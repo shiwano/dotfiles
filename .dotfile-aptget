@@ -1,0 +1,42 @@
+#!/bin/sh
+# sh < <( curl https://github.com/shiwano/dotfiles/raw/master/.dotfile-aptget )
+# this is for intalling essential packages for me in ubuntu
+
+sudo apt-get install -y \
+  vim \
+  screen \
+  lv \
+  nkf \
+  wget \
+  ruby \
+  irb \
+  libopenssl-ruby \
+  libreadline-ruby \
+  rdoc \
+  ri \
+  ruby \
+  ruby-dev \
+  build-essential \
+  bison \
+  openssl \
+  libreadline5 \
+  libreadline-dev \
+  curl \
+  zlib1g \
+  zlib1g-dev \
+  libssl-dev \
+  libxml2-dev \
+  libxslt-dev \
+  git-core \
+  zsh \
+  mysql-client \
+;
+  
+if [ -z $RVM ]; then
+  bash < <( curl http://rvm.beginrescueend.com/releases/rvm-install-head )
+  source ~/.rvm/scripts/rvm
+fi
+
+chsh -s zsh
+
+
