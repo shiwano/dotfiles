@@ -231,7 +231,7 @@ helptags $DOTVIM/doc
 set helplang=ja,en
 " タグファイル設定
 if has("win32") || has("win64")
-  set tags=$DOTVIM/mytags_wim
+  set tags=$DOTVIM/mytags_win
 else
   set tags=$DOTVIM/mytags
 endif
