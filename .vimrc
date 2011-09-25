@@ -24,6 +24,8 @@ Bundle 'gmarik/vundle'
 Bundle "jQuery"
 Bundle "Markdown"
 Bundle "https://github.com/timcharper/textile.vim.git"
+" Color scheme
+Bundle "inkpot"
 " Plugins
 Bundle "YankRing.vim"
 Bundle "http://github.com/thinca/vim-poslist.git"
@@ -36,7 +38,10 @@ Bundle 'unite.vim'
 filetype plugin indent on      " required!
 "-------------------------------------------------------------------------------
 " カラースキーマ
-colorscheme desert
+if !has('gui_running')
+  set t_Co=256
+  colorscheme inkpot
+endif
 "-------------------------------------------------------------------------------
 " ステータスライン
 set laststatus=2    " 常にステータスラインを表示

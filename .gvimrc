@@ -8,7 +8,7 @@ else
 endif
 
 " 色テーマ
-colorscheme darkblue " (GUI使用時)
+colorscheme inkpot " (GUI使用時)
 
 " Windows用キーマップを有効にする
 "source $VIMRUNTIME/mswin.vim
