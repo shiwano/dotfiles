@@ -163,16 +163,6 @@ nmap g* g*zz
 nmap g# g#zz
 nmap G Gzz
 " その他キーバインド
-map <C-x> <S-Insert>
-nmap <C-a> ggVG
-imap <C-a> <C-o>ggVG
-vmap <C-a> <Esc>ggVG
-nmap <C-s> :w<CR>
-imap <C-s> <C-o>:w<CR>
-vmap <C-s> <Esc>:w<CR>
-nmap <C-z> u
-imap <C-z> <C-o>u
-vmap <C-z> <Esc>u
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
 vmap <C-r> <Esc><C-r>
