@@ -12,3 +12,6 @@ bind n screen
 bind h prev
 bind j next
 bind l windowlist
+# 256色対応
+defbce "on"
+term xterm-256color
