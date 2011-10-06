@@ -13,6 +13,9 @@ export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 # 関数
 find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
 
+# vi風キーバインド
+bindkey -v
+
 # ^ 入力したら上のディレクトリに移動
 function cdup() {
   echo
@@ -138,3 +141,10 @@ function chpwd() { ls }
 
 # C-s, C-qを無効にする。
 setopt no_flow_control
+
+# C-p C-n でコマンド履歴検索
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
