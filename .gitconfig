@@ -3,7 +3,7 @@
   email = shiwano@gmail.com
 [github]
   user = shiwano
-  token = 66480ce7a7df36746493534c5efbe23e
+  token = !security 2>&1 >/dev/null find-generic-password -gs \"GitHub API Token\" | ruby -e 'print $1 if STDIN.gets =~ /^password: \\\"(.*)\\\"$/'
 [core]
   editor = vim
   excludesfile = ~/.gitignore  # globalな.gitignoreの指定
