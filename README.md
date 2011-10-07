@@ -1,7 +1,7 @@
 dotfiles
 ========
 
-My dotfiles for Git, GNU Screen, Zsh and Vim
+My dotfiles.
 
 Install
 -------
