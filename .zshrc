@@ -128,7 +128,7 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 function chpwd() { ls }
 
 # ディレクトリ名だけで､ディレクトリの移動をする｡
-# setopt auto_cd
+setopt auto_cd
 
 # C-s, C-qを無効にする。
 setopt no_flow_control
