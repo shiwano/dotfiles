@@ -6,7 +6,7 @@ compinit
 export LANG=ja_JP.UTF-8
 
 # パスの設定
-PATH=/usr/local/bin:$PATH
+PATH=~/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 
@@ -15,15 +15,6 @@ find-grep () { find . -type f -print | xargs grep -n --binary-files=without-matc
 
 # vi風キーバインド
 bindkey -v
-
-# ^ 入力したら上のディレクトリに移動
-function cdup() {
-  echo
-  cd ..
-  zle reset-prompt
-}
-zle -N cdup
-bindkey '\^' cdup
 
 # エイリアスの設定
 alias ls='ls --color=auto'
@@ -55,11 +46,8 @@ esac
 
 # 補完設定
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
-
-# 直前と同じコマンドラインはヒストリに追加しない
-setopt hist_ignore_dups
+HISTSIZE=100000
+SAVEHIST=100000
 
 # シェルのプロセスごとに履歴を共有
 setopt share_history
@@ -74,10 +62,13 @@ setopt hist_no_store
 setopt hist_verify
 
 # 行頭がスペースで始まるコマンドラインはヒストリに記録しない
-# setopt hist_ignore_spece
+#setopt hist_ignore_spece
+
+# 直前と同じコマンドラインはヒストリに追加しない
+setopt hist_ignore_dups
 
 # 重複したヒストリは追加しない
-# setopt hist_ignore_all_dups
+setopt hist_ignore_all_dups
 
 # 補完するかの質問は画面を超える時にのみに行う｡
 LISTMAX=0
