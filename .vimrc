@@ -250,7 +250,7 @@ augroup END
 " Windowsバックスラッシュ対策 Vundleを使っているのでコメントアウト
 "set shellslash
 " Windowsクリップボードを使用
-set clipboard=unnamed
+set clipboard=unnamedplus,unnamed
 "-------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
