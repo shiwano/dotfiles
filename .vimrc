@@ -28,8 +28,9 @@ Bundle "https://github.com/timcharper/textile.vim.git"
 Bundle "inkpot"
 " Plugins
 Bundle "YankRing.vim"
-Bundle "http://github.com/thinca/vim-poslist.git"
-Bundle "http://github.com/thinca/vim-quickrun.git"
+Bundle "https://github.com/thinca/vim-ref.git"
+Bundle "https://github.com/thinca/vim-poslist.git"
+Bundle "https://github.com/thinca/vim-quickrun.git"
 Bundle 'Shougo/neocomplcache'
 Bundle 'matchit.zip'
 Bundle 'http://github.com/scrooloose/nerdcommenter.git'

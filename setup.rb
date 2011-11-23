@@ -37,11 +37,11 @@ else
   cd "dotfiles"
 end
 
-# "bin".expand.mkpath
+"bin".expand.mkpath
 
-# Dir["bin/*"].each do |f|
-  # link f, "~/bin"
-# end
+Dir["bin/*"].each do |f|
+  link f, "~/bin"
+end
 
 link ".vimrc", "~/.vimrc"
 link ".gvimrc", "~/.gvimrc"
@@ -58,3 +58,9 @@ unless "~/.vim/bundle/vundle".expand.exist?
   sh "git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle"
   sh "vim -c BundleInstall -c quit"
 end
+
+"refs".expand.mkpath
+sh "wget http://doc.okkez.net/archives/201107/ruby-refm-1.9.2-dynamic-20110729.zip"
+sh "unzip ruby-refm-1.9.2-dynamic-20110729.zip"
+sh "rm ruby-refm-1.9.2-dynamic-20110729.zip"
+sh "mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm"
