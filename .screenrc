@@ -15,3 +15,6 @@ bind l windowlist
 # 256色対応
 defbce "on"
 term xterm-256color
+termcapinfo xterm-256color is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l
+termcapinfo xterm* 'Co#256:pa#256:AB=\E[48;5;%dm:AF=\E[38;5;%dm:'
+attrcolor b ".I"

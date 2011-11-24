@@ -24,6 +24,7 @@ Bundle 'gmarik/vundle'
 Bundle "jQuery"
 Bundle "Markdown"
 Bundle "https://github.com/timcharper/textile.vim.git"
+Bundle "vim-coffee-script"
 " Color scheme
 Bundle "inkpot"
 " Plugins
@@ -36,6 +37,8 @@ Bundle 'matchit.zip'
 Bundle 'http://github.com/scrooloose/nerdcommenter.git'
 Bundle 'surround.vim'
 Bundle 'unite.vim'
+Bundle 'rails.vim'
+Bundle 'basyura/jslint.vim'
 filetype plugin indent on      " required!
 "-------------------------------------------------------------------------------
 " カラースキーマ
@@ -135,6 +138,7 @@ else
   set ambiwidth=double
 endif
 if has('iconv')
+  let s:enc_utf = 'utf-8'
   let s:enc_euc = 'euc-jp'
   let s:enc_jis = 'iso-2022-jp'
   if iconv("\x87\x64\x87\x6a", 'cp932', 'euc-jisx0213') ==# "\xad\xc5\xad\xcb"
@@ -142,7 +146,7 @@ if has('iconv')
     let s:enc_jis = 'iso-2022-jp-3'
   endif
   set   fileencodings&
-  let &fileencodings = &fileencodings.','.s:enc_jis.',cp932,'.s:enc_euc
+  let &fileencodings = &fileencodings.','.s:enc_utf.','.s:enc_jis.',cp932,'.s:enc_euc
   unlet s:enc_euc
   unlet s:enc_jis
 endif
@@ -217,6 +221,14 @@ let b:match_words="{{t:{{/t}}"
 " nerd_commenter.vim
 let NERDSpaceDelims = 1
 let NERDShutUp = 1
+"-------------------------------------------------------------------------------
+" jslint.vim
+function! s:javascript_filetype_settings()
+  autocmd BufLeave     <buffer> call jslint#clear()
+  autocmd BufWritePost <buffer> call jslint#check()
+  autocmd CursorMoved  <buffer> call jslint#message()
+endfunction
+autocmd FileType javascript call s:javascript_filetype_settings()
 "-------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1

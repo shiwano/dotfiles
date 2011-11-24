@@ -10,6 +10,11 @@ PATH=~/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 
+#vim
+export EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
+alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+
 # ä÷êî
 find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
 
@@ -25,6 +30,9 @@ alias vi='vim'
 alias cp="cp -i"
 alias mv="mv -i"
 alias rm="rm -i"
+alias g='git'
+alias s='git status'
+alias v='vim'
 
 # ÉvÉçÉìÉvÉgÇÃê›íË
 case ${UID} in
