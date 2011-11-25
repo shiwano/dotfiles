@@ -27,12 +27,11 @@ alias ll='ls -l'
 alias la='ls -A'
 alias lal="ls -l -A"
 alias vi='vim'
-alias cp="cp -i"
-alias mv="mv -i"
-alias rm="rm -i"
+#alias cp="cp -i"
+#alias mv="mv -i"
+#alias rm="rm -i"
 alias g='git'
 alias s='git status'
-alias v='vim'
 
 # ƒvƒƒ“ƒvƒg‚Ìİ’è
 case ${UID} in

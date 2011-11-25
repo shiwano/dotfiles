@@ -59,8 +59,10 @@ unless "~/.vim/bundle/vundle".expand.exist?
   sh "vim -c BundleInstall -c quit"
 end
 
-"refs".expand.mkpath
-sh "wget http://doc.okkez.net/archives/201107/ruby-refm-1.9.2-dynamic-20110729.zip"
-sh "unzip ruby-refm-1.9.2-dynamic-20110729.zip"
-sh "rm ruby-refm-1.9.2-dynamic-20110729.zip"
-sh "mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm"
+unless "~/dotfiles/refs/rubyrefm".expand.exist?
+  "refs".expand.mkpath
+  sh "wget http://doc.okkez.net/archives/201107/ruby-refm-1.9.2-dynamic-20110729.zip"
+  sh "unzip ruby-refm-1.9.2-dynamic-20110729.zip"
+  sh "rm ruby-refm-1.9.2-dynamic-20110729.zip"
+  sh "mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm"
+end

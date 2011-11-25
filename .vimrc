@@ -230,6 +230,9 @@ function! s:javascript_filetype_settings()
 endfunction
 autocmd FileType javascript call s:javascript_filetype_settings()
 "-------------------------------------------------------------------------------
+" yankring.vim
+let g:yankring_history_file = '.yankring_history'
+"-------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
 " スニペットファイルの置き場所
