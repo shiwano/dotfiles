@@ -46,6 +46,11 @@ if !has('gui_running')
   set t_Co=256
   colorscheme inkpot
 endif
+" 80 columns highlight
+if exists('+colorcolumn')
+  highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
+  set colorcolumn=80
+endif
 "-------------------------------------------------------------------------------
 " ステータスライン
 set laststatus=2    " 常にステータスラインを表示
