@@ -11,9 +11,11 @@ export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 
 #vim
-export EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
-alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
-alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+if [ -d /Applications/MacVim.app ]; then
+  export EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
+  alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+  alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
+fi
 
 # 関数
 find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
@@ -87,7 +89,7 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 setopt auto_pushd
 
 # check correct command
-setopt correct
+#setopt correct
 
 # 複数の zsh を同時に使う時など history ファイルに上書きせず追加
 setopt append_history
