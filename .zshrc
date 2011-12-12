@@ -36,6 +36,15 @@ alias g='git'
 alias s='git status'
 
 # ƒvƒƒ“ƒvƒg‚Ìİ’è
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' formats '[%b]'
+zstyle ':vcs_info:*' actionformats '[%b|%a]'
+precmd () {
+    psvar=()
+    LANG=en_US.UTF-8 vcs_info
+    [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+}
+
 case ${UID} in
 0)
     PROMPT="%B%{[31m%}%/#%{[m%}%b "
@@ -52,6 +61,7 @@ case ${UID} in
         PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
     ;;
 esac
+RPROMPT="%1(v|%F{green}%1v%f|)"
 
 # •âŠ®İ’è
 HISTFILE=~/.zsh_history
