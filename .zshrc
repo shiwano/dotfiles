@@ -29,11 +29,20 @@ alias ll='ls -l'
 alias la='ls -A'
 alias lal="ls -l -A"
 alias vi='vim'
-#alias cp="cp -i"
-#alias mv="mv -i"
-#alias rm="rm -i"
 alias g='git'
 alias s='git status'
+
+# brew でインストールした256色対応screen
+if [ -d /usr/local/Cellar/screen/4.0.3/bin ]; then
+  alias screen='/usr/local/Cellar/screen/4.0.3/bin/screen'
+fi
+
+# zmv
+autoload zmv
+alias zmz='noglob zmv'
+alias zcp='noglob zmv -C'
+alias zln='noglob zmv -L'
+alias zsy='noglob zmv -Ls'
 
 # プロンプトの設定
 autoload -Uz vcs_info
