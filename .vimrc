@@ -28,6 +28,7 @@ Bundle "vim-coffee-script"
 " Color scheme
 Bundle "inkpot"
 " Plugins
+Bundle 'tpope/vim-rails'
 Bundle "YankRing.vim"
 Bundle "https://github.com/thinca/vim-ref.git"
 Bundle "https://github.com/thinca/vim-poslist.git"
@@ -37,8 +38,10 @@ Bundle 'matchit.zip'
 Bundle 'http://github.com/scrooloose/nerdcommenter.git'
 Bundle 'surround.vim'
 Bundle 'unite.vim'
-Bundle 'rails.vim'
 Bundle 'basyura/jslint.vim'
+Bundle 'Source-Explorer-srcexpl.vim'
+Bundle 'trinity.vim'
+Bundle 'taglist.vim'
 filetype plugin indent on      " required!
 "-------------------------------------------------------------------------------
 " カラースキーマ
@@ -213,39 +216,6 @@ function! s:Exec()
 :endfunction
 command! Exec call <SID>Exec()
 map <silent> <C-F9> :call <SID>Exec()<CR>
-" Python実行
-if has('python')
-  python import vim
-  command Py python exec('\n'.join(vim.current.buffer))
-endif
-"-------------------------------------------------------------------------------
-" matchit.vim
-" % で対応するフレーズに移動
-let b:match_words="{{t:{{/t}}"
-"-------------------------------------------------------------------------------
-" nerd_commenter.vim
-let NERDSpaceDelims = 1
-let NERDShutUp = 1
-"-------------------------------------------------------------------------------
-" jslint.vim
-function! s:javascript_filetype_settings()
-  autocmd BufLeave     <buffer> call jslint#clear()
-  autocmd BufWritePost <buffer> call jslint#check()
-  autocmd CursorMoved  <buffer> call jslint#message()
-endfunction
-autocmd FileType javascript call s:javascript_filetype_settings()
-"-------------------------------------------------------------------------------
-" yankring.vim
-let g:yankring_history_file = '.yankring_history'
-"-------------------------------------------------------------------------------
-" neocomplcache.vim
-let g:neocomplcache_enable_at_startup = 1
-" スニペットファイルの置き場所
-let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
-" TABでスニペットを展開
-imap <expr> <TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<Tab>"
-" スニペット編集 引数にfiletype
-command! -nargs=* Snip NeoComplCacheEditSnippets
 "-------------------------------------------------------------------------------
 " ユーティリティ
 " 現在開いているファイルのある場所に常にcdする
@@ -272,6 +242,39 @@ augroup END
 " Windowsクリップボードを使用
 set clipboard=unnamedplus,unnamed
 "-------------------------------------------------------------------------------
+" matchit.vim
+" % で対応するフレーズに移動
+let b:match_words="{{t:{{/t}}"
+"-------------------------------------------------------------------------------
+" nerd_commenter.vim
+let NERDSpaceDelims = 1
+let NERDShutUp = 1
+"-------------------------------------------------------------------------------
+" jslint.vim
+function! s:javascript_filetype_settings()
+  autocmd BufLeave     <buffer> call jslint#clear()
+  autocmd BufWritePost <buffer> call jslint#check()
+  autocmd CursorMoved  <buffer> call jslint#message()
+endfunction
+autocmd FileType javascript call s:javascript_filetype_settings()
+"-------------------------------------------------------------------------------
+" yankring.vim
+let g:yankring_history_file = '.yankring_history'
+"-------------------------------------------------------------------------------
+" taglist.vim
+if has("macunix")
+  let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
+endif
+"-------------------------------------------------------------------------------
+" neocomplcache.vim
+let g:neocomplcache_enable_at_startup = 1
+" スニペットファイルの置き場所
+let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
+" TABでスニペットを展開
+imap <expr> <TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<Tab>"
+" スニペット編集 引数にfiletype
+command! -nargs=* Snip NeoComplCacheEditSnippets
+"-------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
 " let g:unite_enable_start_insert=1
@@ -287,7 +290,6 @@ nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 nnoremap <silent> ,uu :<C-u>Unite buffer file_mru<CR>
 " 全部乗せ
 nnoremap <silent> ,ua :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
-
 " ウィンドウを分割して開く
 au FileType unite nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
 au FileType unite inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
@@ -297,3 +299,13 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vspli
 " ESCキーを2回押すと終了する
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
+"-------------------------------------------------------------------------------
+" trinity.vim
+" Open and close all the three plugins on the same time 
+nmap <F8>   :TrinityToggleAll<CR> 
+" Open and close the srcexpl.vim separately 
+nmap <F9>   :TrinityToggleSourceExplorer<CR> 
+" Open and close the taglist.vim separately 
+nmap <F10>  :TrinityToggleTagList<CR> 
+" Open and close the NERD_tree.vim separately 
+nmap <F11>  :TrinityToggleNERDTree<CR> 

@@ -2,3 +2,4 @@
 refs/*
 .DS_Store
 Guardfile
+tags

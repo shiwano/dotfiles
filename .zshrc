@@ -32,9 +32,14 @@ alias vi='vim'
 alias g='git'
 alias s='git status'
 
+# brew でインストールしたctags
+if [ -d /usr/local/Cellar/ctags ]; then
+  alias ctags="`brew --prefix`/bin/ctags"
+fi
+
 # brew でインストールした256色対応screen
-if [ -d /usr/local/Cellar/screen/4.0.3/bin ]; then
-  alias screen='/usr/local/Cellar/screen/4.0.3/bin/screen'
+if [ -d /usr/local/Cellar/screen ]; then
+  alias screen="`brew --prefix`/bin/screen"
 fi
 
 # zmv
