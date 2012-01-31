@@ -17,7 +17,7 @@ opts.parse!(ARGV)
 document_root = ARGV[0] || "./"
 
 srv = WEBrick::HTTPServer.new( :DocumentRoot => document_root,
-                               :BindAddress => '127.0.0.1',
+                               :BindAddress => '0.0.0.0',
                                :Port => PORT
                                )
 
