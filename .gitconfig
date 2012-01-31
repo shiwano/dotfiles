@@ -13,6 +13,7 @@
 [alias]
   co = checkout
   ci = commit
+  cim = commit -m
   st = status
   up = pull --rebase
   di = diff --color
@@ -23,6 +24,7 @@
   fetch-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"  st = status
   log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
   log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+  log-stat = log --stat --summary
   config-for-aiming = "!sh -c 'git config user.email siwano@aiming-inc.com'"
 [merge]
   tool = vimdiff
