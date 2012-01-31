@@ -1,11 +1,11 @@
-# •âŠ®‹@”\—LŒø
+# è£œå®Œæ©Ÿèƒ½æœ‰åŠ¹
 autoload -U compinit
 compinit
 
-# •¶šƒR[ƒh‚Ìİ’è
+# æ–‡å­—ã‚³ãƒ¼ãƒ‰ã®è¨­å®š
 export LANG=ja_JP.UTF-8
 
-# ƒpƒX‚Ìİ’è
+# ãƒ‘ã‚¹ã®è¨­å®š
 PATH=~/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
@@ -17,13 +17,13 @@ if [ -d /Applications/MacVim.app ]; then
   alias vim='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
 fi
 
-# ŠÖ”
+# é–¢æ•°
 find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
 
-# vi•—ƒL[ƒoƒCƒ“ƒh
+# vié¢¨ã‚­ãƒ¼ãƒã‚¤ãƒ³ãƒ‰
 bindkey -v
 
-# ƒGƒCƒŠƒAƒX‚Ìİ’è
+# ã‚¨ã‚¤ãƒªã‚¢ã‚¹ã®è¨­å®š
 alias ls='ls --color=auto'
 alias ll='ls -l'
 alias la='ls -A'
@@ -31,25 +31,52 @@ alias lal="ls -l -A"
 alias vi='vim'
 alias g='git'
 alias s='git status'
+alias server='ruby ~/dotfiles/tools/server.rb'
 
-# brew ‚ÅƒCƒ“ƒXƒg[ƒ‹‚µ‚½ctags
+# brew ã§ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ãŸctags
 if [ -d /usr/local/Cellar/ctags ]; then
   alias ctags="`brew --prefix`/bin/ctags"
 fi
 
-# brew ‚ÅƒCƒ“ƒXƒg[ƒ‹‚µ‚½256F‘Î‰screen
+# brew ã§ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ãŸ256è‰²å¯¾å¿œscreen
 if [ -d /usr/local/Cellar/screen ]; then
   alias screen="`brew --prefix`/bin/screen"
 fi
 
 # zmv
 autoload zmv
-alias zmz='noglob zmv'
+alias zmv='noglob zmv -W'
 alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
-# ƒvƒƒ“ƒvƒg‚Ìİ’è
+# Extract
+extract () {
+  if [ -f $1 ] ; then
+    case $1 in
+      *.tar.bz2)   tar xvjf $1    ;;
+      *.tar.gz)    tar xvzf $1    ;;
+      *.tar.xz)    tar xvJf $1    ;;
+      *.bz2)       bunzip2 $1     ;;
+      *.rar)       unrar x $1     ;;
+      *.gz)        gunzip $1      ;;
+      *.tar)       tar xvf $1     ;;
+      *.tbz2)      tar xvjf $1    ;;
+      *.tgz)       tar xvzf $1    ;;
+      *.zip)       unzip $1       ;;
+      *.Z)         uncompress $1  ;;
+      *.7z)        7z x $1        ;;
+      *.lzma)      lzma -dv $1    ;;
+      *.xz)        xz -dv $1      ;;
+      *)           echo "don't know how to extract '$1'..." ;;
+    esac
+  else
+    echo "'$1' is not a valid file!"
+  fi
+}
+alias ex='extract'
+
+# ãƒ—ãƒ­ãƒ³ãƒ—ãƒˆã®è¨­å®š
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
@@ -77,96 +104,96 @@ case ${UID} in
 esac
 RPROMPT="%1(v|%F{green}%1v%f|)"
 
-# •âŠ®İ’è
+# è£œå®Œè¨­å®š
 HISTFILE=~/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
-# ƒVƒFƒ‹‚ÌƒvƒƒZƒX‚²‚Æ‚É—š—ğ‚ğ‹¤—L
+# ã‚·ã‚§ãƒ«ã®ãƒ—ãƒ­ã‚»ã‚¹ã”ã¨ã«å±¥æ­´ã‚’å…±æœ‰
 setopt share_history
 
-# —]•ª‚ÈƒXƒy[ƒX‚ğíœ‚µ‚ÄƒqƒXƒgƒŠ‚É‹L˜^‚·‚é
+# ä½™åˆ†ãªã‚¹ãƒšãƒ¼ã‚¹ã‚’å‰Šé™¤ã—ã¦ãƒ’ã‚¹ãƒˆãƒªã«è¨˜éŒ²ã™ã‚‹
 setopt hist_reduce_blanks
 
-# ƒqƒXƒgƒŠ‚ÉhistoryƒRƒ}ƒ“ƒh‚ğ‹L˜^‚µ‚È‚¢
+# ãƒ’ã‚¹ãƒˆãƒªã«historyã‚³ãƒãƒ³ãƒ‰ã‚’è¨˜éŒ²ã—ãªã„
 setopt hist_no_store
 
-# ƒqƒXƒgƒŠ‚ğŒÄ‚Ño‚µ‚Ä‚©‚çÀs‚·‚éŠÔ‚Éˆê’U•ÒW‚Å‚«‚éó‘Ô‚É‚È‚é
+# ãƒ’ã‚¹ãƒˆãƒªã‚’å‘¼ã³å‡ºã—ã¦ã‹ã‚‰å®Ÿè¡Œã™ã‚‹é–“ã«ä¸€æ—¦ç·¨é›†ã§ãã‚‹çŠ¶æ…‹ã«ãªã‚‹
 setopt hist_verify
 
-# s“ª‚ªƒXƒy[ƒX‚Ån‚Ü‚éƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ÍƒqƒXƒgƒŠ‚É‹L˜^‚µ‚È‚¢
+# è¡Œé ­ãŒã‚¹ãƒšãƒ¼ã‚¹ã§å§‹ã¾ã‚‹ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã¯ãƒ’ã‚¹ãƒˆãƒªã«è¨˜éŒ²ã—ãªã„
 #setopt hist_ignore_spece
 
-# ’¼‘O‚Æ“¯‚¶ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚ÍƒqƒXƒgƒŠ‚É’Ç‰Á‚µ‚È‚¢
+# ç›´å‰ã¨åŒã˜ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã¯ãƒ’ã‚¹ãƒˆãƒªã«è¿½åŠ ã—ãªã„
 setopt hist_ignore_dups
 
-# d•¡‚µ‚½ƒqƒXƒgƒŠ‚Í’Ç‰Á‚µ‚È‚¢
+# é‡è¤‡ã—ãŸãƒ’ã‚¹ãƒˆãƒªã¯è¿½åŠ ã—ãªã„
 setopt hist_ignore_all_dups
 
-# •âŠ®‚·‚é‚©‚Ì¿–â‚Í‰æ–Ê‚ğ’´‚¦‚é‚É‚Ì‚İ‚És‚¤¡
+# è£œå®Œã™ã‚‹ã‹ã®è³ªå•ã¯ç”»é¢ã‚’è¶…ãˆã‚‹æ™‚ã«ã®ã¿ã«è¡Œã†ï½¡
 LISTMAX=0
 
-# sudo ‚Å‚à•âŠ®‚Ì‘ÎÛ
+# sudo ã§ã‚‚è£œå®Œã®å¯¾è±¡
 zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
-# cd‚Ìƒ^ƒCƒ~ƒ“ƒO‚Å©“®“I‚Épushd
+# cdã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§è‡ªå‹•çš„ã«pushd
 setopt auto_pushd
 
 # check correct command
 #setopt correct
 
-# •¡”‚Ì zsh ‚ğ“¯‚Ég‚¤‚È‚Ç history ƒtƒ@ƒCƒ‹‚Éã‘‚«‚¹‚¸’Ç‰Á
+# è¤‡æ•°ã® zsh ã‚’åŒæ™‚ã«ä½¿ã†æ™‚ãªã© history ãƒ•ã‚¡ã‚¤ãƒ«ã«ä¸Šæ›¸ãã›ãšè¿½åŠ 
 setopt append_history
 
-# •âŠ®Œó•â‚ª•¡”‚ ‚é‚ÉAˆê——•\¦
+# è£œå®Œå€™è£œãŒè¤‡æ•°ã‚ã‚‹æ™‚ã«ã€ä¸€è¦§è¡¨ç¤º
 setopt auto_list
 
-# auto_list ‚Ì•âŠ®Œó•âˆê——‚ÅAls -F ‚Ì‚æ‚¤‚Éƒtƒ@ƒCƒ‹‚Ìí•Ê‚ğƒ}[ƒN•\¦‚µ‚È‚¢
+# auto_list ã®è£œå®Œå€™è£œä¸€è¦§ã§ã€ls -F ã®ã‚ˆã†ã«ãƒ•ã‚¡ã‚¤ãƒ«ã®ç¨®åˆ¥ã‚’ãƒãƒ¼ã‚¯è¡¨ç¤ºã—ãªã„
 setopt no_list_types
 
-# •ÛŠÇŒ‹‰Ê‚ğ‚Å‚«‚é‚¾‚¯‹l‚ß‚é
+# ä¿ç®¡çµæœã‚’ã§ãã‚‹ã ã‘è©°ã‚ã‚‹
 setopt list_packed
 
-# •âŠ®ƒL[iTab, Ctrl+I) ‚ğ˜A‘Å‚·‚é‚¾‚¯‚Å‡‚É•âŠ®Œó•â‚ğ©“®‚Å•âŠ®
+# è£œå®Œã‚­ãƒ¼ï¼ˆTab, Ctrl+I) ã‚’é€£æ‰“ã™ã‚‹ã ã‘ã§é †ã«è£œå®Œå€™è£œã‚’è‡ªå‹•ã§è£œå®Œ
 setopt auto_menu
 
-# ƒJƒbƒR‚Ì‘Î‰‚È‚Ç‚ğ©“®“I‚É•âŠ®
+# ã‚«ãƒƒã‚³ã®å¯¾å¿œãªã©ã‚’è‡ªå‹•çš„ã«è£œå®Œ
 setopt auto_param_keys
 
-# ƒfƒBƒŒƒNƒgƒŠ–¼‚Ì•âŠ®‚Å––”ö‚Ì / ‚ğ©“®“I‚É•t‰Á‚µAŸ‚Ì•âŠ®‚É”õ‚¦‚é
+# ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåã®è£œå®Œã§æœ«å°¾ã® / ã‚’è‡ªå‹•çš„ã«ä»˜åŠ ã—ã€æ¬¡ã®è£œå®Œã«å‚™ãˆã‚‹
 setopt auto_param_slash
 
-# ƒr[ƒv‰¹‚ğ–Â‚ç‚³‚È‚¢‚æ‚¤‚É‚·‚é
+# ãƒ“ãƒ¼ãƒ—éŸ³ã‚’é³´ã‚‰ã•ãªã„ã‚ˆã†ã«ã™ã‚‹
 setopt no_beep
 
-# ƒRƒ}ƒ“ƒhƒ‰ƒCƒ“‚Ìˆø”‚Å --prefix=/usr ‚È‚Ç‚Ì = ˆÈ~‚Å‚à•âŠ®‚Å‚«‚é
+# ã‚³ãƒãƒ³ãƒ‰ãƒ©ã‚¤ãƒ³ã®å¼•æ•°ã§ --prefix=/usr ãªã©ã® = ä»¥é™ã§ã‚‚è£œå®Œã§ãã‚‹
 setopt magic_equal_subst
 
-# ƒtƒ@ƒCƒ‹–¼‚Ì“WŠJ‚ÅƒfƒBƒŒƒNƒgƒŠ‚Éƒ}ƒbƒ`‚µ‚½ê‡––”ö‚É / ‚ğ•t‰Á‚·‚é
+# ãƒ•ã‚¡ã‚¤ãƒ«åã®å±•é–‹ã§ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ãƒãƒƒãƒã—ãŸå ´åˆæœ«å°¾ã« / ã‚’ä»˜åŠ ã™ã‚‹
 setopt mark_dirs
 
-# 8 ƒrƒbƒg–Ú‚ğ’Ê‚·‚æ‚¤‚É‚È‚èA“ú–{Œê‚Ìƒtƒ@ƒCƒ‹–¼‚ğ•\¦‰Â”\
+# 8 ãƒ“ãƒƒãƒˆç›®ã‚’é€šã™ã‚ˆã†ã«ãªã‚Šã€æ—¥æœ¬èªã®ãƒ•ã‚¡ã‚¤ãƒ«åã‚’è¡¨ç¤ºå¯èƒ½
 setopt print_eight_bit
 
-# Ctrl+w‚Å¤’¼‘O‚Ì/‚Ü‚Å‚ğíœ‚·‚é¡
+# Ctrl+wã§ï½¤ç›´å‰ã®/ã¾ã§ã‚’å‰Šé™¤ã™ã‚‹ï½¡
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
-# ƒfƒBƒŒƒNƒgƒŠ‚ğ…F‚É‚·‚é¡
+# ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’æ°´è‰²ã«ã™ã‚‹ï½¡
 export LS_COLORS='di=01;36'
 
-# ƒtƒ@ƒCƒ‹ƒŠƒXƒg•âŠ®‚Å‚àls‚Æ“¯—l‚ÉF‚ğ‚Â‚¯‚é¡
+# ãƒ•ã‚¡ã‚¤ãƒ«ãƒªã‚¹ãƒˆè£œå®Œã§ã‚‚lsã¨åŒæ§˜ã«è‰²ã‚’ã¤ã‘ã‚‹ï½¡
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
-# cd ‚ğ‚µ‚½‚Æ‚«‚Éls‚ğÀs‚·‚é
+# cd ã‚’ã—ãŸã¨ãã«lsã‚’å®Ÿè¡Œã™ã‚‹
 function chpwd() { ls }
 
-# ƒfƒBƒŒƒNƒgƒŠ–¼‚¾‚¯‚Å¤ƒfƒBƒŒƒNƒgƒŠ‚ÌˆÚ“®‚ğ‚·‚é¡
+# ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåã ã‘ã§ï½¤ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ç§»å‹•ã‚’ã™ã‚‹ï½¡
 setopt auto_cd
 
-# C-s, C-q‚ğ–³Œø‚É‚·‚éB
+# C-s, C-qã‚’ç„¡åŠ¹ã«ã™ã‚‹ã€‚
 setopt no_flow_control
 
-# C-p C-n ‚ÅƒRƒ}ƒ“ƒh—š—ğŒŸõ
+# C-p C-n ã§ã‚³ãƒãƒ³ãƒ‰å±¥æ­´æ¤œç´¢
 autoload history-search-end
 zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
