@@ -14,6 +14,7 @@
   co = checkout
   ci = commit
   cim = commit -m
+  s = status
   st = status
   up = pull --rebase
   di = diff --color
