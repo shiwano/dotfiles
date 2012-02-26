@@ -1,6 +1,6 @@
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 set nocompatible    " vimですよ
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " 変数定義
 let $TODAY = strftime('%Y%m%d')
 let $DESKTOP = expand('~/desktop')
@@ -10,7 +10,7 @@ if has("win32") || has("win64")
 else
   let $DOTVIM = expand('~/.vim')
 endif
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " Vundle
 " $ git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
 " インストール: .vimrcに追加して、BundleInstall
@@ -25,6 +25,7 @@ Bundle "jQuery"
 Bundle "Markdown"
 Bundle "https://github.com/timcharper/textile.vim.git"
 Bundle "vim-coffee-script"
+Bundle "othree/html5-syntax.vim"
 " Color scheme
 Bundle "inkpot"
 " Plugins
@@ -43,22 +44,24 @@ Bundle 'Source-Explorer-srcexpl.vim'
 Bundle 'trinity.vim'
 Bundle 'taglist.vim'
 filetype plugin indent on      " required!
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " カラースキーマ
 if !has('gui_running')
   set t_Co=256
   colorscheme inkpot
 endif
+
 " 80 columns highlight
 if exists('+colorcolumn')
-  highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
-  set colorcolumn=80
+  highlight ColorColumn ctermbg=53 guibg=#5f0000
+  set colorcolumn=81
 endif
-"-------------------------------------------------------------------------------
+
+"------------------------------------------------------------------------------
 " ステータスライン
 set laststatus=2    " 常にステータスラインを表示
 set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASCII=%03.3b,HEX=%02.2B)\ %l/%L(%P)%m
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " 基本設定
 let mapleader = "," " キーマップリーダー
 set scrolloff=5     " スクロール時の余白確保
@@ -73,7 +76,7 @@ set browsedir=buffer    " Exploreの初期ディレクトリ
 set whichwrap=b,s,h,l,<,>,[,]   " カーソルを行頭、行末で止まらないようにする
 set showcmd         " コマンドをステータス行に表示
 set magic           " 正規表現に使われる記号を有効にする
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " 表示
 set showcmd         " 入力中のコマンドを表示
 set number          " 行番号表示
@@ -104,7 +107,7 @@ augroup cch
   autocmd WinLeave * set nocursorline
   autocmd WinEnter,BufRead * set cursorline
 augroup END
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " インデント
 set autoindent
 set smartindent
@@ -114,14 +117,14 @@ set cindent
 set shiftwidth=2
 set softtabstop=2
 set expandtab " タブをスペースに展開
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " 補完・履歴
 set wildmenu            " コマンド補完を強化
 set wildchar=<tab>      " コマンド補完を開始するキー
 set wildmode=list:full  " リスト表示，最長マッチ
 set history=1000        " コマンド・検索パターンの履歴数
 set complete+=k         " 補完に辞書ファイル追加
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " 検索設定
 set nowrapscan " 最後まで検索したら先頭へ戻らない
 set ignorecase " 大文字小文字無視
@@ -132,7 +135,7 @@ set hlsearch   " 検索文字をハイライト
 vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
 set ffs=unix,dos,mac
@@ -153,7 +156,7 @@ if has('iconv')
     let s:enc_euc = 'euc-jisx0213,euc-jp'
     let s:enc_jis = 'iso-2022-jp-3'
   endif
-  set   fileencodings&
+  set fileencodings&
   let &fileencodings = &fileencodings.','.s:enc_utf.','.s:enc_jis.',cp932,'.s:enc_euc
   unlet s:enc_euc
   unlet s:enc_jis
@@ -161,7 +164,7 @@ endif
 if has('win32unix')
   set termencoding=cp932
 endif
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " キーバインド関係
 " 行単位で移動(1行が長い場合に便利)
 nnoremap j gj
@@ -180,6 +183,11 @@ nmap # #zz
 nmap g* g*zz
 nmap g# g#zz
 nmap G Gzz
+" CTRL-hjklでウィンドウ移動
+nnoremap <C-j> :<C-w>j
+nnoremap <C-k> :<C-k>j
+nnoremap <C-l> :<C-l>j
+nnoremap <C-h> :<C-h>j
 " その他キーバインド
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
@@ -188,11 +196,8 @@ vmap <C-r> <Esc><C-r>
 nmap ; :
 " Explore
 "nmap <silent> <C-e> :Explore<CR>
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " ユーザ定義コマンド
-command! Vsp :set columns=176|vsp
-command! RW :set columns=88
-command! ResetWidth :set columns=88
 command! Cd :cd %:h
 " エンコード指定してファイルを開く
 command! -nargs=1 Reload :call s:Reload(<f-args>)
@@ -216,7 +221,7 @@ function! s:Exec()
 :endfunction
 command! Exec call <SID>Exec()
 map <silent> <C-F9> :call <SID>Exec()<CR>
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " ユーティリティ
 " 現在開いているファイルのある場所に常にcdする
 " au BufEnter * exec ":lcd " . expand("%:p:h")
@@ -241,15 +246,15 @@ augroup END
 "set shellslash
 " Windowsクリップボードを使用
 set clipboard=unnamedplus,unnamed
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " matchit.vim
 " % で対応するフレーズに移動
 let b:match_words="{{t:{{/t}}"
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " nerd_commenter.vim
 let NERDSpaceDelims = 1
 let NERDShutUp = 1
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " jslint.vim
 function! s:javascript_filetype_settings()
   autocmd BufLeave     <buffer> call jslint#clear()
@@ -257,15 +262,15 @@ function! s:javascript_filetype_settings()
   autocmd CursorMoved  <buffer> call jslint#message()
 endfunction
 autocmd FileType javascript call s:javascript_filetype_settings()
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " yankring.vim
 let g:yankring_history_file = '.yankring_history'
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " taglist.vim
 if has("macunix")
   let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
 endif
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
 " スニペットファイルの置き場所
@@ -274,7 +279,7 @@ let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
 imap <expr> <TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<Tab>"
 " スニペット編集 引数にfiletype
 command! -nargs=* Snip NeoComplCacheEditSnippets
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
 " let g:unite_enable_start_insert=1
@@ -299,7 +304,7 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vspli
 " ESCキーを2回押すと終了する
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
-"-------------------------------------------------------------------------------
+"------------------------------------------------------------------------------
 " trinity.vim
 " Open and close all the three plugins on the same time 
 nmap <F8>   :TrinityToggleAll<CR> 
