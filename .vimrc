@@ -32,6 +32,7 @@ Bundle "inkpot"
 Bundle 'tpope/vim-rails'
 Bundle "YankRing.vim"
 Bundle "https://github.com/thinca/vim-ref.git"
+Bundle "https://github.com/mojako/ref-sources.vim.git"
 Bundle "https://github.com/thinca/vim-poslist.git"
 Bundle "https://github.com/thinca/vim-quickrun.git"
 Bundle 'Shougo/neocomplcache'
@@ -314,3 +315,15 @@ nmap <F9>   :TrinityToggleSourceExplorer<CR>
 nmap <F10>  :TrinityToggleTagList<CR> 
 " Open and close the NERD_tree.vim separately 
 nmap <F11>  :TrinityToggleNERDTree<CR> 
+"------------------------------------------------------------------------------
+" ref.vim
+" K でカーソル下のワードを検索
+nmap ,rr :<C-u>Ref refe<Space>
+nmap ,ra :<C-u>Ref alc<Space>
+nmap ,rjq :<C-u>Ref alc<Space>
+nmap ,rw :<C-u>Ref wikipedia<Space>
+nmap ,rwe :<C-u>Ref wikipedia_en<Space>
+let g:ref_alc_start_linenumber = 39 " 表示する行数
+let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
+let g:ref_jquery_doc_path = expand('~/dotfiles/refs/jqapi')
+let g:ref_wikipedia_lang = ['ja', 'en']

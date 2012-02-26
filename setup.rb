@@ -67,3 +67,11 @@ unless "~/dotfiles/refs/rubyrefm".expand.exist?
   sh "rm ruby-refm-1.9.2-dynamic-20110729.zip"
   sh "mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm"
 end
+
+unless "~/dotfiles/refs/jqapi-latest".expand.exist?
+  "refs".expand.mkpath
+  sh "wget http://jqapi.com/jqapi-latest.zip"
+  sh "unzip jqapi-latest.zip -d jqapi"
+  sh "rm jqapi-latest.zip"
+  sh "mv jqapi ~/dotfiles/refs/jqapi"
+end
