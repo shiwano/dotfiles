@@ -50,6 +50,7 @@ link ".vim", "~/.vim"
 link ".zshrc", "~/.zshrc"
 
 link ".screenrc", "~/.screenrc"
+link ".tmux.conf", "~/.tmux.conf"
 
 link ".gitconfig", "~/.gitconfig"
 link ".gitignore", "~/.gitignore"

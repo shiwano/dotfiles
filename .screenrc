@@ -7,13 +7,17 @@ defscrollback 10000
 escape ^Jj
 startup_message off
 vbell off
-caption always "%{= wb} %-w%{=bu dr}%n %t%{-}%+w %= %{=b wk} [%l] %{=b wb}%y/%m/%d(%D) %{=b wm}%c"
 bind n screen
 bind k prev
 bind j next
 bind l windowlist
 bind q quit
-# 256色対応
+defflow off           # disable flow control
+nethack on            # nethackish status messages
+altscreen on          # restore window contents after a vi session
+hardstatus alwayslastline
+hardstatus string '%{gk}[ %{G}%H %{g}][%= %{wk}%?%-Lw%?%{=b kR}(%{W}%n*%f %t%?(%u)%?%{=b kR})%{= kw}%?%+Lw%?%?%= %{g}][%{Y}%l%{g}]%{=b C}[ %m/%d %c ]%{W}'
+# 256 colors
 defbce "on"
 term xterm-256color
 termcapinfo xterm-256color is=\E[r\E[m\E[2J\E[H\E[?7h\E[?1;4;6l

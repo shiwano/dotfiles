@@ -43,6 +43,17 @@ if [ -d /usr/local/Cellar/screen ]; then
   alias screen="`brew --prefix`/bin/screen"
 fi
 
+# tmux on Mac
+tmuxx () {
+  if [[ ( $OSTYPE == darwin* ) && ( -x $(which reattach-to-user-namespace 2>/dev/null) ) ]]; then
+    tweaked_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
+    tmux -f <(echo "$tweaked_config") $*
+  else
+    tmux $*
+  fi
+}
+alias tmux='tmuxx'
+
 # zmv
 autoload zmv
 alias zmv='noglob zmv -W'
@@ -81,26 +92,26 @@ autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 precmd () {
-    psvar=()
-    LANG=en_US.UTF-8 vcs_info
-    [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+  psvar=()
+  LANG=en_US.UTF-8 vcs_info
+  [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 }
 
 case ${UID} in
 0)
-    PROMPT="%B%{[31m%}%/#%{[m%}%b "
-    PROMPT2="%B%{[31m%}%_#%{[m%}%b "
-    SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
-    [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
-        PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
-    ;;
+  PROMPT="%B%{[31m%}%/#%{[m%}%b "
+  PROMPT2="%B%{[31m%}%_#%{[m%}%b "
+  SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
+  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
+      PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
+  ;;
 *)
-    PROMPT="%{[31m%}%/%%%{[m%} "
-    PROMPT2="%{[31m%}%_%%%{[m%} "
-    SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
-    [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
-        PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
-    ;;
+  PROMPT="%{[31m%}%/%%%{[m%} "
+  PROMPT2="%{[31m%}%_%%%{[m%} "
+  SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
+  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
+      PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
+  ;;
 esac
 RPROMPT="%1(v|%F{green}%1v%f|)"
 
@@ -122,7 +133,7 @@ setopt hist_no_store
 setopt hist_verify
 
 # 行頭がスペースで始まるコマンドラインはヒストリに記録しない
-#setopt hist_ignore_spece
+setopt hist_ignore_space
 
 # 直前と同じコマンドラインはヒストリに追加しない
 setopt hist_ignore_dups
@@ -138,9 +149,6 @@ zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/s
 
 # cdのタイミングで自動的にpushd
 setopt auto_pushd
-
-# check correct command
-#setopt correct
 
 # 複数の zsh を同時に使う時など history ファイルに上書きせず追加
 setopt append_history
