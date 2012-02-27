@@ -201,15 +201,16 @@ nmap ; :
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
+" ファイル名変更
+command! -nargs=+ -bang -complete=file Rename let pbnr=fnamemodify(bufname('%'), ':p')|exec 'f '.escape(<q-args>, ' ')|w<bang>|call delete(pbnr)
 " エンコード指定してファイルを開く
 command! -nargs=1 Reload :call s:Reload(<f-args>)
 function! s:Reload(enc)
   e ++enc=a:enc
 endfunction
 " 改行コードをLF、エンコーディングをutf-8の状態にする
-command! SD :call s:SetDefault()
-command! SetDefault :call s:SetDefault()
-function! s:SetDefault()
+command! Normalize :call s:Normalize()
+function! s:Normalize()
   set ff=unix
   set fenc=utf-8
   try
@@ -287,20 +288,23 @@ command! -nargs=* Snip NeoComplCacheEditSnippets
 " let g:unite_enable_start_insert=1
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
-" ファイル一覧
+" カレントディレクトリ一覧
+nnoremap <silent> <C-e> :<C-u>UniteWithCurrentDir file<CR>
+nnoremap <silent> ,uu :<C-u>UniteWithCurrentDir file<CR>
+" バッファのディレクトリ一覧
 nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 " レジスタ一覧
 nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
-" 最近使用したファイル一覧
-nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
-" 常用セット
-nnoremap <silent> ,uu :<C-u>Unite buffer file_mru<CR>
 " 全部乗せ
 nnoremap <silent> ,ua :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 " ウィンドウを分割して開く
 au FileType unite nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
 au FileType unite inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
+au FileType unite nnoremap <silent> <buffer> <expr> <C-k> unite#do_action('split')
+au FileType unite inoremap <silent> <buffer> <expr> <C-k> unite#do_action('split')
 " ウィンドウを縦に分割して開く
+au FileType unite nnoremap <silent> <buffer> <expr> <C-h> unite#do_action('vsplit')
+au FileType unite inoremap <silent> <buffer> <expr> <C-h> unite#do_action('vsplit')
 au FileType unite nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
 au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
 " ESCキーを2回押すと終了する

@@ -3,3 +3,4 @@ refs/*
 .DS_Store
 Guardfile
 tags
+.sass-cache/
