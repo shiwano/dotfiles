@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<root>
+  <list>
+    <item>
+      <name>Custom Remappings</name>
+      <list>
+        <item>
+          <name>Escape to EISUU + Escape (Terminal)</name>
+          <identifier>private.app_terminal_esc_with_eisuu</identifier>
+          <only>TERMINAL</only>
+          <autogen>--KeyToKey-- KeyCode::ESCAPE, KeyCode::ESCAPE, KeyCode::JIS_EISUU</autogen>
+        </item>
+        <item>
+          <name>Control + Right Bracket to EISUU + Control + Right Bracket (Terminal)</name>
+          <identifier>private.app_terminal_C_RBracket_with_eisuu</identifier>
+          <only>TERMINAL</only>
+          <autogen>--KeyToKey-- KeyCode::BRACKET_LEFT, VK_CONTROL, KeyCode::BRACKET_LEFT, VK_CONTROL, KeyCode::JIS_EISUU</autogen>
+        </item>
+      </list>
+    </item>
+  </list>
+</root>

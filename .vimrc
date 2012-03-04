@@ -194,10 +194,9 @@ nnoremap <C-h> :<C-h>j
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
 vmap <C-r> <Esc><C-r>
-"usキーボードで使いやすく
+" usキーボードで使いやすく
 nmap ; :
-" Explore
-"nmap <silent> <C-e> :Explore<CR>
+vmap ; :
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
@@ -282,6 +281,12 @@ let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
 imap <expr> <TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<Tab>"
 " スニペット編集 引数にfiletype
 command! -nargs=* Snip NeoComplCacheEditSnippets
+
+autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
+autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
+autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 "------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
@@ -325,7 +330,7 @@ nmap <F11>  :TrinityToggleNERDTree<CR>
 " K でカーソル下のワードを検索
 nmap ,rr :<C-u>Ref refe<Space>
 nmap ,ra :<C-u>Ref alc<Space>
-nmap ,rjq :<C-u>Ref alc<Space>
+nmap ,rjq :<C-u>Ref jquery<Space>
 nmap ,rw :<C-u>Ref wikipedia<Space>
 nmap ,rwe :<C-u>Ref wikipedia_en<Space>
 let g:ref_alc_start_linenumber = 39 " 表示する行数
