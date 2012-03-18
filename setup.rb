@@ -46,12 +46,9 @@ end
 link ".vimrc", "~/.vimrc"
 link ".gvimrc", "~/.gvimrc"
 link ".vim", "~/.vim"
-
 link ".zshrc", "~/.zshrc"
-
 link ".screenrc", "~/.screenrc"
 link ".tmux.conf", "~/.tmux.conf"
-
 link ".gitconfig", "~/.gitconfig"
 link ".gitignore", "~/.gitignore"
 
@@ -61,17 +58,19 @@ unless "~/.vim/bundle/vundle".expand.exist?
 end
 
 unless "~/dotfiles/refs/rubyrefm".expand.exist?
-  "refs".expand.mkpath
   sh "wget http://doc.okkez.net/archives/201107/ruby-refm-1.9.2-dynamic-20110729.zip"
   sh "unzip ruby-refm-1.9.2-dynamic-20110729.zip"
   sh "rm ruby-refm-1.9.2-dynamic-20110729.zip"
   sh "mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm"
 end
 
-unless "~/dotfiles/refs/jqapi-latest".expand.exist?
-  "refs".expand.mkpath
+unless "~/dotfiles/refs/jqapi".expand.exist?
   sh "wget http://jqapi.com/jqapi-latest.zip"
   sh "unzip jqapi-latest.zip -d jqapi"
   sh "rm jqapi-latest.zip"
   sh "mv jqapi ~/dotfiles/refs/jqapi"
+end
+
+unless "~/dotfiles/refs/jsref".expand.exist?
+  sh "git clone https://github.com/tokuhirom/jsref.git ~/dotfiles/refs/jsref"
 end

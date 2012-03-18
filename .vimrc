@@ -57,7 +57,6 @@ if exists('+colorcolumn')
   highlight ColorColumn ctermbg=53 guibg=#5f0000
   set colorcolumn=81
 endif
-
 "------------------------------------------------------------------------------
 " ステータスライン
 set laststatus=2    " 常にステータスラインを表示
@@ -93,10 +92,6 @@ if has("syntax")
   function! ActivateInvisibleIndicator()
     syntax match InvisibleJISX0208Space "　" display containedin=ALL
     highlight InvisibleJISX0208Space term=underline ctermbg=Cyan guibg=Cyan
-"    syntax match InvisibleTrailedSpace "[ \t]\+$" display containedin=ALL
-"    highlight InvisibleTrailedSpace term=underline ctermbg=Red guibg=Red
-"    syntax match InvisibleTab "\t" display containedin=ALL
-"    highlight InvisibleTab term=underline ctermbg=DarkCyan guibg=DarkCyan
   endf
   augroup invisible
     autocmd! invisible
@@ -225,10 +220,6 @@ command! Exec call <SID>Exec()
 map <silent> <C-F9> :call <SID>Exec()<CR>
 "------------------------------------------------------------------------------
 " ユーティリティ
-" 現在開いているファイルのある場所に常にcdする
-" au BufEnter * exec ":lcd " . expand("%:p:h")
-" 開いたファイル先を自動的にカレントディレクトリに設定
-" set autochdir
 " ヘルプを翻訳版に変更
 helptags $DOTVIM/doc
 set helplang=ja,en
@@ -246,7 +237,7 @@ autocmd InsertLeave * highlight StatusLine guifg=#2E4340 guibg=#ccdc90
 augroup END
 " Windowsバックスラッシュ対策 Vundleを使っているのでコメントアウト
 "set shellslash
-" Windowsクリップボードを使用
+" クリップボードを使用
 set clipboard=unnamedplus,unnamed
 "------------------------------------------------------------------------------
 " matchit.vim
@@ -331,9 +322,11 @@ nmap <F11>  :TrinityToggleNERDTree<CR>
 nmap ,rr :<C-u>Ref refe<Space>
 nmap ,ra :<C-u>Ref alc<Space>
 nmap ,rjq :<C-u>Ref jquery<Space>
+nmap ,rj :<C-u>Ref javascript<Space>
 nmap ,rw :<C-u>Ref wikipedia<Space>
 nmap ,rwe :<C-u>Ref wikipedia_en<Space>
 let g:ref_alc_start_linenumber = 39 " 表示する行数
 let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
 let g:ref_jquery_doc_path = expand('~/dotfiles/refs/jqapi')
+let g:ref_javascript_doc_path = expand('~/dotfiles/refs/jsref/htdocs')
 let g:ref_wikipedia_lang = ['ja', 'en']
