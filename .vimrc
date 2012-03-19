@@ -35,6 +35,7 @@ Bundle "https://github.com/thinca/vim-ref.git"
 Bundle "https://github.com/mojako/ref-sources.vim.git"
 Bundle "https://github.com/thinca/vim-poslist.git"
 Bundle "https://github.com/thinca/vim-quickrun.git"
+Bundle "https://github.com/thinca/vim-qfreplace.git"
 Bundle 'Shougo/neocomplcache'
 Bundle 'matchit.zip'
 Bundle 'http://github.com/scrooloose/nerdcommenter.git'
