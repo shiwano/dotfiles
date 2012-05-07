@@ -4,3 +4,4 @@ refs/*
 Guardfile
 tags
 .sass-cache/
+.rvmrc

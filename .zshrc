@@ -9,6 +9,7 @@ export LANG=ja_JP.UTF-8
 PATH=~/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
+export PATH=$HOME/.nodebrew/current/bin:$PATH # nodebrew
 
 #vim
 if [ -d /Applications/MacVim.app ]; then
@@ -29,6 +30,7 @@ alias ll='ls -l'
 alias la='ls -A'
 alias lal="ls -l -A"
 alias vi='vim'
+alias r='rails'
 alias g='git'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
@@ -212,3 +214,5 @@ bindkey "^N" history-beginning-search-forward-end
 autoload bashcompinit
 bashcompinit
 source ~/dotfiles/tools/git-completion.bash
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting

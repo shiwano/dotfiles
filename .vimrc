@@ -114,6 +114,7 @@ set cindent
 " 0の場合はtabstopと同じ，BSにも影響する
 set shiftwidth=2
 set softtabstop=2
+set tabstop=2
 set expandtab " タブをスペースに展開
 "------------------------------------------------------------------------------
 " 補完・履歴
@@ -129,10 +130,13 @@ set ignorecase " 大文字小文字無視
 set smartcase  " 大文字ではじめたら大文字小文字無視しない
 set incsearch  " インクリメンタルサーチ
 set hlsearch   " 検索文字をハイライト
+set grepprg=grep\ -nH " grep
 "選択した文字列を検索
 vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
+"選択した文字列を Grep
+vnoremap /g "xy:grep '<C-R>=escape(@x, "\\.*$^[]\\'")<CR>' * \| cw<Left><Left><Left><Left><Left>
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
@@ -219,6 +223,8 @@ function! s:Exec()
 :endfunction
 command! Exec call <SID>Exec()
 map <silent> <C-F9> :call <SID>Exec()<CR>
+" Quick fix replace
+command! Q :Qfreplace
 "------------------------------------------------------------------------------
 " ユーティリティ
 " ヘルプを翻訳版に変更

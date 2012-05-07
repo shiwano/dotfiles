@@ -19,10 +19,28 @@
   up = pull --rebase
   di = diff --color
   dc = diff --cached --color
+  mt = mergetool
   topic = checkout origin/master -b 
   current-branch = describe --all --contains HEAD
   push-for-review = "!sh -c 'git push origin HEAD:refs/for/master/`git current-branch`'"
+  pfr = "!sh -c ' \
+        reviewer=$1; \
+        topic=${2:-`git current-branch`}; \
+        if [ -n \"$reviewer\" ]; then \
+          git push origin HEAD:refs/for/master/${topic} --receive-pack=\"git receive-pack --reviewer=$reviewer\" ;\
+        else \
+          git push origin HEAD:refs/for/master/${topic} ;\
+        fi; \
+    ' __dummy__"
   fetch-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"  st = status
+  ffr = "!sh -c ' \
+        change=$1; \
+        if [ -z \"$change\" ]; then exit 1; fi; \
+        patchset=${2:-1}; \
+        val=`expr $change % 100`; \
+        dir=`printf '%02d' $val` ; \
+        git fetch origin refs/changes/$dir/$change/$patchset && git checkout FETCH_HEAD -b $change-$patchset; \
+      ' __dummy__"
   log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
   log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
   log-stat = log --stat --summary
