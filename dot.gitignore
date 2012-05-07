@@ -1,5 +1,3 @@
-.vim/bundle/*
-refs/*
 .DS_Store
 tags
 .sass-cache/
