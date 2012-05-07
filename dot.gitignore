@@ -1,4 +1,4 @@
-dot.vim/bundle/*
+.vim/bundle/*
 refs/*
 .DS_Store
 tags

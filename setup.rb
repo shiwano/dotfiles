@@ -43,14 +43,14 @@ Dir["bin/*"].each do |f|
   link f, "~/bin"
 end
 
-link ".vimrc", "~/.vimrc"
-link ".gvimrc", "~/.gvimrc"
-link ".vim", "~/.vim"
-link ".zshrc", "~/.zshrc"
-link ".screenrc", "~/.screenrc"
-link ".tmux.conf", "~/.tmux.conf"
-link ".gitconfig", "~/.gitconfig"
-link ".gitignore", "~/.gitignore"
+link "dot.vimrc", "~/.vimrc"
+link "dot.gvimrc", "~/.gvimrc"
+link "dot.vim", "~/.vim"
+link "dot.zshrc", "~/.zshrc"
+link "dot.screenrc", "~/.screenrc"
+link "dot.tmux.conf", "~/.tmux.conf"
+link "dot.gitconfig", "~/.gitconfig"
+link "dot.gitignore", "~/.gitignore"
 
 unless "~/.vim/bundle/vundle".expand.exist?
   sh "git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle"
