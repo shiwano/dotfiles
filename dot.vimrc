@@ -36,9 +36,12 @@ Bundle "https://github.com/mojako/ref-sources.vim.git"
 Bundle "https://github.com/thinca/vim-poslist.git"
 Bundle "https://github.com/thinca/vim-quickrun.git"
 Bundle "https://github.com/thinca/vim-qfreplace.git"
-Bundle 'Shougo/neocomplcache'
+Bundle "https://github.com/Shougo/neocomplcache.git"
+Bundle "https://github.com/Shougo/neocomplcache-snippets-complete"
 Bundle 'matchit.zip'
-Bundle 'http://github.com/scrooloose/nerdcommenter.git'
+Bundle 'sudo.vim'
+Bundle 'https://github.com/scrooloose/nerdcommenter.git'
+Bundle 'https://github.com/scrooloose/syntastic.git'
 Bundle 'surround.vim'
 Bundle 'unite.vim'
 Bundle 'basyura/jslint.vim'
@@ -276,7 +279,7 @@ let g:neocomplcache_enable_at_startup = 1
 " スニペットファイルの置き場所
 let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
 " TABでスニペットを展開
-imap <expr> <TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<Tab>"
+imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " スニペット編集 引数にfiletype
 command! -nargs=* Snip NeoComplCacheEditSnippets
 
@@ -298,6 +301,8 @@ nnoremap <silent> ,uu :<C-u>UniteWithCurrentDir file<CR>
 nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 " レジスタ一覧
 nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
+" 最近使用したファイル一覧
+nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 " 全部乗せ
 nnoremap <silent> ,ua :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 " ウィンドウを分割して開く
