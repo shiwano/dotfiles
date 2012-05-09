@@ -248,7 +248,8 @@ augroup END
 " Windowsバックスラッシュ対策 Vundleを使っているのでコメントアウト
 "set shellslash
 " クリップボードを使用
-set clipboard=unnamedplus,unnamed
+set clipboard=unnamed
+"set clipboard=unnamedplus,unnamed
 "------------------------------------------------------------------------------
 " matchit.vim
 " % で対応するフレーズに移動
