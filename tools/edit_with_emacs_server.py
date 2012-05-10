@@ -27,7 +27,7 @@ import optparse
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 _default_port = 9292
-_default_editor = "gvim"
+_default_editor = 'env,LANG=ja_JP.UTF-8,/Applications/MacVim.app/Contents/MacOS/Vim,-g,--nofork'
 
 temp_has_delete=True
 processes = {}
