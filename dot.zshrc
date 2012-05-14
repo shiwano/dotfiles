@@ -6,13 +6,15 @@ compinit
 export LANG=ja_JP.UTF-8
 
 # パスの設定
-PATH=~/bin:/usr/local/bin:$PATH
+PATH=$HOME/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 
 # nodebrew PATH
-export PATH=$HOME/.nodebrew/current/bin:$PATH
-export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
+if [ -d $HOME/.nodebrew ]; then
+  export PATH=$HOME/.nodebrew/current/bin:$PATH
+  export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
+fi
 
 #vim
 if [ -d /Applications/MacVim.app ]; then

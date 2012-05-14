@@ -14,13 +14,16 @@
   co = checkout
   ci = commit
   cim = commit -m
+  cia = commit --amend -C HEAD
   s = status
   st = status
   up = pull --rebase
+  diff = diff --color
   di = diff --color
-  dc = diff --cached --color
+  dica = diff --color --cached
+  dist = diff --color --staged
   mt = mergetool
-  topic = checkout origin/master -b 
+  topic = checkout origin/master -b
   current-branch = describe --all --contains HEAD
   push-for-review = "!sh -c 'git push origin HEAD:refs/for/master/`git current-branch`'"
   pfr = "!sh -c ' \
@@ -32,7 +35,7 @@
           git push origin HEAD:refs/for/master/${topic} ;\
         fi; \
     ' __dummy__"
-  fetch-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"  st = status
+  fetch-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"
   ffr = "!sh -c ' \
         change=$1; \
         if [ -z \"$change\" ]; then exit 1; fi; \
