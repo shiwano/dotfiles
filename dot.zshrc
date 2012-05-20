@@ -10,6 +10,7 @@ PATH=~/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 export PATH=$HOME/.nodebrew/current/bin:$PATH # nodebrew
+export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
 
 #vim
 if [ -d /Applications/MacVim.app ]; then
