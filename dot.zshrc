@@ -25,7 +25,7 @@ fi
 find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
 
 # vi風キーバインド
-bindkey -v
+# bindkey -v
 
 # エイリアスの設定
 alias ls='ls --color=auto'
