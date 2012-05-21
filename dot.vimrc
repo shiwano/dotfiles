@@ -269,6 +269,7 @@ autocmd FileType javascript call s:javascript_filetype_settings()
 "------------------------------------------------------------------------------
 " yankring.vim
 let g:yankring_history_file = '.yankring_history'
+let g:yankring_manual_clipboard_check = 0
 "------------------------------------------------------------------------------
 " taglist.vim
 if has("macunix")
