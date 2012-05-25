@@ -1,36 +1,35 @@
-snippet doc
-	/**
-	 * ${0}
-	 */
+snippet anon
+    function(${1}) { ${2} };
 
-snippet docf
-	/**
-	 * @fileoverview ${0}
-	 * @name ${1}
-	 * @author shiwano@gmail.com
-	 * @license GPL|LGPL|MIT License
-	 */
-	
+snippet for
+    for (var <+i+>=0; <+i+> < <+<+Things+>.length+>; <+i+>++) {
+    <+<+Things+>[<+i+>]+>
+    };
 
-snippet docm
-	/**
-	 * ${0}
-	 * @param ${1}
-	 * @returns ${2}
-	 */
+snippet fun
+    function ${1:function_name} (${2:argument}) {
+    	${3:// body}
+    }
 
-snippet docc
-	/**
-	 * ${0}
-	 * @constructor
-	 * @param ${1}
-	 */
+snippet if
+    if (${1:true}) { ${2} };
 
-snippet greq
-	goog.require('${0}');
+snippet ife
+    if (${1:true}) {
+    	${2}
+    } else {
+    };
 
-snippet gpro
-	goog.provide('${0}');
+snippet met
+    ${1:method_name}: function(${2:attribute}){
+      ${3}
+    }${4:, }
 
-snippet log
-	console.log(${0});
+snippet proto
+    ${1:class_name}.prototype.${2:method_name} = function(${3:first_argument}) {
+    	${4:// body}
+    };
+
+snippet timeout
+    setTimeout(function() { ${1} }, ${2:10});
+
