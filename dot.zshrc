@@ -2,6 +2,9 @@
 autoload -U compinit
 compinit
 
+# 色
+export TERM=xterm-256color
+
 # 文字コードの設定
 export LANG=ja_JP.UTF-8
 
@@ -16,7 +19,7 @@ if [ -d $HOME/.nodebrew ]; then
   export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
 fi
 
-#vim
+# vim
 if [ -d /Applications/MacVim.app ]; then
   export EDITOR=/Applications/MacVim.app/Contents/MacOS/Vim
   alias vi='env LANG=ja_JP.UTF-8 /Applications/MacVim.app/Contents/MacOS/Vim "$@"'
@@ -98,10 +101,20 @@ alias ex='extract'
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
+ZSHFG=`expr $RANDOM / 128`
+
 precmd () {
   psvar=()
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+
+  if [ $ZSHFG -ge 250 ]
+  then
+    ZSHFG=0
+  fi
+
+  ZSHFG=`expr $ZSHFG + 10`
+  RPROMPT="%1(v|%F{$ZSHFG}%1v%f|)"
 }
 
 case ${UID} in
@@ -120,7 +133,7 @@ case ${UID} in
       PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
   ;;
 esac
-RPROMPT="%1(v|%F{green}%1v%f|)"
+RPROMPT="%1(v|%F{green}%1v%f|)$ZSHFG"
 
 # 補完設定
 HISTFILE=~/.zsh_history
