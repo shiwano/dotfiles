@@ -278,18 +278,42 @@ endif
 "------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
+let g:NeoComplCache_KeywordCompletionStartLength = 1
+let g:NeoComplCache_MinKeywordLength = 2
+let g:NeoComplCache_MinSyntaxLength = 2
+let g:NeoComplCache_SmartCase = 1
+let g:NeoComplCache_PreviousKeywordCompletion = 1
+let g:NeoComplCache_EnableUnderbarCompletion = 1
+let g:NeoComplCache_EnableSkipCompletion = 0
 " スニペットファイルの置き場所
 let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
 " TABでスニペットを展開
 imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " スニペット編集 引数にfiletype
-command! -nargs=* Snip NeoComplCacheEditSnippets
+command! -nargs=* Snippet NeoComplCacheEditSnippets
+" 辞書
+let g:NeoComplCache_DictionaryFileTypeLists = {
+  \ 'default' : '',
+  \ 'objc' : $HOME . '/.vim/dict/objectivec.dict',
+  \ 'javascript' : $HOME . '/.vim/dict/javascript.dict',
+  \ 'ruby' : $HOME . '/.vim/dict/ruby.dict',
+  \ 'perl' : $HOME . '/.vim/dict/perl.dict',
+  \ }
+
+if !exists('g:neocomplcache_omni_patterns')
+  let g:neocomplcache_omni_patterns = {}
+endif
+let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
+autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
+autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 "------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
