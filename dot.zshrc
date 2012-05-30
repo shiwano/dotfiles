@@ -2,7 +2,7 @@
 autoload -U compinit
 compinit
 
-# 色
+# 256色
 export TERM=xterm-256color
 
 # 文字コードの設定
@@ -133,10 +133,9 @@ case ${UID} in
       PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
   ;;
 esac
-RPROMPT="%1(v|%F{green}%1v%f|)$ZSHFG"
 
 # 補完設定
-HISTFILE=~/.zsh_history
+HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
@@ -231,6 +230,6 @@ bindkey "^N" history-beginning-search-forward-end
 # git の補完関数を早く
 autoload bashcompinit
 bashcompinit
-source ~/dotfiles/tools/git-completion.bash
+source $HOME/dotfiles/tools/git-completion.bash
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
