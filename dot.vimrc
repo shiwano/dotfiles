@@ -141,7 +141,7 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 "選択した文字列を Grep
-vnoremap /g "xy:grep '<C-R>=escape(@x, "\\.*$^[]\\'")<CR>' * \| cw<Left><Left><Left><Left><Left>
+vnoremap /g y:Unite grep:**/*:-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
