@@ -31,6 +31,7 @@ Bundle "inkpot"
 " Plugins
 Bundle 'tpope/vim-rails'
 Bundle "YankRing.vim"
+Bundle "https://github.com/Shougo/vimproc.git"
 Bundle "https://github.com/thinca/vim-ref.git"
 Bundle "https://github.com/mojako/ref-sources.vim.git"
 Bundle "https://github.com/thinca/vim-poslist.git"
@@ -44,6 +45,7 @@ Bundle 'https://github.com/scrooloose/nerdcommenter.git'
 Bundle 'https://github.com/scrooloose/syntastic.git'
 Bundle 'surround.vim'
 Bundle 'unite.vim'
+Bundle 'https://github.com/Sixeight/unite-grep.git'
 Bundle 'basyura/jslint.vim'
 Bundle 'Source-Explorer-srcexpl.vim'
 Bundle 'trinity.vim'
@@ -315,6 +317,12 @@ autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
 "------------------------------------------------------------------------------
+" vimproc
+if has('mac')
+  let g:vimproc_dll_path = expand('~/dotfiles/settings/vimproc/autoload/vimproc_mac.so')
+elseif has('unix')
+endif
+"------------------------------------------------------------------------------
 " unite.vim
 " 入力モードで開始する
 " let g:unite_enable_start_insert=1
@@ -344,6 +352,8 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vspli
 " ESCキーを2回押すと終了する
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
+" unite grep
+nnoremap <silent> ,ug :Unite grep:**/*:-iHRn<CR>
 "------------------------------------------------------------------------------
 " trinity.vim
 " Open and close all the three plugins on the same time 
