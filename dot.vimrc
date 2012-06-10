@@ -294,8 +294,9 @@ let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_underbar_completion = 1
 " スニペットファイルの置き場所
 let g:neocomplcache_snippets_dir = $DOTVIM.'/snippets'
-" TABでスニペットを展開
-imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
+" スニペットを展開
+imap <expr><TAB> pumvisible() ? "\<C-n>" : neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<TAB>"
+imap <expr><CR> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<CR>"
 " スニペット編集 引数にfiletype
 command! -nargs=* Snippet NeoComplCacheEditSnippets
 " 辞書
