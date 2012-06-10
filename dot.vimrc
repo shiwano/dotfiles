@@ -239,10 +239,14 @@ command! Q :Qfreplace
 helptags $DOTVIM/doc
 set helplang=ja,en
 " タグファイル設定
+set tags=$DOTVIM/mytags
+
 if has("win32") || has("win64")
-  set tags=$DOTVIM/mytags_win
-else
-  set tags=$DOTVIM/mytags
+  set tags+=$DOTVIM/mytags_win
+endif
+
+if has('path_extra')
+  set tags+=./**3/tags;
 endif
 "入力モード時、ステータスラインのカラーを変更
 augroup InsertHook

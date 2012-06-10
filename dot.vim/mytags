@@ -1,5 +1,3 @@
-gvimrc	$HOME/.gvimrc	1
 grc	$HOME/.gvimrc	1
 rc	$HOME/.vimrc	1
-tag	$HOME/vimfiles/mytags	1
-tags	$HOME/vimfiles/mytags	1
+tag	$DOTVIM/mytags	1

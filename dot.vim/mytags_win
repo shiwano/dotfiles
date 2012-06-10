@@ -1,6 +1,1 @@
-gvimrc	$HOME/_gvimrc	1
-grc	$HOME/_gvimrc	1
-rc	$HOME/_vimrc	1
-tag	$HOME/vimfiles/mytags_win	1
-tags	$HOME/vimfiles/mytags_win	1
-winhosts	C:/Windows/System32/drivers/etc/hosts	1
+hosts	C:/Windows/System32/drivers/etc/hosts	1
