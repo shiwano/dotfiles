@@ -7,17 +7,7 @@ else
   set guifont=VL\ ゴシック\ 12
 endif
 
-" 色テーマ
-colorscheme inkpot " (GUI使用時)
-
-" Windows用キーマップを有効にする
-"source $VIMRUNTIME/mswin.vim
-
-" ビジュアル選択(D&D他)を自動的にクリップボードへ (:help guioptions_a)
-"set guioptions+=a
-
 " ウインドウの幅
 set columns=88
-
 " ウインドウの高さ
 set lines=34
