@@ -336,12 +336,6 @@ let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 "------------------------------------------------------------------------------
-" vimproc
-if has('mac')
-  let g:vimproc_dll_path = $HOME.'/dotfiles/settings/vimproc/autoload/vimproc_mac.so'
-elseif has('unix')
-endif
-"------------------------------------------------------------------------------
 " unite.vim
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
