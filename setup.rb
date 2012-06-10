@@ -33,9 +33,9 @@ Dir['./dot\.*'].each do |f|
   link f, '~/' + f.sub('dot', '')
 end
 
-unless '~/.vim/bundle/vundle'.expand.exist?
-  system 'git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle'
-  system 'vim -c BundleInstall -c quit'
+unless '~/dotfiles/dot.vim/bundle/neobundle.vim'.expand.exist?
+  system 'git clone https://github.com/Shougo/neobundle.vim ~/dotfiles/dot.vim/bundle/neobundle.vim'
+  system 'vim -c NeoBundleInstall -c quit'
 end
 
 unless '~/dotfiles/refs/rubyrefm'.expand.exist?

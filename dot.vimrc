@@ -11,45 +11,48 @@ else
   let $DOTVIM = expand('~/.vim')
 endif
 "------------------------------------------------------------------------------
-" Vundle
-" $ git clone http://github.com/gmarik/vundle.git ~/.vim/bundle/vundle
+" NeoBundle
 " インストール: .vimrcに追加して、BundleInstall
 " アンインストール: .vimrcから削除して、BundleClean
 filetype off                   " required!
-set rtp+=$DOTVIM/bundle/vundle/
-call vundle#rc('$DOTVIM/bundle/')
-" Vundle
-Bundle 'gmarik/vundle'
+
+if has('vim_starting')
+  set rtp+=$DOTVIM/bundle/neobundle.vim/
+  call neobundle#rc(expand('$DOTVIM/bundle'))
+endif
+
+" NeoBundle
+NeoBundle 'git://github.com/Shougo/neobundle.vim.git'
 " Syntax highlight
-Bundle "jQuery"
-Bundle "Markdown"
-Bundle "https://github.com/timcharper/textile.vim.git"
-Bundle "vim-coffee-script"
-Bundle "othree/html5-syntax.vim"
+NeoBundle "jQuery"
+NeoBundle "Markdown"
+NeoBundle "https://github.com/timcharper/textile.vim.git"
+NeoBundle "vim-coffee-script"
+NeoBundle "othree/html5-syntax.vim"
 " Color scheme
-Bundle "inkpot"
+NeoBundle "inkpot"
 " Plugins
-Bundle 'tpope/vim-rails'
-Bundle "YankRing.vim"
-Bundle "https://github.com/Shougo/vimproc.git"
-Bundle "https://github.com/thinca/vim-ref.git"
-Bundle "https://github.com/mojako/ref-sources.vim.git"
-Bundle "https://github.com/thinca/vim-poslist.git"
-Bundle "https://github.com/thinca/vim-quickrun.git"
-Bundle "https://github.com/thinca/vim-qfreplace.git"
-Bundle "https://github.com/Shougo/neocomplcache.git"
-Bundle "https://github.com/Shougo/neocomplcache-snippets-complete"
-Bundle 'matchit.zip'
-Bundle 'sudo.vim'
-Bundle 'https://github.com/scrooloose/nerdcommenter.git'
-Bundle 'https://github.com/scrooloose/syntastic.git'
-Bundle 'surround.vim'
-Bundle 'unite.vim'
-Bundle 'https://github.com/Sixeight/unite-grep.git'
-Bundle 'basyura/jslint.vim'
-Bundle 'Source-Explorer-srcexpl.vim'
-Bundle 'trinity.vim'
-Bundle 'taglist.vim'
+NeoBundle 'tpope/vim-rails'
+NeoBundle "YankRing.vim"
+NeoBundle "https://github.com/Shougo/vimproc.git"
+NeoBundle "https://github.com/thinca/vim-ref.git"
+NeoBundle "https://github.com/mojako/ref-sources.vim.git"
+NeoBundle "https://github.com/thinca/vim-poslist.git"
+NeoBundle "https://github.com/thinca/vim-quickrun.git"
+NeoBundle "https://github.com/thinca/vim-qfreplace.git"
+NeoBundle "https://github.com/Shougo/neocomplcache.git"
+NeoBundle "https://github.com/Shougo/neocomplcache-snippets-complete"
+NeoBundle 'matchit.zip'
+NeoBundle 'sudo.vim'
+NeoBundle 'https://github.com/scrooloose/nerdcommenter.git'
+NeoBundle 'https://github.com/scrooloose/syntastic.git'
+NeoBundle 'surround.vim'
+NeoBundle 'unite.vim'
+NeoBundle 'https://github.com/Sixeight/unite-grep.git'
+NeoBundle 'basyura/jslint.vim'
+NeoBundle 'Source-Explorer-srcexpl.vim'
+NeoBundle 'trinity.vim'
+NeoBundle 'taglist.vim'
 filetype plugin indent on      " required!
 "------------------------------------------------------------------------------
 " カラースキーマ
@@ -141,7 +144,7 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 "選択した文字列を Grep
-vnoremap /g y:Unite grep:**/*:-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>
+vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
@@ -280,42 +283,49 @@ endif
 "------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
-let g:NeoComplCache_KeywordCompletionStartLength = 1
-let g:NeoComplCache_MinKeywordLength = 2
-let g:NeoComplCache_MinSyntaxLength = 2
-let g:NeoComplCache_SmartCase = 1
-let g:NeoComplCache_PreviousKeywordCompletion = 1
-let g:NeoComplCache_EnableUnderbarCompletion = 1
-let g:NeoComplCache_EnableSkipCompletion = 0
+let g:neocomplcache_auto_completion_start_length = 1
+let g:neocomplcache_min_syntax_length = 2
+let g:neocomplcache_min_keyword_length = 2
+let g:neocomplcache_enable_smart_case = 1
+let g:neocomplcache_enable_underbar_completion = 1
 " スニペットファイルの置き場所
-let g:NeoComplCache_SnippetsDir = '$DOTVIM/snippets'
+let g:neocomplcache_snippets_dir = expand('$DOTVIM/snippets')
 " TABでスニペットを展開
 imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " スニペット編集 引数にfiletype
 command! -nargs=* Snippet NeoComplCacheEditSnippets
 " 辞書
-let g:NeoComplCache_DictionaryFileTypeLists = {
+let g:neocomplcache_dictionary_filetype_lists = {
   \ 'default' : '',
-  \ 'objc' : $HOME . '/.vim/dict/objectivec.dict',
-  \ 'javascript' : $HOME . '/.vim/dict/javascript.dict',
-  \ 'ruby' : $HOME . '/.vim/dict/ruby.dict',
-  \ 'perl' : $HOME . '/.vim/dict/perl.dict',
+  \ 'c' : expand('$DOTVIM/dict/c-eglibc.dict'),
+  \ 'objc' : expand('$DOTVIM/dict/objectivec.dict'),
+  \ 'ruby' : expand('$DOTVIM/dict/ruby.dict'),
+  \ 'perl' : expand('$DOTVIM/dict/perl.dict'),
+  \ 'css' : expand('$DOTVIM/dict/css.dict'),
+  \ 'javascript' : expand('$DOTVIM/dict/javascript.dict'),
+  \ 'actionscript' : expand('$DOTVIM/dict/actionscript.dict'),
   \ }
-
-if !exists('g:neocomplcache_omni_patterns')
-  let g:neocomplcache_omni_patterns = {}
-endif
-let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
+autocmd FileType c set omnifunc=ccomplete#Complete
+autocmd FileType cpp set omnifunc=cppcomplete#Complete
+autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+
+if !exists('g:neocomplcache_omni_patterns')
+  let g:neocomplcache_omni_patterns = {}
+endif
+let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
+let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 "------------------------------------------------------------------------------
 " vimproc
 if has('mac')
@@ -324,8 +334,6 @@ elseif has('unix')
 endif
 "------------------------------------------------------------------------------
 " unite.vim
-" 入力モードで開始する
-" let g:unite_enable_start_insert=1
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
 " カレントディレクトリ一覧
@@ -353,7 +361,7 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vspli
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
 " unite grep
-nnoremap <silent> ,ug :Unite grep:**/*:-iHRn<CR>
+nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
 "------------------------------------------------------------------------------
 " trinity.vim
 " Open and close all the three plugins on the same time 
