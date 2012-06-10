@@ -338,6 +338,7 @@ let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 "------------------------------------------------------------------------------
 " unite.vim
+let g:unite_enable_start_insert = 1
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
 " カレントディレクトリ一覧
@@ -348,24 +349,34 @@ nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 " 最近使用したファイル一覧
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
-" ウィンドウを分割して開く
-au FileType unite nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-au FileType unite inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
-au FileType unite nnoremap <silent> <buffer> <expr> <C-k> unite#do_action('split')
-au FileType unite inoremap <silent> <buffer> <expr> <C-k> unite#do_action('split')
-" ウィンドウを縦に分割して開く
-au FileType unite nnoremap <silent> <buffer> <expr> <C-h> unite#do_action('vsplit')
-au FileType unite inoremap <silent> <buffer> <expr> <C-h> unite#do_action('vsplit')
-au FileType unite nnoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vsplit')
-" ESCキーを2回押すと終了する
-au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
-au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
 " grep
 nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
+
+autocmd FileType unite call s:unite_my_settings()
+function! s:unite_my_settings()
+  imap <buffer> <ESC><ESC> <Plug>(unite_exit)
+  nmap <buffer> <ESC> <Plug>(unite_exit)
+  nmap <buffer> <C-p> k
+  nmap <buffer> <C-n> j
+
+  nmap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
+  imap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
+
+  inoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
+  nnoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
+
+  nnoremap <silent><buffer><expr> <C-j> unite#do_action('split')
+  inoremap <silent><buffer><expr> <C-j> unite#do_action('split')
+  nnoremap <silent><buffer><expr> <C-k> unite#do_action('split')
+  inoremap <silent><buffer><expr> <C-k> unite#do_action('split')
+  nnoremap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
+  inoremap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
+  nnoremap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
+  inoremap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
+endfunction
 "------------------------------------------------------------------------------
 " vimfiler
-nnoremap <silent> <C-e> :VimFiler -split -simple -winwidth=35 -no-quit<CR>
+nnoremap <silent> <C-e> :VimFilerCurrentDir -split -simple -winwidth=35 -no-quit<CR>
 
 autocmd! FileType vimfiler call g:my_vimfiler_settings()
 function! g:my_vimfiler_settings()
