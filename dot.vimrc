@@ -14,7 +14,7 @@ endif
 " NeoBundle
 " Plugin 追加: .vimrc に追加して、:NeoBundleInstall
 " Plugin 削除: .vimrc から削除して、:NeoBundleClean
-" Plugin 更新: :NeoBundleInstall!
+" Plugin 更新: :NeoBundleUpdate
 filetype off                   " required!
 
 if has('vim_starting')
@@ -25,6 +25,10 @@ endif
 NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
 NeoBundle 'https://github.com/ciaranm/inkpot'
+NeoBundle 'https://github.com/tomasr/molokai'
+NeoBundle 'https://github.com/jnurmine/Zenburn'
+NeoBundle 'https://github.com/altercation/vim-colors-solarized'
+NeoBundle 'https://github.com/nanotech/jellybeans.vim'
 " Syntax highlight
 NeoBundle 'jQuery'
 NeoBundle 'https://github.com/hallison/vim-markdown'
@@ -64,8 +68,17 @@ filetype plugin indent on      " required!
 " カラースキーマ
 if !has('gui_running')
   set t_Co=256
-  colorscheme inkpot
+  colorscheme jellybeans
 endif
+
+" syntax enable
+" set background=dark
+" colorscheme solarized
+" let g:solarized_termcolors=256
+" let g:solarized_termtrans = 1
+" let g:solarized_contrast = 'high'
+" let g:solarized_visibility = 'high'
+" let g:solarized_underline = 1
 
 " 80 columns highlight
 if exists('+colorcolumn')
@@ -356,6 +369,8 @@ function! s:unite_my_settings()
   nmap <buffer> <ESC> <Plug>(unite_exit)
   nmap <buffer> <C-p> k
   nmap <buffer> <C-n> j
+  imap <buffer> <TAB> <ESC>j
+  nmap <buffer> <TAB> j
 
   nmap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
   imap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
@@ -374,7 +389,7 @@ function! s:unite_my_settings()
 endfunction
 "------------------------------------------------------------------------------
 " vimfiler
-nnoremap <silent> <C-e> :VimFilerCurrentDir -split -simple -winwidth=35 -no-quit<CR>
+nnoremap <silent> <C-e> :VimFilerCurrentDir -simple<CR>
 
 autocmd! FileType vimfiler call g:my_vimfiler_settings()
 function! g:my_vimfiler_settings()
