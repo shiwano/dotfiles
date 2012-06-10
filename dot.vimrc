@@ -298,7 +298,7 @@ let g:neocomplcache_min_keyword_length = 2
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_underbar_completion = 1
 " スニペットファイルの置き場所
-let g:neocomplcache_snippets_dir = expand('$DOTVIM/snippets')
+let g:neocomplcache_snippets_dir = $DOTVIM.'/snippets'
 " TABでスニペットを展開
 imap <expr><TAB> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : pumvisible() ? "\<C-n>" : "\<TAB>"
 " スニペット編集 引数にfiletype
@@ -306,13 +306,13 @@ command! -nargs=* Snippet NeoComplCacheEditSnippets
 " 辞書
 let g:neocomplcache_dictionary_filetype_lists = {
   \ 'default' : '',
-  \ 'c' : expand('$DOTVIM/dict/c-eglibc.dict'),
-  \ 'objc' : expand('$DOTVIM/dict/objectivec.dict'),
-  \ 'ruby' : expand('$DOTVIM/dict/ruby.dict'),
-  \ 'perl' : expand('$DOTVIM/dict/perl.dict'),
-  \ 'css' : expand('$DOTVIM/dict/css.dict'),
-  \ 'javascript' : expand('$DOTVIM/dict/javascript.dict'),
-  \ 'actionscript' : expand('$DOTVIM/dict/actionscript.dict'),
+  \ 'c' : $DOTVIM.'/dict/c-eglibc.dict',
+  \ 'objc' : $DOTVIM.'/dict/objectivec.dict',
+  \ 'ruby' : $DOTVIM.'/dict/ruby.dict',
+  \ 'perl' : $DOTVIM.'/dict/perl.dict',
+  \ 'css' : $DOTVIM.'/dict/css.dict',
+  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
+  \ 'actionscript' : $DOTVIM.'/dict/actionscript.dict',
   \ }
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -338,7 +338,7 @@ let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 "------------------------------------------------------------------------------
 " vimproc
 if has('mac')
-  let g:vimproc_dll_path = expand('~/dotfiles/settings/vimproc/autoload/vimproc_mac.so')
+  let g:vimproc_dll_path = $HOME.'/dotfiles/settings/vimproc/autoload/vimproc_mac.so'
 elseif has('unix')
 endif
 "------------------------------------------------------------------------------
@@ -392,6 +392,6 @@ nmap ,rw :<C-u>Ref wikipedia<Space>
 nmap ,rwe :<C-u>Ref wikipedia_en<Space>
 let g:ref_alc_start_linenumber = 39 " 表示する行数
 let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
-let g:ref_jquery_doc_path = expand('~/dotfiles/refs/jqapi')
-let g:ref_javascript_doc_path = expand('~/dotfiles/refs/jsref/htdocs')
+let g:ref_jquery_doc_path = $HOME.'/dotfiles/refs/jqapi'
+let g:ref_javascript_doc_path = $HOME.'/dotfiles/refs/jsref/htdocs'
 let g:ref_wikipedia_lang = ['ja', 'en']
