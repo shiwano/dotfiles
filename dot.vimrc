@@ -66,23 +66,19 @@ NeoBundle 'matchit.zip'
 filetype plugin indent on      " required!
 "------------------------------------------------------------------------------
 " カラースキーマ
+syntax enable
+set background=dark
+colorscheme solarized
+
 if !has('gui_running')
   set t_Co=256
-  colorscheme jellybeans
+  let g:solarized_termcolors=256
+  let g:solarized_termtrans = 1
+  let g:solarized_contrast = 'high'
+  let g:solarized_visibility = 'high'
 endif
 
-" syntax enable
-" set background=dark
-" colorscheme solarized
-" let g:solarized_termcolors=256
-" let g:solarized_termtrans = 1
-" let g:solarized_contrast = 'high'
-" let g:solarized_visibility = 'high'
-" let g:solarized_underline = 1
-
-" 80 columns highlight
 if exists('+colorcolumn')
-  highlight ColorColumn ctermbg=53 guibg=#5f0000
   set colorcolumn=81
 endif
 "------------------------------------------------------------------------------
@@ -109,7 +105,7 @@ set magic           " 正規表現に使われる記号を有効にする
 " 表示
 set showcmd         " 入力中のコマンドを表示
 set number          " 行番号表示
-set numberwidth=8   " 行番号の幅
+set numberwidth=6   " 行番号の幅
 set ruler           " ルーラーの表示
 set list            " 不可視文字表示
 set listchars=tab:>.,trail:_,extends:>,precedes:<   " 不可視文字の表示形式

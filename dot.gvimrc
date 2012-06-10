@@ -7,6 +7,10 @@ else
   set guifont=VL\ ゴシック\ 12
 endif
 
+" カラースキーマ
+syntax enable
+set background=dark
+colorscheme solarized
 " ウインドウの幅
 set columns=88
 " ウインドウの高さ
