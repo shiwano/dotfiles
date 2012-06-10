@@ -333,6 +333,7 @@ let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 "------------------------------------------------------------------------------
 " unite.vim
 let g:unite_enable_start_insert = 1
+let g:unite_update_time = 10
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
 " カレントディレクトリ一覧
