@@ -185,12 +185,6 @@ endif
 " 行単位で移動(1行が長い場合に便利)
 nnoremap j gj
 nnoremap k gk
-" バッファ周り
-nmap <silent> <C-Right> :bnext<CR>
-nmap <silent> <C-Left> :bprevious<CR>
-nmap <silent> <C-c> :bw<CR>
-nmap <silent> <C-b> :b#<CR>
-"nmap <silent> <C-l> :ls<CR>
 " 検索などで飛んだらそこを真ん中に
 nmap n nzz
 nmap N Nzz
@@ -200,10 +194,10 @@ nmap g* g*zz
 nmap g# g#zz
 nmap G Gzz
 " CTRL-hjklでウィンドウ移動
-nnoremap <C-j> :<C-w>j
-nnoremap <C-k> :<C-k>j
-nnoremap <C-l> :<C-l>j
-nnoremap <C-h> :<C-h>j
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <C-h> <C-w>h
 " その他キーバインド
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
