@@ -31,8 +31,9 @@ NeoBundle 'https://github.com/hallison/vim-markdown'
 NeoBundle 'https://github.com/kchmck/vim-coffee-script'
 NeoBundle 'https://github.com/timcharper/textile.vim'
 NeoBundle 'https://github.com/othree/html5-syntax.vim'
-" Unite
+" Environment
 NeoBundle 'https://github.com/Shougo/vimproc'
+NeoBundle 'https://github.com/Shougo/vimfiler'
 NeoBundle 'https://github.com/Shougo/unite.vim'
 NeoBundle 'https://github.com/Sixeight/unite-grep'
 NeoBundle 'https://github.com/thinca/vim-qfreplace'
@@ -340,16 +341,13 @@ let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
 " カレントディレクトリ一覧
-nnoremap <silent> <C-e> :<C-u>UniteWithCurrentDir file<CR>
-nnoremap <silent> ,uu :<C-u>UniteWithCurrentDir file<CR>
+nnoremap <silent> ,ud :<C-u>UniteWithCurrentDir file<CR>
 " バッファのディレクトリ一覧
 nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 " レジスタ一覧
 nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 " 最近使用したファイル一覧
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
-" 全部乗せ
-nnoremap <silent> ,ua :<C-u>UniteWithBufferDir -buffer-name=files buffer file_mru bookmark file<CR>
 " ウィンドウを分割して開く
 au FileType unite nnoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
 au FileType unite inoremap <silent> <buffer> <expr> <C-j> unite#do_action('split')
@@ -363,8 +361,16 @@ au FileType unite inoremap <silent> <buffer> <expr> <C-l> unite#do_action('vspli
 " ESCキーを2回押すと終了する
 au FileType unite nnoremap <silent> <buffer> <ESC><ESC> q
 au FileType unite inoremap <silent> <buffer> <ESC><ESC> <ESC>q
-" unite grep
+" grep
 nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
+"------------------------------------------------------------------------------
+" vimfiler
+nnoremap <silent> <C-e> :VimFiler -split -simple -winwidth=35 -no-quit<CR>
+
+autocmd! FileType vimfiler call g:my_vimfiler_settings()
+function! g:my_vimfiler_settings()
+  nmap <buffer><expr><CR> vimfiler#smart_cursor_map("\<Plug>(vimfiler_expand_tree)", "\<Plug>(vimfiler_edit_file)")
+endfunction
 "------------------------------------------------------------------------------
 " trinity.vim
 " Open and close all the three plugins on the same time 
