@@ -257,7 +257,7 @@ if has("win32") || has("win64")
 endif
 
 if has('path_extra')
-  set tags+=./**3/tags;
+  set tags+=tags;
 endif
 "入力モード時、ステータスラインのカラーを変更
 augroup InsertHook
