@@ -202,6 +202,8 @@ nnoremap <C-h> <C-w>h
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
 vmap <C-r> <Esc><C-r>
+" qq でレジスタに記憶しないようにする
+nmap qq <ESC>
 " usキーボードで使いやすく
 nmap ; :
 vmap ; :
