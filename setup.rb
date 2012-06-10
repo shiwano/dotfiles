@@ -29,32 +29,32 @@ Dir['bin/*'].each do |f|
   link f, '~/bin'
 end
 
-Dir['./dot\.*'].each do |f|
+Dir['dot\.*'].each do |f|
   link f, '~/' + f.sub('dot', '')
 end
 
-unless '~/dotfiles/dot.vim/bundle/neobundle.vim'.expand.exist?
-  system 'git clone https://github.com/Shougo/neobundle.vim ~/dotfiles/dot.vim/bundle/neobundle.vim'
+unless 'dot.vim/bundle/neobundle.vim'.expand.exist?
+  system 'git clone https://github.com/Shougo/neobundle.vim dot.vim/bundle/neobundle.vim'
   system 'vim -c NeoBundleInstall -c quit'
-  cp '~/dotfiles/settings/vimproc/post-merge', '~/dotfiles/dot.vim/bundle/vimproc/.git/hooks/post-merge'
-  chmod 0755, '~/dotfiles/dot.vim/bundle/vimproc/.git/hooks/post-merge'
-  system '~/dotfiles/dot.vim/bundle/vimproc/.git/hooks/post-merge'
+  cp 'settings/vimproc/post-merge'.expand, 'dot.vim/bundle/vimproc/.git/hooks/post-merge'.expand
+  chmod 0755, 'dot.vim/bundle/vimproc/.git/hooks/post-merge'.expand
+  system 'dot.vim/bundle/vimproc/.git/hooks/post-merge'
 end
 
-unless '~/dotfiles/refs/rubyrefm'.expand.exist?
+unless 'refs/rubyrefm'.expand.exist?
   system 'wget http://doc.okkez.net/archives/201107/ruby-refm-1.9.2-dynamic-20110729.zip'
   system 'unzip ruby-refm-1.9.2-dynamic-20110729.zip'
-  system 'rm ruby-refm-1.9.2-dynamic-20110729.zip'
-  system 'mv ruby-refm-1.9.2-dynamic-20110729 ~/dotfiles/refs/rubyrefm'
+  rm 'ruby-refm-1.9.2-dynamic-20110729.zip'.expand
+  mv 'ruby-refm-1.9.2-dynamic-20110729'.expand, 'refs/rubyrefm'.expand
 end
 
 unless '~/dotfiles/refs/jqapi'.expand.exist?
   system 'wget http://jqapi.com/jqapi-latest.zip'
   system 'unzip jqapi-latest.zip -d jqapi'
-  system 'rm jqapi-latest.zip'
-  system 'mv jqapi ~/dotfiles/refs/jqapi'
+  rm 'jqapi-latest.zip'.expand
+  mv 'jqapi'.expand, 'refs/jqapi'.expand
 end
 
 unless '~/dotfiles/refs/jsref'.expand.exist?
-  system 'git clone https://github.com/tokuhirom/jsref.git ~/dotfiles/refs/jsref'
+  system 'git clone https://github.com/tokuhirom/jsref.git refs/jsref'
 end
