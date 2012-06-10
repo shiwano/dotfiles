@@ -12,47 +12,52 @@ else
 endif
 "------------------------------------------------------------------------------
 " NeoBundle
-" インストール: .vimrcに追加して、BundleInstall
-" アンインストール: .vimrcから削除して、BundleClean
+" Plugin 追加: .vimrc に追加して、:NeoBundleInstall
+" Plugin 削除: .vimrc から削除して、:NeoBundleClean
+" Plugin 更新: :NeoBundleInstall!
 filetype off                   " required!
 
 if has('vim_starting')
   set rtp+=$DOTVIM/bundle/neobundle.vim/
-  call neobundle#rc(expand('$DOTVIM/bundle'))
+  call neobundle#rc($DOTVIM.'/bundle')
 endif
-
 " NeoBundle
-NeoBundle 'git://github.com/Shougo/neobundle.vim.git'
-" Syntax highlight
-NeoBundle "jQuery"
-NeoBundle "Markdown"
-NeoBundle "https://github.com/timcharper/textile.vim.git"
-NeoBundle "vim-coffee-script"
-NeoBundle "othree/html5-syntax.vim"
+NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
-NeoBundle "inkpot"
-" Plugins
-NeoBundle 'tpope/vim-rails'
-NeoBundle "YankRing.vim"
-NeoBundle "https://github.com/Shougo/vimproc.git"
-NeoBundle "https://github.com/thinca/vim-ref.git"
-NeoBundle "https://github.com/mojako/ref-sources.vim.git"
-NeoBundle "https://github.com/thinca/vim-poslist.git"
-NeoBundle "https://github.com/thinca/vim-quickrun.git"
-NeoBundle "https://github.com/thinca/vim-qfreplace.git"
-NeoBundle "https://github.com/Shougo/neocomplcache.git"
-NeoBundle "https://github.com/Shougo/neocomplcache-snippets-complete"
-NeoBundle 'matchit.zip'
-NeoBundle 'sudo.vim'
-NeoBundle 'https://github.com/scrooloose/nerdcommenter.git'
-NeoBundle 'https://github.com/scrooloose/syntastic.git'
-NeoBundle 'surround.vim'
-NeoBundle 'unite.vim'
-NeoBundle 'https://github.com/Sixeight/unite-grep.git'
-NeoBundle 'basyura/jslint.vim'
+NeoBundle 'https://github.com/ciaranm/inkpot'
+" Syntax highlight
+NeoBundle 'jQuery'
+NeoBundle 'https://github.com/hallison/vim-markdown'
+NeoBundle 'https://github.com/kchmck/vim-coffee-script'
+NeoBundle 'https://github.com/timcharper/textile.vim'
+NeoBundle 'https://github.com/othree/html5-syntax.vim'
+" Unite
+NeoBundle 'https://github.com/Shougo/vimproc'
+NeoBundle 'https://github.com/Shougo/unite.vim'
+NeoBundle 'https://github.com/Sixeight/unite-grep'
+NeoBundle 'https://github.com/thinca/vim-qfreplace'
+" Code completion
+NeoBundle 'https://github.com/Shougo/neocomplcache'
+NeoBundle 'https://github.com/Shougo/neocomplcache-snippets-complete'
+" Reference
+NeoBundle 'https://github.com/thinca/vim-ref'
+NeoBundle 'https://github.com/mojako/ref-sources.vim'
+" Source reading
 NeoBundle 'Source-Explorer-srcexpl.vim'
 NeoBundle 'trinity.vim'
 NeoBundle 'taglist.vim'
+NeoBundle 'https://github.com/scrooloose/nerdtree'
+" Lint
+NeoBundle 'https://github.com/scrooloose/syntastic'
+NeoBundle 'https://github.com/basyura/jslint.vim'
+" Other plugins
+NeoBundle 'https://github.com/tpope/vim-rails'
+NeoBundle 'https://github.com/tpope/vim-surround'
+NeoBundle 'https://github.com/thinca/vim-poslist'
+NeoBundle 'https://github.com/thinca/vim-quickrun'
+NeoBundle 'https://github.com/scrooloose/nerdcommenter'
+NeoBundle 'YankRing.vim'
+NeoBundle 'matchit.zip'
 filetype plugin indent on      " required!
 "------------------------------------------------------------------------------
 " カラースキーマ
