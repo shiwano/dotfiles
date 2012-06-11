@@ -213,6 +213,9 @@ imap <C-r> <C-o><C-r>
 vmap <C-r> <Esc><C-r>
 " qq でレジスタに記憶しないようにする
 nmap qq <ESC>
+" コマンドモードでの補完
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
 " usキーボードで使いやすく
 nmap ; :
 vmap ; :
