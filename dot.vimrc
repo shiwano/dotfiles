@@ -367,11 +367,16 @@ function! s:unite_my_settings()
   nmap <buffer> <ESC> <Plug>(unite_exit)
   nmap <buffer> <C-p> k
   nmap <buffer> <C-n> j
-  imap <buffer> <TAB> <ESC>j
-  nmap <buffer> <TAB> j
+  inoremap <buffer> <TAB> <ESC>j
+  nnoremap <buffer> <TAB> j
+  inoremap <silent><buffer> <S-TAB> <ESC>k
+  nnoremap <silent><buffer> <S-TAB> k
 
   nmap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
   imap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
+
+  inoremap <silent><buffer> <C-r> <Plug>(unite_redraw)
+  nnoremap <silent><buffer> <C-r> <Plug>(unite_redraw)
 
   inoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
   nnoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
@@ -417,3 +422,9 @@ let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
 let g:ref_jquery_doc_path = $HOME.'/dotfiles/refs/jqapi'
 let g:ref_javascript_doc_path = $HOME.'/dotfiles/refs/jsref/htdocs'
 let g:ref_wikipedia_lang = ['ja', 'en']
+"------------------------------------------------------------------------------
+" syntastic
+" :Errors エラー一覧表示
+let g:syntastic_mode_map = { 'mode': 'active',
+                           \ 'active_filetypes': [],
+                           \ 'passive_filetypes': ['html'] }
