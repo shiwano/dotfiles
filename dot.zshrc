@@ -1,4 +1,5 @@
 # 補完機能有効
+fpath=($HOME/.zsh/completion ${fpath})
 autoload -U compinit
 compinit
 
@@ -230,6 +231,6 @@ bindkey "^N" history-beginning-search-forward-end
 # git の補完関数を早く
 autoload bashcompinit
 bashcompinit
-source $HOME/dotfiles/tools/git-completion.bash
+source $HOME/.zsh/git-completion.bash
 
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
