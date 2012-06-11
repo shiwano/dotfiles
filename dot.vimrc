@@ -239,14 +239,6 @@ function! s:Normalize()
   catch
   endtry
 endfunction
-" ソース編集中に開いているファイルを実行する
-function! s:Exec()
-  exe "!" . &ft . " %"
-:endfunction
-command! Exec call <SID>Exec()
-map <silent> <C-F9> :call <SID>Exec()<CR>
-" Quick fix replace
-command! Q :Qfreplace
 "------------------------------------------------------------------------------
 " ユーティリティ
 " ヘルプを翻訳版に変更
