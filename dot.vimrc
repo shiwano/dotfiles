@@ -364,6 +364,7 @@ nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
   imap <buffer> qq <Plug>(unite_exit)
+  nmap <buffer> qq <Plug>(unite_exit)
   nmap <buffer> q <Plug>(unite_exit)
   imap <buffer> jj <Plug>(unite_insert_leave)
   imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
@@ -372,11 +373,12 @@ function! s:unite_my_settings()
   imap <buffer> <S-TAB> <Plug>(unite_select_previous_line)<ESC>
   nmap <buffer> <Tab> j
   nmap <buffer> <S-TAB> k
-  imap <buffer> <C-p> <Plug>(unite_select_previous_line)<ESC>
   imap <buffer> <C-n> <Plug>(unite_select_next_line)<ESC>
-  nmap <buffer> <C-p> k
+  imap <buffer> <C-p> <Plug>(unite_select_previous_line)<ESC>
   nmap <buffer> <C-n> j
+  nmap <buffer> <C-p> k
   imap <buffer> <C-r> <Plug>(unite_redraw)
+  nmap <buffer> <C-r> <Plug>(unite_redraw)
   imap <buffer><expr> <C-e> unite#do_action('vimfiler')
   nmap <buffer><expr> <C-e> unite#do_action('vimfiler')
 
@@ -391,10 +393,11 @@ function! s:unite_my_settings()
 endfunction
 "------------------------------------------------------------------------------
 " vimfiler
-nnoremap <silent> <C-e> :VimFilerCurrentDir -simple<CR>
+let g:vimfiler_safe_mode_by_default = 0
+nnoremap <silent> <C-e> :VimFilerBufferDir -simple<CR>
 
-autocmd! FileType vimfiler call g:my_vimfiler_settings()
-function! g:my_vimfiler_settings()
+autocmd! FileType vimfiler call g:vimfiler_my_settings()
+function! g:vimfiler_my_settings()
   nmap <buffer><expr><CR> vimfiler#smart_cursor_map("\<Plug>(vimfiler_expand_tree)", "\<Plug>(vimfiler_edit_file)")
 endfunction
 "------------------------------------------------------------------------------
