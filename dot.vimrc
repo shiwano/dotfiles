@@ -363,32 +363,31 @@ nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
-  imap <buffer> <ESC><ESC> <Plug>(unite_exit)
-  nmap <buffer> <ESC> <Plug>(unite_exit)
+  imap <buffer> qq <Plug>(unite_exit)
+  nmap <buffer> q <Plug>(unite_exit)
+  imap <buffer> jj <Plug>(unite_insert_leave)
+  imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+  nmap <buffer> <C-w> <Plug>(unite_delete_backward_path)
+  imap <buffer> <TAB> <Plug>(unite_select_next_line)<ESC>
+  imap <buffer> <S-TAB> <Plug>(unite_select_previous_line)<ESC>
+  nmap <buffer> <Tab> j
+  nmap <buffer> <S-TAB> k
+  imap <buffer> <C-p> <Plug>(unite_select_previous_line)<ESC>
+  imap <buffer> <C-n> <Plug>(unite_select_next_line)<ESC>
   nmap <buffer> <C-p> k
   nmap <buffer> <C-n> j
-  inoremap <buffer> <TAB> <ESC>j
-  nnoremap <buffer> <TAB> j
-  inoremap <silent><buffer> <S-TAB> <ESC>k
-  nnoremap <silent><buffer> <S-TAB> k
+  imap <buffer> <C-r> <Plug>(unite_redraw)
+  imap <buffer><expr> <C-e> unite#do_action('vimfiler')
+  nmap <buffer><expr> <C-e> unite#do_action('vimfiler')
 
-  nmap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
-  imap <silent><buffer> <C-w> <Plug>(unite_delete_backward_path)
-
-  inoremap <silent><buffer> <C-r> <Plug>(unite_redraw)
-  nnoremap <silent><buffer> <C-r> <Plug>(unite_redraw)
-
-  inoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
-  nnoremap <silent><buffer><expr> <C-e> unite#do_action('vimfiler')
-
-  nnoremap <silent><buffer><expr> <C-j> unite#do_action('split')
-  inoremap <silent><buffer><expr> <C-j> unite#do_action('split')
-  nnoremap <silent><buffer><expr> <C-k> unite#do_action('split')
-  inoremap <silent><buffer><expr> <C-k> unite#do_action('split')
-  nnoremap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
-  inoremap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
-  nnoremap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
-  inoremap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
+  nmap <silent><buffer><expr> <C-j> unite#do_action('split')
+  imap <silent><buffer><expr> <C-j> unite#do_action('split')
+  nmap <silent><buffer><expr> <C-k> unite#do_action('split')
+  imap <silent><buffer><expr> <C-k> unite#do_action('split')
+  nmap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
+  imap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
+  nmap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
+  imap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
 endfunction
 "------------------------------------------------------------------------------
 " vimfiler
