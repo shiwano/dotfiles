@@ -356,6 +356,8 @@ nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
 nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 " 最近使用したファイル一覧
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
+" 再帰的ファイル一覧
+nnoremap <silent> ,uu :<C-u>Unite file_rec/async<CR>
 " grep
 nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
 
