@@ -61,6 +61,8 @@ NeoBundle 'https://github.com/tpope/vim-surround'
 NeoBundle 'https://github.com/thinca/vim-poslist'
 NeoBundle 'https://github.com/thinca/vim-quickrun'
 NeoBundle 'https://github.com/scrooloose/nerdcommenter'
+NeoBundle 'https://github.com/mattn/webapi-vim'
+NeoBundle 'https://github.com/mattn/gist-vim'
 NeoBundle 'YankRing.vim'
 NeoBundle 'matchit.zip'
 filetype plugin indent on      " required!
@@ -421,6 +423,12 @@ let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
 let g:ref_jquery_doc_path = $HOME.'/dotfiles/refs/jqapi'
 let g:ref_javascript_doc_path = $HOME.'/dotfiles/refs/jsref/htdocs'
 let g:ref_wikipedia_lang = ['ja', 'en']
+"------------------------------------------------------------------------------
+" Gist.vim
+let g:gist_clip_command = 'pbcopy'
+let g:gist_detect_filetype = 1
+let g:gist_open_browser_after_post = 1
+let g:gist_post_private = 1
 "------------------------------------------------------------------------------
 " syntastic
 " :Errors エラー一覧表示
