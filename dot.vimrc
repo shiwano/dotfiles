@@ -117,7 +117,7 @@ if has("syntax")
   syntax on
   function! ActivateInvisibleIndicator()
     syntax match InvisibleJISX0208Space "　" display containedin=ALL
-    highlight InvisibleJISX0208Space term=underline ctermbg=Cyan guibg=Cyan
+    highlight InvisibleJISX0208Space term=underline ctermbg=236 guibg=Cyan
   endf
   augroup invisible
     autocmd! invisible
