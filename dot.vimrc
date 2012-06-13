@@ -161,7 +161,7 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 "選択した文字列を Grep
-vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>
+vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>/**/*
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
@@ -369,7 +369,7 @@ nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 " 再帰的ファイル一覧
 nnoremap <silent> ,uu :<C-u>Unite file_rec/async<CR>
 " grep
-nnoremap <silent> ,ug :Unite grep::-iHRn<CR>
+nnoremap ,ug :Unite grep::-iHRn<CR>/**/*
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
@@ -442,6 +442,12 @@ let g:gist_clip_command = 'pbcopy'
 let g:gist_detect_filetype = 1
 let g:gist_open_browser_after_post = 1
 let g:gist_post_private = 1
+"------------------------------------------------------------------------------
+" poslist
+nmap <C-f> <Plug>(poslist-next-pos)
+imap <C-f> <C-o><Plug>(poslist-next-pos)
+nmap <C-b> <Plug>(poslist-prev-pos)
+imap <C-b> <C-o><Plug>(poslist-prev-pos)
 "------------------------------------------------------------------------------
 " syntastic
 " :Errors エラー一覧表示
