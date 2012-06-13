@@ -155,13 +155,13 @@ set ignorecase " 大文字小文字無視
 set smartcase  " 大文字ではじめたら大文字小文字無視しない
 set incsearch  " インクリメンタルサーチ
 set hlsearch   " 検索文字をハイライト
-set grepprg=grep\ -nH " grep
+set grepprg=grep\ -nHRn " grep
 "選択した文字列を検索
 vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 "選択した文字列を Grep
-vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>/**/*
+vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>/*
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
@@ -369,7 +369,7 @@ nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 " 再帰的ファイル一覧
 nnoremap <silent> ,uu :<C-u>Unite file_rec/async<CR>
 " grep
-nnoremap ,ug :Unite grep::-iHRn<CR>/**/*
+nnoremap ,ug :Unite grep::-iHRn<CR>/*
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
