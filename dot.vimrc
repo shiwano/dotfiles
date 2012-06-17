@@ -205,22 +205,35 @@ nmap g* g*zz
 nmap g# g#zz
 nmap G Gzz
 " CTRL-hjklでウィンドウ移動
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-nnoremap <C-h> <C-w>h
+nmap <C-j> <C-w>j
+nmap <C-k> <C-w>k
+nmap <C-l> <C-w>l
+nmap <C-h> <C-w>h
 " その他キーバインド
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
+imap <C-l> <Right>
 vmap <C-r> <Esc><C-r>
 " qq でレジスタに記憶しないようにする
 nmap qq <ESC>
 " コマンドモードでの補完
-cnoremap <C-p> <Up>
-cnoremap <C-n> <Down>
+cmap <C-p> <Up>
+cmap <C-n> <Down>
 " usキーボードで使いやすく
 nmap ; :
 vmap ; :
+" 閉じかっこ補完
+inoremap { {}<LEFT>
+inoremap [ []<LEFT>
+inoremap ( ()<LEFT>
+inoremap " ""<LEFT>
+inoremap ' ''<LEFT>
+augroup MyXML
+  autocmd!
+  autocmd Filetype xml inoremap <buffer> </ </<C-x><C-o>
+  autocmd Filetype html inoremap <buffer> </ </<C-x><C-o>
+  autocmd Filetype eruby inoremap <buffer> </ </<C-x><C-o>
+augroup END
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
@@ -295,7 +308,7 @@ endif
 "------------------------------------------------------------------------------
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
-let g:neocomplcache_auto_completion_start_length = 1
+let g:neocomplcache_auto_completion_start_length = 2
 let g:neocomplcache_min_syntax_length = 2
 let g:neocomplcache_min_keyword_length = 2
 let g:neocomplcache_enable_smart_case = 1
@@ -329,8 +342,8 @@ autocmd FileType cpp set omnifunc=cppcomplete#Complete
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
-autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
+" autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 
 if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
