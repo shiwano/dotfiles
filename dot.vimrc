@@ -222,12 +222,7 @@ cmap <C-n> <Down>
 " usキーボードで使いやすく
 nmap ; :
 vmap ; :
-" 閉じかっこ補完
-inoremap { {}<LEFT>
-inoremap [ []<LEFT>
-inoremap ( ()<LEFT>
-inoremap " ""<LEFT>
-inoremap ' ''<LEFT>
+" HTML 閉じタグ補完
 augroup MyXML
   autocmd!
   autocmd Filetype xml inoremap <buffer> </ </<C-x><C-o>
