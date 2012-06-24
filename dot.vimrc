@@ -31,10 +31,13 @@ NeoBundle 'https://github.com/altercation/vim-colors-solarized'
 NeoBundle 'https://github.com/nanotech/jellybeans.vim'
 " Syntax highlight
 NeoBundle 'jQuery'
-NeoBundle 'https://github.com/hallison/vim-markdown'
 NeoBundle 'https://github.com/kchmck/vim-coffee-script'
-NeoBundle 'https://github.com/timcharper/textile.vim'
 NeoBundle 'https://github.com/othree/html5-syntax.vim'
+NeoBundle 'https://github.com/hallison/vim-markdown'
+NeoBundle 'https://github.com/timcharper/textile.vim'
+NeoBundle 'https://github.com/groenewege/vim-less'
+NeoBundle 'https://github.com/wavded/vim-stylus'
+NeoBundle 'https://github.com/hail2u/vim-css3-syntax'
 " Environment
 NeoBundle 'https://github.com/Shougo/vimproc'
 NeoBundle 'https://github.com/Shougo/vimfiler'
@@ -230,15 +233,17 @@ augroup MyXML
   autocmd Filetype eruby inoremap <buffer> </ </<C-x><C-o>
 augroup END
 "------------------------------------------------------------------------------
+" Filetype detection
+au BufRead,BufNewFile Watchfile set filetype=coffee
+"------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
 " ファイル名変更
 command! -nargs=+ -bang -complete=file Rename let pbnr=fnamemodify(bufname('%'), ':p')|exec 'f '.escape(<q-args>, ' ')|w<bang>|call delete(pbnr)
 " エンコード指定してファイルを開く
-command! -nargs=1 Reload :call s:Reload(<f-args>)
-function! s:Reload(enc)
-  e ++enc=a:enc
-endfunction
+command! -nargs=1 Reload :e ++enc=<f-args>
+" 末尾スペース削除
+command! Rstrip :%s/\s\+$//e
 " 改行コードをLF、エンコーディングをutf-8の状態にする
 command! Normalize :call s:Normalize()
 function! s:Normalize()
