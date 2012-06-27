@@ -3,6 +3,11 @@ fpath=($HOME/.zsh/completion ${fpath})
 autoload -U compinit
 compinit
 
+# git の補完関数を早く
+autoload bashcompinit
+bashcompinit
+source $HOME/.zsh/git-completion.bash
+
 # 256色
 export TERM=xterm-256color
 
@@ -44,6 +49,9 @@ alias r='rails'
 alias g='git'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
+
+# hub alias
+function git(){hub "$@"} # zsh
 
 # brew でインストールしたctags
 if [ -d /usr/local/Cellar/ctags ]; then
@@ -228,8 +236,3 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
-
-# git の補完関数を早く
-autoload bashcompinit
-bashcompinit
-source $HOME/.zsh/git-completion.bash
