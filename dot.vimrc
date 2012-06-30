@@ -38,6 +38,7 @@ NeoBundle 'https://github.com/timcharper/textile.vim'
 NeoBundle 'https://github.com/groenewege/vim-less'
 NeoBundle 'https://github.com/wavded/vim-stylus'
 NeoBundle 'https://github.com/hail2u/vim-css3-syntax'
+NeoBundle 'https://github.com/digitaltoad/vim-jade'
 " Environment
 NeoBundle 'https://github.com/Shougo/vimproc'
 NeoBundle 'https://github.com/Shougo/vimfiler'
