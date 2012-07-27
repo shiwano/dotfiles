@@ -69,6 +69,7 @@ NeoBundle 'https://github.com/mattn/webapi-vim'
 NeoBundle 'https://github.com/mattn/gist-vim'
 NeoBundle 'YankRing.vim'
 NeoBundle 'matchit.zip'
+NeoBundle 'Align'
 filetype plugin indent on      " required!
 "------------------------------------------------------------------------------
 " カラースキーマ
@@ -344,12 +345,12 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
-" autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
+autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
 
 if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
 endif
-let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+" let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
@@ -378,6 +379,7 @@ function! s:unite_my_settings()
   nmap <buffer> qq <Plug>(unite_exit)
   nmap <buffer> q <Plug>(unite_exit)
   imap <buffer> jj <Plug>(unite_insert_leave)
+  imap <buffer> kk <Plug>(unite_insert_leave)
   imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
   nmap <buffer> <C-w> <Plug>(unite_delete_backward_path)
   imap <buffer> <TAB> <Plug>(unite_select_next_line)<ESC>
@@ -455,3 +457,6 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 let g:syntastic_mode_map = { 'mode': 'active',
                            \ 'active_filetypes': [],
                            \ 'passive_filetypes': ['html'] }
+"------------------------------------------------------------------------------
+" QuickRun
+command! Q :QuickRun
