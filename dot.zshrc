@@ -47,6 +47,7 @@ alias lal="ls -l -A"
 alias vi='vim'
 alias r='rails'
 alias g='git'
+alias gg='git grep'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
 
