@@ -25,6 +25,34 @@
   mt = mergetool
   topic = checkout origin/master -b
   current-branch = describe --all --contains HEAD
+  la = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+  log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
+  lg = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+  log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
+  ls = log --stat --summary --color
+  log-stat = log --stat --summary --color
+  lp = log --patch --color
+  log-patch = log --patch --color
+  up-upstream = "!sh -c ' \
+                 branch=${2:-`git current-branch`}; \
+                 git checkout master; \
+                 git fetch upstream; \
+                 git merge upstream/master; \
+                 git push origin master; \
+                 git checkout ${branch}; \
+               ' __dummy__"
+  prune-branches = "!sh -c 'git branch | grep -v master | xargs git branch -d'"
+  prune-remote-branches = "!sh -c ' \
+                           git branch -r --merged | \
+                           grep origin | \
+                           grep -v \">\" | \
+                           grep -v master | \
+                           sed \"/>|master/d;/origin/!d;s:origin/::\" | \
+                           xargs git push origin --delete \
+                           ' __dummy__"
+
+  # for gerrit
+  config-for-aiming = "!sh -c 'git config user.email siwano@aiming-inc.com'"
   push-for-review = "!sh -c 'git push origin HEAD:refs/for/master/`git current-branch`'"
   pfr = "!sh -c ' \
         reviewer=$1; \
@@ -44,30 +72,6 @@
         dir=`printf '%02d' $val` ; \
         git fetch origin refs/changes/$dir/$change/$patchset && git checkout FETCH_HEAD -b $change-$patchset; \
       ' __dummy__"
-  la = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
-  log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
-  lg = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
-  log-graph = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
-  ls = log --stat --summary
-  log-stat = log --stat --summary
-  up-upstream = "!sh -c ' \
-                 branch=${2:-`git current-branch`}; \
-                 git checkout master; \
-                 git fetch upstream; \
-                 git merge upstream/master; \
-                 git push origin master; \
-                 git checkout ${branch}; \
-               ' __dummy__"
-  prune-branches = "!sh -c 'git branch | grep -v master | xargs git branch -d'"
-  prune-remote-branches = "!sh -c ' \
-                           git branch -r --merged | \
-                           grep origin | \
-                           grep -v \">\" | \
-                           grep -v master | \
-                           sed \"/>|master/d;/origin/!d;s:origin/::\" | \
-                           xargs git push origin --delete \
-                           ' __dummy__"
-  config-for-aiming = "!sh -c 'git config user.email siwano@aiming-inc.com'"
 [merge]
   tool = vimdiff
 [mergetool]
