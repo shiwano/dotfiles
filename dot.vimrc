@@ -219,6 +219,7 @@ nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
 imap <C-l> <Right>
 vmap <C-r> <Esc><C-r>
+nmap <silent> L :nohl<CR>
 " qq でレジスタに記憶しないようにする
 nmap qq <ESC>
 " コマンドモードでの補完
