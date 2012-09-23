@@ -41,6 +41,7 @@
                  git push origin master; \
                  git checkout ${branch}; \
                ' __dummy__"
+  prune = "!sh -c 'git branch | grep -v master | xargs git branch -d'"
   prune-branches = "!sh -c 'git branch | grep -v master | xargs git branch -d'"
   prune-remote-branches = "!sh -c ' \
                            git branch -r --merged | \
