@@ -47,7 +47,7 @@ NeoBundle 'https://github.com/Sixeight/unite-grep'
 NeoBundle 'https://github.com/thinca/vim-qfreplace'
 " Code completion
 NeoBundle 'https://github.com/Shougo/neocomplcache'
-NeoBundle 'https://github.com/Shougo/neocomplcache-snippets-complete'
+NeoBundle 'https://github.com/Shougo/neosnippet'
 " Reference
 NeoBundle 'https://github.com/thinca/vim-ref'
 NeoBundle 'https://github.com/mojako/ref-sources.vim'
@@ -166,7 +166,7 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 "選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 "選択した文字列を Grep
-vnoremap /g y:Unite grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR>/*
+vnoremap /g y:Unite -no-quit grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR><BS>**/*
 "------------------------------------------------------------------------------
 " エンコーディング関連
 " 改行文字
@@ -372,7 +372,7 @@ nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 " 再帰的ファイル一覧
 nnoremap <silent> ,uu :<C-u>Unite file_rec/async<CR>
 " grep
-nnoremap ,ug :Unite grep::-iHRn<CR>/*
+nnoremap ,ug :Unite -no-quit grep::-iHRn<CR><BS>**/*
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
