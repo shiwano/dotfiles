@@ -19,6 +19,7 @@ PATH=$HOME/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 
 # nodebrew PATH
 if [ -d $HOME/.nodebrew ]; then
