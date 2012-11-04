@@ -7,11 +7,29 @@ snippet boilerplate
         <title>${1}</title>
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width" />
+        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/css/bootstrap-combined.min.css" rel="stylesheet" />
         <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+        <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.2.1/js/bootstrap.min.js"></script>
+        <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.1/require.min.js" data-main=""></script> -->
+        <style>
+          body {
+            padding-top: 40px;
+            padding-bottom: 40px;
+          }
+        </style>
       </head>
       <body>
-        ${2}
+        <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container">
+              <a href="" class="brand">${1}</a>
+            </div>
+          </div>
+        </div>
+        <div class="container">
+          ${2}
+        </div>
       </body>
     </html>
 
