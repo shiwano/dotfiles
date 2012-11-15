@@ -76,3 +76,5 @@
   tool = vimdiff
 [mergetool]
   keepBackup = false
+[http]
+	postBuffer = 524288000
