@@ -54,9 +54,6 @@ alias server='ruby ~/dotfiles/tools/server.rb'
 # find & sed
 function findsed () { find . -name $1 | xargs gsed -i $2 }
 
-# hub alias
-function git(){hub "$@"} # zsh
-
 # brew でインストールしたctags
 if [ -d /usr/local/Cellar/ctags ]; then
   alias ctags="`brew --prefix`/bin/ctags"
