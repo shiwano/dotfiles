@@ -50,6 +50,7 @@ alias be='bundle exec'
 alias gg='git grep'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
+alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 
 # find & sed
 function findsed () { find . -name $1 | xargs gsed -i $2 }
