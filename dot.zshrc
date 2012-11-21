@@ -44,9 +44,9 @@ find-grep () { find . -type f -print | xargs grep -n --binary-files=without-matc
 alias ls='ls --color=auto'
 alias ll='ls -l'
 alias la='ls -A'
-alias lal="ls -l -A"
+alias lal='ls -l -A'
 alias vi='vim'
-alias r='rails'
+alias be='bundle exec'
 alias gg='git grep'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
