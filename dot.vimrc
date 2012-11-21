@@ -238,7 +238,7 @@ augroup MyXML
 augroup END
 "------------------------------------------------------------------------------
 " Filetype detection
-au BufRead,BufNewFile Watchfile set filetype=coffee
+au BufRead,BufNewFile *.cson set filetype=coffee
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
