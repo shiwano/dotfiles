@@ -29,6 +29,7 @@ NeoBundle 'https://github.com/tomasr/molokai'
 NeoBundle 'https://github.com/jnurmine/Zenburn'
 NeoBundle 'https://github.com/altercation/vim-colors-solarized'
 NeoBundle 'https://github.com/nanotech/jellybeans.vim'
+NeoBundle 'https://github.com/nono/vim-handlebars'
 " Syntax highlight
 NeoBundle 'jQuery'
 NeoBundle 'https://github.com/kchmck/vim-coffee-script'
