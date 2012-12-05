@@ -240,6 +240,8 @@ augroup END
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.cson set filetype=coffee
+au BufRead,BufNewFile *.jsenv set filetype=javascript
+au BufRead,BufNewFile *.coffeeenv set filetype=coffee
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
