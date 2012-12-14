@@ -39,12 +39,12 @@ exports.template = function(grunt, init, done) {
     props.main = 'lib/index.js';
 
     props.dependencies = {
-      "grunt": '~' + grunt.version,
-      "grunt-contrib-coffee": "~0.3.2",
-      "grunt-contrib-watch": "~0.1.4"
     };
 
     props.devDependencies = {
+      "grunt": '~' + grunt.version,
+      "grunt-contrib-watch": "~0.1.4",
+      "grunt-contrib-coffee": "~0.3.2",
       "grunt-simple-mocha": "~0.2.0",
       "mocha": "~1.7.3",
       "chai": "~1.4.0"
