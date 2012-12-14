@@ -78,3 +78,5 @@
   keepBackup = false
 [http]
 	postBuffer = 524288000
+[push]
+	default = nothing
