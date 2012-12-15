@@ -1,6 +1,6 @@
-spec = require '../spec_helper'
+helper = require '../test_helper'
 
-lib = spec.require "index"
+lib = helper.require "index"
 
 describe 'lib', ->
   describe '#awesome', ->
