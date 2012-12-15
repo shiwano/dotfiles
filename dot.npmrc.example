@@ -1,3 +1,4 @@
 root = $HOME/.node_libraries
 binroot = $HOME/bin
 manroot = $HOME/share/man
+email = shiwano@gmail.com
