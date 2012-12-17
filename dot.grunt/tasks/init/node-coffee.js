@@ -45,7 +45,7 @@ exports.template = function(grunt, init, done) {
       "grunt": '~' + grunt.version,
       "grunt-contrib-watch": "~0.1.4",
       "grunt-contrib-coffee": "~0.3.2",
-      "grunt-simple-mocha": "~0.2.0",
+      "grunt-simple-mocha": "~0.3.1",
       "mocha": "~1.7.3",
       "chai": "~1.4.0"
     };
