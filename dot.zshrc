@@ -51,6 +51,7 @@ alias gg='git grep'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
+alias tmux='tmuxx'
 
 # find & sed
 function findsed () { find . -name $1 | xargs gsed -i $2 }
@@ -64,17 +65,6 @@ fi
 if [ -d /usr/local/Cellar/screen ]; then
   alias screen="`brew --prefix`/bin/screen"
 fi
-
-# tmux on Mac
-tmuxx () {
-  if [[ ( $OSTYPE == darwin* ) && ( -x $(which reattach-to-user-namespace 2>/dev/null) ) ]]; then
-    tweaked_config=$(cat $HOME/.tmux.conf <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"'))
-    tmux -f <(echo "$tweaked_config") $*
-  else
-    tmux $*
-  fi
-}
-alias tmux='tmuxx'
 
 # zmv
 autoload zmv
