@@ -54,7 +54,7 @@ class Setup
   end
 
   def set_up_bin
-    cd '~'.expand
+    cd '~/dotfiles'.expand
     'bin'.expand.mkpath unless 'bin'.expand.exist?
     Dir['bin/*'].each{ |path| put_file path, '~/bin' }
   end
