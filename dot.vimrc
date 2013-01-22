@@ -286,7 +286,7 @@ augroup END
 "set shellslash
 " クリップボードを使用
 set clipboard=unnamed
-"set clipboard=unnamedplus,unnamed
+" set clipboard=unnamedplus,unnamed
 "------------------------------------------------------------------------------
 " matchit.vim
 " % で対応するフレーズに移動
@@ -295,14 +295,6 @@ let b:match_words="{{t:{{/t}}"
 " nerd_commenter.vim
 let NERDSpaceDelims = 1
 let NERDShutUp = 1
-"------------------------------------------------------------------------------
-" jslint.vim
-function! s:javascript_filetype_settings()
-  autocmd BufLeave     <buffer> call jslint#clear()
-  autocmd BufWritePost <buffer> call jslint#check()
-  autocmd CursorMoved  <buffer> call jslint#message()
-endfunction
-autocmd FileType javascript call s:javascript_filetype_settings()
 "------------------------------------------------------------------------------
 " yankring.vim
 let g:yankring_history_file = '.yankring_history'
@@ -464,7 +456,7 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 let g:syntastic_mode_map = { 'mode': 'active',
   \ 'active_filetypes': [],
   \ 'passive_filetypes': ['html'] }
-let g:syntastic_auto_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
 let g:syntastic_javascript_checker = 'jshint'
 "------------------------------------------------------------------------------
 " QuickRun
