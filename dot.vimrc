@@ -241,6 +241,7 @@ augroup END
 au BufRead,BufNewFile *.cson set filetype=coffee
 au BufRead,BufNewFile *.jsenv set filetype=javascript
 au BufRead,BufNewFile *.coffeeenv set filetype=coffee
+au BufRead,BufNewFile *.tss set filetype=javascript
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
