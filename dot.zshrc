@@ -35,7 +35,8 @@ if [ -d /Applications/MacVim.app ]; then
 fi
 
 # 関数
-find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
+function find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
+function find-sed () { find . -name $1 -type f | xargs gsed -i $2 }
 
 # vi風キーバインド
 # bindkey -v
@@ -52,9 +53,6 @@ alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
-
-# find & sed
-function findsed () { find . -name $1 | xargs gsed -i $2 }
 
 # brew でインストールしたctags
 if [ -d /usr/local/Cellar/ctags ]; then
