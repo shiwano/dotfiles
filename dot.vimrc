@@ -25,13 +25,11 @@ endif
 NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
 NeoBundle 'https://github.com/ciaranm/inkpot'
-NeoBundle 'https://github.com/tomasr/molokai'
-NeoBundle 'https://github.com/jnurmine/Zenburn'
 NeoBundle 'https://github.com/altercation/vim-colors-solarized'
-NeoBundle 'https://github.com/nanotech/jellybeans.vim'
-NeoBundle 'https://github.com/nono/vim-handlebars'
 " Syntax highlight
 NeoBundle 'jQuery'
+NeoBundle 'https://github.com/jelera/vim-javascript-syntax'
+NeoBundle 'https://github.com/nono/vim-handlebars'
 NeoBundle 'https://github.com/kchmck/vim-coffee-script'
 NeoBundle 'https://github.com/othree/html5-syntax.vim'
 NeoBundle 'https://github.com/hallison/vim-markdown'
@@ -50,6 +48,7 @@ NeoBundle 'https://github.com/thinca/vim-qfreplace'
 " Code completion
 NeoBundle 'https://github.com/Shougo/neocomplcache'
 NeoBundle 'https://github.com/Shougo/neosnippet'
+NeoBundle 'https://github.com/teramako/jscomplete-vim'
 " Reference
 NeoBundle 'https://github.com/thinca/vim-ref'
 NeoBundle 'https://github.com/mojako/ref-sources.vim'
@@ -60,8 +59,8 @@ NeoBundle 'taglist.vim'
 NeoBundle 'https://github.com/scrooloose/nerdtree'
 " Lint
 NeoBundle 'https://github.com/scrooloose/syntastic'
-NeoBundle 'https://github.com/basyura/jslint.vim'
 " Other plugins
+NeoBundle 'https://github.com/jiangmiao/simple-javascript-indenter'
 NeoBundle 'https://github.com/tpope/vim-rails'
 NeoBundle 'https://github.com/tpope/vim-surround'
 NeoBundle 'https://github.com/thinca/vim-poslist'
@@ -336,12 +335,14 @@ let g:neocomplcache_dictionary_filetype_lists = {
   \ 'perl' : $DOTVIM.'/dict/perl.dict',
   \ 'css' : $DOTVIM.'/dict/css.dict',
   \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
+  \ 'coffee' : $DOTVIM.'/dict/javascript.dict',
   \ 'actionscript' : $DOTVIM.'/dict/actionscript.dict',
   \ }
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
+autocmd FileType javascript setlocal omnifunc=jscomplete#CompleteJS
+autocmd FileType coffee setlocal omnifunc=jscomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
@@ -460,9 +461,13 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 " syntastic
 " :Errors エラー一覧表示
 let g:syntastic_mode_map = { 'mode': 'active',
-                           \ 'active_filetypes': [],
-                           \ 'passive_filetypes': ['html'] }
-let g:syntastic_auto_jump=1
+  \ 'active_filetypes': [],
+  \ 'passive_filetypes': ['html'] }
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_javascript_checker = 'jshint'
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
+"------------------------------------------------------------------------------
+" jscomplete
+let g:jscomplete_use = ['dom', 'moz', 'es6th']
