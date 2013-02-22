@@ -109,6 +109,7 @@ set browsedir=buffer    " Exploreの初期ディレクトリ
 set whichwrap=b,s,h,l,<,>,[,]   " カーソルを行頭、行末で止まらないようにする
 set showcmd         " コマンドをステータス行に表示
 set magic           " 正規表現に使われる記号を有効にする
+set nofoldenable    " 折り畳み無効
 "------------------------------------------------------------------------------
 " 表示
 set showcmd         " 入力中のコマンドを表示
@@ -242,6 +243,7 @@ au BufRead,BufNewFile *.cson set filetype=coffee
 au BufRead,BufNewFile *.jsenv set filetype=javascript
 au BufRead,BufNewFile *.coffeeenv set filetype=coffee
 au BufRead,BufNewFile *.tss set filetype=javascript
+au BufRead,BufNewFile *.prefab set filetype=yaml
 "------------------------------------------------------------------------------
 " ユーザ定義コマンド
 command! Cd :cd %:h
