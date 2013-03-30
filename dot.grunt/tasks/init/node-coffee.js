@@ -43,9 +43,9 @@ exports.template = function(grunt, init, done) {
 
     props.devDependencies = {
       "grunt": '~' + grunt.version,
-      "grunt-contrib-watch": "~0.1.4",
-      "grunt-contrib-coffee": "~0.3.2",
-      "grunt-simple-mocha": "~0.3.1",
+      "grunt-contrib-watch": "~0.2.0rc7",
+      "grunt-contrib-coffee": "~0.4.0rc5",
+      "grunt-simple-mocha": "~0.3.2",
       "mocha": "~1.7.3",
       "chai": "~1.4.0"
     };

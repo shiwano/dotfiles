@@ -4,8 +4,11 @@ module.exports = (grunt) ->
 
     coffee:
       lib:
-        files:
-          'lib/*.js': 'src/**/*.coffee'
+        expand: true
+        cwd: 'src/'
+        src: ['*.coffee']
+        dest: 'lib/'
+        ext: '.js'
 
     simplemocha:
       lib:

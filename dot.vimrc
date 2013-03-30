@@ -98,6 +98,7 @@ set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASC
 let mapleader = "," " キーマップリーダー
 set notitle         " タイトル変更しない
 set scrolloff=5     " スクロール時の余白確保
+set nowritebackup
 set nobackup        " バックアップ取らない
 set autoread        " 他で書き換えられたら自動で読み直す
 set noswapfile      " スワップファイル作らない
