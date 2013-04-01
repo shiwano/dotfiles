@@ -60,7 +60,7 @@ NeoBundle 'taglist.vim'
 NeoBundle 'https://github.com/scrooloose/nerdtree'
 " Lint
 NeoBundle 'https://github.com/scrooloose/syntastic'
-" Other plugins
+" Misc
 NeoBundle 'https://github.com/jiangmiao/simple-javascript-indenter'
 NeoBundle 'https://github.com/tpope/vim-rails'
 NeoBundle 'https://github.com/tpope/vim-surround'
@@ -69,6 +69,7 @@ NeoBundle 'https://github.com/thinca/vim-quickrun'
 NeoBundle 'https://github.com/scrooloose/nerdcommenter'
 NeoBundle 'https://github.com/mattn/webapi-vim'
 NeoBundle 'https://github.com/mattn/gist-vim'
+NeoBundle 'https://github.com/thinca/vim-splash'
 NeoBundle 'YankRing.vim'
 NeoBundle 'matchit.zip'
 NeoBundle 'Align'
@@ -89,7 +90,8 @@ if !has('gui_running')
 endif
 
 if exists('+colorcolumn')
-  set colorcolumn=81
+  autocmd Filetype * set colorcolumn=81
+  autocmd Filetype Scratch set colorcolumn=''
 endif
 "------------------------------------------------------------------------------
 " Status line
@@ -98,9 +100,9 @@ set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASC
 
 " 入力モード時、ステータスラインのカラーを変更
 augroup InsertHook
-autocmd!
-autocmd InsertEnter * highlight StatusLine guifg=#ccdc90 guibg=#2E4340
-autocmd InsertLeave * highlight StatusLine guifg=#2E4340 guibg=#ccdc90
+  autocmd!
+  autocmd InsertEnter * highlight StatusLine guifg=#ccdc90 guibg=#2E4340
+  autocmd InsertLeave * highlight StatusLine guifg=#2E4340 guibg=#ccdc90
 augroup END
 "------------------------------------------------------------------------------
 " General settings
