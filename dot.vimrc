@@ -503,7 +503,7 @@ let g:syntastic_mode_map = { 'mode': 'active',
   \ 'active_filetypes': [],
   \ 'passive_filetypes': ['html'] }
 let g:syntastic_javascript_checker = 'jshint'
-let g:syntastic_coffee_lint_options = 'max_line_length=0'.
+let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
