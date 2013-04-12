@@ -41,7 +41,7 @@
                  git push origin master; \
                  git checkout ${branch}; \
                ' __dummy__"
-  prune-branches = "!sh -c 'git branch | grep -v master | xargs git branch -d'"
+  prune-branches = !git branch --delete $(git branch --merged master | grep -v '^*\\|  master$')
   prune-remote-branches = "!sh -c ' \
                            git branch -r --merged | \
                            grep origin | \
@@ -52,8 +52,8 @@
                          ' __dummy__"
 
   # for gerrit
-  config-for-aiming = "!sh -c 'git config user.email siwano@aiming-inc.com'"
-  push-for-review = "!sh -c 'git push origin HEAD:refs/for/master/`git current-branch`'"
+  config-for-aiming = config user.email siwano@aiming-inc.com
+  push-for-review = !git push origin HEAD:refs/for/master/$(git current-branch)
   pfr = "!sh -c ' \
         reviewer=$1; \
         topic=${2:-`git current-branch`}; \
