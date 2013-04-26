@@ -35,7 +35,7 @@ if [ -d /Applications/MacVim.app ]; then
 fi
 
 # 関数
-function find-grep () { find . -type f -print | xargs grep -n --binary-files=without-match $@ }
+function find-grep () { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
 function find-sed () { find . -name $1 -type f | xargs gsed -i $2 }
 
 # vi風キーバインド

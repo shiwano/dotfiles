@@ -34,7 +34,7 @@ end
 def clone_repository
   cd '~'.expand
   return puts 'dotfiles repository already exists!' if 'dotfiles'.expand.exist?
-  system 'git clone git@github.com:shiwano/dotfiles.git dotfiles'
+  system 'git clone git://github.com/shiwano/dotfiles.git dotfiles'
 end
 
 def setup_bin
