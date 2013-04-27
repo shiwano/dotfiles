@@ -17,13 +17,21 @@ export LANG=ja_JP.UTF-8
 # パスの設定
 PATH=$HOME/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
-PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+
 if [ -d /usr/local/Cellar/coreutils ]; then
   PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 fi
 
-# nodebrew PATH
+if [ -d $HOME/.rbenv ]; then
+  PATH="$HOME/.rbenv/bin:$PATH"
+  eval "$(rbenv init -)"
+fi
+
+if [ -d $HOME/.rvm ]; then
+  [[ -s "$HOME/.rvm/scripts/rvm" ]] && . "$HOME/.rvm/scripts/rvm" # This loads RVM into a shell session.
+  PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
+fi
+
 if [ -d $HOME/.nodebrew ]; then
   export PATH=$HOME/.nodebrew/current/bin:$PATH
   export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
