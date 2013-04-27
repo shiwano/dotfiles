@@ -38,9 +38,9 @@ def clone_repository
 end
 
 def setup_bin
+  '~/bin'.expand.mkpath unless '~/bin'.expand.exist?
   cd '~/dotfiles'.expand
-  'bin'.expand.mkpath unless 'bin'.expand.exist?
-  Dir['dotfiles/bin/*'].each{ |path| put_file path, '~/bin' }
+  Dir['bin/*'].each{ |path| put_file path, '~/bin' }
 end
 
 def setup_dotfiles
