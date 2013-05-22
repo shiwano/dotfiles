@@ -49,13 +49,13 @@ NeoBundle 'https://github.com/thinca/vim-qfreplace'
 " Code completion
 NeoBundle 'https://github.com/Shougo/neocomplcache'
 NeoBundle 'https://github.com/Shougo/neosnippet'
-NeoBundle 'https://github.com/teramako/jscomplete-vim'
+NeoBundle 'https://github.com/marijnh/tern_for_vim'
 " Reference
 NeoBundle 'https://github.com/thinca/vim-ref'
 NeoBundle 'https://github.com/mojako/ref-sources.vim'
 " Source reading
-NeoBundle 'Source-Explorer-srcexpl.vim'
-NeoBundle 'trinity.vim'
+NeoBundle 'https://github.com/wesleyche/SrcExpl'
+NeoBundle 'https://github.com/wesleyche/Trinity'
 NeoBundle 'taglist.vim'
 NeoBundle 'https://github.com/scrooloose/nerdtree'
 " Lint
@@ -367,8 +367,8 @@ let g:neocomplcache_dictionary_filetype_lists = {
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=jscomplete#CompleteJS
-autocmd FileType coffee setlocal omnifunc=jscomplete#CompleteJS
+autocmd FileType javascript setlocal omnifunc=tern#Complete
+autocmd FileType coffee setlocal omnifunc=tern#Complete
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
@@ -502,7 +502,7 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 let g:syntastic_mode_map = { 'mode': 'active',
   \ 'active_filetypes': [],
   \ 'passive_filetypes': ['html'] }
-let g:syntastic_javascript_checker = 'jshint'
+let g:syntastic_javascript_checkers = ['jshint']
 let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
 "------------------------------------------------------------------------------
 " QuickRun
