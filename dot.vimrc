@@ -61,6 +61,7 @@ NeoBundle 'https://github.com/scrooloose/nerdtree'
 " Lint
 NeoBundle 'https://github.com/scrooloose/syntastic'
 " Misc
+NeoBundle 'https://github.com/fholgado/minibufexpl.vim'
 NeoBundle 'https://github.com/jiangmiao/simple-javascript-indenter'
 NeoBundle 'https://github.com/tpope/vim-rails'
 NeoBundle 'https://github.com/tpope/vim-surround'
@@ -73,6 +74,15 @@ NeoBundle 'https://github.com/thinca/vim-splash'
 NeoBundle 'YankRing.vim'
 NeoBundle 'matchit.zip'
 NeoBundle 'Align'
+
+NeoBundleLazy 'nosami/Omnisharp', {
+\   'autoload': {'filetypes': ['cs']},
+\   'build': {
+\     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
+\     'mac': 'xbuild server/OmniSharp.sln',
+\     'unix': 'xbuild server/OmniSharp.sln',
+\   }
+\ }
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
@@ -236,6 +246,12 @@ nmap <C-k> <C-w>k
 nmap <C-l> <C-w>l
 nmap <C-h> <C-w>h
 
+" CTRL-HJKLでバッファ移動
+nmap <S-J> :bn<CR>
+nmap <S-K> :bp<CR>
+nmap <S-L> :bn<CR>
+nmap <S-H> :bp<CR>
+
 " その他キーバインド
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
@@ -337,17 +353,43 @@ endif
 " neocomplcache.vim
 let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_auto_completion_start_length = 2
-let g:neocomplcache_min_syntax_length = 2
+let g:neocomplcache_min_syntax_length = 0
 let g:neocomplcache_min_keyword_length = 2
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_underbar_completion = 1
+let g:neocomplcache_enable_camel_case_completion = 1
+let g:neocomplcache_enable_auto_close_preview = 1
+
+if !exists('g:neocomplcache_keyword_patterns')
+  let g:neocomplcache_keyword_patterns = {}
+endif
+let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
 " スニペットファイルの置き場所
 let g:neocomplcache_snippets_dir = $DOTVIM.'/snippets'
 
 " スニペットを展開
-imap <expr><TAB> pumvisible() ? "\<C-n>" : neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<TAB>"
+inoremap <expr><TAB> pumvisible() ? "\<C-n>" : neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
 imap <expr><CR> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<CR>"
+
+" Recommended key-mappings.
+" <CR>: close popup and save indent.
+inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
+inoremap <expr>.  neocomplcache#close_popup() . "."
+inoremap <expr>(  neocomplcache#close_popup() . "("
+inoremap <expr>)  neocomplcache#close_popup() . ")"
+inoremap <expr><space>  neocomplcache#close_popup() . " "
+inoremap <expr>;  neocomplcache#close_popup() . ";"
+" <C-h>, <BS>: close popup and delete backword char.
+inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
+inoremap <expr><C-y>  neocomplcache#close_popup()
+inoremap <expr><C-e>  neocomplcache#cancel_popup()
+inoremap <expr><ESC> pumvisible() ? neocomplcache#cancel_popup() : "\<esc>"
+
+" AutoComplPop like behavior.
+let g:neocomplcache_enable_auto_select = 1
 
 " スニペット編集 引数にfiletype
 command! -nargs=* Snippet NeoComplCacheEditSnippets
@@ -383,7 +425,8 @@ if !exists('g:neocomplcache_omni_patterns')
   let g:neocomplcache_omni_patterns = {}
 endif
 
-" let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.cs = '.*'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
@@ -508,5 +551,16 @@ let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
 " QuickRun
 command! Q :QuickRun
 "------------------------------------------------------------------------------
-" jscomplete
-let g:jscomplete_use = ['dom', 'moz', 'es6th']
+" OmniSharp
+let g:OmniSharp_host = "http://localhost:2000"
+let g:OmniSharp_typeLookupInPreview = 1
+
+"Showmatch significantly slows down omnicomplete
+"when the first match contains parentheses.
+set noshowmatch
+
+"don't autoselect first item in omnicomplete, show if only one item (for preview)
+set completeopt=longest,menuone,preview
+
+"Don't ask to save when changing buffers (i.e. when jumping to a type definition)
+set hidden
