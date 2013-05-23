@@ -50,20 +50,9 @@ end
 
 def setup_vim_plugins
   cd '~/dotfiles'.expand
-  if 'dot.vim/bundle/neobundle.vim'.expand.exist?
-    puts "vim plugins already exists!"
-  else
-    system 'git clone https://github.com/Shougo/neobundle.vim dot.vim/bundle/neobundle.vim'
-    system 'vim -c NeoBundleInstall -c quit'
-  end
-
-  cp 'settings/vimproc/post-merge'.expand, 'dot.vim/bundle/vimproc/.git/hooks/post-merge'.expand
-  chmod 0755, 'dot.vim/bundle/vimproc/.git/hooks/post-merge'.expand
-  system 'dot.vim/bundle/vimproc/.git/hooks/post-merge'
-
-  cd '~/dotfiles/dot.vim/bundle/tern_for_vim'.expand
-  system 'npm install'
-  cd '~/dotfiles'.expand
+  puts "vim plugins already exists!" if 'dot.vim/bundle/neobundle.vim'.expand.exist?
+  system 'git clone https://github.com/Shougo/neobundle.vim dot.vim/bundle/neobundle.vim'
+  system 'vim -c NeoBundleInstall -c quit'
 end
 
 def download_ruby_ref

@@ -25,56 +25,45 @@ endif
 " NeoBundle
 NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
-NeoBundle 'https://github.com/ciaranm/inkpot'
-NeoBundle 'https://github.com/altercation/vim-colors-solarized'
+NeoBundle 'ciaranm/inkpot'
+NeoBundle 'altercation/vim-colors-solarized'
 " Syntax highlight
 NeoBundle 'jQuery'
-NeoBundle 'https://github.com/jelera/vim-javascript-syntax'
-NeoBundle 'https://github.com/nono/vim-handlebars'
-NeoBundle 'https://github.com/kchmck/vim-coffee-script'
-NeoBundle 'https://github.com/othree/html5-syntax.vim'
-NeoBundle 'https://github.com/hallison/vim-markdown'
-NeoBundle 'https://github.com/timcharper/textile.vim'
-NeoBundle 'https://github.com/groenewege/vim-less'
-NeoBundle 'https://github.com/wavded/vim-stylus'
-NeoBundle 'https://github.com/hail2u/vim-css3-syntax'
-NeoBundle 'https://github.com/digitaltoad/vim-jade'
-NeoBundle 'https://github.com/dmitry-ilyashevich/vim-typescript'
+NeoBundle 'jelera/vim-javascript-syntax'
+NeoBundle 'nono/vim-handlebars'
+NeoBundle 'kchmck/vim-coffee-script'
+NeoBundle 'othree/html5-syntax.vim'
+NeoBundle 'hallison/vim-markdown'
+NeoBundle 'timcharper/textile.vim'
+NeoBundle 'groenewege/vim-less'
+NeoBundle 'wavded/vim-stylus'
+NeoBundle 'hail2u/vim-css3-syntax'
+NeoBundle 'digitaltoad/vim-jade'
+NeoBundle 'dmitry-ilyashevich/vim-typescript'
 " Environment
-NeoBundle 'https://github.com/Shougo/vimproc'
-NeoBundle 'https://github.com/Shougo/vimfiler'
-NeoBundle 'https://github.com/Shougo/unite.vim'
-NeoBundle 'https://github.com/Sixeight/unite-grep'
-NeoBundle 'https://github.com/thinca/vim-qfreplace'
+NeoBundle 'Shougo/unite.vim.git'
+NeoBundle 'Sixeight/unite-grep'
+NeoBundle 'Shougo/vimfiler'
+NeoBundle 'thinca/vim-qfreplace'
+NeoBundle 'Shougo/vimproc', {
+\ 'build' : {
+\     'windows' : 'make -f make_mingw32.mak',
+\     'cygwin' : 'make -f make_cygwin.mak',
+\     'mac' : 'make -f make_mac.mak',
+\     'unix' : 'make -f make_unix.mak',
+\    },
+\ }
 " Code completion
-NeoBundle 'https://github.com/Shougo/neocomplcache'
-NeoBundle 'https://github.com/Shougo/neosnippet'
-NeoBundle 'https://github.com/marijnh/tern_for_vim'
-" Reference
-NeoBundle 'https://github.com/thinca/vim-ref'
-NeoBundle 'https://github.com/mojako/ref-sources.vim'
-" Source reading
-NeoBundle 'https://github.com/wesleyche/SrcExpl'
-NeoBundle 'https://github.com/wesleyche/Trinity'
-NeoBundle 'taglist.vim'
-NeoBundle 'https://github.com/scrooloose/nerdtree'
-" Lint
-NeoBundle 'https://github.com/scrooloose/syntastic'
-" Misc
-NeoBundle 'https://github.com/fholgado/minibufexpl.vim'
-NeoBundle 'https://github.com/jiangmiao/simple-javascript-indenter'
-NeoBundle 'https://github.com/tpope/vim-rails'
-NeoBundle 'https://github.com/tpope/vim-surround'
-NeoBundle 'https://github.com/thinca/vim-poslist'
-NeoBundle 'https://github.com/thinca/vim-quickrun'
-NeoBundle 'https://github.com/scrooloose/nerdcommenter'
-NeoBundle 'https://github.com/mattn/webapi-vim'
-NeoBundle 'https://github.com/mattn/gist-vim'
-NeoBundle 'https://github.com/thinca/vim-splash'
-NeoBundle 'YankRing.vim'
-NeoBundle 'matchit.zip'
-NeoBundle 'Align'
-
+NeoBundle 'Shougo/neocomplcache'
+NeoBundle 'Shougo/neosnippet'
+NeoBundleLazy 'marijnh/tern_for_vim', {
+\   'autoload': {'filetypes': ['javascript', 'coffee']},
+\   'build': {
+\     'windows': 'npm install',
+\     'mac': 'npm install',
+\     'unix': 'npm install',
+\   }
+\ }
 NeoBundleLazy 'nosami/Omnisharp', {
 \   'autoload': {'filetypes': ['cs']},
 \   'build': {
@@ -83,6 +72,30 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \     'unix': 'xbuild server/OmniSharp.sln',
 \   }
 \ }
+" Reference
+NeoBundle 'thinca/vim-ref'
+NeoBundle 'mojako/ref-sources.vim'
+" Source reading
+NeoBundle 'wesleyche/SrcExpl'
+NeoBundle 'wesleyche/Trinity'
+NeoBundle 'taglist.vim'
+NeoBundle 'scrooloose/nerdtree'
+" Lint
+NeoBundle 'scrooloose/syntastic'
+" Misc
+NeoBundle 'fholgado/minibufexpl.vim'
+NeoBundle 'jiangmiao/simple-javascript-indenter'
+NeoBundle 'tpope/vim-rails'
+NeoBundle 'tpope/vim-surround'
+NeoBundle 'thinca/vim-poslist'
+NeoBundle 'thinca/vim-quickrun'
+NeoBundle 'scrooloose/nerdcommenter'
+NeoBundle 'mattn/webapi-vim'
+NeoBundle 'mattn/gist-vim'
+NeoBundle 'thinca/vim-splash'
+NeoBundle 'YankRing.vim'
+NeoBundle 'matchit.zip'
+NeoBundle 'Align'
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
