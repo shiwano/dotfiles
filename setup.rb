@@ -34,7 +34,7 @@ end
 def clone_repository
   cd '~'.expand
   return puts 'dotfiles repository already exists!' if 'dotfiles'.expand.exist?
-  system 'git clone git://github.com/shiwano/dotfiles.git dotfiles'
+  system 'git clone --recursive git://github.com/shiwano/dotfiles.git dotfiles'
 end
 
 def setup_bin
@@ -50,8 +50,8 @@ end
 
 def setup_vim_plugins
   cd '~/dotfiles'.expand
-  puts "vim plugins already exists!" if 'dot.vim/bundle/neobundle.vim'.expand.exist?
-  system 'git clone https://github.com/Shougo/neobundle.vim dot.vim/bundle/neobundle.vim'
+  return puts "vim plugins already exists!" if 'dot.vim/bundle/neobundle.vim'.expand.exist?
+  system 'git clone --recursive git://github.com/Shougo/neobundle.vim dot.vim/bundle/neobundle.vim'
   system 'vim -c NeoBundleInstall -c quit'
 end
 
@@ -76,7 +76,7 @@ end
 def download_javascript_ref
   cd '~/dotfiles'.expand
   return puts 'javascript ref already exists!' if '~/dotfiles/refs/jsref'.expand.exist?
-  system 'git clone https://github.com/tokuhirom/jsref.git refs/jsref'
+  system 'git clone --recursive git://github.com/tokuhirom/jsref.git refs/jsref'
 end
 
 if $0 == __FILE__
