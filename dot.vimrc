@@ -56,8 +56,7 @@ NeoBundle 'Shougo/vimproc', {
 " Code completion
 NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Shougo/neosnippet'
-NeoBundleLazy 'marijnh/tern_for_vim', {
-\   'autoload': {'filetypes': ['javascript', 'coffee']},
+NeoBundle 'marijnh/tern_for_vim', {
 \   'build': {
 \     'windows': 'npm install',
 \     'mac': 'npm install',
@@ -399,7 +398,6 @@ inoremap <expr><C-h> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplcache#smart_close_popup()."\<C-h>"
 inoremap <expr><C-y>  neocomplcache#close_popup()
 inoremap <expr><C-e>  neocomplcache#cancel_popup()
-inoremap <expr><ESC> pumvisible() ? neocomplcache#cancel_popup() : "\<esc>"
 
 " AutoComplPop like behavior.
 let g:neocomplcache_enable_auto_select = 1
