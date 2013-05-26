@@ -1,3 +1,6 @@
 [submodule "dot.grunt-init/node"]
 	path = dot.grunt-init/node
 	url = git@github.com:gruntjs/grunt-init-node.git
+[submodule "dot.grunt-init/node-coffee"]
+	path = dot.grunt-init/node-coffee
+	url = git@github.com:shiwano/grunt-init-node-coffee.git
