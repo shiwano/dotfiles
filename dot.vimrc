@@ -370,7 +370,7 @@ let g:neocomplcache_min_keyword_length = 2
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_underbar_completion = 1
 let g:neocomplcache_enable_camel_case_completion = 1
-let g:neocomplcache_enable_auto_close_preview = 1
+let g:neocomplcache_enable_auto_close_preview = 0
 
 if !exists('g:neocomplcache_keyword_patterns')
   let g:neocomplcache_keyword_patterns = {}
