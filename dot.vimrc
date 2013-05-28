@@ -400,7 +400,7 @@ inoremap <expr><C-y>  neocomplcache#close_popup()
 inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 " AutoComplPop like behavior.
-let g:neocomplcache_enable_auto_select = 1
+" let g:neocomplcache_enable_auto_select = 1
 
 " スニペット編集 引数にfiletype
 command! -nargs=* Snippet NeoComplCacheEditSnippets
@@ -413,10 +413,10 @@ let g:neocomplcache_dictionary_filetype_lists = {
   \ 'ruby' : $DOTVIM.'/dict/ruby.dict',
   \ 'perl' : $DOTVIM.'/dict/perl.dict',
   \ 'css' : $DOTVIM.'/dict/css.dict',
-  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
-  \ 'coffee' : $DOTVIM.'/dict/javascript.dict',
   \ 'actionscript' : $DOTVIM.'/dict/actionscript.dict',
   \ }
+"  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
+"  \ 'coffee' : $DOTVIM.'/dict/javascript.dict',
 
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
