@@ -82,7 +82,7 @@ NeoBundle 'scrooloose/nerdtree'
 " Lint
 NeoBundle 'scrooloose/syntastic'
 " Misc
-NeoBundle 'fholgado/minibufexpl.vim'
+" NeoBundle 'fholgado/minibufexpl.vim'
 NeoBundle 'jiangmiao/simple-javascript-indenter'
 NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-surround'
