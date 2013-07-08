@@ -144,6 +144,7 @@ set whichwrap=b,s,h,l,<,>,[,]  " カーソルを行頭、行末で止まらな�
 set showcmd                    " コマンドをステータス行に表示
 set magic                      " 正規表現に使われる記号を有効にする
 set nofoldenable               " 折り畳み無効
+set autochdir                  " バッファを開いた時にカレントディレクトリを変更
 "------------------------------------------------------------------------------
 " View
 set showcmd                                       " 入力中のコマンドを表示
@@ -421,7 +422,6 @@ let g:neocomplcache_dictionary_filetype_lists = {
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=tern#Complete
-autocmd FileType coffee setlocal omnifunc=tern#Complete
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
@@ -441,6 +441,7 @@ let g:neocomplcache_omni_patterns.cs = '.*'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
+let g:neocomplcache_omni_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
 "------------------------------------------------------------------------------
 " unite.vim
 let g:unite_enable_start_insert = 1
