@@ -378,14 +378,6 @@ if !exists('g:neocomplcache_keyword_patterns')
 endif
 let g:neocomplcache_keyword_patterns['default'] = '\h\w*'
 
-" スニペットファイルの置き場所
-let g:neocomplcache_snippets_dir = $DOTVIM.'/snippets'
-
-" スニペットを展開
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<S-TAB>"
-imap <expr><CR> neocomplcache#sources#snippets_complete#expandable() ? "\<Plug>(neocomplcache_snippets_expand)" : "\<CR>"
-
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <expr><CR> pumvisible() ? neocomplcache#close_popup() : "\<CR>"
@@ -402,9 +394,6 @@ inoremap <expr><C-e>  neocomplcache#cancel_popup()
 
 " AutoComplPop like behavior.
 " let g:neocomplcache_enable_auto_select = 1
-
-" スニペット編集 引数にfiletype
-command! -nargs=* Snippet NeoComplCacheEditSnippets
 
 " 辞書
 let g:neocomplcache_dictionary_filetype_lists = {
@@ -442,6 +431,26 @@ let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
+"------------------------------------------------------------------------------
+" neosnippet
+" Enable snipMate compatibility feature.
+let g:neosnippet#enable_snipmate_compatibility = 1
+
+" Tell Neosnippet about the other snippets
+let g:neosnippet#snippets_directory=$DOTVIM.'/snippets'
+
+" Plugin key-mappings.
+imap <C-k>     <Plug>(neosnippet_expand_or_jump)
+smap <C-k>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-k>     <Plug>(neosnippet_expand_target)
+
+" SuperTab like snippets behavior.
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+\ "\<Plug>(neosnippet_expand_or_jump)"
+\: "\<TAB>"
 "------------------------------------------------------------------------------
 " unite.vim
 let g:unite_enable_start_insert = 1
