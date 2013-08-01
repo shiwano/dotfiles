@@ -5,6 +5,10 @@ set nocompatible " Vim!
 let $TODAY = strftime('%Y%m%d')
 let $DESKTOP = expand('~/desktop')
 
+if has("macunix")
+  let $LUA_DLL = '/usr/local/Cellar/lua/5.1.5/lib/liblua.dylib'
+endif
+
 if has("win32") || has("win64")
   let $DOTVIM = expand('~/vimfiles')
 else
