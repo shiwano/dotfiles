@@ -39,7 +39,7 @@ NeoBundle 'groenewege/vim-less'
 NeoBundle 'wavded/vim-stylus'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
-NeoBundle 'dmitry-ilyashevich/vim-typescript'
+NeoBundle 'leafgarland/typescript-vim'
 " Environment
 NeoBundle 'Shougo/unite.vim.git'
 NeoBundle 'Sixeight/unite-grep'
@@ -568,6 +568,7 @@ let g:syntastic_mode_map = { 'mode': 'active',
   \ 'passive_filetypes': ['html'] }
 let g:syntastic_javascript_checkers = ['jshint']
 let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
+let g:loaded_syntastic_typescript_tsc_checker = 1 " disable typescript linter
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
