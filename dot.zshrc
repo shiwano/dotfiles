@@ -59,11 +59,12 @@ alias la='ls -A'
 alias lal='ls -l -A'
 alias vi='vim'
 alias be='bundle exec'
-alias gg='git grep'
 alias s='git status'
 alias server='ruby ~/dotfiles/tools/server.rb'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
+alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
+alias gg='ag'
 
 # brew でインストールしたctags
 if [ -d /usr/local/Cellar/ctags ]; then
