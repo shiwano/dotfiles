@@ -60,7 +60,7 @@ alias lal='ls -l -A'
 alias vi='vim'
 alias be='bundle exec'
 alias s='git status'
-alias server='ruby ~/dotfiles/tools/server.rb'
+alias server='python -m SimpleHTTPServer 8080'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
