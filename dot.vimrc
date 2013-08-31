@@ -148,7 +148,7 @@ set whichwrap=b,s,h,l,<,>,[,]  " カーソルを行頭、行末で止まらな�
 set showcmd                    " コマンドをステータス行に表示
 set magic                      " 正規表現に使われる記号を有効にする
 set nofoldenable               " 折り畳み無効
-set autochdir                  " バッファを開いた時にカレントディレクトリを変更
+" set autochdir                  " バッファを開いた時にカレントディレクトリを変更
 "------------------------------------------------------------------------------
 " View
 set showcmd                                       " 入力中のコマンドを表示
@@ -299,7 +299,7 @@ augroup END
 au BufRead,BufNewFile *.cson set filetype=coffee
 au BufRead,BufNewFile *.jsenv set filetype=javascript
 au BufRead,BufNewFile *.coffeeenv set filetype=coffee
-au BufRead,BufNewFile *.tss set filetype=javascript
+au BufRead,BufNewFile *.jmk set filetype=javascript
 au BufRead,BufNewFile *.prefab set filetype=yaml
 "------------------------------------------------------------------------------
 " Custom commands
@@ -431,6 +431,7 @@ endif
 
 let g:neocomplcache_omni_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.cs = '.*'
+let g:neocomplcache_omni_patterns.typescript = '.*'
 let g:neocomplcache_omni_patterns.c = '\%(\.\|->\)\h\w*'
 let g:neocomplcache_omni_patterns.cpp = '\h\w*\%(\.\|->\)\h\w*\|\h\w*::'
 let g:neocomplcache_omni_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
