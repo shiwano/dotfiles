@@ -465,7 +465,7 @@ xmap <C-k> <Plug>(neosnippet_expand_target)
 
 imap <expr><CR> neosnippet#expandable_or_jumpable() ?
   \ "\<Plug>(neosnippet_expand_or_jump)"
-  \: pumvisible() ? "\<C-n>" : "\<CR>"
+  \: "\<CR>"
 smap <expr><CR> neosnippet#expandable_or_jumpable() ?
   \ "\<Plug>(neosnippet_expand_or_jump)"
   \: "\<CR>"
@@ -590,6 +590,14 @@ let g:loaded_syntastic_typescript_tsc_checker = 1 " disable typescript linter
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
+let g:quickrun_config = {
+\   "_" : {
+\       "runner" : "vimproc",
+\       "runner/vimproc/updatetime" : 60
+\   },
+\}
+" quickrun.vim が実行していない場合には <C-c> を呼び出す
+nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 "------------------------------------------------------------------------------
 " OmniSharp
 let g:OmniSharp_host = "http://localhost:2000"
