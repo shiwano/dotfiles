@@ -35,6 +35,9 @@
   log-stat = log --stat --summary --color
   lp = log --patch --color
   log-patch = log --patch --color
+  ignore = update-index --assume-unchanged
+  unignore = update-index --no-assume-unchanged
+  ignored = !git ls-files -v | grep "^[a-z]"
   up-upstream = "!sh -c ' \
                  branch=${2:-`git current-branch`}; \
                  git checkout master; \
