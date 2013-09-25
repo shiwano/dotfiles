@@ -23,9 +23,9 @@ filetype off
 
 if has('vim_starting')
   set rtp+=$DOTVIM/bundle/neobundle.vim/
-  call neobundle#rc($DOTVIM.'/bundle')
 endif
 
+call neobundle#rc($DOTVIM.'/bundle')
 " NeoBundle
 NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
