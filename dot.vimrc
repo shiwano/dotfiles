@@ -516,15 +516,6 @@ function! s:unite_my_settings()
   nmap <buffer> <C-r> <Plug>(unite_redraw)
   imap <buffer><expr> <C-e> unite#do_action('vimfiler')
   nmap <buffer><expr> <C-e> unite#do_action('vimfiler')
-
-  nmap <silent><buffer><expr> <C-j> unite#do_action('split')
-  imap <silent><buffer><expr> <C-j> unite#do_action('split')
-  nmap <silent><buffer><expr> <C-k> unite#do_action('split')
-  imap <silent><buffer><expr> <C-k> unite#do_action('split')
-  nmap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
-  imap <silent><buffer><expr> <C-l> unite#do_action('vsplit')
-  nmap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
-  imap <silent><buffer><expr> <C-h> unite#do_action('vsplit')
 endfunction
 "------------------------------------------------------------------------------
 " vimfiler
