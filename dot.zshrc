@@ -60,7 +60,7 @@ alias lal='ls -l -A'
 alias vi='vim'
 alias be='bundle exec'
 alias s='git status'
-alias server='python -m SimpleHTTPServer 8080'
+alias server="ruby -rwebrick -e 'WEBrick::HTTPServer.new({:DocumentRoot => "./", :Port => 8080}).start"
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
