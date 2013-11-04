@@ -473,6 +473,7 @@ smap <expr><CR> neosnippet#expandable_or_jumpable() ?
 " unite.vim
 let g:unite_enable_start_insert = 1
 let g:unite_update_time = 10
+let g:unite_source_file_rec_max_cache_files = 10000
 
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
@@ -490,7 +491,7 @@ nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 
 " 再帰的ファイル一覧
-nnoremap <silent> ,uu :<C-u>Unite file_rec/async<CR>
+nnoremap <silent> ,uu  :<C-u>Unite file_rec/async:!<CR>
 
 " grep
 nnoremap ,ug :Unite -no-quit grep::-iHRn<CR><BS>**/*
