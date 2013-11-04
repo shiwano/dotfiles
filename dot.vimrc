@@ -201,7 +201,17 @@ set ignorecase          " 大文字小文字無視
 set smartcase           " 大文字ではじめたら大文字小文字無視しない
 set incsearch           " インクリメンタルサーチ
 set hlsearch            " 検索文字をハイライト
-set grepprg=grep\ -nHRn " grep
+
+if executable('ag')
+  set grepprg=ag\ --nogroup\ -is
+  set grepformat=%f:%l:%m
+elseif executable('ack')
+  set grepprg=ack\ --nogroup
+  set grepformat=%f:%l:%m
+else
+  set grepprg=grep\ -Hnd\ skip\ -r
+  set grepformat=%f:%l:%m,%f:%l%m,%f\ \ %l%m
+endif
 
 " 選択した文字列を検索
 vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
@@ -210,7 +220,7 @@ vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 
 " 選択した文字列を Grep
-vnoremap /g y:Unite -no-quit grep::-iHRn:<C-R>=escape(@", '\\.*$^[]')<CR><CR><BS>**/*
+vnoremap /g y:Unite -no-quit grep:.::<C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " Encodings
 set ffs=unix,dos,mac    " 改行
@@ -473,7 +483,17 @@ smap <expr><CR> neosnippet#expandable_or_jumpable() ?
 " unite.vim
 let g:unite_enable_start_insert = 1
 let g:unite_update_time = 10
-let g:unite_source_file_rec_max_cache_files = 10000
+call unite#custom_source('file_rec/async', 'ignore_pattern', '\.png$\|\.jpg$\|\.jpeg$\|\.gif$\|\.mid$\|\.ttf$\|\.mp3$')
+
+" 大文字小文字を区別しない
+let g:unite_enable_ignore_case = 1
+let g:unite_enable_smart_case = 1
+
+if executable('ag')
+  let g:unite_source_grep_command = 'ag'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column'
+  let g:unite_source_grep_recursive_opt = ''
+endif
 
 " バッファ一覧
 nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
@@ -491,10 +511,10 @@ nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 
 " 再帰的ファイル一覧
-nnoremap <silent> ,uu  :<C-u>Unite file_rec/async:!<CR>
+nnoremap <silent> ,uu :<C-u>Unite file_rec/async:!<CR>
 
 " grep
-nnoremap ,ug :Unite -no-quit grep::-iHRn<CR><BS>**/*
+nnoremap <silent> ,ug :<C-u>Unite -no-quit grep:. -buffer-name=search-buffer<CR><BS>
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
