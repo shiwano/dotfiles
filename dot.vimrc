@@ -44,6 +44,16 @@ NeoBundle 'wavded/vim-stylus'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
+NeoBundleLazy 'clausreinke/typescript-tools', {
+\ 'script_type' : 'plugin',
+\ 'autoload' : { 'filetypes' : 'typescript' },
+\ 'build' : {
+\     'cygwin' : 'npm install',
+\     'windows' : 'npm install',
+\     'mac'    : 'npm install',
+\     'unix'   : 'npm install',
+\   },
+\ }
 " Environment
 NeoBundle 'Shougo/unite.vim.git'
 NeoBundle 'Sixeight/unite-grep'
@@ -379,10 +389,8 @@ endif
 "------------------------------------------------------------------------------
 " Use neocomplete.
 let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_auto_close_preview = 0
 let g:neocomplete#enable_camel_case_completion = 1
 let g:neocomplete#enable_underbar_completion = 1
-" Use smartcase.
 let g:neocomplete#enable_smart_case = 1
 " Set minimum syntax keyword length.
 let g:neocomplete#sources#syntax#min_keyword_length = 2
@@ -440,6 +448,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
 autocmd FileType cpp set omnifunc=cppcomplete#Complete
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
+autocmd FileType typescript setlocal omnifunc=TSScompleteFunc
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
 autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
@@ -620,7 +629,7 @@ let g:OmniSharp_typeLookupInPreview = 1
 set noshowmatch
 
 "don't autoselect first item in omnicomplete, show if only one item (for preview)
-set completeopt=longest,menuone,preview
+set completeopt=longest,menuone
 
 "Don't ask to save when changing buffers (i.e. when jumping to a type definition)
 set hidden
