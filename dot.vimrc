@@ -85,6 +85,8 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \     'unix': 'xbuild server/OmniSharp.sln',
 \   }
 \ }
+NeoBundle 'tokorom/clang_complete'
+NeoBundle 'tokorom/clang_complete-getopts-ios'
 " Reference
 NeoBundle 'thinca/vim-ref'
 NeoBundle 'mojako/ref-sources.vim'
@@ -465,10 +467,25 @@ let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.cs = '.*'
 let g:neocomplete#sources#omni#input_patterns.typescript = '.*'
 let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
+let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
+let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 
 " For perlomni.vim setting.
 " https://github.com/c9s/perlomni.vim
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'"
+
+" For clang_complete
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_overwrite_completefunc = 1
+let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+let g:neocomplete#force_omni_input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
+let g:neocomplete#force_omni_input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
+let g:clang_complete_auto = 0
+let g:clang_auto_select = 0
+"let g:clang_use_library = 1
 "------------------------------------------------------------------------------
 " neosnippet
 " Enable snipMate compatibility feature.
@@ -608,6 +625,9 @@ let g:syntastic_mode_map = { 'mode': 'active',
 let g:syntastic_javascript_checkers = ['jshint']
 let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
 let g:loaded_syntastic_typescript_tsc_checker = 1 " disable typescript linter
+" For objective-c
+let g:syntastic_objc_check_header = 1
+let g:syntastic_objc_auto_refresh_includes = 1
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
@@ -633,3 +653,11 @@ set completeopt=longest,menuone
 
 "Don't ask to save when changing buffers (i.e. when jumping to a type definition)
 set hidden
+"------------------------------------------------------------------------------
+" clang complete
+let g:clang_complete_auto = 0
+let g:clang_auto_select = 0
+
+let g:clang_complete_getopts_ios_default_options = '-fblocks -fobjc-arc -D __IPHONE_OS_VERSION_MIN_REQUIRED=40300'
+let g:clang_complete_getopts_ios_sdk_directory = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.1.sdk'
+let g:clang_complete_getopts_ios_ignore_directories = ["^\.git", "\.xcodeproj"]
