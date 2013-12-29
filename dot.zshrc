@@ -14,7 +14,7 @@ export TERM=xterm-256color
 # 文字コードの設定
 export LANG=ja_JP.UTF-8
 
-# パスの設定
+# 環境変数
 PATH=$HOME/bin:/usr/local/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
@@ -35,6 +35,10 @@ fi
 if [ -d $HOME/.nodebrew ]; then
   export PATH=$HOME/.nodebrew/current/bin:$PATH
   export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
+fi
+
+if [ -d gcc ]; then
+  CC=gcc
 fi
 
 # vim
