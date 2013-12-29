@@ -37,7 +37,7 @@ if [ -d $HOME/.nodebrew ]; then
   export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
 fi
 
-if [ -d gcc ]; then
+if [ -d $PATH/gcc ]; then
   CC=gcc
 fi
 
