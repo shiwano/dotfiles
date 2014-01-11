@@ -55,30 +55,6 @@ def setup_vim_plugins
   system 'vim -c NeoBundleInstall -c quit'
 end
 
-def download_ruby_ref
-  cd '~/dotfiles'.expand
-  return puts 'ruby ref already exists!' if 'refs/rubyrefm'.expand.exist?
-  system 'wget http://doc.okkez.net/archives/201208/ruby-refm-1.9.3-dynamic-20120829.zip'
-  system 'unzip ruby-refm-1.9.3-dynamic-20120829.zip'
-  rm 'ruby-refm-1.9.3-dynamic-20120829.zip'.expand
-  mv 'ruby-refm-1.9.3-dynamic-20120829'.expand, 'refs/rubyrefm'.expand
-end
-
-def download_jquery_ref
-  cd '~/dotfiles'.expand
-  return puts 'jquery ref already exists!' if '~/dotfiles/refs/jqapi'.expand.exist?
-  system 'wget http://jqapi.com/jqapi.zip'
-  system 'unzip jqapi.zip -d jqapi'
-  rm 'jqapi.zip'.expand
-  mv 'jqapi'.expand, 'refs/jqapi'.expand
-end
-
-def download_javascript_ref
-  cd '~/dotfiles'.expand
-  return puts 'javascript ref already exists!' if '~/dotfiles/refs/jsref'.expand.exist?
-  system 'git clone --recursive git://github.com/tokuhirom/jsref.git refs/jsref'
-end
-
 if $0 == __FILE__
   puts_separator 'git repo'
   clone_repository
@@ -88,8 +64,4 @@ if $0 == __FILE__
   setup_dotfiles
   puts_separator 'vim plugins'
   setup_vim_plugins
-  puts_separator 'referencies'
-  download_ruby_ref
-  download_jquery_ref
-  download_javascript_ref
 end

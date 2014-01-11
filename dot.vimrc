@@ -87,9 +87,6 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \ }
 NeoBundle 'tokorom/clang_complete'
 NeoBundle 'tokorom/clang_complete-getopts-ios'
-" Reference
-NeoBundle 'thinca/vim-ref'
-NeoBundle 'mojako/ref-sources.vim'
 " Source reading
 NeoBundle 'wesleyche/SrcExpl'
 NeoBundle 'wesleyche/Trinity'
@@ -589,20 +586,6 @@ nmap <F10>  :TrinityToggleTagList<CR>
 
 " Open and close the NERD_tree.vim separately
 nmap <F11>  :TrinityToggleNERDTree<CR>
-"------------------------------------------------------------------------------
-" ref.vim
-" K でカーソル下のワードを検索
-nmap ,rr :<C-u>Ref refe<Space>
-nmap ,ra :<C-u>Ref alc<Space>
-nmap ,rjq :<C-u>Ref jquery<Space>
-nmap ,rj :<C-u>Ref javascript<Space>
-nmap ,rw :<C-u>Ref wikipedia<Space>
-nmap ,rwe :<C-u>Ref wikipedia_en<Space>
-let g:ref_alc_start_linenumber = 39 " 表示する行数
-let g:ref_alc2_overwrite_alc = 1 " ref-sources の alc2 を使う
-let g:ref_jquery_doc_path = $HOME.'/dotfiles/refs/jqapi'
-let g:ref_javascript_doc_path = $HOME.'/dotfiles/refs/jsref/htdocs'
-let g:ref_wikipedia_lang = ['ja', 'en']
 "------------------------------------------------------------------------------
 " Gist.vim
 let g:gist_clip_command = 'pbcopy'
