@@ -1,4 +1,3 @@
-refs/*
 .DS_Store
 dot.vim/bundle/*
 dot.vim/.netrwhist
