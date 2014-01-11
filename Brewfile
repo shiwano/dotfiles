@@ -52,6 +52,7 @@ cask install growlnotify
 cask install quicklook-csv
 cask install quicklook-json
 cask install webp-quicklook
+cask install sequel-pro
 
 # Remove outdated versions
 cleanup
