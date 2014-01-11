@@ -47,6 +47,8 @@ cask install mongohub
 cask install keepassx
 cask install virtualbox
 cask install vagrant
+cask install simple-comic
+cask install growlnotify
 cask install quicklook-csv
 cask install quicklook-json
 cask install webp-quicklook
