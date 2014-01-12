@@ -367,8 +367,7 @@ endif
 "set shellslash
 
 " クリップボードを使用
-set clipboard=unnamed
-" set clipboard=unnamedplus,unnamed
+set clipboard+=unnamed
 "------------------------------------------------------------------------------
 " matchit.vim
 let b:match_words="{{t:{{/t}}" " % で対応するフレーズに移動
