@@ -53,6 +53,7 @@ cask install quicklook-csv
 cask install quicklook-json
 cask install webp-quicklook
 cask install sequel-pro
+cask install libreoffice
 
 # Remove outdated versions
 cleanup
