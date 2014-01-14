@@ -24,7 +24,7 @@ install coreutils
 install wget
 install tree
 install ack
-install subversion --unicode-path
+install subversion
 install mcrypt
 install jpeg
 install pstree

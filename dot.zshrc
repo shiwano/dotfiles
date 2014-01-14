@@ -15,7 +15,7 @@ export TERM=xterm-256color
 export LANG=ja_JP.UTF-8
 
 # 環境変数
-PATH=$HOME/bin:/usr/local/bin:$PATH
+PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
 if [ -d /usr/local/Cellar/coreutils ]; then
