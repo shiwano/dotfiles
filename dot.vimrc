@@ -70,6 +70,7 @@ NeoBundle 'Shougo/vimproc', {
 " Code completion
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'Shougo/neosnippet'
+NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'marijnh/tern_for_vim', {
 \   'build': {
 \     'windows': 'npm install',
