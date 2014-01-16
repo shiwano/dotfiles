@@ -56,6 +56,7 @@ cask install quicklook-json
 cask install webp-quicklook
 cask install sequel-pro
 cask install libreoffice
+cask install macvim-kaoriya
 
 # Fonts
 cask install font-source-code-pro
