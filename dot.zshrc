@@ -22,8 +22,8 @@ if [ -d /usr/local/Cellar/coreutils ]; then
   PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 fi
 
-if [ -d $HOME/.rbenv ]; then
-  PATH="$HOME/.rbenv/bin:$PATH"
+if which rbenv > /dev/null; then
+  export RBENV_ROOT=/usr/local/var/rbenv
   eval "$(rbenv init -)"
 fi
 

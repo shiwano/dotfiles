@@ -35,6 +35,8 @@ install libxml2
 install imagemagick
 install lv
 install nkf
+install rbenv
+install ruby-build
 
 # .dmg
 cask install google-chrome
