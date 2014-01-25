@@ -405,10 +405,10 @@ let g:neocomplete#sources#dictionary#dictionaries = {
   \ 'ruby' : $DOTVIM.'/dict/ruby.dict',
   \ 'perl' : $DOTVIM.'/dict/perl.dict',
   \ 'css' : $DOTVIM.'/dict/css.dict',
+  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
   \ 'coffee' : $DOTVIM.'/dict/javascript.dict',
   \ 'actionscript' : $DOTVIM.'/dict/actionscript.dict'
   \ }
-"  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
 
 " Define keyword.
 if !exists('g:neocomplete#keyword_patterns')
@@ -431,7 +431,7 @@ endfunction
 " <TAB>: completion.
 inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
 " dot: completion.
-inoremap <expr> . pumvisible() ? "\<C-E>.\<C-X>\<C-O>\<C-P>" : ".\<C-X>\<C-O>\<C-P>"
+" inoremap <expr> . pumvisible() ? neocomplete#smart_close_popup().".\<C-X>\<C-O>\<C-P>" : ".\<C-X>\<C-O>\<C-P>"
 " <C-h>, <BS>: close popup and delete backword char.
 inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
