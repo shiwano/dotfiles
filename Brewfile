@@ -19,6 +19,7 @@ install the_silver_searcher
 install reattach-to-user-namespace
 install lua
 install ctags
+install cmake
 install tmux
 install coreutils
 install wget
