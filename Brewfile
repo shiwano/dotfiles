@@ -62,6 +62,7 @@ cask install libreoffice
 cask install macvim-kaoriya
 cask install trailer
 cask install tiled
+cask install mplayerx
 
 # Fonts
 cask install font-source-code-pro
