@@ -72,11 +72,12 @@ NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'marijnh/tern_for_vim', {
+\ 'autoload' : { 'filetypes' : 'javascript' },
 \   'build': {
 \     'windows': 'npm install',
 \     'mac': 'npm install',
 \     'unix': 'npm install',
-\   }
+\   },
 \ }
 NeoBundleLazy 'nosami/Omnisharp', {
 \   'autoload': {'filetypes': ['cs']},
@@ -84,7 +85,7 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
 \     'mac': 'xbuild server/OmniSharp.sln',
 \     'unix': 'xbuild server/OmniSharp.sln',
-\   }
+\   },
 \ }
 NeoBundle 'tokorom/clang_complete'
 NeoBundle 'tokorom/clang_complete-getopts-ios'
