@@ -9,7 +9,6 @@ tap homebrew/versions
 tap homebrew/binary
 tap phinze/homebrew-cask
 tap caskroom/versions
-tap caskroom/fonts
 
 # Packages
 install brew-cask
@@ -63,9 +62,6 @@ cask install macvim-kaoriya
 cask install trailer
 cask install tiled
 cask install mplayerx
-
-# Fonts
-cask install font-source-code-pro
 
 # Remove outdated versions
 cleanup
