@@ -25,7 +25,6 @@ install coreutils
 install wget
 install tree
 install ack
-install subversion
 install mcrypt
 install jpeg
 install pstree
@@ -38,6 +37,7 @@ install lv
 install nkf
 install rbenv
 install ruby-build
+install subversion17 --unicode-path
 
 # .dmg
 cask install google-chrome
