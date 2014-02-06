@@ -44,6 +44,7 @@ NeoBundle 'wavded/vim-stylus'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
+NeoBundle 'JSON.vim'
 NeoBundleLazy 'clausreinke/typescript-tools', {
 \ 'script_type' : 'plugin',
 \ 'autoload' : { 'filetypes' : 'typescript' },
@@ -322,6 +323,7 @@ au BufRead,BufNewFile *.jsenv set filetype=javascript
 au BufRead,BufNewFile *.coffeeenv set filetype=coffee
 au BufRead,BufNewFile *.jmk set filetype=javascript
 au BufRead,BufNewFile *.prefab set filetype=yaml
+au BufRead,BufNewFile *.json set filetype=json
 "------------------------------------------------------------------------------
 " Custom commands
 
