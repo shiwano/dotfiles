@@ -62,6 +62,7 @@ cask install macvim-kaoriya
 cask install trailer
 cask install tiled
 cask install mplayerx
+cask install steam
 
 # Remove outdated versions
 cleanup
