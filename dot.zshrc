@@ -22,14 +22,13 @@ if [ -d /usr/local/Cellar/coreutils ]; then
   PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
 fi
 
-if which rbenv > /dev/null; then
-  export RBENV_ROOT=/usr/local/var/rbenv
-  eval "$(rbenv init -)"
-fi
-
-if [ -d $HOME/.nodebrew ]; then
-  export PATH=$HOME/.nodebrew/current/bin:$PATH
-  export NODE_PATH=$HOME/.nodebrew/current/lib/node_modules
+if [ -d ${HOME}/.anyenv ] ; then
+  export PATH="$HOME/.anyenv/bin:$PATH"
+  eval "$(anyenv init -)"
+  for D in `find $HOME/.anyenv/envs -type d -d 1`
+  do
+    export PATH="$D/shims:$PATH"
+  done
 fi
 
 if [ -d $PATH/gcc ]; then
@@ -237,3 +236,6 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
+
+# PATH の重複を消す
+typeset -U path PATH
