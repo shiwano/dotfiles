@@ -19,14 +19,19 @@ PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
 if [ -d /usr/local/Cellar/coreutils ]; then
-  PATH="$(brew --prefix coreutils)/libexec/gnubin:$PATH"
+  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+fi
+
+if [ -d /usr/local/Cellar/gnu-sed ]; then
+  PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+  MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
   export PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
-  for D in `find $HOME/.anyenv/envs -type d -d 1`
-  do
+  for D in `find $HOME/.anyenv/envs -type d -d 1`; do
     export PATH="$D/shims:$PATH"
   done
 fi
@@ -34,9 +39,9 @@ fi
 # vim
 if [ -d $HOME/Applications/MacVim.app ]; then
   export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
-  alias vi='env LANG=ja_JP.UTF-8 $HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
-  alias vim='env LANG=ja_JP.UTF-8 $HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
-  alias gvim='env LANG=ja_JP.UTF-8 open -a $HOME/Applications/MacVim.app "$@"'
+  alias vi='$EDITOR "$@"'
+  alias vim='$EDITOR "$@"'
+  alias gvim='$EDITOR "$@"'
 fi
 
 # 関数
@@ -63,11 +68,6 @@ alias gg='ag'
 # brew でインストールしたctags
 if [ -d /usr/local/Cellar/ctags ]; then
   alias ctags="`brew --prefix`/bin/ctags"
-fi
-
-# brew でインストールした256色対応screen
-if [ -d /usr/local/Cellar/screen ]; then
-  alias screen="`brew --prefix`/bin/screen"
 fi
 
 # zmv
@@ -114,8 +114,7 @@ precmd () {
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-  if [ $ZSHFG -ge 250 ]
-  then
+  if [ $ZSHFG -ge 250 ]; then
     ZSHFG=0
   fi
 
