@@ -63,6 +63,7 @@ cask install trailer
 cask install tiled
 cask install mplayerx
 cask install steam
+cask install iphone-configuration-utility
 
 # Remove outdated versions
 cleanup
