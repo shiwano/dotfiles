@@ -34,7 +34,6 @@ install libxml2
 install imagemagick
 install lv
 install nkf
-install rbenv
 install ruby-build
 install subversion17 --unicode-path
 
