@@ -31,10 +31,6 @@ if [ -d ${HOME}/.anyenv ] ; then
   done
 fi
 
-if [ -d $PATH/gcc ]; then
-  CC=gcc
-fi
-
 # vim
 if [ -d $HOME/Applications/MacVim.app ]; then
   export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
