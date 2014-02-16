@@ -64,11 +64,6 @@ alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
 alias gg='ag'
 alias npm-exec='PATH=$(npm bin):$PATH'
 
-# brew でインストールしたctags
-if [ -d /usr/local/Cellar/ctags ]; then
-  alias ctags="`brew --prefix`/bin/ctags"
-fi
-
 # zmv
 autoload zmv
 alias zmv='noglob zmv -W'
