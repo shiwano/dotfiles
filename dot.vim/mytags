@@ -1,3 +1,7 @@
+brewfile	$HOME/dotfiles/Brewfile	1
+gitconfig	$HOME/.gitconfig	1
+gitignore	$HOME/.gitignore	1
 grc	$HOME/.gvimrc	1
 rc	$HOME/.vimrc	1
 tag	$DOTVIM/mytags	1
+zshrc	$HOME/.zshrc	1
