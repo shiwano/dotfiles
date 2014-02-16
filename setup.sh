@@ -48,12 +48,14 @@ done
 topic 'Setup Vim plugins'
 
 if [ -d $DOTFILES_DIR/dot.vim/bundle/neobundle.vim ]; then
-  echo 'Vim plugins already exist'
+  echo 'Vim plugins are already installed'
 else
   if type vim > /dev/null 2>&1; then
     echo 'Installing Vim plugins'
     git clone --recursive git://github.com/Shougo/neobundle.vim $DOTFILES_DIR/dot.vim/bundle/neobundle.vim
     vim -c NeoBundleInstall -c quit
+  else
+    echo 'Not found Vim'
   fi
 fi
 
@@ -68,7 +70,7 @@ if [ $UNAME = "Darwin" ]; then
     brew bundle $DOTFILES_DIR
   fi
 else
-  echo 'This environment does not need homebrew'
+  echo 'This environment does not need Homebrew'
 fi
 
 topic 'Setup anyenv'
