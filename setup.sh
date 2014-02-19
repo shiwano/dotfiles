@@ -4,7 +4,7 @@ UNAME=`uname`
 LOCAL_BIN_DIR=$HOME/bin
 DOTFILES_DIR=$HOME/dotfiles
 
-topic() {
+function topic {
   echo -en "\033[1;30m"
   echo "$*"
   echo -en "\033[0m"
