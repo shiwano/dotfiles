@@ -24,6 +24,8 @@
   di = diff --color
   dica = diff --color --cached
   dist = diff --color --staged
+  diw = diff --color --word-diff
+  di-csv = diff --color --word-diff-regex="[^[:blank:],]"
   mt = mergetool
   topic = checkout origin/master -b
   current-branch = describe --all --contains HEAD
