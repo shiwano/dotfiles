@@ -43,36 +43,14 @@ if [ -d $HOME/Applications/MacVim.app ]; then
   alias gvim='$EDITOR "$@"'
 fi
 
-# 関数
-function find-grep () { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
-function find-sed () { find . -name $1 -type f | xargs gsed -i $2 }
-
 # vi風キーバインド
 # bindkey -v
 
-# エイリアスの設定
-alias ls='ls --color=auto'
-alias ll='ls -l'
-alias la='ls -A'
-alias lal='ls -l -A'
-alias vi='vim'
-alias s='git status'
-alias server='python -m SimpleHTTPServer 8080'
-alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
-alias tmux='tmuxx'
-alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
-alias gg='ag'
-alias npm-exec='PATH=$(npm bin):$PATH'
+# 関数
+function find-grep { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
+function find-sed { find . -name $1 -type f | xargs gsed -i $2 }
 
-# zmv
-autoload zmv
-alias zmv='noglob zmv -W'
-alias zcp='noglob zmv -C'
-alias zln='noglob zmv -L'
-alias zsy='noglob zmv -Ls'
-
-# Extract
-extract () {
+function extract {
   if [ -f $1 ] ; then
     case $1 in
       *.tar.bz2)   tar xvjf $1    ;;
@@ -95,7 +73,43 @@ extract () {
     echo "'$1' is not a valid file!"
   fi
 }
-alias ex='extract'
+
+function static-httpd {
+  if type python > /dev/null; then
+    if python -V 2>&1 | grep -qm1 'Python 3\.'; then
+      python -m http.server 5000
+    else
+      python -m SimpleHTTPServer 5000
+    fi
+  elif type ruby > /dev/null; then
+    if ruby -v | grep -qm1 'ruby 2\.'; then
+      ruby -run -e httpd -- --port=5000 .
+    else
+      ruby -rwebrick -e 'WEBrick::HTTPServer.new(:Port => 5000, :DocumentRoot => ".").start'
+    fi
+  elif type node > /dev/null; then
+    node -e "var c=require('connect'), d=process.env.PWD; c().use(c.logger()).use(c.static(d)).use(c.directory(d)).listen(5000);"
+  fi
+}
+
+# エイリアスの設定
+alias ls='ls --color=auto'
+alias ll='ls -l'
+alias la='ls -A'
+alias lal='ls -l -A'
+alias vi='vim'
+alias s='git status'
+alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
+alias tmux='tmuxx'
+alias ag="ag --pager='less -R --no-init --quit-if-one-screen'"
+alias gg='ag'
+alias npm-exec='PATH=$(npm bin):$PATH'
+
+autoload zmv
+alias zmv='noglob zmv -W'
+alias zcp='noglob zmv -C'
+alias zln='noglob zmv -L'
+alias zsy='noglob zmv -Ls'
 
 # プロンプトの設定
 autoload -Uz vcs_info
@@ -103,7 +117,7 @@ zstyle ':vcs_info:*' formats '[%b]'
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
 ZSHFG=`expr $RANDOM / 128`
 
-precmd () {
+function precmd {
   psvar=()
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
