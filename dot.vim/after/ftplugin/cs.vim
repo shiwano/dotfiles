@@ -17,3 +17,6 @@ nnoremap oa :OmniSharpAddToProject<cr>
 " (Experimental - uses vim-dispatch plugin) - Start the omnisharp server for the current solution
 nnoremap os :OmniSharpStartServer<cr>
 nnoremap ost :OmniSharpStopServer<cr>
+
+" Fold a C sharp region
+let b:match_words = '\s*#\s*region.*$:\s*#\s*endregion'
