@@ -240,5 +240,8 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
 
+# ローカルの .zshrc を読み込む
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
 # PATH の重複を消す
 typeset -U path PATH
