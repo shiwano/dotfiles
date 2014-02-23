@@ -35,6 +35,7 @@ install imagemagick
 install lv
 install nkf
 install subversion17 --unicode-path
+install md5sha1sum
 
 # .dmg
 cask install google-chrome
@@ -62,6 +63,7 @@ cask install tiled
 cask install mplayerx
 cask install steam
 cask install iphone-configuration-utility
+cask install heroku-toolbelt
 
 # Remove outdated versions
 cleanup
