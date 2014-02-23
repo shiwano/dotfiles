@@ -36,6 +36,10 @@ if [ -d ${HOME}/.anyenv ] ; then
   done
 fi
 
+if [ -d /usr/local/heroku ] ; then
+  export PATH="/usr/local/heroku/bin:$PATH"
+fi
+
 # vim
 if [ -d $HOME/Applications/MacVim.app ]; then
   export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
