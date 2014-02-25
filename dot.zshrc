@@ -44,7 +44,7 @@ fi
 if [ -d $HOME/Applications/MacVim.app ]; then
   export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
   alias vim='$EDITOR "$@"'
-  alias gvim='$EDITOR "$@"'
+  alias gvim='open -a $HOME/Applications/MacVim.app "$@"'
 fi
 
 # vi風キーバインド
