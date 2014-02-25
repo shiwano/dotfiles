@@ -5,7 +5,6 @@
   user = shiwano
   token = !security 2>&1 >/dev/null find-generic-password -gs \"GitHub API Token\" | ruby -e 'print $1 if STDIN.gets =~ /^password: \\\"(.*)\\\"$/'
 [core]
-  editor = vim
   excludesfile = ~/.gitignore
   autocrlf = input
 [color]
