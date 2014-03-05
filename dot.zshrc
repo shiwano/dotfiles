@@ -105,7 +105,7 @@ alias vi='vim'
 alias s='git status'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
-alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case --skip-vcs-ignores"
+alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 alias npm-exec='PATH=$(npm bin):$PATH'
 
 autoload zmv
