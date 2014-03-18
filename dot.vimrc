@@ -112,6 +112,7 @@ NeoBundle 'thinca/vim-splash'
 NeoBundle 'YankRing.vim'
 NeoBundle 'matchit.zip'
 NeoBundle 'Align'
+NeoBundle 'thinca/vim-threes'
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
