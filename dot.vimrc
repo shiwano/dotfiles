@@ -44,7 +44,7 @@ NeoBundle 'wavded/vim-stylus'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'JSON.vim'
+NeoBundle 'elzr/vim-json'
 NeoBundleLazy 'clausreinke/typescript-tools', {
 \ 'script_type' : 'plugin',
 \ 'autoload' : { 'filetypes' : 'typescript' },
