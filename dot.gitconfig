@@ -10,6 +10,7 @@
 [color]
   ui = auto
 [alias]
+  gommit = commit
   co = checkout
   ci = commit
   cim = commit -m
