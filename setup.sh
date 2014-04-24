@@ -31,13 +31,19 @@ done
 
 topic 'Setup dotfiles'
 
-for DOTFILE in `find $DOTFILES_DIR -type f -maxdepth 1 -name 'dot.*' -regex '.*[^(example)]$'`; do
+for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' -regex '.*[^(example)]$'`; do
   DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./'`
   echo 'Linking' $DOTFILE '->' $DEST
   ln -sf $DOTFILE $DEST
 done
 
-for DOTFILE in `find $DOTFILES_DIR -type f -maxdepth 1 -name 'dot.*.example'`; do
+for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type d -name 'dot.*'`; do
+  DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./'`
+  echo 'Linking' $DOTFILE '->' $DEST
+  ln -sfn $DOTFILE $DEST
+done
+
+for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*.example'`; do
   DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
   if [ ! -f $DEST ]; then
     echo 'Copying' $DOTFILE '->' $DEST
