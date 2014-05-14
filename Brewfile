@@ -64,6 +64,7 @@ cask install mplayerx
 cask install steam
 cask install iphone-configuration-utility
 cask install heroku-toolbelt
+cask install licecap
 
 # Remove outdated versions
 cleanup
