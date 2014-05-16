@@ -43,6 +43,7 @@
   ignored = !git ls-files -v | grep "^[a-z]"
   unstage = reset HEAD
   us = reset HEAD
+  contributors = git shortlog -s -n -e
   rename-branch = branch -m
   cch= "!f() { git cherry -v "$@" | awk '{ if($1 == \"+\"){ color = \"green\" } if($1 == \"-\"){ color = \"red\" } cmd = \"git show --date=short --no-notes --pretty=format:\\047%C\" color $1 \" %h %Cgreen%cd %Cblue%cn%x09%Creset%s\\047 --summary \" $2; cmd | getline t; close(cmd); print t }' ;}; f"
   up-upstream = "!sh -c ' \
