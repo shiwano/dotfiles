@@ -93,3 +93,5 @@
   postBuffer = 524288000
 [push]
   default = nothing
+[fetch]
+  prune = true
