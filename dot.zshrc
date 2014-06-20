@@ -40,6 +40,11 @@ if [ -d /usr/local/heroku ] ; then
   export PATH="/usr/local/heroku/bin:$PATH"
 fi
 
+# android sdks
+if [ -d /Applications/android-sdk-macosx ]; then
+  PATH="/Applications/android-sdk-macosx/tools:$PATH"
+fi
+
 # vim
 if [ -d $HOME/Applications/MacVim.app ]; then
   export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
