@@ -1,5 +1,3 @@
-setlocal noexpandtab
-
 nnoremap ob :wa!<cr>:OmniSharpBuild<cr>
 nnoremap od :OmniSharpGotoDefinition<cr>
 nnoremap oi :OmniSharpFindImplementations<cr>
