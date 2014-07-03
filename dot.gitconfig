@@ -85,6 +85,7 @@
         dir=`printf '%02d' $val` ; \
         git fetch origin refs/changes/$dir/$change/$patchset && git checkout FETCH_HEAD -b $change-$patchset; \
       ' __dummy__"
+  sed = "!LANG=C LC_ALL=C sh -c \"git ls-files $1 | grep -iv '.\\(so\\|ico\\|exe\\|pdf\\|jar\\|gif\\|air\\|zip\\|ser\\|p12\\|pbj\\|swz\\|swc\\|mp3\\|png\\|jpg\\|swf\\)$' | xargs -I{} sed -i '' -e '$2' {} \""
 [merge]
   tool = vimdiff
 [mergetool]
