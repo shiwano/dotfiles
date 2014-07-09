@@ -9,6 +9,7 @@ tap homebrew/versions
 tap homebrew/binary
 tap phinze/homebrew-cask
 tap caskroom/versions
+tap peco/peco
 
 # Packages
 install brew-cask
@@ -37,6 +38,7 @@ install nkf
 install subversion17 --unicode-path
 install md5sha1sum
 install hub
+install peco
 
 # .dmg
 cask install google-chrome
