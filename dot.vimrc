@@ -301,7 +301,6 @@ imap <C-r> <C-o><C-r>
 imap <C-l> <Right>
 vmap <C-r> <Esc><C-r>
 nmap <silent> L :nohl<CR>
-nmap r :Qfreplace
 
 " qq でレジスタに記憶しないようにする
 nmap qq <ESC>
