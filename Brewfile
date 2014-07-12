@@ -36,6 +36,7 @@ install lv
 install nkf
 install subversion17 --unicode-path
 install md5sha1sum
+install hub
 
 # .dmg
 cask install google-chrome
