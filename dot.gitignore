@@ -4,3 +4,4 @@ tags
 .rvmrc
 .~lock.*
 .tern-port
+.local.vimrc
