@@ -115,6 +115,7 @@ NeoBundle 'Align'
 NeoBundle 'thinca/vim-threes'
 NeoBundle 'thinca/vim-singleton'
 NeoBundle 'mattn/flappyvird-vim'
+NeoBundle 'thinca/vim-localrc'
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
