@@ -114,6 +114,7 @@ NeoBundle 'matchit.zip'
 NeoBundle 'Align'
 NeoBundle 'thinca/vim-threes'
 NeoBundle 'thinca/vim-singleton'
+NeoBundle 'mattn/flappyvird-vim'
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
