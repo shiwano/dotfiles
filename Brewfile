@@ -39,6 +39,7 @@ install subversion17 --unicode-path
 install md5sha1sum
 install hub
 install peco
+install mercurial
 
 # .dmg
 cask install google-chrome
