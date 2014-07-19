@@ -29,16 +29,21 @@ if [ -d /usr/local/Cellar/gnu-sed ]; then
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
-  export PATH="$HOME/.anyenv/bin:$PATH"
+  PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
   for D in `find $HOME/.anyenv/envs -maxdepth 1 -type d`; do
-    export PATH="$D/shims:$PATH"
+    PATH="$D/shims:$PATH"
   done
 fi
 
 if [ -d /usr/local/heroku ] ; then
   export PATH="/usr/local/heroku/bin:$PATH"
 fi
+
+# Go
+
+export GOPATH=$HOME/golang
+PATH="$GOPATH/bin:$PATH"
 
 # android sdks
 if [ -d /Applications/android-sdk-macosx ]; then
