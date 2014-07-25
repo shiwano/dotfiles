@@ -7,12 +7,11 @@ update
 # Add Repository
 tap homebrew/versions
 tap homebrew/binary
-tap caskroom/cask
 tap caskroom/versions
 tap peco/peco
 
 # Packages
-install brew-cask
+install caskroom/cask/brew-cask
 install zsh
 install git
 install the_silver_searcher
