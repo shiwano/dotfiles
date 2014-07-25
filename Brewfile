@@ -7,7 +7,7 @@ update
 # Add Repository
 tap homebrew/versions
 tap homebrew/binary
-tap phinze/homebrew-cask
+tap caskroom/cask
 tap caskroom/versions
 tap peco/peco
 
