@@ -41,11 +41,11 @@ install peco
 install mercurial
 
 # .dmg
+cask install alfred
 cask install google-chrome
 cask install firefox
 cask install iterm2
 cask install xtrafinder
-cask install keyremap4macbook
 cask install appcleaner
 cask install dropbox
 cask install skype
@@ -68,6 +68,7 @@ cask install steam
 cask install iphone-configuration-utility
 cask install heroku-toolbelt
 cask install licecap
+cask install karabiner
 
 # Remove outdated versions
 cleanup
