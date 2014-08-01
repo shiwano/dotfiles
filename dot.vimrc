@@ -575,8 +575,8 @@ endfunction
 let g:vimfiler_safe_mode_by_default = 0
 nnoremap <silent> <C-e> :VimFilerBufferDir -simple<CR>
 
-autocmd! FileType vimfiler call g:vimfiler_my_settings()
-function! g:vimfiler_my_settings()
+autocmd! FileType vimfiler call s:vimfiler_my_settings()
+function! s:vimfiler_my_settings()
   nmap qq <Plug>(vimfiler_exit)
   nmap q <Plug>(vimfiler_exit)
   nmap <buffer><expr><CR> vimfiler#smart_cursor_map("\<Plug>(vimfiler_expand_tree)", "\<Plug>(vimfiler_edit_file)")
