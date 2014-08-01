@@ -73,6 +73,7 @@ NeoBundle 'Shougo/vimproc', {
 NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
+NeoBundle 'kana/vim-smartinput'
 NeoBundle 'marijnh/tern_for_vim', {
 \ 'autoload' : { 'filetypes' : 'javascript' },
 \   'build': {
