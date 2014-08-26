@@ -616,9 +616,11 @@ let g:syntastic_mode_map = { 'mode': 'active',
   \ 'passive_filetypes': ['html'] }
 let g:syntastic_javascript_checkers = ['jshint']
 let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
-" For objective-c
+" for objective-c
 let g:syntastic_objc_check_header = 1
 let g:syntastic_objc_auto_refresh_includes = 1
+" for TypeScript
+let g:syntastic_typescript_checkers = ['tslint']
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
