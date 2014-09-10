@@ -50,8 +50,9 @@
                  branch=${2:-`git current-branch`}; \
                  git checkout master; \
                  git fetch upstream; \
+                 git reset --hard upstream/master; \
                  git merge upstream/master; \
-                 git push origin master; \
+                 git push origin master --no-verify; \
                  git checkout ${branch}; \
                ' __dummy__"
   prune-branches = !git branch --delete $(git branch --merged master | grep -v '^*\\|  master$')
@@ -93,6 +94,6 @@
 [http]
   postBuffer = 524288000
 [push]
-  default = nothing
+  default = current
 [fetch]
   prune = true
