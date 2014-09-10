@@ -86,4 +86,6 @@ if type anyenv > /dev/null 2>&1; then
 else
   echo 'Installing anyenv'
   git clone https://github.com/riywo/anyenv $HOME/.anyenv
+  mkdir -p $HOME/.anyenv/plugins
+  git clone https://github.com/znz/anyenv-update.git $HOME/.anyenv/plugins/anyenv-update
 fi
