@@ -108,6 +108,7 @@ NeoBundle 'thinca/vim-threes'
 NeoBundle 'thinca/vim-singleton'
 NeoBundle 'mattn/flappyvird-vim'
 NeoBundle 'thinca/vim-localrc'
+NeoBundle 'tpope/vim-projectionist'
 
 filetype plugin indent on
 "------------------------------------------------------------------------------
