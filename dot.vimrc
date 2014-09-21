@@ -523,6 +523,8 @@ smap <expr><CR> neosnippet#expandable_or_jumpable() ?
 " unite.vim
 let g:unite_enable_start_insert = 1
 let g:unite_update_time = 10
+let g:unite_source_file_mru_limit = 10000
+call unite#custom_source('file_rec/async', 'ignore_pattern', '\.png$\|\.jpg$\|\.jpeg$\|\.gif$\|\.mid$\|\.ttf$\|\.mp3$')
 
 " 大文字小文字を区別しない
 let g:unite_enable_ignore_case = 1
