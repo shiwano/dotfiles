@@ -45,16 +45,7 @@ NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'elzr/vim-json'
-NeoBundleLazy 'clausreinke/typescript-tools', {
-\ 'script_type' : 'plugin',
-\ 'autoload' : { 'filetypes' : 'typescript' },
-\ 'build' : {
-\     'cygwin' : 'npm install',
-\     'windows' : 'npm install',
-\     'mac'    : 'npm install',
-\     'unix'   : 'npm install',
-\   },
-\ }
+NeoBundle 'shiwano/typescript-tools'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
