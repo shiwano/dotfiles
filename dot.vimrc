@@ -46,6 +46,7 @@ NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'elzr/vim-json'
 NeoBundle 'shiwano/typescript-tools'
+NeoBundle 'ekalinin/Dockerfile.vim'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -323,6 +324,7 @@ au BufRead,BufNewFile *.coffeeenv set filetype=coffee
 au BufRead,BufNewFile *.jmk set filetype=javascript
 au BufRead,BufNewFile *.prefab set filetype=yaml
 au BufRead,BufNewFile *.json set filetype=json
+au BufRead,BufNewFile *.contract set filetype=ruby
 "------------------------------------------------------------------------------
 " Custom commands
 
