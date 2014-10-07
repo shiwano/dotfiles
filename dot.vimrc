@@ -645,9 +645,6 @@ set noshowmatch
 
 "don't autoselect first item in omnicomplete, show if only one item (for preview)
 set completeopt=longest,menuone
-
-"Don't ask to save when changing buffers (i.e. when jumping to a type definition)
-set hidden
 "------------------------------------------------------------------------------
 " clang complete
 let g:clang_complete_auto = 0
