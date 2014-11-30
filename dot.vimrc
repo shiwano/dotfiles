@@ -285,12 +285,6 @@ nmap <C-k> <C-w>k
 nmap <C-l> <C-w>l
 nmap <C-h> <C-w>h
 
-" CTRL-HJKLでバッファ移動
-nmap <S-J> :bn<CR>
-nmap <S-K> :bp<CR>
-nmap <S-L> :bn<CR>
-nmap <S-H> :bp<CR>
-
 " その他キーバインド
 nmap <C-r> <C-r>
 imap <C-r> <C-o><C-r>
@@ -428,9 +422,8 @@ inoremap <expr><C-l> neocomplete#complete_common_string()
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 function! s:my_cr_function()
-  return neocomplete#smart_close_popup() . "\<CR>"
   " For no inserting <CR> key.
-  "return pumvisible() ? neocomplete#close_popup() : "\<CR>"
+  return pumvisible() ? neocomplete#close_popup() : "\<CR>"
 endfunction
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
