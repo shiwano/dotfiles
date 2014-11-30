@@ -1,74 +1,77 @@
+#!/bin/bash -eu
+
 # Make sure using latest Homebrew
-update
+brew update
 
 # Update already-installed formula (takes too much time, I will do it manually later)
-# upgrade
+# brew upgrade
 
 # Add Repository
-tap homebrew/versions
-tap homebrew/binary
-tap caskroom/versions
-tap peco/peco
+brew tap homebrew/versions
+brew tap homebrew/binary
+brew tap caskroom/versions
+brew tap peco/peco
 
 # Packages
-install caskroom/cask/brew-cask
-install zsh
-install git
-install the_silver_searcher
-install reattach-to-user-namespace
-install lua
-install ctags
-install cmake
-install tmux
-install coreutils
-install wget
-install tree
-install ack
-install mcrypt
-install jpeg
-install pstree
-install gnu-sed
-install curl
-install openssl
-install libxml2
-install imagemagick
-install lv
-install nkf
-install subversion17 --unicode-path
-install md5sha1sum
-install hub
-install peco
-install mercurial
+brew install caskroom/cask/brew-cask
+brew install zsh
+brew install git
+brew install the_silver_searcher
+brew install reattach-to-user-namespace
+brew install lua
+brew install ctags
+brew install cmake
+brew install tmux
+brew install coreutils
+brew install wget
+brew install tree
+brew install ack
+brew install mcrypt
+brew install jpeg
+brew install pstree
+brew install gnu-sed
+brew install curl
+brew install openssl
+brew install libxml2
+brew install imagemagick
+brew install lv
+brew install nkf
+brew install subversion17 --unicode-path
+brew install md5sha1sum
+brew install hub
+brew install peco
+brew install mercurial
 
 # .dmg
-cask install alfred
-cask install google-chrome
-cask install firefox
-cask install iterm2
-cask install xtrafinder
-cask install appcleaner
-cask install dropbox
-cask install skype
-cask install mongohub
-cask install keepassx
-cask install virtualbox
-cask install vagrant
-cask install simple-comic
-cask install growlnotify
-cask install quicklook-csv
-cask install quicklook-json
-cask install webp-quicklook
-cask install sequel-pro
-cask install libreoffice
-cask install macvim-kaoriya
-cask install trailer
-cask install tiled
-cask install mplayerx
-cask install steam
-cask install iphone-configuration-utility
-cask install heroku-toolbelt
-cask install licecap
-cask install karabiner
+brew cask install alfred
+brew cask install google-chrome
+brew cask install firefox
+brew cask install iterm2
+brew cask install xtrafinder
+brew cask install appcleaner
+brew cask install dropbox
+brew cask install skype
+brew cask install mongohub
+brew cask install keepassx
+brew cask install virtualbox
+brew cask install vagrant
+brew cask install simple-comic
+brew cask install growlnotify
+brew cask install quicklook-csv
+brew cask install quicklook-json
+brew cask install webp-quicklook
+brew cask install sequel-pro
+brew cask install libreoffice
+brew cask install macvim-kaoriya
+brew cask install trailer
+brew cask install tiled
+brew cask install mplayerx
+brew cask install steam
+brew cask install iphone-configuration-utility
+brew cask install heroku-toolbelt
+brew cask install licecap
+brew cask install karabiner
 
 # Remove outdated versions
-cleanup
+brew cleanup
+brew cask cleanup

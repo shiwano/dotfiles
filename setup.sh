@@ -73,7 +73,7 @@ if [ $UNAME = "Darwin" ]; then
   else
     echo 'Installing Homebrew'
     ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
-    brew bundle $DOTFILES_DIR
+    $DOTFILES_DIR/brew.sh
   fi
 else
   echo 'This environment does not need Homebrew'
