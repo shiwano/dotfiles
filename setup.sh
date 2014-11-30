@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -u
 
 UNAME=`uname`
 LOCAL_BIN_DIR=$HOME/bin
