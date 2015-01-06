@@ -46,7 +46,7 @@ NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'elzr/vim-json'
 NeoBundle 'shiwano/typescript-tools'
-NeoBundle 'ekalinin/Dockerfile.vim'
+NeoBundle 'honza/Dockerfile.vim'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -510,7 +510,8 @@ smap <expr><CR> neosnippet#expandable_or_jumpable() ?
 let g:unite_enable_start_insert = 1
 let g:unite_update_time = 10
 let g:unite_source_file_mru_limit = 10000
-call unite#custom_source('file_rec/async', 'ignore_pattern', '\.png$\|\.jpg$\|\.jpeg$\|\.gif$\|\.mid$\|\.ttf$\|\.mp3$')
+call unite#custom_source('file_rec/async', 'ignore_pattern', '\.log$')
+call unite#custom_source('grep', 'ignore_pattern', '\.log$')
 
 " 大文字小文字を区別しない
 let g:unite_enable_ignore_case = 1
@@ -518,7 +519,7 @@ let g:unite_enable_smart_case = 1
 
 if executable('ag')
   let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column --smart-case'
+  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column --smart-case -U'
   let g:unite_source_grep_recursive_opt = ''
 endif
 
