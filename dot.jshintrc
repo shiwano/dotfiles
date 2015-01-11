@@ -17,5 +17,14 @@
   "strict": true,
   "trailing": true,
   "sub": true,
-  "node": true
+  "node": true,
+  "predef": [
+    "before",
+    "beforeEach",
+    "after",
+    "afterEach",
+    "describe",
+    "context",
+    "it"
+  ]
 }
