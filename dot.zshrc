@@ -133,6 +133,7 @@ alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 alias npm-exec='PATH=$(npm bin):$PATH'
+alias search='ag -g . | ag '
 
 autoload zmv
 alias zmv='noglob zmv -W'
