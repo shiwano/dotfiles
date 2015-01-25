@@ -1,3 +1,0 @@
-#!/bin/bash
-
-mono ~/dotfiles/dot.vim/bundle/Omnisharp/server/OmniSharp/bin/Debug/OmniSharp.exe -s $1
