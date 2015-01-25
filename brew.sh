@@ -71,6 +71,7 @@ brew cask install iphone-configuration-utility
 brew cask install heroku-toolbelt
 brew cask install licecap
 brew cask install karabiner
+brew cask install xamarin-studio
 
 # Remove outdated versions
 brew cleanup
