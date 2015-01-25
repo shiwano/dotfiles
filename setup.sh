@@ -1,8 +1,7 @@
 #!/bin/bash -u
 
-UNAME=`uname`
-LOCAL_BIN_DIR=$HOME/bin
-DOTFILES_DIR=$HOME/dotfiles
+readonly LOCAL_BIN_DIR=$HOME/bin
+readonly DOTFILES_DIR=$HOME/dotfiles
 
 function topic {
   echo -en "\033[1;30m"
@@ -20,34 +19,32 @@ fi
 
 topic 'Setup local bin files'
 
-if [ ! -d $LOCAL_BIN_DIR ]; then
-  mkdir $LOCAL_BIN_DIR
-fi
+mkdir -p $LOCAL_BIN_DIR
 
-for BIN in `find $DOTFILES_DIR/bin -type f -maxdepth 1`; do
-  echo 'Linking' $BIN '->' $LOCAL_BIN_DIR
-  ln -sf $BIN $LOCAL_BIN_DIR
+for bin in `find $DOTFILES_DIR/bin -type f -maxdepth 1`; do
+  echo 'Linking' $bin '->' $LOCAL_BIN_DIR
+  ln -sf $bin $LOCAL_BIN_DIR
 done
 
 topic 'Setup dotfiles'
 
-for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' -regex '.*[^(example)]$'`; do
-  DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./'`
-  echo 'Linking' $DOTFILE '->' $DEST
-  ln -sf $DOTFILE $DEST
+for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' -regex '.*[^(example)]$'`; do
+  dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
+  echo 'Linking' $dotfile '->' $dest
+  ln -sf $dotfile $dest
 done
 
-for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type d -name 'dot.*'`; do
-  DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./'`
-  echo 'Linking' $DOTFILE '->' $DEST
-  ln -sfn $DOTFILE $DEST
+for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type d -name 'dot.*'`; do
+  dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
+  echo 'Linking' $dotfile '->' $dest
+  ln -sfn $dotfile $dest
 done
 
-for DOTFILE in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*.example'`; do
-  DEST=$HOME/`basename $DOTFILE | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
-  if [ ! -f $DEST ]; then
-    echo 'Copying' $DOTFILE '->' $DEST
-    cp $DOTFILE $DEST
+for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*.example'`; do
+  dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
+  if [ ! -f $dest ]; then
+    echo 'Copying' $dotfile '->' $dest
+    cp $dotfile $dest
   fi
 done
 
@@ -67,7 +64,7 @@ fi
 
 topic 'Setup Homebrew'
 
-if [ $UNAME = "Darwin" ]; then
+if [ `uname` = "Darwin" ]; then
   if type brew > /dev/null 2>&1; then
     echo 'Homebrew is already installed'
   else
