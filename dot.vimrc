@@ -25,7 +25,7 @@ if has('vim_starting')
   set rtp+=$DOTVIM/bundle/neobundle.vim/
 endif
 
-call neobundle#rc($DOTVIM.'/bundle')
+call neobundle#begin($DOTVIM.'/bundle')
 " NeoBundle
 NeoBundle 'git://github.com/Shougo/neobundle.vim'
 " Color scheme
@@ -111,7 +111,9 @@ NeoBundle 'mattn/flappyvird-vim'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'tpope/vim-projectionist'
 
+call neobundle#end()
 filetype plugin indent on
+NeoBundleCheck
 "------------------------------------------------------------------------------
 " Color scheme
 syntax enable
