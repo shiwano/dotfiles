@@ -60,6 +60,7 @@
   config-for-aiming = config user.email siwano@aiming-inc.com
   push-for-review = !git push origin HEAD:refs/for/master/$(git current-branch)
   sed = "!LANG=C LC_ALL=C sh -c \"git ls-files $1 | grep -iv '.\\(so\\|ico\\|exe\\|pdf\\|jar\\|gif\\|air\\|zip\\|ser\\|p12\\|pbj\\|swz\\|swc\\|mp3\\|png\\|jpg\\|swf\\)$' | xargs -I{} sed -i '' -e '$2' {} \""
+  rank = !git shortlog -sn --no-merges | cat -n
 [merge]
   tool = vimdiff
 [mergetool]
