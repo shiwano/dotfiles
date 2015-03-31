@@ -40,7 +40,6 @@ brew install md5sha1sum
 brew install hub
 brew install peco
 brew install mercurial
-brew install mono
 
 # .dmg
 brew cask install alfred
@@ -71,6 +70,7 @@ brew cask install heroku-toolbelt
 brew cask install licecap
 brew cask install karabiner
 brew cask install xamarin-studio
+brew cask install mono-mdk
 
 # Remove outdated versions
 brew cleanup
