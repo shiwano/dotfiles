@@ -10,7 +10,6 @@ brew update
 brew tap homebrew/versions
 brew tap homebrew/binary
 brew tap caskroom/versions
-brew tap peco/peco
 
 # Packages
 brew install caskroom/cask/brew-cask
@@ -36,11 +35,12 @@ brew install libxml2
 brew install imagemagick
 brew install lv
 brew install nkf
-brew install subversion17 --unicode-path
+brew install subversion17 --with-unicode-path
 brew install md5sha1sum
 brew install hub
 brew install peco
 brew install mercurial
+brew install mono
 
 # .dmg
 brew cask install alfred
@@ -51,7 +51,7 @@ brew cask install xtrafinder
 brew cask install appcleaner
 brew cask install dropbox
 brew cask install skype
-brew cask install mongohub
+brew cask install jeromelebel-mongohub
 brew cask install keepassx
 brew cask install virtualbox
 brew cask install vagrant
@@ -59,7 +59,7 @@ brew cask install simple-comic
 brew cask install growlnotify
 brew cask install quicklook-csv
 brew cask install quicklook-json
-brew cask install webp-quicklook
+brew cask install webpquicklook
 brew cask install sequel-pro
 brew cask install libreoffice
 brew cask install macvim-kaoriya
@@ -67,7 +67,6 @@ brew cask install trailer
 brew cask install tiled
 brew cask install mplayerx
 brew cask install steam
-brew cask install iphone-configuration-utility
 brew cask install heroku-toolbelt
 brew cask install licecap
 brew cask install karabiner
