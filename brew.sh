@@ -40,6 +40,7 @@ brew install md5sha1sum
 brew install hub
 brew install peco
 brew install mercurial
+brew install google-japanese-ime
 
 # .dmg
 brew cask install alfred
