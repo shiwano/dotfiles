@@ -14,7 +14,7 @@ topic 'Clone the repository'
 if [ -d $DOTFILES_DIR ]; then
   echo 'dotfiles repository already exists'
 else
-  git clone --recursive git@github.com:shiwano/dotfiles.git $DOTFILES_DIR
+  git clone --recursive https://github.com/shiwano/dotfiles.git $DOTFILES_DIR
 fi
 
 topic 'Setup local bin files'
@@ -69,7 +69,7 @@ if [ `uname` = "Darwin" ]; then
     echo 'Homebrew is already installed'
   else
     echo 'Installing Homebrew'
-    ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
     $DOTFILES_DIR/brew.sh
   fi
 else
