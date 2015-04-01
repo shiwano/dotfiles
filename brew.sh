@@ -41,6 +41,7 @@ brew install hub
 brew install peco
 brew install mercurial
 brew install google-japanese-ime
+brew install mysql
 
 # .dmg
 brew cask install alfred
