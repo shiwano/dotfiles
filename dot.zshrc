@@ -14,7 +14,7 @@ export TERM=xterm-256color
 # 文字コードの設定
 export LANG=ja_JP.UTF-8
 
-# 環境変数
+# PATH
 PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
@@ -38,6 +38,10 @@ fi
 
 if [ -d /usr/local/heroku ] ; then
   export PATH="/usr/local/heroku/bin:$PATH"
+fi
+
+if [ -d /usr/local/opt/android-sdk ] ; then
+  export ANDROID_HOME=/usr/local/opt/android-sdk
 fi
 
 # Go

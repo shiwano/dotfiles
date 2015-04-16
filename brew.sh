@@ -42,6 +42,8 @@ brew install peco
 brew install mercurial
 brew install google-japanese-ime
 brew install mysql
+brew install android-sdk
+brew install ant
 
 # .dmg
 brew cask install alfred
