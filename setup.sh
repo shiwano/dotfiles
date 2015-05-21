@@ -28,7 +28,7 @@ done
 
 topic 'Setup dotfiles'
 
-for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' -regex '.*[^(example)]$'`; do
+for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' | grep -v 'example'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
   echo 'Linking' $dotfile '->' $dest
   ln -sf $dotfile $dest
