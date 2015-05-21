@@ -6,3 +6,4 @@ tags
 .tern-port
 .local.vimrc
 *.userprefs
+*.cache
