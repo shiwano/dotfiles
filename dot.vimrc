@@ -54,12 +54,13 @@ NeoBundle 'Shougo/neomru.vim'
 NeoBundle 'Sixeight/unite-grep'
 NeoBundle 'Shougo/vimfiler'
 NeoBundle 'thinca/vim-qfreplace'
-NeoBundle 'Shougo/vimproc', {
+NeoBundle 'Shougo/vimproc.vim', {
 \ 'build' : {
-\     'windows' : 'make -f make_mingw32.mak',
+\     'windows' : 'tools\\update-dll-mingw',
 \     'cygwin' : 'make -f make_cygwin.mak',
 \     'mac' : 'make -f make_mac.mak',
-\     'unix' : 'make -f make_unix.mak',
+\     'linux' : 'make',
+\     'unix' : 'gmake',
 \    },
 \ }
 " Code completion
@@ -94,7 +95,7 @@ NeoBundle 'scrooloose/nerdtree'
 NeoBundle 'scrooloose/syntastic'
 " Misc
 " NeoBundle 'fholgado/minibufexpl.vim'
-NeoBundle 'jiangmiao/simple-javascript-indenter'
+NeoBundle 'jason0x43/vim-js-indent'
 NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-surround'
 NeoBundle 'thinca/vim-poslist'
