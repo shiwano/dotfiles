@@ -47,6 +47,7 @@ NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'elzr/vim-json'
 NeoBundle 'shiwano/typescript-tools'
 NeoBundle 'honza/Dockerfile.vim'
+NeoBundle 'beyondmarc/hlsl.vim'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -321,6 +322,7 @@ au BufRead,BufNewFile *.jmk set filetype=javascript
 au BufRead,BufNewFile *.prefab set filetype=yaml
 au BufRead,BufNewFile *.json set filetype=json
 au BufRead,BufNewFile *.contract set filetype=ruby
+au BufRead,BufNewFile *.shader set filetype=hlsl
 "------------------------------------------------------------------------------
 " Custom commands
 
