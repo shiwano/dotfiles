@@ -45,7 +45,6 @@
   us = reset HEAD
   back = reset HEAD~
   contributors = shortlog -s -n -e
-  rename-branch = branch -m
   cch= "!f() { git cherry -v "$@" | awk '{ if($1 == \"+\"){ color = \"green\" } if($1 == \"-\"){ color = \"red\" } cmd = \"git show --date=short --no-notes --pretty=format:\\047%C\" color $1 \" %h %Cgreen%cd %Cblue%cn%x09%Creset%s\\047 --summary \" $2; cmd | getline t; close(cmd); print t }' ;}; f"
   checkout-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"
   prune-branches = !git branch --delete $(git branch --merged master | grep -v '^*\\|  master$')
@@ -62,6 +61,8 @@
   push-for-review = !git push origin HEAD:refs/for/master/$(git current-branch)
   sed = "!LANG=C LC_ALL=C sh -c \"git ls-files $1 | grep -iv '.\\(so\\|ico\\|exe\\|pdf\\|jar\\|gif\\|air\\|zip\\|ser\\|p12\\|pbj\\|swz\\|swc\\|mp3\\|png\\|jpg\\|swf\\)$' | xargs -I{} sed -i '' -e '$2' {} \""
   rank = !git shortlog -sn --no-merges | cat -n
+  rename = "!sh -c 'git branch -m `git current-branch` $0'"
+  upstream = "!sh -c 'git branch --set-upstream-to=$0 `git current-branch`'"
 [merge]
   tool = vimdiff
 [mergetool]
