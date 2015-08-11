@@ -86,6 +86,7 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \ }
 NeoBundle 'tokorom/clang_complete'
 NeoBundle 'tokorom/clang_complete-getopts-ios'
+NeoBundle 'fatih/vim-go'
 " Lint
 NeoBundle 'scrooloose/syntastic'
 " Misc
@@ -603,6 +604,10 @@ let g:syntastic_objc_check_header = 1
 let g:syntastic_objc_auto_refresh_includes = 1
 " for TypeScript
 let g:syntastic_typescript_checkers = ['tslint']
+" for Go
+let g:syntastic_mode_map = { 'mode': 'passive',
+    \ 'active_filetypes': ['go'] }
+let g:syntastic_go_checkers = ['go', 'golint']
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
