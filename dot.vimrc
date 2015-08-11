@@ -86,15 +86,10 @@ NeoBundleLazy 'nosami/Omnisharp', {
 \ }
 NeoBundle 'tokorom/clang_complete'
 NeoBundle 'tokorom/clang_complete-getopts-ios'
-" Source reading
-NeoBundle 'wesleyche/SrcExpl'
-NeoBundle 'wesleyche/Trinity'
-NeoBundle 'taglist.vim'
-NeoBundle 'scrooloose/nerdtree'
 " Lint
 NeoBundle 'scrooloose/syntastic'
 " Misc
-" NeoBundle 'fholgado/minibufexpl.vim'
+NeoBundle 'taglist.vim'
 NeoBundle 'jason0x43/vim-js-indent'
 NeoBundle 'tpope/vim-rails'
 NeoBundle 'tpope/vim-surround'
@@ -582,20 +577,6 @@ function! s:vimfiler_my_settings()
   nmap q <Plug>(vimfiler_exit)
   nmap <buffer><expr><CR> vimfiler#smart_cursor_map("\<Plug>(vimfiler_expand_tree)", "\<Plug>(vimfiler_edit_file)")
 endfunction
-"------------------------------------------------------------------------------
-" trinity.vim
-
-" Open and close all the three plugins on the same time
-nmap <F8>   :TrinityToggleAll<CR>
-
-" Open and close the srcexpl.vim separately
-nmap <F9>   :TrinityToggleSourceExplorer<CR>
-
-" Open and close the taglist.vim separately
-nmap <F10>  :TrinityToggleTagList<CR>
-
-" Open and close the NERD_tree.vim separately
-nmap <F11>  :TrinityToggleNERDTree<CR>
 "------------------------------------------------------------------------------
 " Gist.vim
 let g:gist_clip_command = 'pbcopy'
