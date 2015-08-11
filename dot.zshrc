@@ -46,7 +46,7 @@ fi
 
 # Go
 
-export GOPATH=$HOME/golang
+export GOPATH=$HOME/go
 PATH="$GOPATH/bin:$PATH"
 
 # android sdks
@@ -139,6 +139,8 @@ alias tmux='tmuxx'
 alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 alias npm-exec='PATH=$(npm bin):$PATH'
 alias search='ag -g . | ag '
+alias b='bundle exec'
+alias n='npm-exec'
 
 autoload zmv
 alias zmv='noglob zmv -W'
