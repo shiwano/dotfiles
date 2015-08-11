@@ -37,7 +37,6 @@ NeoBundle 'jelera/vim-javascript-syntax'
 NeoBundle 'nono/vim-handlebars'
 NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'othree/html5-syntax.vim'
-NeoBundle 'hallison/vim-markdown'
 NeoBundle 'timcharper/textile.vim'
 NeoBundle 'groenewege/vim-less'
 NeoBundle 'wavded/vim-stylus'
@@ -48,6 +47,8 @@ NeoBundle 'elzr/vim-json'
 NeoBundle 'shiwano/typescript-tools'
 NeoBundle 'honza/Dockerfile.vim'
 NeoBundle 'beyondmarc/hlsl.vim'
+NeoBundle 'godlygeek/tabular' " vim-markdown required
+NeoBundle 'plasticboy/vim-markdown'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -147,7 +148,7 @@ let mapleader = ","            " キーマップリーダー
 set notitle                    " タイトル変更しない
 set scrolloff=5                " スクロール時の余白確保
 set nowritebackup              " バックアップファイルを作らない
-set nobackup                   " バックアップ取らない。バックアップファイルを作っても削除。
+set nobackup                   " バックアップ取らない。バックアップファイルを作っても削除
 set noswapfile                 " スワップファイル作らない
 set autoread                   " 他で書き換えられたら自動で読み直す
 set hidden                     " 編集中でも他のファイルを開けるようにする
@@ -160,7 +161,7 @@ set showcmd                    " コマンドをステータス行に表示
 set magic                      " 正規表現に使われる記号を有効にする
 set nofoldenable               " 折り畳み無効
 set noundofile                 " アンドゥファイルを生成しない
-" set autochdir                  " バッファを開いた時にカレントディレクトリを変更
+set nomodeline                 " ファイルごとにオプション指定する機能をオフ
 "------------------------------------------------------------------------------
 " View
 set showcmd                                       " 入力中のコマンドを表示
