@@ -124,13 +124,21 @@ if !has('gui_running')
   let g:solarized_termcolors=256
   let g:solarized_termtrans = 1
   let g:solarized_contrast = 'high'
-  let g:solarized_visibility = 'high'
+  let g:solarized_visibility = 'low'
 endif
+
+augroup highlightIdegraphicSpace
+  autocmd!
+  autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=DarkGreen guibg=DarkGreen
+  autocmd VimEnter,WinEnter * match IdeographicSpace /　/
+augroup END
 
 if exists('+colorcolumn')
   autocmd Filetype * set colorcolumn=81
   autocmd Filetype Scratch set colorcolumn=''
 endif
+
+syntax on
 "------------------------------------------------------------------------------
 " Status line
 set laststatus=2    " 常にステータスラインを表示
@@ -172,20 +180,7 @@ set list                                          " 不可視文字表示
 set listchars=tab:>.,trail:_,extends:>,precedes:< " 不可視文字の表示形式
 set display=uhex                                  " 印字不可能文字を16進数で表示
 
-" 全角スペースをハイライト
-if has("syntax")
-  syntax on
-  function! ActivateInvisibleIndicator()
-    syntax match InvisibleJISX0208Space "　" display containedin=ALL
-    highlight InvisibleJISX0208Space term=underline ctermbg=236 guibg=Cyan
-  endf
-  augroup invisible
-    autocmd! invisible
-    autocmd BufNew,BufRead * call ActivateInvisibleIndicator()
-  augroup END
-endif
-
-" カレントウィンドウにのみ罫線を引く
+" 現在行にラインを引く
 augroup cch
   autocmd! cch
   autocmd WinLeave * set nocursorline
