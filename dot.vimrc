@@ -34,7 +34,7 @@ NeoBundle 'altercation/vim-colors-solarized'
 " Syntax highlight
 NeoBundle 'jQuery'
 NeoBundle 'jelera/vim-javascript-syntax'
-NeoBundle 'nono/vim-handlebars'
+NeoBundle 'mustache/vim-mustache-handlebars'
 NeoBundle 'kchmck/vim-coffee-script'
 NeoBundle 'othree/html5-syntax.vim'
 NeoBundle 'timcharper/textile.vim'
