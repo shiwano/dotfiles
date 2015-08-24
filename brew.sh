@@ -10,6 +10,7 @@ brew update
 brew tap homebrew/versions
 brew tap homebrew/binary
 brew tap caskroom/versions
+brew tap shiwano/formulas
 
 # Packages
 brew install caskroom/cask/brew-cask
@@ -44,6 +45,8 @@ brew install google-japanese-ime
 brew install mysql
 brew install android-sdk
 brew install ant
+brew install musta
+brew install misakura
 
 # .dmg
 brew cask install alfred
