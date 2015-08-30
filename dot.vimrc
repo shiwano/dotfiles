@@ -507,7 +507,7 @@ smap <expr><CR> neosnippet#expandable_or_jumpable() ?
 let g:unite_enable_start_insert = 1
 let g:unite_update_time = 10
 let g:unite_source_file_mru_limit = 10000
-call unite#custom_source('file_rec/async', 'ignore_pattern', '\.log$')
+call unite#custom_source('file_rec/git', 'ignore_pattern', '\.log$')
 call unite#custom_source('grep', 'ignore_pattern', '\.log$')
 
 " 大文字小文字を区別しない
@@ -536,7 +536,7 @@ nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
 nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
 
 " 再帰的ファイル一覧
-nnoremap <silent> ,uu :<C-u>Unite file_rec/async:!<CR>
+nnoremap <silent> ,uu :<C-u>Unite file_rec/git<CR>
 
 " grep
 nnoremap <silent> ,ug :<C-u>Unite -no-quit grep:. -buffer-name=search-buffer<CR><BS>
