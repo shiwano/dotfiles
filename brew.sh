@@ -78,6 +78,7 @@ brew cask install licecap
 brew cask install karabiner
 brew cask install xamarin-studio
 brew cask install mono-mdk
+brew cask install qlmarkdown
 
 # Remove outdated versions
 brew cleanup
