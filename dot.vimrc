@@ -543,6 +543,7 @@ nnoremap <silent> ,ug :<C-u>Unite -no-quit grep:. -buffer-name=search-buffer<CR>
 
 autocmd FileType unite call s:unite_my_settings()
 function! s:unite_my_settings()
+  nmap <buffer> i <Plug>(unite_insert_enter)
   imap <buffer> qq <Plug>(unite_exit)
   nmap <buffer> qq <Plug>(unite_exit)
   nmap <buffer> q <Plug>(unite_exit)
