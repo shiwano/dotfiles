@@ -607,7 +607,7 @@ let g:syntastic_typescript_checkers = ['tslint']
 " for Go
 let g:syntastic_mode_map = { 'mode': 'passive',
     \ 'active_filetypes': ['go'] }
-let g:syntastic_go_checkers = ['go', 'golint']
+let g:syntastic_go_checkers = ['golint']
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
