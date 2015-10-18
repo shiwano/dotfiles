@@ -1,8 +1,6 @@
-nnoremap od :TSSdef<cr>
-nnoremap of :TSSreferences<cr>
-nnoremap ot :TSStype<cr>
-nnoremap or :TSSreload<cr>
-nnoremap os :TSSstarthere<cr>
-nnoremap ost :TSSend<cr>
+nnoremap od :TsuquyomiDefinition<cr>
+nnoremap of :TsuquyomiReferences<cr>
+nnoremap on :TsuquyomiRenameSymbol<cr>
+nnoremap or :TsuquyomiReload<cr>
+nnoremap os :TsuquyomiStartServer<cr>
 
-let g:TSS = ["tss", "\-\-module", "commonjs"]

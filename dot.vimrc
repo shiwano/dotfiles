@@ -44,7 +44,6 @@ NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'elzr/vim-json'
-NeoBundle 'shiwano/typescript-tools'
 NeoBundle 'honza/Dockerfile.vim'
 NeoBundle 'beyondmarc/hlsl.vim'
 NeoBundle 'godlygeek/tabular' " vim-markdown required
@@ -69,6 +68,7 @@ NeoBundle 'Shougo/neocomplete.vim'
 NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'kana/vim-smartinput'
+NeoBundle 'Quramy/tsuquyomi'
 NeoBundle 'marijnh/tern_for_vim', {
 \ 'autoload' : { 'filetypes' : 'javascript' },
 \   'build': {
@@ -449,7 +449,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType c set omnifunc=ccomplete#Complete
 autocmd FileType cpp set omnifunc=cppcomplete#Complete
 autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType typescript setlocal omnifunc=TSScompleteFunc
+autocmd FileType typescript setlocal omnifunc=tsuquyomi#complete
 autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
 autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
 autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
@@ -465,11 +465,14 @@ let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.cs = '[^. \t]\.\%(\h\w*\)\?'
-let g:neocomplete#sources#omni#input_patterns.typescript = '[^. \t]\.\%(\h\w*\)\?'
 let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'"
+if !exists('g:neocomplete#force_omni_input_patterns')
+  let g:neocomplete#force_omni_input_patterns = {}
+endif
+let g:neocomplete#force_omni_input_patterns.typescript = '[^. \t]\.\%(\h\w*\)\?'
 
 " For clang_complete
 if !exists('g:neocomplete#force_omni_input_patterns')
