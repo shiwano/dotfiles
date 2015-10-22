@@ -44,6 +44,7 @@
   unstage = reset HEAD
   us = reset HEAD
   back = reset HEAD~
+  cleanup = "!sh -c 'git reset --hard && git clean -fd'"
   contributors = shortlog -s -n -e
   cch= "!f() { git cherry -v "$@" | awk '{ if($1 == \"+\"){ color = \"green\" } if($1 == \"-\"){ color = \"red\" } cmd = \"git show --date=short --no-notes --pretty=format:\\047%C\" color $1 \" %h %Cgreen%cd %Cblue%cn%x09%Creset%s\\047 --summary \" $2; cmd | getline t; close(cmd); print t }' ;}; f"
   checkout-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"
