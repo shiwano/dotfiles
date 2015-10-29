@@ -7,3 +7,4 @@ tags
 .local.vimrc
 *.userprefs
 *.cache
+_ignored/
