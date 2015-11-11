@@ -331,6 +331,9 @@ command! -nargs=1 Reload :e ++enc=<f-args>
 " 末尾スペース削除
 command! Rstrip :%s/\s\+$//e
 
+" 差分確認
+command! -nargs=1 -complete=file D vertical diffsplit <args>
+
 " 改行コードをLF、エンコーディングをutf-8の状態にする
 command! Normalize :call s:Normalize()
 function! s:Normalize()
