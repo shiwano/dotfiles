@@ -45,6 +45,7 @@ brew install google-japanese-ime
 brew install mysql
 brew install android-sdk
 brew install ant
+brew install watch
 brew install musta
 brew install misakura
 
