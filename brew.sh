@@ -1,4 +1,6 @@
-#!/bin/bash -eu
+#!/bin/bash
+
+set -eu
 
 # Make sure using latest Homebrew
 brew update

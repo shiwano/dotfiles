@@ -1,4 +1,6 @@
-#!/bin/bash -u
+#!/bin/bash
+
+set -u
 
 readonly LOCAL_BIN_DIR=$HOME/bin
 readonly DOTFILES_DIR=$HOME/dotfiles
