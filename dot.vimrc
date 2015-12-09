@@ -27,7 +27,7 @@ endif
 
 call neobundle#begin($DOTVIM.'/bundle')
 " NeoBundle
-NeoBundle 'git://github.com/Shougo/neobundle.vim'
+NeoBundle 'Shougo/neobundle.vim'
 " Color scheme
 NeoBundle 'ciaranm/inkpot'
 NeoBundle 'altercation/vim-colors-solarized'
