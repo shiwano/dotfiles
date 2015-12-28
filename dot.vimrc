@@ -472,6 +472,7 @@ let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*
 let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'"
+let g:neocomplete#sources#omni#input_patterns.go = '[^.[:digit:] *\t]\.\w*'
 if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
@@ -596,7 +597,7 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 "------------------------------------------------------------------------------
 " syntastic
 " :Errors エラー一覧表示
-" let g:syntastic_auto_loc_list = 1
+let g:syntastic_auto_loc_list = 1
 let g:syntastic_mode_map = { 'mode': 'active',
   \ 'active_filetypes': [],
   \ 'passive_filetypes': ['html'] }
@@ -608,9 +609,8 @@ let g:syntastic_objc_auto_refresh_includes = 1
 " for TypeScript
 let g:syntastic_typescript_checkers = ['tslint']
 " for Go
-let g:syntastic_mode_map = { 'mode': 'passive',
-    \ 'active_filetypes': ['go'] }
-let g:syntastic_go_checkers = ['golint']
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['go'] }
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
