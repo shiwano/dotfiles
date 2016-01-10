@@ -48,7 +48,7 @@ fi
 
 export GOPATH=$HOME/go
 PATH="$GOPATH/bin:$PATH"
-# export GO15VENDOREXPERIMENT=1
+export GO15VENDOREXPERIMENT=1
 
 # android sdks
 if [ -d /Applications/android-sdk-macosx ]; then
