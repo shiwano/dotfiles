@@ -472,7 +472,7 @@ let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*
 let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
 let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
 let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'"
-let g:neocomplete#sources#omni#input_patterns.go = '[^.[:digit:] *\t]\.\w*'
+let g:neocomplete#sources#omni#input_patterns.go = '[^. *\t]\.\w*'
 if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
@@ -610,6 +610,7 @@ let g:syntastic_objc_auto_refresh_includes = 1
 let g:syntastic_typescript_checkers = ['tslint']
 " for Go
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['go'] }
+" let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck', 'go']
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 "------------------------------------------------------------------------------
 " QuickRun
