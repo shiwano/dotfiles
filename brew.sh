@@ -11,11 +11,11 @@ brew update
 # Add Repository
 brew tap homebrew/versions
 brew tap homebrew/binary
+brew tap caskroom/cask
 brew tap caskroom/versions
 brew tap shiwano/formulas
 
 # Packages
-brew install caskroom/cask/brew-cask
 brew install zsh
 brew install git
 brew install the_silver_searcher
@@ -52,37 +52,37 @@ brew install musta
 brew install misakura
 
 # .dmg
-brew cask install alfred
-brew cask install google-chrome
-brew cask install firefox
-brew cask install iterm2
-brew cask install xtrafinder
-brew cask install appcleaner
-brew cask install dropbox
-brew cask install skype
-brew cask install jeromelebel-mongohub
-brew cask install keepassx
-brew cask install virtualbox
-brew cask install vagrant
-brew cask install simple-comic
-brew cask install growlnotify
-brew cask install quicklook-csv
-brew cask install quicklook-json
-brew cask install webpquicklook
-brew cask install sequel-pro
-brew cask install libreoffice
-brew cask install macvim-kaoriya
-brew cask install trailer
-brew cask install tiled
-brew cask install mplayerx
-brew cask install steam
-brew cask install heroku-toolbelt
-brew cask install licecap
-brew cask install karabiner
-brew cask install xamarin-studio
-brew cask install mono-mdk
-brew cask install qlmarkdown
+brew install caskroom/cask/alfred
+brew install caskroom/cask/google-chrome
+brew install caskroom/cask/firefox
+brew install caskroom/cask/iterm2
+brew install caskroom/cask/xtrafinder
+brew install caskroom/cask/appcleaner
+brew install caskroom/cask/dropbox
+brew install caskroom/cask/skype
+brew install caskroom/cask/jeromelebel-mongohub
+brew install caskroom/cask/keepassx
+brew install caskroom/cask/virtualbox
+brew install caskroom/cask/vagrant
+brew install caskroom/cask/simple-comic
+brew install caskroom/cask/growlnotify
+brew install caskroom/cask/quicklook-csv
+brew install caskroom/cask/quicklook-json
+brew install caskroom/cask/webpquicklook
+brew install caskroom/cask/sequel-pro
+brew install caskroom/cask/libreoffice
+brew install caskroom/cask/macvim-kaoriya
+brew install caskroom/cask/trailer
+brew install caskroom/cask/tiled
+brew install caskroom/cask/mplayerx
+brew install caskroom/cask/steam
+brew install caskroom/cask/heroku-toolbelt
+brew install caskroom/cask/licecap
+brew install caskroom/cask/karabiner
+brew install caskroom/cask/xamarin-studio
+brew install caskroom/cask/mono-mdk
+brew install caskroom/cask/elmarkdown
+brew install caskroom/cask/rdm
 
 # Remove outdated versions
 brew cleanup
-brew cask cleanup
