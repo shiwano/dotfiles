@@ -50,6 +50,7 @@ brew install ant
 brew install watch
 brew install musta
 brew install misakura
+brew install multitail
 
 # .dmg
 brew install caskroom/cask/alfred
