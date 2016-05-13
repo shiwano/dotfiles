@@ -3,11 +3,6 @@ fpath=($HOME/.zsh/completion ${fpath})
 autoload -U compinit
 compinit
 
-# git の補完関数を早く
-autoload bashcompinit
-bashcompinit
-source $HOME/.zsh/git-completion.bash
-
 # 256色
 export TERM=xterm-256color
 
