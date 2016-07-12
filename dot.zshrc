@@ -144,6 +144,9 @@ alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
+alias docker-rm-all='docker rm $(docker ps -a -q)'
+alias docker-rmi-all='docker rmi $(docker images -q)'
+
 # プロンプトの設定
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
