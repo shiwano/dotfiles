@@ -51,6 +51,7 @@ brew install watch
 brew install musta
 brew install misakura
 brew install multitail
+brew install iproute2mac
 
 # .dmg
 brew install caskroom/cask/alfred
