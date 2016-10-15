@@ -107,21 +107,10 @@ function static-httpd {
   fi
 }
 
-# function peco-select-history() {
-    # local tac
-    # if which tac > /dev/null; then
-        # tac="tac"
-    # else
-        # tac="tail -r"
-    # fi
-    # BUFFER=$(history -n 1 | \
-        # eval $tac | \
-        # peco --query "$LBUFFER")
-    # CURSOR=$#BUFFER
-    # zle clear-screen
-# }
-# zle -N peco-select-history
-# bindkey '^r' peco-select-history
+function g {
+  local p=$(ghq list | peco)
+  [ $p ] && cd $(ghq root)/$p
+}
 
 # エイリアスの設定
 alias ls='ls --color=auto'
@@ -137,7 +126,6 @@ alias b='bundle exec'
 alias n='npm-exec'
 
 alias s='git status'
-alias g='p=$(ghq list | peco); [ $p ] && cd $(ghq root)/$p'
 alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 
 autoload zmv
