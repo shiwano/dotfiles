@@ -107,7 +107,7 @@ function static-httpd {
   fi
 }
 
-function g {
+function move-to-ghq-directory {
   local p=$(ghq list | peco)
   [ $p ] && cd $(ghq root)/$p
 }
@@ -126,6 +126,7 @@ alias b='bundle exec'
 alias n='npm-exec'
 
 alias s='git status'
+alias g='move-to-ghq-directory'
 alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 
 autoload zmv
