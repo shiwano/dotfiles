@@ -74,3 +74,5 @@
   default = current
 [fetch]
   prune = true
+[ghq]
+  root = ~/code/src
