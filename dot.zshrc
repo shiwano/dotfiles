@@ -41,7 +41,7 @@ fi
 
 # Go
 
-export GOPATH=$HOME/go
+export GOPATH=$HOME/code
 PATH="$GOPATH/bin:$PATH"
 export GO15VENDOREXPERIMENT=1
 
@@ -129,14 +129,16 @@ alias ll='ls -l'
 alias la='ls -A'
 alias lal='ls -l -A'
 alias vi='vim'
-alias s='git status'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
-alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 alias npm-exec='PATH=$(npm bin):$PATH'
 alias search='ag -g . | ag '
 alias b='bundle exec'
 alias n='npm-exec'
+
+alias s='git status'
+alias g='cd $(ghq list | peco | awk -v root=$(ghq root) '"'"'{print root "/" $0}'"'"')'
+alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 
 autoload zmv
 alias zmv='noglob zmv -W'
