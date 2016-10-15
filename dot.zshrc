@@ -137,7 +137,7 @@ alias b='bundle exec'
 alias n='npm-exec'
 
 alias s='git status'
-alias g='p=$(ghq list | peco | awk -v root=$(ghq root) '"'"'{print root "/" $0}'"'"'); [ $p ] && cd $p'
+alias g='p=$(ghq list | peco); [ $p ] && cd $(ghq root)/$p'
 alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
 
 autoload zmv
