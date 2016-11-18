@@ -1,0 +1,17 @@
+" Set the URL of this file to "Sync cVimrc with GitHub Gist"
+
+map <C-d> scrollPageDown
+map <C-u> scrollPageUp
+
+map i goToInput
+
+site '*://github.com/*' {
+  unmap ?
+  unmap t
+  unmap r
+}
+
+site '*://github.com/*/commits/*' {
+  unmap n
+  unmap p
+}
