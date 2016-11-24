@@ -9,9 +9,7 @@ site '*://github.com/*' {
   unmap ?
   unmap t
   unmap r
-}
-
-site '*://github.com/*/commits/*' {
   unmap n
   unmap p
+  unmap c
 }
