@@ -46,9 +46,9 @@ NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'gkz/vim-ls'
 NeoBundle 'elzr/vim-json'
 NeoBundle 'honza/Dockerfile.vim'
-NeoBundle 'beyondmarc/hlsl.vim'
 NeoBundle 'godlygeek/tabular' " vim-markdown required
 NeoBundle 'plasticboy/vim-markdown'
+NeoBundle 'ShaderHighLight'
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
