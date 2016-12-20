@@ -1,3 +1,7 @@
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
+
 nnoremap ob :wa!<cr>:OmniSharpBuild<cr>
 nnoremap od :OmniSharpGotoDefinition<cr>
 nnoremap oi :OmniSharpFindImplementations<cr>
