@@ -60,7 +60,7 @@
 
   config-for-aiming = config user.email siwano@aiming-inc.com
   push-for-review = !git push origin HEAD:refs/for/master/$(git current-branch)
-  sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files $0 | xargs sed -i -e $1'" # git sed '**/*.go' $'s/foo/bar/g'
+  sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'" # git sed '**/*.go' $'s/foo/bar/g'
   sed-help = !echo "git sed '**/*.go' $'s/foo/bar/g'"
   rank = !git shortlog -sn --no-merges | cat -n
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
