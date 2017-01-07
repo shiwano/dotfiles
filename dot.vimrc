@@ -110,6 +110,7 @@ NeoBundle 'thinca/vim-singleton'
 NeoBundle 'mattn/flappyvird-vim'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'tpope/vim-projectionist'
+NeoBundle 'buoto/gotests-vim'
 
 call neobundle#end()
 filetype plugin indent on
