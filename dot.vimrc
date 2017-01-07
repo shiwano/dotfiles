@@ -45,7 +45,7 @@ NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
 NeoBundle 'gkz/vim-ls'
 NeoBundle 'elzr/vim-json'
-NeoBundle 'honza/Dockerfile.vim'
+NeoBundle 'ekalinin/Dockerfile.vim'
 NeoBundle 'godlygeek/tabular' " vim-markdown required
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'ShaderHighLight'
