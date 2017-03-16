@@ -7,6 +7,16 @@ let $DESKTOP = expand('~/desktop')
 
 if has("macunix")
   let $LUA_DLL = '/usr/local/Cellar/lua/5.2.3_1/lib/liblua.dylib'
+
+  augroup cpp-path
+    autocmd!
+    autocmd FileType cpp setlocal path=.,/usr/include,/usr/local/include,/usr/lib/c++/v1
+  augroup END
+
+  let s:clang_library_path='/Library/Developer/CommandLineTools/usr/lib'
+  if isdirectory(s:clang_library_path)
+    let g:clang_library_path=s:clang_library_path
+  endif
 endif
 
 if has("win32") || has("win64")
@@ -49,6 +59,10 @@ NeoBundle 'ekalinin/Dockerfile.vim'
 NeoBundle 'godlygeek/tabular' " vim-markdown required
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'ShaderHighLight'
+NeoBundle 'cespare/vim-toml'
+NeoBundleLazy 'vim-jp/cpp-vim', {
+      \ 'autoload' : {'filetypes' : 'cpp'}
+      \ }
 " Environment
 NeoBundle 'Shougo/unite.vim'
 NeoBundle 'Shougo/neomru.vim'
@@ -89,8 +103,11 @@ NeoBundleLazy 'nosami/Omnisharp', {
 NeoBundle 'tokorom/clang_complete'
 NeoBundle 'tokorom/clang_complete-getopts-ios'
 NeoBundle 'fatih/vim-go'
-" Lint
+" Lint and Format
 NeoBundle 'scrooloose/syntastic'
+NeoBundleLazy 'rhysd/vim-clang-format', {
+      \ 'autoload' : {'filetypes' : ['c', 'cpp', 'objc']}
+      \ }
 " Misc
 NeoBundle 'taglist.vim'
 NeoBundle 'jason0x43/vim-js-indent'
@@ -111,6 +128,9 @@ NeoBundle 'mattn/flappyvird-vim'
 NeoBundle 'thinca/vim-localrc'
 NeoBundle 'tpope/vim-projectionist'
 NeoBundle 'buoto/gotests-vim'
+NeoBundleLazy 'soramugi/auto-ctags.vim', {
+      \ 'autoload' : {'filetypes' : ['c', 'cpp']}
+      \ }
 
 call neobundle#end()
 filetype plugin indent on
@@ -486,9 +506,6 @@ endif
 let g:neocomplete#force_omni_input_patterns.typescript = '[^. \t]\.\%(\h\w*\)\?'
 
 " For clang_complete
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
 let g:neocomplete#force_overwrite_completefunc = 1
 let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
 let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
@@ -619,6 +636,11 @@ let g:syntastic_typescript_checkers = ['tslint']
 let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['go'] }
 " let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck', 'go']
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+" for C++
+" let g:syntastic_debug = 1
+let g:syntastic_cpp_cpplint_exec = 'cpplint.py'
+let g:syntastic_cpp_checkers = ['cpplint']
+let g:syntastic_cpp_check_header = 1
 "------------------------------------------------------------------------------
 " QuickRun
 command! Q :QuickRun
@@ -643,8 +665,7 @@ set noshowmatch
 set completeopt=longest,menuone
 "------------------------------------------------------------------------------
 " clang complete
-let g:clang_complete_auto = 0
-let g:clang_auto_select = 0
+let g:clang_user_options = '-std=c++11'
 
 let g:clang_complete_getopts_ios_default_options = '-fblocks -fobjc-arc -D __IPHONE_OS_VERSION_MIN_REQUIRED=40300'
 let g:clang_complete_getopts_ios_sdk_directory = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.1.sdk'
@@ -656,3 +677,7 @@ let g:vim_json_syntax_conceal = 0
 " vim-go
 let g:go_fmt_command = "goimports"
 let g:go_list_type = "quickfix"
+"------------------------------------------------------------------------------
+" auto-tags
+let g:auto_ctags = 1
+let g:auto_ctags_tags_args = '--tag-relative --recurse --sort=yes'
