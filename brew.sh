@@ -52,6 +52,7 @@ brew install musta
 brew install misakura
 brew install multitail
 brew install iproute2mac
+brew install clang-format
 
 # .dmg
 brew install caskroom/cask/alfred
