@@ -53,6 +53,7 @@ brew install misakura
 brew install multitail
 brew install iproute2mac
 brew install clang-format
+brew install wireshark --with-qt
 
 # .dmg
 brew install caskroom/cask/alfred
@@ -86,6 +87,8 @@ brew install caskroom/cask/xamarin-studio
 brew install caskroom/cask/mono-mdk
 brew install caskroom/cask/elmarkdown
 brew install caskroom/cask/rdm
+brew cask install wireshark-chmodbpf
+brew linkapps wireshark
 
 # Remove outdated versions
 brew cleanup
