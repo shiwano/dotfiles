@@ -89,6 +89,7 @@ brew install caskroom/cask/elmarkdown
 brew install caskroom/cask/rdm
 brew cask install wireshark-chmodbpf
 brew linkapps wireshark
+brew install Caskroom/cask/gyazo
 
 # Remove outdated versions
 brew cleanup
