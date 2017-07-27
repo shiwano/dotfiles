@@ -9,8 +9,6 @@ brew update
 # brew upgrade
 
 # Add Repository
-brew tap homebrew/versions
-brew tap homebrew/binary
 brew tap caskroom/cask
 brew tap caskroom/versions
 brew tap shiwano/formulas
@@ -87,9 +85,9 @@ brew install caskroom/cask/xamarin-studio
 brew install caskroom/cask/mono-mdk
 brew install caskroom/cask/elmarkdown
 brew install caskroom/cask/rdm
-brew cask install wireshark-chmodbpf
+brew install caskroom/cask/wireshark-chmodbpf
 brew linkapps wireshark
-brew install Caskroom/cask/gyazo
+brew install caskroom/cask/gyazo
 
 # Remove outdated versions
 brew cleanup
