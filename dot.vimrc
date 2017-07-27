@@ -53,6 +53,7 @@ NeoBundle 'wavded/vim-stylus'
 NeoBundle 'hail2u/vim-css3-syntax'
 NeoBundle 'digitaltoad/vim-jade'
 NeoBundle 'leafgarland/typescript-vim'
+NeoBundle 'aklt/plantuml-syntax'
 NeoBundle 'gkz/vim-ls'
 NeoBundle 'elzr/vim-json'
 NeoBundle 'ekalinin/Dockerfile.vim'
@@ -343,6 +344,7 @@ au BufRead,BufNewFile *.json set filetype=json
 au BufRead,BufNewFile *.contract set filetype=ruby
 au BufRead,BufNewFile *.shader set filetype=hlsl
 au BufRead,BufNewFile Guardfile set filetype=ruby
+au BufRead,BufNewFile Fastfile set filetype=ruby
 "------------------------------------------------------------------------------
 " Custom commands
 
