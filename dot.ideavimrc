@@ -1,0 +1,23 @@
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+set showmatch matchtime=1
+set cmdheight=2
+set laststatus=2
+set showcmd
+set nofoldenable
+set display=lastline
+set listchars=tab:>.,trail:_,extends:>,precedes:< 
+set clipboard+=unnamed
+set showmatch
+
+nnoremap L :nohl<CR>
+
+nnoremap <C-o> :action Back<cr>
+nnoremap <C-i> :action Forward<cr>
+nnoremap ob :action BuildSolutionAction<CR>
+nnoremap or :action Refactorings.QuickListPopupAction<CR>
+nnoremap od :action GotoDeclaration<CR>
+nnoremap oi :action GotoImplementation<CR>
+nnoremap of :action FindUsages<CR>
