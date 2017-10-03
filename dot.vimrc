@@ -92,7 +92,7 @@ NeoBundle 'marijnh/tern_for_vim', {
 \     'unix': 'npm install',
 \   },
 \ }
-NeoBundleLazy 'nosami/Omnisharp', {
+NeoBundleLazy 'OmniSharp/omnisharp-vim', {
 \   'autoload': {'filetypes': ['cs']},
 \   'build': {
 \     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
