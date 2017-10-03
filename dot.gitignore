@@ -9,3 +9,9 @@ tags
 *.cache
 _ignored/
 _ignored.meta
+dump.rdb
+*.sln.DotSettings.user
+
+*/AssetCaches/
+*/Assets/Editor/JetBrains/
+*/Assets/Editor/JetBrains.meta
