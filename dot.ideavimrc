@@ -14,6 +14,13 @@ set showmatch
 
 nnoremap L :nohl<CR>
 
+nnoremap ,uu :action SearchEverywhere<CR>
+nnoremap ,ub :action SearchEverywhere<CR>
+nnoremap ,uf :action SearchEverywhere<CR>
+nnoremap ,ur :action SearchEverywhere<CR>
+nnoremap ,um :action SearchEverywhere<CR>
+nnoremap ,ug :action SearchEverywhere<CR>
+
 nnoremap <C-o> :action Back<cr>
 nnoremap <C-i> :action Forward<cr>
 nnoremap ob :action BuildSolutionAction<CR>
