@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -u
+set -eu
 
-readonly LOCAL_BIN_DIR=$HOME/bin
-readonly DOTFILES_DIR=$HOME/dotfiles
+readonly local_bin_dir=$HOME/bin
+readonly dotfiles_dir=$HOME/dotfiles
 
 function topic {
   echo -en "\033[1;30m"
@@ -13,36 +13,36 @@ function topic {
 
 topic 'Clone the repository'
 
-if [ -d $DOTFILES_DIR ]; then
+if [ -d $dotfiles_dir ]; then
   echo 'dotfiles repository already exists'
 else
-  git clone --recursive https://github.com/shiwano/dotfiles.git $DOTFILES_DIR
+  git clone --recursive https://github.com/shiwano/dotfiles.git $dotfiles_dir
 fi
 
 topic 'Setup local bin files'
 
-mkdir -p $LOCAL_BIN_DIR
+mkdir -p $local_bin_dir
 
-for bin in `find $DOTFILES_DIR/bin -type f -maxdepth 1`; do
-  echo 'Linking' $bin '->' $LOCAL_BIN_DIR
-  ln -sf $bin $LOCAL_BIN_DIR
+for bin in `find $dotfiles_dir/bin -type f -maxdepth 1`; do
+  echo 'Linking' $bin '->' $local_bin_dir
+  ln -sf $bin $local_bin_dir
 done
 
 topic 'Setup dotfiles'
 
-for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*' | grep -v 'example'`; do
+for dotfile in `find $dotfiles_dir -maxdepth 1 -type f -name 'dot.*' | grep -v 'example'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
   echo 'Linking' $dotfile '->' $dest
   ln -sf $dotfile $dest
 done
 
-for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type d -name 'dot.*'`; do
+for dotfile in `find $dotfiles_dir -maxdepth 1 -type d -name 'dot.*'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
   echo 'Linking' $dotfile '->' $dest
   ln -sfn $dotfile $dest
 done
 
-for dotfile in `find $DOTFILES_DIR -maxdepth 1 -type f -name 'dot.*.example'`; do
+for dotfile in `find $dotfiles_dir -maxdepth 1 -type f -name 'dot.*.example'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
   if [ ! -f $dest ]; then
     echo 'Copying' $dotfile '->' $dest
@@ -52,12 +52,12 @@ done
 
 topic 'Setup Vim plugins'
 
-if [ -d $DOTFILES_DIR/dot.vim/bundle/neobundle.vim ]; then
+if [ -d $dotfiles_dir/dot.vim/bundle/neobundle.vim ]; then
   echo 'Vim plugins are already installed'
 else
   if type vim > /dev/null 2>&1; then
     echo 'Installing Vim plugins'
-    git clone --recursive git://github.com/Shougo/neobundle.vim $DOTFILES_DIR/dot.vim/bundle/neobundle.vim
+    git clone --recursive git://github.com/Shougo/neobundle.vim $dotfiles_dir/dot.vim/bundle/neobundle.vim
     vim -c NeoBundleInstall -c quit
   else
     echo 'Not found Vim'
@@ -72,7 +72,7 @@ if [ `uname` = "Darwin" ]; then
   else
     echo 'Installing Homebrew'
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    $DOTFILES_DIR/brew.sh
+    $dotfiles_dir/brew.sh
   fi
 else
   echo 'This environment does not need Homebrew'
