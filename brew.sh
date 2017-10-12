@@ -88,6 +88,7 @@ brew install caskroom/cask/rdm
 brew install caskroom/cask/wireshark-chmodbpf
 brew linkapps wireshark
 brew install caskroom/cask/gyazo
+brew install caskroom/cask/db-browser-for-sqlite
 
 # Remove outdated versions
 brew cleanup
