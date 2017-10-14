@@ -127,7 +127,7 @@ alias n='npm-exec'
 
 alias s='git status'
 alias g='move-to-ghq-directory'
-alias gg="ag --pager='less -R --no-init --quit-if-one-screen' --smart-case"
+alias gg='git ls-files -z | xargs -0 ag --pager="less -R --no-init --quit-if-one-screen" --smart-case'
 
 autoload zmv
 alias zmv='noglob zmv -W'
