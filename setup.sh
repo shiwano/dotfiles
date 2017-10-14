@@ -3,6 +3,7 @@
 set -eu
 
 readonly local_bin_dir=$HOME/bin
+readonly local_dotconfig_dir=$HOME/.config
 readonly dotfiles_dir=$HOME/dotfiles
 
 function topic {
@@ -19,30 +20,34 @@ else
   git clone --recursive https://github.com/shiwano/dotfiles.git $dotfiles_dir
 fi
 
-topic 'Setup local bin files'
+topic 'Setup bin directory'
 
 mkdir -p $local_bin_dir
 
-for bin in `find $dotfiles_dir/bin -type f -maxdepth 1`; do
+for bin in `find $dotfiles_dir/bin -type f -maxdepth 1 -mindepth 1`; do
   echo 'Linking' $bin '->' $local_bin_dir
   ln -sf $bin $local_bin_dir
 done
 
-topic 'Setup dotfiles'
+topic 'Setup .config directory'
 
-for dotfile in `find $dotfiles_dir -maxdepth 1 -type f -name 'dot.*' | grep -v 'example'`; do
-  dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
-  echo 'Linking' $dotfile '->' $dest
-  ln -sf $dotfile $dest
+mkdir -p $local_dotconfig_dir
+
+for src in `find $dotfiles_dir/config -maxdepth 1 -mindepth 1`; do
+  dest=$local_dotconfig_dir/`basename $src`
+  echo 'Linking' $src '->' $dest
+  ln -sfn $src $dest
 done
 
-for dotfile in `find $dotfiles_dir -maxdepth 1 -type d -name 'dot.*'`; do
+topic 'Setup dotfiles'
+
+for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -name 'dot.*' | grep -v 'example'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
   echo 'Linking' $dotfile '->' $dest
   ln -sfn $dotfile $dest
 done
 
-for dotfile in `find $dotfiles_dir -maxdepth 1 -type f -name 'dot.*.example'`; do
+for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -type f -name 'dot.*.example'`; do
   dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
   if [ ! -f $dest ]; then
     echo 'Copying' $dotfile '->' $dest
