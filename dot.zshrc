@@ -112,13 +112,13 @@ function grep-git-files {
 }
 
 function move-to-ghq-directory {
-  local p="$(ghq list | peco)"
+  local p="$(ghq list | peco --select-1)"
   [ $p ] && cd $(ghq root)/$p
 }
 
 function edit-grepped-file {
   if [ $@ ]; then
-    local s="$(grep-git-files $@ | peco)"
+    local s="$(grep-git-files $@ | peco --select-1)"
     [ $s ] && shift $# && vim +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
   fi
 }
