@@ -66,6 +66,7 @@
   rank = !git shortlog -sn --no-merges | cat -n
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
   upstream = "!sh -c 'git branch --set-upstream-to=$0 `git current-branch`'"
+  mru = for-each-ref --format='%(refname:short) (%(authordate:relative))' --sort=-committerdate refs/heads/
 [merge]
   tool = vimdiff
 [mergetool]
