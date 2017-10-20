@@ -25,6 +25,7 @@ nnoremap <C-o> :action Back<cr>
 nnoremap <C-i> :action Forward<cr>
 nnoremap ob :action BuildSolutionAction<CR>
 nnoremap or :action Refactorings.QuickListPopupAction<CR>
+nnoremap on :action Refactorings.QuickListPopupAction<CR>
 nnoremap od :action GotoDeclaration<CR>
 nnoremap oi :action GotoImplementation<CR>
 nnoremap of :action FindUsages<CR>
