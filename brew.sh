@@ -12,6 +12,7 @@ brew update
 brew tap caskroom/cask
 brew tap caskroom/versions
 brew tap shiwano/formulas
+brew tap delphinus/macvim-kaoriya
 
 # Packages
 brew install zsh
@@ -89,6 +90,8 @@ brew install caskroom/cask/wireshark-chmodbpf
 brew linkapps wireshark
 brew install caskroom/cask/gyazo
 brew install caskroom/cask/db-browser-for-sqlite
+brew install delphinus/macvim-kaoriya/macvim-kaoriya
+brew install caskroom/cask/shiftit
 
 # Remove outdated versions
 brew cleanup
