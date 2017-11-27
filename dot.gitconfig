@@ -47,8 +47,6 @@
   stash-ls = stash list --stat
   cleanup = "!sh -c 'git reset --hard && git clean -fd'"
   contributors = shortlog -s -n -e
-  cch= "!f() { git cherry -v "$@" | awk '{ if($1 == \"+\"){ color = \"green\" } if($1 == \"-\"){ color = \"red\" } cmd = \"git show --date=short --no-notes --pretty=format:\\047%C\" color $1 \" %h %Cgreen%cd %Cblue%cn%x09%Creset%s\\047 --summary \" $2; cmd | getline t; close(cmd); print t }' ;}; f"
-  checkout-for-review = "!sh -c 'git fetch origin $0 && git checkout FETCH_HEAD'"
   prune-branches = !git branch --delete $(git branch --merged master | grep -v '^*\\|  master$')
   prune-remote-branches = "!sh -c ' \
                            git branch -r --merged | \
@@ -58,8 +56,6 @@
                            sed \"/>|master/d;/origin/!d;s:origin/::\" | \
                            xargs git push origin --delete \
                          ' __dummy__"
-
-  config-for-aiming = config user.email siwano@aiming-inc.com
   push-for-review = !git push origin HEAD:refs/for/master/$(git current-branch)
   sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'" # git sed '**/*.go' $'s/foo/bar/g'
   sed-help = !echo "git sed '**/*.go' $'s/foo/bar/g'"
