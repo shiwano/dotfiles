@@ -108,7 +108,7 @@ function static-httpd {
 }
 
 function grep-git-files {
-  [ $@ ] && git ls-files -z | xargs -0 ag --pager="less -R --no-init --quit-if-one-screen" --smart-case $@
+  [ $@ ] && git ls-files -z . | xargs -0 ag --pager="less -R --no-init --quit-if-one-screen" --smart-case $@
 }
 
 function move-to-ghq-directory {
@@ -116,11 +116,17 @@ function move-to-ghq-directory {
   [ $p ] && cd $(ghq root)/$p
 }
 
-function edit-grepped-file {
+function edit-git-grepped-file {
   if [ $@ ]; then
     local s="$(grep-git-files $@ | peco --select-1)"
     [ $s ] && shift $# && vim +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
   fi
+}
+
+function edit-git-file {
+  local dir=${1-.}
+  local s="$(git ls-files $dir | peco --select-1)"
+  [ $s ] && shift $# && vim $s
 }
 
 # エイリアスの設定
@@ -138,8 +144,9 @@ alias n='npm-exec'
 
 alias s='git status'
 alias g='move-to-ghq-directory'
+alias gv='edit-git-file'
 alias gg='grep-git-files'
-alias gv='edit-grepped-file'
+alias ggv='edit-git-grepped-file'
 
 autoload zmv
 alias zmv='noglob zmv -W'
