@@ -13,6 +13,7 @@ brew tap caskroom/cask
 brew tap caskroom/versions
 brew tap shiwano/formulas
 brew tap delphinus/macvim-kaoriya
+brew tap cosmo0920/mingw_w64
 
 # Packages
 brew install zsh
@@ -53,6 +54,7 @@ brew install multitail
 brew install iproute2mac
 brew install clang-format
 brew install wireshark --with-qt
+brew install mingw-w64
 
 # .dmg
 brew install caskroom/cask/alfred
