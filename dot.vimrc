@@ -61,6 +61,7 @@ NeoBundle 'godlygeek/tabular' " vim-markdown required
 NeoBundle 'plasticboy/vim-markdown'
 NeoBundle 'ShaderHighLight'
 NeoBundle 'cespare/vim-toml'
+NeoBundle 'posva/vim-vue'
 NeoBundleLazy 'vim-jp/cpp-vim', {
       \ 'autoload' : {'filetypes' : 'cpp'}
       \ }
@@ -85,6 +86,7 @@ NeoBundle 'Shougo/neosnippet'
 NeoBundle 'Shougo/neosnippet-snippets'
 NeoBundle 'kana/vim-smartinput'
 NeoBundle 'Quramy/tsuquyomi'
+NeoBundle 'Quramy/tsuquyomi-vue'
 NeoBundle 'marijnh/tern_for_vim', {
 \ 'autoload' : { 'filetypes' : 'javascript' },
 \   'build': {
@@ -343,6 +345,7 @@ au BufRead,BufNewFile *.prefab set filetype=yaml
 au BufRead,BufNewFile *.json set filetype=json
 au BufRead,BufNewFile *.contract set filetype=ruby
 au BufRead,BufNewFile *.shader set filetype=hlsl
+au BufRead,BufNewFile *.vue setlocal filetype=vue
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
 "------------------------------------------------------------------------------
@@ -506,6 +509,7 @@ if !exists('g:neocomplete#force_omni_input_patterns')
   let g:neocomplete#force_omni_input_patterns = {}
 endif
 let g:neocomplete#force_omni_input_patterns.typescript = '[^. \t]\.\%(\h\w*\)\?'
+let g:neocomplete#force_omni_input_patterns.vue = '[^. \t]\.\%(\h\w*\)\?'
 
 " For clang_complete
 let g:neocomplete#force_overwrite_completefunc = 1
@@ -625,7 +629,6 @@ imap <C-b> <C-o><Plug>(poslist-prev-pos)
 " :Errors エラー一覧表示
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_mode_map = { 'mode': 'active',
-  \ 'active_filetypes': [],
   \ 'passive_filetypes': ['html'] }
 let g:syntastic_javascript_checkers = ['jshint']
 let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
@@ -635,7 +638,6 @@ let g:syntastic_objc_auto_refresh_includes = 1
 " for TypeScript
 let g:syntastic_typescript_checkers = ['tslint']
 " for Go
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': ['go'] }
 " let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck', 'go']
 let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 " for C++
@@ -683,3 +685,28 @@ let g:go_list_type = "quickfix"
 " auto-tags
 let g:auto_ctags = 1
 let g:auto_ctags_tags_args = '--tag-relative --recurse --sort=yes'
+"------------------------------------------------------------------------------
+" vim-vue
+autocmd FileType vue syntax sync fromstart
+let g:ft = ''
+function! NERDCommenter_before()
+  if &ft == 'vue'
+    let g:ft = 'vue'
+    let stack = synstack(line('.'), col('.'))
+    if len(stack) > 0
+      let syn = synIDattr((stack)[0], 'name')
+      if len(syn) > 0
+        exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
+      endif
+    endif
+  endif
+endfunction
+function! NERDCommenter_after()
+  if g:ft == 'vue'
+    setf vue
+    let g:ft = ''
+  endif
+endfunction
+"------------------------------------------------------------------------------
+" tsuquyomi
+let g:tsuquyomi_disable_quickfix = 1
