@@ -27,7 +27,6 @@ endif
 "------------------------------------------------------------------------------
 call plug#begin('~/.vim/plugged')
 " Color scheme
-Plug 'ciaranm/inkpot'
 Plug 'altercation/vim-colors-solarized'
 " Syntax highlight
 Plug 'vim-scripts/jQuery'
@@ -60,8 +59,6 @@ Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 " Code completion
 Plug 'Shougo/neocomplete.vim'
-Plug 'Shougo/neosnippet'
-Plug 'Shougo/neosnippet-snippets'
 Plug 'kana/vim-smartinput'
 Plug 'Quramy/tsuquyomi', { 'for': ['typescript', 'vue'] }
 Plug 'Quramy/tsuquyomi-vue', { 'for': ['typescript', 'vue'] }
@@ -87,9 +84,7 @@ Plug 'thinca/vim-splash'
 Plug 'vim-scripts/YankRing.vim'
 Plug 'vim-scripts/matchit.zip'
 Plug 'vim-scripts/Align'
-Plug 'thinca/vim-threes'
 Plug 'thinca/vim-singleton'
-Plug 'mattn/flappyvird-vim'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
 Plug 'buoto/gotests-vim'
@@ -477,25 +472,6 @@ let g:neocomplete#force_omni_input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->
 let g:clang_complete_auto = 0
 let g:clang_auto_select = 0
 "let g:clang_use_library = 1
-"------------------------------------------------------------------------------
-" neosnippet
-" Enable snipMate compatibility feature.
-let g:neosnippet#enable_snipmate_compatibility = 1
-
-" Tell Neosnippet about the other snippets
-let g:neosnippet#snippets_directory=$DOTVIM.'/snippets'
-
-" Plugin key-mappings.
-imap <C-k> <Plug>(neosnippet_expand_or_jump)
-smap <C-k> <Plug>(neosnippet_expand_or_jump)
-xmap <C-k> <Plug>(neosnippet_expand_target)
-
-imap <expr><CR> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)"
-  \: "\<CR>"
-smap <expr><CR> neosnippet#expandable_or_jumpable() ?
-  \ "\<Plug>(neosnippet_expand_or_jump)"
-  \: "\<CR>"
 "------------------------------------------------------------------------------
 " unite.vim
 let g:unite_enable_start_insert = 1
