@@ -25,119 +25,76 @@ else
   let $DOTVIM = expand('~/.vim')
 endif
 "------------------------------------------------------------------------------
-" NeoBundle
-" Plugin 追加: .vimrc に追加して、:NeoBundleInstall
-" Plugin 削除: .vimrc から削除して、:NeoBundleClean
-" Plugin 更新: :NeoBundleUpdate
-filetype off
-
-if has('vim_starting')
-  set rtp+=$DOTVIM/bundle/neobundle.vim/
-endif
-
-call neobundle#begin($DOTVIM.'/bundle')
-" NeoBundle
-NeoBundle 'Shougo/neobundle.vim'
+call plug#begin('~/.vim/plugged')
 " Color scheme
-NeoBundle 'ciaranm/inkpot'
-NeoBundle 'altercation/vim-colors-solarized'
+Plug 'ciaranm/inkpot'
+Plug 'altercation/vim-colors-solarized'
 " Syntax highlight
-NeoBundle 'jQuery'
-NeoBundle 'jelera/vim-javascript-syntax'
-NeoBundle 'mustache/vim-mustache-handlebars'
-NeoBundle 'kchmck/vim-coffee-script'
-NeoBundle 'othree/html5-syntax.vim'
-NeoBundle 'timcharper/textile.vim'
-NeoBundle 'groenewege/vim-less'
-NeoBundle 'wavded/vim-stylus'
-NeoBundle 'hail2u/vim-css3-syntax'
-NeoBundle 'digitaltoad/vim-jade'
-NeoBundle 'leafgarland/typescript-vim'
-NeoBundle 'aklt/plantuml-syntax'
-NeoBundle 'gkz/vim-ls'
-NeoBundle 'elzr/vim-json'
-NeoBundle 'ekalinin/Dockerfile.vim'
-NeoBundle 'godlygeek/tabular' " vim-markdown required
-NeoBundle 'plasticboy/vim-markdown'
-NeoBundle 'ShaderHighLight'
-NeoBundle 'cespare/vim-toml'
-NeoBundle 'posva/vim-vue'
-NeoBundleLazy 'vim-jp/cpp-vim', {
-      \ 'autoload' : {'filetypes' : 'cpp'}
-      \ }
+Plug 'vim-scripts/jQuery'
+Plug 'jelera/vim-javascript-syntax'
+Plug 'mustache/vim-mustache-handlebars'
+Plug 'kchmck/vim-coffee-script'
+Plug 'othree/html5-syntax.vim'
+Plug 'timcharper/textile.vim'
+Plug 'groenewege/vim-less'
+Plug 'wavded/vim-stylus'
+Plug 'hail2u/vim-css3-syntax'
+Plug 'digitaltoad/vim-jade'
+Plug 'leafgarland/typescript-vim'
+Plug 'aklt/plantuml-syntax'
+Plug 'gkz/vim-ls'
+Plug 'elzr/vim-json'
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'godlygeek/tabular' " vim-markdown required
+Plug 'plasticboy/vim-markdown'
+Plug 'vim-scripts/ShaderHighLight'
+Plug 'cespare/vim-toml'
+Plug 'posva/vim-vue'
+Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
 " Environment
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'Shougo/neomru.vim'
-NeoBundle 'Sixeight/unite-grep'
-NeoBundle 'Shougo/vimfiler'
-NeoBundle 'thinca/vim-qfreplace'
-NeoBundle 'Shougo/vimproc.vim', {
-\ 'build' : {
-\     'windows' : 'tools\\update-dll-mingw',
-\     'cygwin' : 'make -f make_cygwin.mak',
-\     'mac' : 'make -f make_mac.mak',
-\     'linux' : 'make',
-\     'unix' : 'gmake',
-\    },
-\ }
+Plug 'Shougo/unite.vim'
+Plug 'Shougo/neomru.vim'
+Plug 'Sixeight/unite-grep'
+Plug 'Shougo/vimfiler'
+Plug 'thinca/vim-qfreplace'
+Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 " Code completion
-NeoBundle 'Shougo/neocomplete.vim'
-NeoBundle 'Shougo/neosnippet'
-NeoBundle 'Shougo/neosnippet-snippets'
-NeoBundle 'kana/vim-smartinput'
-NeoBundle 'Quramy/tsuquyomi'
-NeoBundle 'Quramy/tsuquyomi-vue'
-NeoBundle 'marijnh/tern_for_vim', {
-\ 'autoload' : { 'filetypes' : 'javascript' },
-\   'build': {
-\     'windows': 'npm install',
-\     'mac': 'npm install',
-\     'unix': 'npm install',
-\   },
-\ }
-NeoBundleLazy 'OmniSharp/omnisharp-vim', {
-\   'autoload': {'filetypes': ['cs']},
-\   'build': {
-\     'windows': 'MSBuild.exe server/OmniSharp.sln /p:Platform="Any CPU"',
-\     'mac': 'xbuild server/OmniSharp.sln',
-\     'unix': 'xbuild server/OmniSharp.sln',
-\   },
-\ }
-NeoBundle 'tokorom/clang_complete'
-NeoBundle 'tokorom/clang_complete-getopts-ios'
-NeoBundle 'fatih/vim-go'
+Plug 'Shougo/neocomplete.vim'
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
+Plug 'kana/vim-smartinput'
+Plug 'Quramy/tsuquyomi', { 'for': ['typescript', 'vue'] }
+Plug 'Quramy/tsuquyomi-vue', { 'for': ['typescript', 'vue'] }
+Plug 'marijnh/tern_for_vim', { 'for': 'javascript', 'build': 'npm install' }
+Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
+Plug 'tokorom/clang_complete', { 'for': ['c', 'cpp', 'objc'] }
+Plug 'tokorom/clang_complete-getopts-ios', { 'for': ['c', 'cpp', 'objc'] }
+Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
 " Lint and Format
-NeoBundle 'scrooloose/syntastic'
-NeoBundleLazy 'rhysd/vim-clang-format', {
-      \ 'autoload' : {'filetypes' : ['c', 'cpp', 'objc']}
-      \ }
+Plug 'scrooloose/syntastic'
+Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 " Misc
-NeoBundle 'taglist.vim'
-NeoBundle 'jason0x43/vim-js-indent'
-NeoBundle 'tpope/vim-rails'
-NeoBundle 'tpope/vim-surround'
-NeoBundle 'thinca/vim-poslist'
-NeoBundle 'thinca/vim-quickrun'
-NeoBundle 'scrooloose/nerdcommenter'
-NeoBundle 'mattn/webapi-vim'
-NeoBundle 'mattn/gist-vim'
-NeoBundle 'thinca/vim-splash'
-NeoBundle 'YankRing.vim'
-NeoBundle 'matchit.zip'
-NeoBundle 'Align'
-NeoBundle 'thinca/vim-threes'
-NeoBundle 'thinca/vim-singleton'
-NeoBundle 'mattn/flappyvird-vim'
-NeoBundle 'thinca/vim-localrc'
-NeoBundle 'tpope/vim-projectionist'
-NeoBundle 'buoto/gotests-vim'
-NeoBundleLazy 'soramugi/auto-ctags.vim', {
-      \ 'autoload' : {'filetypes' : ['c', 'cpp']}
-      \ }
-
-call neobundle#end()
-filetype plugin indent on
-NeoBundleCheck
+Plug 'vim-scripts/taglist.vim'
+Plug 'jason0x43/vim-js-indent'
+Plug 'tpope/vim-rails'
+Plug 'tpope/vim-surround'
+Plug 'thinca/vim-poslist'
+Plug 'thinca/vim-quickrun'
+Plug 'scrooloose/nerdcommenter'
+Plug 'mattn/webapi-vim'
+Plug 'mattn/gist-vim'
+Plug 'thinca/vim-splash'
+Plug 'vim-scripts/YankRing.vim'
+Plug 'vim-scripts/matchit.zip'
+Plug 'vim-scripts/Align'
+Plug 'thinca/vim-threes'
+Plug 'thinca/vim-singleton'
+Plug 'mattn/flappyvird-vim'
+Plug 'thinca/vim-localrc'
+Plug 'tpope/vim-projectionist'
+Plug 'buoto/gotests-vim'
+Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
+call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
 syntax enable

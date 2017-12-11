@@ -57,13 +57,13 @@ done
 
 topic 'Setup Vim plugins'
 
-if [ -d $dotfiles_dir/dot.vim/bundle/neobundle.vim ]; then
+if [ -f $dotfiles_dir/dot.vim/autoload/plug.vim ]; then
   echo 'Vim plugins are already installed'
 else
   if type vim > /dev/null 2>&1; then
     echo 'Installing Vim plugins'
-    git clone --recursive git://github.com/Shougo/neobundle.vim $dotfiles_dir/dot.vim/bundle/neobundle.vim
-    vim -c NeoBundleInstall -c quit
+    curl -fLo $dotfiles_dir/dot.vim//autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    vim -c PlugInstall -c quit
   else
     echo 'Not found Vim'
   fi

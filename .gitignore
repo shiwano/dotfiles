@@ -1,5 +1,6 @@
 .DS_Store
-dot.vim/bundle/*
+dot.vim/autoload/plug.vim
+dot.vim/plugged/
 dot.vim/.netrwhist
 dot.vim/doc/tags
 dot.vim/view
