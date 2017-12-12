@@ -39,6 +39,8 @@ if [ -d /usr/local/opt/android-sdk ] ; then
   export ANDROID_HOME=/usr/local/opt/android-sdk
 fi
 
+export XDG_CONFIG_HOME=$HOME/.config
+
 # Go
 
 export GOPATH=$HOME/code
@@ -134,7 +136,7 @@ alias ls='ls --color=auto'
 alias ll='ls -l'
 alias la='ls -A'
 alias lal='ls -l -A'
-alias vi='vim'
+alias vi='nvim'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias npm-exec='PATH=$(npm bin):$PATH'

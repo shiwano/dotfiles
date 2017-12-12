@@ -55,6 +55,7 @@ brew install iproute2mac
 brew install clang-format
 brew install wireshark --with-qt
 brew install mingw-w64
+brew install neovim
 
 # .dmg
 brew install caskroom/cask/alfred

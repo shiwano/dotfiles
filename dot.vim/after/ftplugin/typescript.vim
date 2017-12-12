@@ -1,5 +1,5 @@
-nnoremap od :TsuquyomiDefinition<cr>
-nnoremap of :TsuquyomiReferences<cr>
-nnoremap on :TsuquyomiRenameSymbol<cr>
-nnoremap or :TsuquyomiReload<cr>
-nnoremap os :TsuquyomiStartServer<cr>
+nnoremap od :TSDef<cr>
+nnoremap of :TSRefs<cr>
+nnoremap on :TSRename<cr>
+nnoremap or :TSRestart<cr>
+nnoremap os :TSStart<cr>

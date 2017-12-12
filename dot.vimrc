@@ -15,7 +15,7 @@ if has("macunix")
 
   let s:clang_library_path='/Library/Developer/CommandLineTools/usr/lib'
   if isdirectory(s:clang_library_path)
-    let g:clang_library_path=s:clang_library_path
+    let g:clang_library_path = s:clang_library_path.'/libclang.dylib'
   endif
 endif
 
@@ -58,14 +58,17 @@ Plug 'Shougo/vimfiler'
 Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 " Code completion
-Plug 'Shougo/neocomplete.vim'
+if has('nvim')
+  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+else
+  Plug 'Shougo/deoplete.nvim'
+  Plug 'roxma/nvim-yarp'
+  Plug 'roxma/vim-hug-neovim-rpc'
+endif
+Plug 'mhartington/nvim-typescript', { 'for': ['typescript', 'vue'] }
+Plug 'zchee/deoplete-go', { 'do': 'make', 'for': 'go' }
 Plug 'kana/vim-smartinput'
-Plug 'Quramy/tsuquyomi', { 'for': ['typescript', 'vue'] }
-Plug 'Quramy/tsuquyomi-vue', { 'for': ['typescript', 'vue'] }
-Plug 'marijnh/tern_for_vim', { 'for': 'javascript', 'build': 'npm install' }
 Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
-Plug 'tokorom/clang_complete', { 'for': ['c', 'cpp', 'objc'] }
-Plug 'tokorom/clang_complete-getopts-ios', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
 " Lint and Format
 Plug 'scrooloose/syntastic'
@@ -243,50 +246,28 @@ endif
 "------------------------------------------------------------------------------
 " Key mappings
 
-" 行単位で移動(1行が長い場合に便利)
 nnoremap j gj
 nnoremap k gk
 
-" 検索などで飛んだらそこを真ん中に
-nmap n nzz
-nmap N Nzz
-nmap * *zz
-nmap # #zz
-nmap g* g*zz
-nmap g# g#zz
-nmap G Gzz
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
+nnoremap G Gzz
 
-" CTRL-hjklでウィンドウ移動
-nmap <C-j> <C-w>j
-nmap <C-k> <C-w>k
-nmap <C-l> <C-w>l
-nmap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <C-h> <C-w>h
 
-" その他キーバインド
-nmap <C-r> <C-r>
-imap <C-r> <C-o><C-r>
-imap <C-l> <Right>
-vmap <C-r> <Esc><C-r>
-nmap <silent> L :nohl<CR>
-
-" qq でレジスタに記憶しないようにする
-nmap qq <ESC>
-
-" コマンドモードでの補完
-cmap <C-p> <Up>
-cmap <C-n> <Down>
-
-" usキーボードで使いやすく
-nmap ; :
-vmap ; :
-
-" HTML 閉じタグ補完
-augroup MyXML
-  autocmd!
-  autocmd Filetype xml inoremap <buffer> </ </<C-x><C-o>
-  autocmd Filetype html inoremap <buffer> </ </<C-x><C-o>
-  autocmd Filetype eruby inoremap <buffer> </ </<C-x><C-o>
-augroup END
+nnoremap <silent> L :nohl<CR>
+nnoremap qq <ESC>
+cnoremap <C-p> <Up>
+cnoremap <C-n> <Down>
+nnoremap ; :
+vnoremap ; :
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.cson set filetype=coffee
@@ -346,11 +327,28 @@ if has('path_extra')
   set tags+=tags;
 endif
 
-" Windowsバックスラッシュ対策 Vundleを使っているのでコメントアウト
-"set shellslash
-
 " クリップボードを使用
 set clipboard+=unnamed
+"------------------------------------------------------------------------------
+" terminal
+if has('nvim')
+  tnoremap <silent> <ESC> <C-\><C-n>
+  tnoremap <silent> <C-j> <C-\><C-n><C-w>j
+  tnoremap <silent> <C-k> <C-\><C-n><C-w>k
+  tnoremap <silent> <C-l> <C-\><C-n><C-w>l
+  tnoremap <silent> <C-h> <C-\><C-n><C-w>h
+
+  autocmd TermOpen * setlocal scrollback=1
+
+  command! T :call s:T()
+  function! s:T()
+    vsplit
+    wincmd l
+    vertical resize 100
+    terminal
+    normal i
+  endfunction
+endif
 "------------------------------------------------------------------------------
 " matchit.vim
 let b:match_words="{{t:{{/t}}" " % で対応するフレーズに移動
@@ -367,111 +365,6 @@ let g:yankring_manual_clipboard_check = 0
 if has("macunix")
   let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
 endif
-"------------------------------------------------------------------------------
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-let g:neocomplete#enable_camel_case_completion = 1
-let g:neocomplete#enable_underbar_completion = 1
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-  \ 'default' : '',
-  \ 'vimshell' : $HOME.'/.vimshell_hist',
-  \ 'scheme' : $HOME.'/.gosh_completions',
-  \ 'c' : $DOTVIM.'/dict/c-eglibc.dict',
-  \ 'objc' : $DOTVIM.'/dict/objectivec.dict',
-  \ 'ruby' : $DOTVIM.'/dict/ruby.dict',
-  \ 'perl' : $DOTVIM.'/dict/perl.dict',
-  \ 'css' : $DOTVIM.'/dict/css.dict',
-  \ 'javascript' : $DOTVIM.'/dict/javascript.dict',
-  \ 'coffee' : $DOTVIM.'/dict/javascript.dict',
-  \ 'actionscript' : $DOTVIM.'/dict/actionscript.dict'
-  \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-  let g:neocomplete#keyword_patterns = {}
-endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
-
-" Plugin key-mappings.
-inoremap <expr><C-g> neocomplete#undo_completion()
-inoremap <expr><C-l> neocomplete#complete_common_string()
-
-" Recommended key-mappings.
-" <CR>: close popup and save indent.
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function()
-  " For no inserting <CR> key.
-  return pumvisible() ? neocomplete#close_popup() : "\<CR>"
-endfunction
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ neocomplete#start_manual_complete()
-function! s:check_back_space() "{{{
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
-" dot: completion.
-" inoremap <expr> . pumvisible() ? neocomplete#smart_close_popup().".\<C-X>\<C-O>\<C-P>" : ".\<C-X>\<C-O>\<C-P>"
-" <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><C-y> neocomplete#close_popup()
-inoremap <expr><C-e> neocomplete#cancel_popup()
-" Close popup by <Space>.
-inoremap <expr><Space> pumvisible() ? neocomplete#close_popup()."\<Space>" : "\<Space>"
-
-" Enable omni completion.
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType c set omnifunc=ccomplete#Complete
-autocmd FileType cpp set omnifunc=cppcomplete#Complete
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType typescript setlocal omnifunc=tsuquyomi#complete
-autocmd FileType cs setlocal omnifunc=OmniSharp#Complete
-" autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
-" autocmd FileType ruby,eruby let g:rubycomplete_buffer_loading = 1
-" autocmd FileType ruby,eruby let g:rubycomplete_classes_in_global = 1
-" autocmd FileType ruby,eruby let g:rubycomplete_rails = 1
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-" let g:neocomplete#sources#omni#input_patterns.ruby = '[^. *\t]\.\w*\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.cs = '[^. \t]\.\%(\h\w*\)\?'
-let g:neocomplete#sources#omni#input_patterns.javascript = '[^. *\t]\.\w*\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)'
-let g:neocomplete#sources#omni#input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'"
-let g:neocomplete#sources#omni#input_patterns.go = '[^. *\t]\.\w*'
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.typescript = '[^. \t]\.\%(\h\w*\)\?'
-let g:neocomplete#force_omni_input_patterns.vue = '[^. \t]\.\%(\h\w*\)\?'
-
-" For clang_complete
-let g:neocomplete#force_overwrite_completefunc = 1
-let g:neocomplete#force_omni_input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-let g:neocomplete#force_omni_input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-let g:neocomplete#force_omni_input_patterns.objc = '[^.[:digit:] *\t]\%(\.\|->\)\w*'
-let g:neocomplete#force_omni_input_patterns.objcpp = '[^.[:digit:] *\t]\%(\.\|->\)\w*\|\h\w*::\w*'
-let g:clang_complete_auto = 0
-let g:clang_auto_select = 0
-"let g:clang_use_library = 1
 "------------------------------------------------------------------------------
 " unite.vim
 let g:unite_enable_start_insert = 1
@@ -593,13 +486,6 @@ nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() 
 " OmniSharp
 let g:OmniSharp_host = "http://localhost:2000"
 let g:OmniSharp_typeLookupInPreview = 1
-
-"Showmatch significantly slows down omnicomplete
-"when the first match contains parentheses.
-set noshowmatch
-
-"don't autoselect first item in omnicomplete, show if only one item (for preview)
-set completeopt=longest,menuone
 "------------------------------------------------------------------------------
 " clang complete
 let g:clang_user_options = '-std=c++11'
@@ -641,5 +527,32 @@ function! NERDCommenter_after()
   endif
 endfunction
 "------------------------------------------------------------------------------
-" tsuquyomi
-let g:tsuquyomi_disable_quickfix = 1
+" deoplete
+set completeopt=menuone
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_smart_case = 1
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ deoplete#mappings#manual_complete()
+function! s:check_back_space() abort "{{{
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
+endfunction"}}}
+
+inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> deoplete#smart_close_popup()."\<C-h>"
+
+inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+function! s:my_cr_function() abort
+  return deoplete#close_popup() . "\<CR>"
+endfunction
+
+autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
+
+let g:nvim_typescript#vue_support = 1
+
+let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
+let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
+let g:deoplete#sources#go#cgo#libclang_path = g:clang_library_path
