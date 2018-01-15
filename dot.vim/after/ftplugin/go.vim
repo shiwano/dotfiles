@@ -10,4 +10,4 @@ nnoremap oc :GoCallees<cr>
 nnoremap op :GoImplements<cr>
 nnoremap oi :GoImport<cr>
 nnoremap ob :GoBuild<cr>
-nnoremap ot :GoTests<cr>:bufdo checktime<cr>
+nnoremap ot :GoTest<cr>
