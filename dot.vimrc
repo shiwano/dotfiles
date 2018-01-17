@@ -555,4 +555,7 @@ let g:nvim_typescript#vue_support = 1
 
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-let g:deoplete#sources#go#cgo#libclang_path = g:clang_library_path
+
+if has("macunix")
+  let g:deoplete#sources#go#cgo#libclang_path = g:clang_library_path
+endif
