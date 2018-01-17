@@ -132,11 +132,16 @@ function edit-git-file {
 }
 
 # エイリアスの設定
+if type nvim > /dev/null; then
+  alias vi='nvim'
+else
+  alias vi='vim'
+fi
+
 alias ls='ls --color=auto'
 alias ll='ls -l'
 alias la='ls -A'
 alias lal='ls -l -A'
-alias vi='nvim'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias npm-exec='PATH=$(npm bin):$PATH'
