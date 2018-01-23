@@ -11,3 +11,4 @@ nnoremap op :GoImplements<cr>
 nnoremap oi :GoImport<cr>
 nnoremap ob :GoBuild<cr>
 nnoremap ot :GoTest<cr>
+nnoremap os :GoFillStruct<cr>
