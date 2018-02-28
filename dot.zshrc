@@ -139,9 +139,9 @@ else
 fi
 
 alias ls='ls --color=auto'
-alias ll='ls -l'
+alias ll='ls -l --block-size=KB'
 alias la='ls -A'
-alias lal='ls -l -A'
+alias lal='ls -l -A --block-size=KB'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias npm-exec='PATH=$(npm bin):$PATH'
