@@ -256,6 +256,7 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 nnoremap G Gzz
+nnoremap aa @a
 
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
