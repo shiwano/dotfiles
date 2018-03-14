@@ -67,6 +67,16 @@ fi
 function find-grep { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
 function find-sed { find . -name $1 -type f | xargs gsed -i $2 }
 
+function compress {
+  if [ -f $1 ] ; then
+    tar -zcvf $1.tar.gz $1
+  elif [ -d $1 ] ; then
+    tar -zcvf $1.tar.gz $1
+  else
+    echo "'$1' is not a valid file or directory!"
+  fi
+}
+
 function extract {
   if [ -f $1 ] ; then
     case $1 in
@@ -148,6 +158,7 @@ alias npm-exec='PATH=$(npm bin):$PATH'
 alias search='ag -g . | ag '
 alias b='bundle exec'
 alias n='npm-exec'
+alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 
 alias s='git status'
 alias g='move-to-ghq-directory'
