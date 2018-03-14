@@ -57,6 +57,7 @@ Plug 'Sixeight/unite-grep'
 Plug 'Shougo/vimfiler'
 Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+Plug 'jmcantrell/vim-virtualenv'
 " Code completion
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
@@ -70,9 +71,11 @@ Plug 'zchee/deoplete-go', { 'do': 'make', 'for': 'go' }
 Plug 'kana/vim-smartinput'
 Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
+Plug 'zchee/deoplete-jedi'
 " Lint and Format
 Plug 'scrooloose/syntastic'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
+Plug 'Vimjas/vim-python-pep8-indent'
 " Misc
 Plug 'vim-scripts/taglist.vim'
 Plug 'jason0x43/vim-js-indent'
@@ -474,14 +477,15 @@ let g:syntastic_cpp_checkers = ['cpplint']
 let g:syntastic_cpp_check_header = 1
 "------------------------------------------------------------------------------
 " QuickRun
-command! Q :QuickRun
-let g:quickrun_config = {
-\   "_" : {
-\       "runner" : "vimproc",
-\       "runner/vimproc/updatetime" : 60
-\   },
-\}
-" quickrun.vim が実行していない場合には <C-c> を呼び出す
+let g:quickrun_config = get(g:, 'quickrun_config', {})
+let g:quickrun_config._ = {
+      \ 'runner'    : 'vimproc',
+      \ 'runner/vimproc/updatetime' : 60,
+      \ 'outputter/buffer/split'  : ':rightbelow 16sp',
+      \ 'outputter/buffer/close_on_empty' : 1,
+      \ }
+nnoremap t :QuickRun<CR>
+nnoremap tt :Q<CR>
 nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 "------------------------------------------------------------------------------
 " OmniSharp
