@@ -42,7 +42,6 @@ fi
 export XDG_CONFIG_HOME=$HOME/.config
 
 # Go
-
 export GOPATH=$HOME/code
 PATH="$GOPATH/bin:$PATH"
 export GO15VENDOREXPERIMENT=1
@@ -54,10 +53,22 @@ fi
 
 # vim
 if [ -d $HOME/Applications/MacVim.app ]; then
-  export EDITOR=$HOME/Applications/MacVim.app/Contents/MacOS/Vim
-  alias vim='$EDITOR "$@"'
+  alias vim='$HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
   alias gvim='open -a $HOME/Applications/MacVim.app "$@"'
   alias vimdiff=$HOME/Applications/MacVim.app/Contents/MacOS/vimdiff
+fi
+
+if type nvim > /dev/null; then
+  alias vi='nvim'
+  export EDITOR='nvim'
+else
+  alias vi='vim'
+  export EDITOR='vim'
+fi
+
+# direnv
+if type direnv > /dev/null; then
+  eval "$(direnv hook zsh)"
 fi
 
 # vi風キーバインド
@@ -142,12 +153,6 @@ function edit-git-file {
 }
 
 # エイリアスの設定
-if type nvim > /dev/null; then
-  alias vi='nvim'
-else
-  alias vi='vim'
-fi
-
 alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'

@@ -56,6 +56,7 @@ brew install clang-format
 brew install wireshark --with-qt
 brew install mingw-w64
 brew install neovim
+brew install direnv
 
 # .dmg
 brew install caskroom/cask/alfred
