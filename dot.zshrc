@@ -35,6 +35,11 @@ if [ -d /usr/local/heroku ] ; then
   export PATH="/usr/local/heroku/bin:$PATH"
 fi
 
+if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
+  export PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
+  export PATH="$HOME/.pub-cache/bin:$PATH"
+fi
+
 if [ -d /usr/local/opt/android-sdk ] ; then
   export ANDROID_HOME=/usr/local/opt/android-sdk
 fi

@@ -50,6 +50,7 @@ Plug 'vim-scripts/ShaderHighLight'
 Plug 'cespare/vim-toml'
 Plug 'posva/vim-vue'
 Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
+Plug 'dart-lang/dart-vim-plugin'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
@@ -72,6 +73,10 @@ Plug 'kana/vim-smartinput'
 Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
 Plug 'zchee/deoplete-jedi'
+Plug 'autozimu/LanguageClient-neovim', {
+    \ 'branch': 'next',
+    \ 'do': 'bash install.sh',
+    \ }
 " Lint and Format
 Plug 'scrooloose/syntastic'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
@@ -312,6 +317,16 @@ function! s:Normalize()
     %s///g
   catch
   endtry
+endfunction
+
+" Toggle expandtab
+command! TabToggle :call s:TabToggle()
+function! s:TabToggle()
+  if &expandtab
+    set noexpandtab
+  else
+    set expandtab
+  endif
 endfunction
 "------------------------------------------------------------------------------
 " Utilities
@@ -564,3 +579,9 @@ let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const
 if has("macunix")
   let g:deoplete#sources#go#cgo#libclang_path = g:clang_library_path
 endif
+"------------------------------------------------------------------------------
+" LanguageClient-neovim
+let g:LanguageClient_serverCommands = {
+    \ 'dart': ['dart_language_server'],
+    \ }
+let g:LanguageClient_diagnosticsEnable = 0
