@@ -57,6 +57,10 @@ brew install wireshark --with-qt
 brew install mingw-w64
 brew install neovim
 brew install direnv
+brew install --HEAD libimobiledevice
+brew install ideviceinstaller
+brew install cocoapods
+brew install ios-deploy
 
 # .dmg
 brew install caskroom/cask/alfred
