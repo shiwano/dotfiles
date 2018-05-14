@@ -67,7 +67,7 @@ else
   Plug 'roxma/nvim-yarp'
   Plug 'roxma/vim-hug-neovim-rpc'
 endif
-Plug 'mhartington/nvim-typescript', { 'for': ['typescript', 'vue'] }
+Plug 'mhartington/nvim-typescript', { 'for': ['typescript'] }
 Plug 'zchee/deoplete-go', { 'do': 'make', 'for': 'go' }
 Plug 'kana/vim-smartinput'
 Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
@@ -78,7 +78,7 @@ Plug 'autozimu/LanguageClient-neovim', {
     \ 'do': 'bash install.sh',
     \ }
 " Lint and Format
-Plug 'scrooloose/syntastic'
+Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
 " Misc
@@ -290,6 +290,7 @@ au BufRead,BufNewFile *.shader set filetype=hlsl
 au BufRead,BufNewFile *.vue setlocal filetype=vue
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
+au BufRead,BufNewFile .envrc* set filetype=sh
 "------------------------------------------------------------------------------
 " Custom commands
 
@@ -470,27 +471,6 @@ imap <C-f> <C-o><Plug>(poslist-next-pos)
 nmap <C-b> <Plug>(poslist-prev-pos)
 imap <C-b> <C-o><Plug>(poslist-prev-pos)
 "------------------------------------------------------------------------------
-" syntastic
-" :Errors エラー一覧表示
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_mode_map = { 'mode': 'active',
-  \ 'passive_filetypes': ['html'] }
-let g:syntastic_javascript_checkers = ['jshint']
-let g:syntastic_coffee_coffeelint_args = '-f ~/.vim/coffeelint.json'
-" for objective-c
-let g:syntastic_objc_check_header = 1
-let g:syntastic_objc_auto_refresh_includes = 1
-" for TypeScript
-let g:syntastic_typescript_checkers = ['tslint']
-" for Go
-" let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck', 'go']
-let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
-" for C++
-" let g:syntastic_debug = 1
-let g:syntastic_cpp_cpplint_exec = 'cpplint.py'
-let g:syntastic_cpp_checkers = ['cpplint']
-let g:syntastic_cpp_check_header = 1
-"------------------------------------------------------------------------------
 " QuickRun
 let g:quickrun_config = get(g:, 'quickrun_config', {})
 let g:quickrun_config._ = {
@@ -570,8 +550,6 @@ function! s:my_cr_function() abort
 endfunction
 
 autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
-
-let g:nvim_typescript#vue_support = 1
 
 let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
 let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
