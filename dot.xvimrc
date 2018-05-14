@@ -1,0 +1,28 @@
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+set showmatch matchtime=1
+set cmdheight=2
+set laststatus=2
+set showcmd
+set nofoldenable
+set display=lastline
+set listchars=tab:>.,trail:_,extends:>,precedes:< 
+set clipboard+=unnamed
+set showmatch
+
+nnoremap L :nohl<CR>
+
+nnoremap ,uu :xcmenucmd Find in Workspace...<CR>
+nnoremap ,ub :xcmenucmd Find in Workspace...<CR>
+nnoremap ,uf :xcmenucmd Find in Workspace...<CR>
+nnoremap ,ur :xcmenucmd Find in Workspace...<CR>
+nnoremap ,um :xcmenucmd Find in Workspace...<CR>
+nnoremap ,ug :xcmenucmd Find in Workspace...<CR>
+
+nnoremap <C-i> :xccmd goForwardInHistoryByCommand<CR>
+nnoremap <C-o> :xccmd goBackInHistoryByCommand<CR>
+nnoremap ob :make<CR>
+nnoremap od viw:xccmd jumpToDefinition<CR>
+nnoremap of viw:xccmd findSelectedTextInWorkspace<CR>
