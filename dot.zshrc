@@ -23,6 +23,10 @@ if [ -d /usr/local/Cellar/gnu-sed ]; then
   MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
+if [ -d /usr/local/Cellar/openssl ]; then
+  PATH="/usr/local/opt/openssl/bin:$PATH"
+fi
+
 if [ -d ${HOME}/.anyenv ] ; then
   PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
@@ -40,8 +44,8 @@ if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
   export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
-if [ -d /usr/local/opt/android-sdk ] ; then
-  export ANDROID_HOME=/usr/local/opt/android-sdk
+if [ -d "$HOME/Library/Android/sdk" ] ; then
+  export ANDROID_HOME="$HOME/Library/Android/sdk"
 fi
 
 export XDG_CONFIG_HOME=$HOME/.config
@@ -120,18 +124,10 @@ function extract {
 function static-httpd {
   if type python > /dev/null; then
     if python -V 2>&1 | grep -qm1 'Python 3\.'; then
-      python -m http.server 5000
+      python -m http.server ${1-5000}
     else
-      python -m SimpleHTTPServer 5000
+      python -m SimpleHTTPServer ${1-5000}
     fi
-  elif type ruby > /dev/null; then
-    if ruby -v | grep -qm1 'ruby 2\.'; then
-      ruby -run -e httpd -- --port=5000 .
-    else
-      ruby -rwebrick -e 'WEBrick::HTTPServer.new(:Port => 5000, :DocumentRoot => ".").start'
-    fi
-  elif type node > /dev/null; then
-    node -e "var c=require('connect'), d=process.env.PWD; c().use(c.logger()).use(c.static(d)).use(c.directory(d)).listen(5000);"
   fi
 }
 
