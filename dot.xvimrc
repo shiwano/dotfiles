@@ -12,17 +12,19 @@ set listchars=tab:>.,trail:_,extends:>,precedes:<
 set clipboard+=unnamed
 set showmatch
 
+nnoremap ; :
+vnoremap ; :
 nnoremap L :nohl<CR>
 
-nnoremap ,uu :xcmenucmd Find in Workspace...<CR>
-nnoremap ,ub :xcmenucmd Find in Workspace...<CR>
-nnoremap ,uf :xcmenucmd Find in Workspace...<CR>
-nnoremap ,ur :xcmenucmd Find in Workspace...<CR>
-nnoremap ,um :xcmenucmd Find in Workspace...<CR>
-nnoremap ,ug :xcmenucmd Find in Workspace...<CR>
+nnoremap ,uu :xcmenucmd Open Quickly...<CR>
+nnoremap ,ub :xcmenucmd Open Quickly...<CR>
+nnoremap ,uf :xcmenucmd Open Quickly...<CR>
+nnoremap ,ur :xcmenucmd Open Quickly...<CR>
+nnoremap ,um :xcmenucmd Open Quickly...<CR>
+nnoremap ,ug :xcmenucmd Open Quickly...<CR>
 
 nnoremap <C-i> :xccmd goForwardInHistoryByCommand<CR>
 nnoremap <C-o> :xccmd goBackInHistoryByCommand<CR>
 nnoremap ob :make<CR>
 nnoremap od viw:xccmd jumpToDefinition<CR>
-nnoremap of viw:xccmd findSelectedTextInWorkspace<CR>
+nnoremap of :xcmenucmd Find Selected Symbol in Workspace<CR>
