@@ -12,6 +12,8 @@ set listchars=tab:>.,trail:_,extends:>,precedes:<
 set clipboard+=unnamed
 set showmatch
 
+nnoremap ; :
+vnoremap ; :
 nnoremap L :nohl<CR>
 
 nnoremap ,uu :action SearchEverywhere<CR>
