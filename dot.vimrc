@@ -51,6 +51,7 @@ Plug 'cespare/vim-toml'
 Plug 'posva/vim-vue'
 Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
 Plug 'dart-lang/dart-vim-plugin'
+Plug 'keith/swift.vim'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
