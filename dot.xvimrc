@@ -9,7 +9,7 @@ set showcmd
 set nofoldenable
 set display=lastline
 set listchars=tab:>.,trail:_,extends:>,precedes:< 
-set clipboard+=unnamed
+set clipboard=unnamed
 set showmatch
 
 nnoremap ; :
@@ -23,8 +23,8 @@ nnoremap ,ur :xcmenucmd Open Quickly...<CR>
 nnoremap ,um :xcmenucmd Open Quickly...<CR>
 nnoremap ,ug :xcmenucmd Open Quickly...<CR>
 
-nnoremap <C-i> :xccmd goForwardInHistoryByCommand<CR>
-nnoremap <C-o> :xccmd goBackInHistoryByCommand<CR>
+nnoremap <C-i> :xcmenucmd Go Forward<CR>
+nnoremap <C-o> :xcmenucmd Go Back<CR>
 nnoremap ob :make<CR>
 nnoremap od viw:xccmd jumpToDefinition<CR>
 nnoremap of :xcmenucmd Find Selected Symbol in Workspace<CR>
