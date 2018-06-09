@@ -85,7 +85,7 @@ brew install caskroom/cask/libreoffice
 brew install caskroom/cask/macvim-kaoriya
 brew install caskroom/cask/trailer
 brew install caskroom/cask/tiled
-brew install caskroom/cask/mplayerx
+brew install caskroom/cask/5kplayer
 brew install caskroom/cask/steam
 brew install caskroom/cask/heroku-toolbelt
 brew install caskroom/cask/licecap
