@@ -564,3 +564,7 @@ let g:LanguageClient_serverCommands = {
     \ 'dart': ['dart_language_server'],
     \ }
 let g:LanguageClient_diagnosticsEnable = 0
+"------------------------------------------------------------------------------
+" dart-vim-plugin
+let g:dart_style_guide = 2
+let g:dart_format_on_save = 1
