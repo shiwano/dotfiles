@@ -38,12 +38,10 @@ brew install libxml2
 brew install imagemagick
 brew install lv
 brew install nkf
-brew install subversion17 --with-unicode-path
 brew install md5sha1sum
 brew install hub
 brew install peco
 brew install mercurial
-brew install google-japanese-ime
 brew install mysql
 brew install android-sdk
 brew install ant
