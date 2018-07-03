@@ -76,3 +76,5 @@
   prune = true
 [ghq]
   root = ~/code/src
+[url "git@github.com:"]
+	insteadOf = https://github.com/
