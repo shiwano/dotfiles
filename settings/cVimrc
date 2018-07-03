@@ -2,6 +2,8 @@
 
 map <C-d> scrollPageDown
 map <C-u> scrollPageUp
+map <C-o> goBack
+map <C-i> goForward
 
 map i goToInput
 
