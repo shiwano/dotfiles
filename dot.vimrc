@@ -176,6 +176,12 @@ augroup cch
   autocmd WinLeave * set nocursorline
   autocmd WinEnter,BufRead * set cursorline
 augroup END
+
+" wrap long lines in quickfix
+augroup quickfix
+    autocmd!
+    autocmd FileType qf setlocal wrap
+augroup END
 "------------------------------------------------------------------------------
 " Indent
 set autoindent
