@@ -27,6 +27,10 @@ if [ -d /usr/local/Cellar/openssl ]; then
   PATH="/usr/local/opt/openssl/bin:$PATH"
 fi
 
+if [ -d /usr/local/Caskroom/google-cloud-sdk ]; then
+  PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:$PATH"
+fi
+
 if [ -d ${HOME}/.anyenv ] ; then
   PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
