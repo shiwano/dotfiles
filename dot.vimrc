@@ -60,7 +60,7 @@ Plug 'Shougo/vimfiler'
 Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
-" Code completion
+" Code completion, debug
 if has('nvim')
   Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
 else
@@ -73,6 +73,7 @@ Plug 'zchee/deoplete-go', { 'do': 'make', 'for': 'go' }
 Plug 'kana/vim-smartinput'
 Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
+Plug 'sebdah/vim-delve'
 Plug 'zchee/deoplete-jedi'
 Plug 'autozimu/LanguageClient-neovim', {
     \ 'branch': 'next',

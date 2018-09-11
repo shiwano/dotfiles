@@ -11,4 +11,10 @@ nnoremap op :GoImplements<cr>
 nnoremap oi :GoImport<cr>
 nnoremap ob :GoBuild<cr>
 nnoremap ot :GoTest!<cr>
+nnoremap ott :GoTestFunc!<cr>
 nnoremap os :GoFillStruct<cr>
+
+nnoremap odd :DlvTest<cr>
+nnoremap odc :DlvClearAll<cr>
+nnoremap odb :DlvToggleBreakpoint<cr>
+nnoremap odl :DlvToggleTracepoint<cr>
