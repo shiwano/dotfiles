@@ -17,4 +17,4 @@ nnoremap os :GoFillStruct<cr>
 nnoremap odd :DlvTest<cr>
 nnoremap odc :DlvClearAll<cr>
 nnoremap odb :DlvToggleBreakpoint<cr>
-nnoremap odl :DlvToggleTracepoint<cr>
+nnoremap odt :DlvToggleTracepoint<cr>
