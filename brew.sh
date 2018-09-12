@@ -59,6 +59,8 @@ brew install --HEAD libimobiledevice
 brew install ideviceinstaller
 brew install cocoapods
 brew install ios-deploy
+brew install jq
+breq install stern
 
 # .dmg
 brew install caskroom/cask/alfred
