@@ -84,6 +84,7 @@ Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
 " Misc
+Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
 Plug 'jason0x43/vim-js-indent'
 Plug 'tpope/vim-rails'
@@ -101,6 +102,7 @@ Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
 Plug 'buoto/gotests-vim'
+Plug 'kburdett/vim-nuuid'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 call plug#end()
 "------------------------------------------------------------------------------
@@ -575,3 +577,6 @@ let g:LanguageClient_diagnosticsEnable = 0
 " dart-vim-plugin
 let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
+"------------------------------------------------------------------------------
+" nuuid.vim
+let g:nuuid_no_mappings = 1
