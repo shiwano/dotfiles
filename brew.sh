@@ -14,6 +14,7 @@ brew tap caskroom/versions
 brew tap shiwano/formulas
 brew tap delphinus/macvim-kaoriya
 brew tap cosmo0920/mingw_w64
+brew tap mscharley/homebrew
 
 # Packages
 brew install zsh
@@ -61,6 +62,7 @@ brew install cocoapods
 brew install ios-deploy
 brew install jq
 breq install stern
+brew install alacritty
 
 # .dmg
 brew install caskroom/cask/alfred
