@@ -30,6 +30,7 @@
   dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
   mt = mergetool
   topic = checkout origin/master -b
+  topic-develop = checkout origin/develop -b
   current-branch = describe --all --contains HEAD
   la = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
   log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
@@ -49,6 +50,7 @@
   cleanup = "!sh -c 'git reset --hard && git clean -fd'"
   contributors = shortlog -s -n -e
   prune-branches = !git branch --delete $(git branch --merged origin/master | grep -v '^*\\|  master$')
+  prune-branches-develop = !git branch --delete $(git branch --merged origin/develop | grep -v '^*\\|  master$')
   prune-remote-branches = "!sh -c ' \
                            git branch -r --merged | \
                            grep origin | \
