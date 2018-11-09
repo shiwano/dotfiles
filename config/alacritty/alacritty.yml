@@ -82,19 +82,19 @@ tabspaces: 8
 font:
   # Normal (roman) font face
   normal:
-    family: Menlo
+    family: Source Code Variable
     # The `style` can be specified to pick a specific face.
     # style: Regular
 
   # Italic font face
   bold:
-    family: Menlo
+    family: Source Code Variable
     # The `style` can be specified to pick a specific face.
     # style: Bold
 
   # Italic font face
   italic:
-    family: Menlo
+    family: Source Code Variable
     # The `style` can be specified to pick a specific face.
     # style: Italic
 
@@ -161,24 +161,24 @@ colors:
   # Normal colors
   normal:
     black:   '0x000000'
-    red:     '0xd54e53'
-    green:   '0xb9ca4a'
-    yellow:  '0xe6c547'
-    blue:    '0x7aa6da'
-    magenta: '0xc397d8'
-    cyan:    '0x70c0ba'
-    white:   '0xffffff'
+    red:     '0xc91b00'
+    green:   '0x00c200'
+    yellow:  '0xc7c400'
+    blue:    '0x0225c7'
+    magenta: '0xc930c7'
+    cyan:    '0x00c5c7'
+    white:   '0xc7c7c7'
 
   # Bright colors
   bright:
-    black:   '0x666666'
-    red:     '0xff3334'
-    green:   '0x9ec400'
-    yellow:  '0xe7c547'
-    blue:    '0x7aa6da'
-    magenta: '0xb77ee0'
-    cyan:    '0x54ced6'
-    white:   '0xffffff'
+    black:   '0x676767'
+    red:     '0xff6d67'
+    green:   '0x5ff967'
+    yellow:  '0xfefb67'
+    blue:    '0x6871ff'
+    magenta: '0xff76ff'
+    cyan:    '0x5ffdff'
+    white:   '0xfeffff'
 
   # Dim colors
   #
@@ -231,7 +231,7 @@ visual_bell:
 #
 # Window opacity as a floating point number from `0.0` to `1.0`.
 # The value `0.0` is completely transparent and `1.0` is opaque.
-background_opacity: 1.0
+background_opacity: 0.9
 
 # Mouse bindings
 #
