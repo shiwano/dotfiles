@@ -187,6 +187,8 @@ alias docker-rm-all='docker rm $(docker ps -a -q)'
 alias docker-rmi-all='docker rmi $(docker images -q)'
 alias docker-sh='docker run -it --entrypoint sh'
 
+alias lsof-listen='lsof -i -P | grep "LISTEN"'
+
 # プロンプトの設定
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
