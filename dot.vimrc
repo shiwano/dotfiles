@@ -362,11 +362,13 @@ set clipboard+=unnamed
 "------------------------------------------------------------------------------
 " terminal
 if has('nvim')
+  nnoremap <silent> <C-z> :terminal<CR>i
   tnoremap <silent> <ESC> <C-\><C-n>
   tnoremap <silent> <C-j> <C-\><C-n><C-w>j
   tnoremap <silent> <C-k> <C-\><C-n><C-w>k
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
+  tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
 
   autocmd TermOpen * setlocal scrollback=1
 
