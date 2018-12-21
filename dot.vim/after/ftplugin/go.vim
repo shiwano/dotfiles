@@ -12,6 +12,7 @@ nnoremap oi :GoImport<cr>
 nnoremap ob :GoBuild<cr>
 nnoremap ot :GoTest!<cr>
 nnoremap ott :GoTestFunc!<cr>
+nnoremap otb :GoTestCompile<cr>
 nnoremap os :GoFillStruct<cr>
 
 nnoremap odd :DlvTest<cr>
