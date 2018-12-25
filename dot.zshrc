@@ -73,6 +73,7 @@ fi
 
 if type nvim > /dev/null; then
   alias vi='nvim'
+  alias vimdiff='nvim -d'
   export EDITOR='nvim'
 else
   alias vi='vim'
