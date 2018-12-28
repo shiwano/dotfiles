@@ -72,10 +72,15 @@
   reset-remote = "!sh -c 'git fetch && git reset --hard `git current-remote-branch`'"
   upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
   mg = "!sh -c 'git fetch && git merge `git upstream-branch`'"
+  editor = "!sh -c 'if type nvim > /dev/null; then echo nvim; else echo vim; fi'"
 [merge]
-  tool = vimdiff
-[mergetool]
-  keepBackup = false
+  tool = nvimdiff
+[diff]
+  tool = nvimdiff
+[difftool "nvimdiff"]
+  cmd = "$(git editor) -R -d -c \"wincmd l\" -d \"$LOCAL\" \"$REMOTE\""
+[mergetool "nvimdiff"]
+  cmd = "$(git editor) -d -c \"4wincmd w | wincmd J\" \"$LOCAL\" \"$BASE\" \"$REMOTE\"  \"$MERGED\""
 [http]
   postBuffer = 524288000
 [push]
