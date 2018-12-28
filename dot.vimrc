@@ -369,7 +369,6 @@ if has('nvim')
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
-  tnoremap <silent> ;q<CR> <C-\><C-n>:bd!<CR>
 
   autocmd TermOpen * setlocal scrollback=100000
 
