@@ -368,9 +368,12 @@ if has('nvim')
   tnoremap <silent> <C-k> <C-\><C-n><C-w>k
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
+  tnoremap <silent> <C-u> <C-\><C-n><C-u>
+  tnoremap <silent> <C-d> <C-\><C-n><C-d>
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
 
   autocmd TermOpen * setlocal scrollback=100000
+  autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
 
   command! T :call s:T()
   function! s:T()
