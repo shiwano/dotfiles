@@ -51,6 +51,7 @@
   back = reset HEAD~
   stash-ls = stash list --stat
   cleanup = "!sh -c 'git reset --hard && git clean -fd'"
+  clean-orig = "!sh -c 'find . -name \"*.orig\" -delete'"
   contributors = shortlog -s -n -e
   prune-branches = !git branch --delete $(git branch --merged origin/master | grep -v '^*\\|  master$')
   prune-branches-develop = !git branch --delete $(git branch --merged origin/develop | grep -v '^*\\|  master$')
