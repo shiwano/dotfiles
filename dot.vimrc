@@ -301,6 +301,7 @@ au BufRead,BufNewFile *.vue setlocal filetype=vue
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
 au BufRead,BufNewFile .envrc* set filetype=sh
+au BufRead,BufNewFile .dart* set filetype=dart
 "------------------------------------------------------------------------------
 " Custom commands
 
