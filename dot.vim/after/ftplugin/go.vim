@@ -14,6 +14,7 @@ nnoremap ot :GoTest!<cr>
 nnoremap ott :GoTestFunc!<cr>
 nnoremap otb :GoTestCompile<cr>
 nnoremap os :GoFillStruct<cr>
+nnoremap or :GoRun<cr>
 
 nnoremap odd :DlvTest<cr>
 nnoremap odc :DlvClearAll<cr>
