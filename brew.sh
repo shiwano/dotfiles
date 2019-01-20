@@ -62,14 +62,12 @@ brew install cocoapods
 brew install ios-deploy
 brew install jq
 breq install stern
-brew install alacritty
 
 # .dmg
 brew install caskroom/cask/alfred
 brew install caskroom/cask/google-chrome
 brew install caskroom/cask/firefox
 brew install caskroom/cask/iterm2
-brew install caskroom/cask/xtrafinder
 brew install caskroom/cask/appcleaner
 brew install caskroom/cask/dropbox
 brew install caskroom/cask/skype
@@ -77,7 +75,6 @@ brew install caskroom/cask/jeromelebel-mongohub
 brew install caskroom/cask/keepassx
 brew install caskroom/cask/virtualbox
 brew install caskroom/cask/vagrant
-brew install caskroom/cask/simple-comic
 brew install caskroom/cask/growlnotify
 brew install caskroom/cask/quicklook-csv
 brew install caskroom/cask/quicklook-json
@@ -91,8 +88,6 @@ brew install caskroom/cask/5kplayer
 brew install caskroom/cask/steam
 brew install caskroom/cask/heroku-toolbelt
 brew install caskroom/cask/licecap
-brew install caskroom/cask/karabiner
-brew install caskroom/cask/xamarin-studio
 brew install caskroom/cask/mono-mdk
 brew install caskroom/cask/elmarkdown
 brew install caskroom/cask/rdm
@@ -101,7 +96,8 @@ brew linkapps wireshark
 brew install caskroom/cask/gyazo
 brew install caskroom/cask/db-browser-for-sqlite
 brew install delphinus/macvim-kaoriya/macvim-kaoriya
-brew install caskroom/cask/shiftit
+brew install caskroom/cask/spectacle
+brew install caskroom/cask/cmd-eikana
 
 # Remove outdated versions
 brew cleanup
