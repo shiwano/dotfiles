@@ -155,7 +155,7 @@ function edit-git-grepped-file {
 function edit-git-file {
   local dir=${1-.}
   local s="$(git ls-files $dir | peco --select-1)"
-  [ $s ] && shift $# && vim $s
+  [ $s ] && shift $# && vi $s
 }
 
 # エイリアスの設定
