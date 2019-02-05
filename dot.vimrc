@@ -13,9 +13,10 @@ if has("macunix")
     autocmd FileType cpp setlocal path=.,/usr/include,/usr/local/include,/usr/lib/c++/v1
   augroup END
 
-  let s:clang_library_path='/Library/Developer/CommandLineTools/usr/lib'
-  if isdirectory(s:clang_library_path)
-    let g:clang_library_path = s:clang_library_path.'/libclang.dylib'
+  if isdirectory('/Library/Developer/CommandLineTools/usr/lib')
+    let g:clang_library_path = '/Library/Developer/CommandLineTools/usr/lib/libclang.dylib'
+  elseif isdirectory('/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib')
+    let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
   endif
 endif
 
