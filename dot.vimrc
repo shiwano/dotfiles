@@ -96,7 +96,7 @@ Plug 'scrooloose/nerdcommenter'
 Plug 'mattn/webapi-vim'
 Plug 'mattn/gist-vim'
 Plug 'thinca/vim-splash'
-Plug 'vim-scripts/YankRing.vim'
+Plug 'LeafCage/yankround.vim'
 Plug 'vim-scripts/matchit.zip'
 Plug 'vim-scripts/Align'
 Plug 'thinca/vim-singleton'
@@ -394,9 +394,15 @@ let b:match_words="{{t:{{/t}}" " % で対応するフレーズに移動
 let NERDSpaceDelims = 1
 let NERDShutUp = 1
 "------------------------------------------------------------------------------
-" yankring.vim
-let g:yankring_history_file = '.yankring_history'
-let g:yankring_manual_clipboard_check = 0
+" yankround.vim
+nmap p <Plug>(yankround-p)
+xmap p <Plug>(yankround-p)
+nmap P <Plug>(yankround-P)
+nmap gp <Plug>(yankround-gp)
+xmap gp <Plug>(yankround-gp)
+nmap gP <Plug>(yankround-gP)
+nmap <C-p> <Plug>(yankround-prev)
+nmap <C-n> <Plug>(yankround-next)
 "------------------------------------------------------------------------------
 " taglist.vim
 if has("macunix")
