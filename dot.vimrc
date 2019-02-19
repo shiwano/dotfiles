@@ -53,6 +53,7 @@ Plug 'posva/vim-vue'
 Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'keith/swift.vim'
+Plug 'hashivim/vim-terraform'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
@@ -593,3 +594,6 @@ let g:dart_format_on_save = 1
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
+"------------------------------------------------------------------------------
+" vim-terraform
+let g:terraform_fmt_on_save = 1
