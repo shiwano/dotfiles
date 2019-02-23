@@ -58,6 +58,7 @@ export XDG_CONFIG_HOME=$HOME/.config
 export GOPATH=$HOME/code
 PATH="$GOPATH/bin:$PATH"
 export GO15VENDOREXPERIMENT=1
+export GO111MODULE=on
 
 # android sdks
 if [ -d /Applications/android-sdk-macosx ]; then
