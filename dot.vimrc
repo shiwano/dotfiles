@@ -63,24 +63,13 @@ Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 " Code completion, debug
-if has('nvim')
-  Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-  Plug 'Shougo/deoplete.nvim'
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
-endif
-Plug 'mhartington/nvim-typescript', { 'for': ['typescript'] }
-Plug 'zchee/deoplete-go', { 'do': 'make', 'for': 'go' }
 Plug 'kana/vim-smartinput'
-Plug 'OmniSharp/omnisharp-vim', { 'for': 'cs', 'build': 'xbuild server/OmniSharp.sln' }
 Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
 Plug 'sebdah/vim-delve'
-Plug 'zchee/deoplete-jedi'
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
 " Lint and Format
 Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
@@ -505,17 +494,6 @@ nnoremap t :QuickRun<CR>
 nnoremap tt :Q<CR>
 nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 "------------------------------------------------------------------------------
-" OmniSharp
-let g:OmniSharp_host = "http://localhost:2000"
-let g:OmniSharp_typeLookupInPreview = 1
-"------------------------------------------------------------------------------
-" clang complete
-let g:clang_user_options = '-std=c++11'
-
-let g:clang_complete_getopts_ios_default_options = '-fblocks -fobjc-arc -D __IPHONE_OS_VERSION_MIN_REQUIRED=40300'
-let g:clang_complete_getopts_ios_sdk_directory = '/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.1.sdk'
-let g:clang_complete_getopts_ios_ignore_directories = ["^\.git", "\.xcodeproj"]
-"------------------------------------------------------------------------------
 " vim-json
 let g:vim_json_syntax_conceal = 0
 "------------------------------------------------------------------------------
@@ -549,43 +527,6 @@ function! NERDCommenter_after()
   endif
 endfunction
 "------------------------------------------------------------------------------
-" deoplete
-set completeopt=menuone
-let g:deoplete#enable_at_startup = 1
-let g:deoplete#enable_smart_case = 1
-
-inoremap <silent><expr> <TAB>
-      \ pumvisible() ? "\<C-n>" :
-      \ <SID>check_back_space() ? "\<TAB>" :
-      \ deoplete#mappings#manual_complete()
-function! s:check_back_space() abort "{{{
-  let col = col('.') - 1
-  return !col || getline('.')[col - 1]  =~ '\s'
-endfunction"}}}
-
-inoremap <expr><C-h> deoplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> deoplete#smart_close_popup()."\<C-h>"
-
-inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
-function! s:my_cr_function() abort
-  return deoplete#close_popup() . "\<CR>"
-endfunction
-
-autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
-
-let g:deoplete#sources#go#gocode_binary = $GOPATH.'/bin/gocode'
-let g:deoplete#sources#go#sort_class = ['package', 'func', 'type', 'var', 'const']
-
-if has("macunix")
-  let g:deoplete#sources#go#cgo#libclang_path = g:clang_library_path
-endif
-"------------------------------------------------------------------------------
-" LanguageClient-neovim
-let g:LanguageClient_serverCommands = {
-    \ 'dart': ['dart_language_server'],
-    \ }
-let g:LanguageClient_diagnosticsEnable = 0
-"------------------------------------------------------------------------------
 " dart-vim-plugin
 let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
@@ -595,3 +536,43 @@ let g:nuuid_no_mappings = 1
 "------------------------------------------------------------------------------
 " vim-terraform
 let g:terraform_fmt_on_save = 1
+"------------------------------------------------------------------------------
+" asynccomplete
+let g:asyncomplete_smart_completion = 1
+let g:asyncomplete_auto_popup = 1
+set completeopt=menuone
+
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+imap <c-space> <Plug>(asyncomplete_force_refresh)
+autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~ '\s'
+endfunction
+
+inoremap <silent><expr> <TAB>
+  \ pumvisible() ? "\<C-n>" :
+  \ <SID>check_back_space() ? "\<TAB>" :
+  \ asyncomplete#force_refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+" go-lsp
+let g:lsp_async_completion = 1
+let g:lsp_signs_enabled = 0
+let g:lsp_diagnostics_echo_cursor = 0
+" let g:lsp_log_verbose = 1
+" let g:lsp_log_file = expand('~/vim-lsp.log')
+" let g:asyncomplete_log_file = expand('~/asyncomplete.log')
+
+if executable('bingo')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'bingo',
+        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
+        \ 'whitelist': ['go'],
+        \ })
+    autocmd FileType go setlocal omnifunc=lsp#complete
+endif
