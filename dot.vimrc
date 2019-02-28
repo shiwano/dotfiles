@@ -97,6 +97,7 @@ Plug 'tpope/vim-projectionist'
 Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
+Plug 'fatih/vim-hclfmt'
 call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
@@ -594,3 +595,8 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
     \ 'priority': 10,
     \ 'completor': function('asyncomplete#sources#file#completor')
     \ }))
+"------------------------------------------------------------------------------
+" vim-hclfmt
+let g:hcl_fmt_autosave = 1
+let g:tf_fmt_autosave = 0
+let g:nomad_fmt_autosave = 0
