@@ -165,7 +165,6 @@ alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
 alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
-alias term='alacritty'
 alias tmux='tmuxx'
 alias npm-exec='PATH=$(npm bin):$PATH'
 alias search='ag -g . | ag '
@@ -190,6 +189,8 @@ alias docker-rmi-all='docker rmi $(docker images -q)'
 alias docker-sh='docker run -it --entrypoint sh'
 
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
+
+alias go-get='GO111MODULE=off go get -u'
 
 # プロンプトの設定
 autoload -Uz vcs_info
