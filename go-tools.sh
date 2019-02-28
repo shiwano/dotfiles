@@ -12,3 +12,4 @@ go get -u github.com/jessevdk/go-assets-builder
 go get -u github.com/golang/dep/cmd/dep
 go get -u github.com/saibing/bingo
 go get -u github.com/go-delve/delve/cmd/dlv
+go get -u github.com/hashicorp/hcl2/cmd/hclfmt
