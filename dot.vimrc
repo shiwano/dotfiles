@@ -581,12 +581,32 @@ if executable('bingo')
         \ })
     autocmd FileType go setlocal omnifunc=lsp#complete
 endif
+
+if executable('typescript-language-server')
+  au User lsp_setup call lsp#register_server({
+    \ 'name': 'typescript-language-server',
+    \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
+    \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+    \ 'whitelist': ['typescript', 'javascript', 'javascript.jsx']
+    \ })
+  autocmd FileType typescript,javascript,javascript.jsx setlocal omnifunc=lsp#complete
+endif
+
+if executable('vls')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'vls',
+        \ 'cmd': { server_info->[&shell, &shellcmdflag, 'vls --stdio']},
+        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
+        \ 'whitelist': ['vue'],
+        \ })
+    autocmd FileType vue setlocal omnifunc=lsp#complete
+endif
 "------------------------------------------------------------------------------
 " asyncomplete-buffer.vim
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
     \ 'name': 'buffer',
     \ 'whitelist': ['*'],
-    \ 'blacklist': ['go'],
+    \ 'blacklist': ['go', 'typescript', 'javascript', 'javascript.jsx', 'vue'],
     \ 'completor': function('asyncomplete#sources#buffer#completor'),
     \ }))
 "------------------------------------------------------------------------------

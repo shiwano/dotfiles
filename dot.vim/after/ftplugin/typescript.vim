@@ -1,5 +1,5 @@
-nnoremap od :TSDef<cr>
-nnoremap of :TSRefs<cr>
-nnoremap on :TSRename<cr>
-nnoremap or :TSRestart<cr>
-nnoremap os :TSStart<cr>
+nnoremap od :LspDefinition<CR>
+nnoremap oh :LspHover<CR>
+nnoremap of :LspReferences<CR>
+nnoremap op :LspImplementation<CR>
+nnoremap on :LspRename<CR>
