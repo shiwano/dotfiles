@@ -54,6 +54,8 @@ Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'keith/swift.vim'
 Plug 'hashivim/vim-terraform'
+Plug 'shiwano/vim-hcl'
+Plug 'chr4/nginx.vim'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
