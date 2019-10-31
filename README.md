@@ -6,8 +6,8 @@ My dotfiles.
 Install
 -------
 
-If install on the new environment,
+If install on the new environment, execute the follwing command.
 
-### import dotfiles
-
-    curl -L https://raw.github.com/shiwano/dotfiles/master/setup.sh | bash -s stable
+```
+curl -L https://raw.github.com/shiwano/dotfiles/master/setup.sh | bash -s stable
+```
