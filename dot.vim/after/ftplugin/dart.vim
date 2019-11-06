@@ -1,5 +1,5 @@
-nnoremap <silent> oi :call LanguageClient_textDocument_hover()<CR>
-nnoremap <silent> od :call LanguageClient_textDocument_definition()<CR>
-nnoremap <silent> of :call LanguageClient_textDocument_references()<CR>
-nnoremap <silent> on :call LanguageClient_textDocument_rename()<CR>
-nnoremap <silent> or :LanguageClientStop<CR>:LanguageClientStart<CR>
+nnoremap od :LspDefinition<CR>
+nnoremap oh :LspHover<CR>
+nnoremap of :LspReferences<CR>
+nnoremap op :LspImplementation<CR>
+nnoremap on :LspRename<cr>

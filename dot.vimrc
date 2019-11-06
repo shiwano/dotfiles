@@ -56,6 +56,8 @@ Plug 'keith/swift.vim'
 Plug 'hashivim/vim-terraform'
 Plug 'shiwano/vim-hcl'
 Plug 'chr4/nginx.vim'
+Plug 'google/vim-maktaba'
+Plug 'bazelbuild/vim-bazel'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
@@ -78,6 +80,7 @@ Plug 'prabirshrestha/asyncomplete-buffer.vim'
 Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
+Plug 'ruby-formatter/rufo-vim'
 " Misc
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
@@ -325,6 +328,20 @@ function! s:Normalize()
     %s///g
   catch
   endtry
+endfunction
+
+command! SaveMarkdownToDropbox :call s:SaveMarkdownToDropbox()
+function! s:SaveMarkdownToDropbox()
+  try
+    w $HOME/Dropbox/Memo/$TODAY-$RANDOM.md
+  catch
+  endtry
+endfunction
+
+" Insert separator string.
+command! Sep :call s:Sep()
+function! s:Sep()
+  execute ":normal i# =============================================================================="
 endfunction
 
 " Toggle expandtab
@@ -582,6 +599,15 @@ if executable('bingo')
     autocmd FileType go setlocal omnifunc=lsp#complete
 endif
 
+if executable('dart_language_server')
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'dart_language_server',
+        \ 'cmd': {server_info->['dart_language_server']},
+        \ 'whitelist': ['dart'],
+        \ })
+    autocmd FileType dart setlocal omnifunc=lsp#complete
+endif
+
 if executable('typescript-language-server')
   au User lsp_setup call lsp#register_server({
     \ 'name': 'typescript-language-server',
@@ -622,3 +648,6 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
 let g:hcl_fmt_autosave = 1
 let g:tf_fmt_autosave = 0
 let g:nomad_fmt_autosave = 0
+"------------------------------------------------------------------------------
+" rufo-vim
+let g:rufo_auto_formatting = 1
