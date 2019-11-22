@@ -52,6 +52,10 @@ if [ -d "$HOME/Library/Android/sdk" ] ; then
   export ANDROID_HOME="$HOME/Library/Android/sdk"
 fi
 
+if [ -d ${HOME}/.local ] ; then
+  PATH="$HOME/.local/bin:$PATH"
+fi
+
 export XDG_CONFIG_HOME=$HOME/.config
 
 # Go
@@ -159,6 +163,11 @@ function edit-git-file {
   [ $s ] && shift $# && vi $s
 }
 
+function edit-git-changed-file {
+  local s="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq | peco --select-1)"
+  [ $s ] && shift $# && vi $s
+}
+
 # エイリアスの設定
 alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
@@ -171,7 +180,8 @@ alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authoriz
 
 alias s='git status'
 alias g='move-to-ghq-directory'
-alias v='edit-git-file'
+alias v='edit-git-changed-file'
+alias vv='edit-git-file'
 alias gg='grep-git-files'
 alias ggv='edit-git-grepped-file'
 
