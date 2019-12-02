@@ -68,9 +68,8 @@ if [ -f $dotfiles_dir/dot.vim/autoload/plug.vim ]; then
   echo 'Vim plugins are already installed'
 else
   if type vim > /dev/null 2>&1; then
-    echo 'Installing Vim plugins'
+    echo 'Installing vim-plug'
     curl -fLo $dotfiles_dir/dot.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-    vim -c PlugInstall -c quit
   else
     echo 'Not found Vim'
   fi
