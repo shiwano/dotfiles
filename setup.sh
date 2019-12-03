@@ -88,14 +88,3 @@ if [ `uname` = "Darwin" ]; then
 else
   echo 'This environment does not need Homebrew'
 fi
-
-topic 'Setup anyenv'
-
-if type anyenv > /dev/null 2>&1; then
-  echo 'anyenv is already installed'
-else
-  echo 'Installing anyenv'
-  git clone https://github.com/riywo/anyenv $HOME/.anyenv
-  mkdir -p $HOME/.anyenv/plugins
-  git clone https://github.com/znz/anyenv-update.git $HOME/.anyenv/plugins/anyenv-update
-fi
