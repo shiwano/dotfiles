@@ -58,6 +58,7 @@ Plug 'shiwano/vim-hcl'
 Plug 'chr4/nginx.vim'
 Plug 'google/vim-maktaba'
 Plug 'bazelbuild/vim-bazel'
+Plug 'bfontaine/Brewfile.vim'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
