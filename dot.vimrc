@@ -69,7 +69,7 @@ Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 " Code completion, debug
 Plug 'kana/vim-smartinput'
-Plug 'fatih/vim-go', { 'for': 'go', 'do': ':GoInstallBinaries' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'sebdah/vim-delve'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/async.vim'
