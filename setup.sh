@@ -55,17 +55,17 @@ for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -type f -name 'dot.*.
   fi
 done
 
-topic 'Setup Vim plugins'
+topic 'Setup Vim'
 
 if [ ! -d $HOME/.config/nvim ]; then
-  echo 'Setup neovim config'
+  echo 'Linking neovim config'
   mkdir -p $HOME/.config
   ln -sfn $dotfiles_dir/dot.vim $HOME/.config/nvim
   ln -sfn $dotfiles_dir/dot.vimrc $HOME/.config/nvim/init.vim
 fi
 
 if [ -f $dotfiles_dir/dot.vim/autoload/plug.vim ]; then
-  echo 'Vim plugins are already installed'
+  echo 'vim-plug is already installed'
 else
   if type vim > /dev/null 2>&1; then
     echo 'Installing vim-plug'
@@ -82,8 +82,7 @@ if [ `uname` = "Darwin" ]; then
     echo 'Homebrew is already installed'
   else
     echo 'Installing Homebrew'
-    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-    $dotfiles_dir/brew.sh
+	/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
 else
   echo 'This environment does not need Homebrew'
