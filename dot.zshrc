@@ -63,6 +63,7 @@ export GOPATH=$HOME/code
 PATH="$GOPATH/bin:$PATH"
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
+export GOENV_DISABLE_GOPATH=1
 
 # android sdks
 if [ -d /Applications/android-sdk-macosx ]; then
