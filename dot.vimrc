@@ -342,10 +342,6 @@ endfunction
 " Utilities
 set tags=$DOTVIM/mytags
 
-if has("win32") || has("win64")
-  set tags+=$DOTVIM/mytags_win
-endif
-
 if has('path_extra')
   set tags+=tags;
 endif
