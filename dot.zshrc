@@ -203,40 +203,38 @@ alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias go-get='GO111MODULE=off go get -u'
 
 # Prompt -----------------------------------------------------------------------
+ICON_GIT_BRANCH=$'\Uf418 '
+ICON_CAT=$'\Uf61a '
+ICON_KEY=$'\Uf805 '
+ICON_FOLDER=$'\Uf450 '
+ICON_USER=$'\Uf2c0 '
+ICON_CLOCK=$'\Uf017 '
+
+case ${UID} in
+0)
+  PROMPT_FACE="${ICON_KEY}"
+  ;;
+*)
+  PROMPT_FACE="${ICON_CAT}"
+  ;;
+esac
+
 autoload -Uz vcs_info
-zstyle ':vcs_info:*' formats '[%b]'
-zstyle ':vcs_info:*' actionformats '[%b|%a]'
-ZSHFG=`expr $RANDOM / 128`
+zstyle ':vcs_info:*' formats '%b'
+zstyle ':vcs_info:*' actionformats '%b|%a'
 
 function precmd {
   psvar=()
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-  if [ $ZSHFG -ge 250 ]; then
-    ZSHFG=0
-  fi
-
-  ZSHFG=`expr $ZSHFG + 10`
-  RPROMPT="%1(v|%F{$ZSHFG}%1v%f|)"
-}
-
-case ${UID} in
-0)
-  PROMPT="%B%{[31m%}%/#%{[m%}%b "
-  PROMPT2="%B%{[31m%}%_#%{[m%}%b "
-  SPROMPT="%B%{[31m%}%r is correct? [n,y,a,e]:%{[m%}%b "
-  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
-      PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
-  ;;
-*)
-  PROMPT="%{[31m%}%/%%%{[m%} "
-  PROMPT2="%{[31m%}%_%%%{[m%} "
+  RPROMPT="%{[35m%}${ICON_USER}%n%{[m%} %{[34m%}${ICON_CLOCK}%*%{[m%} %1(v|%{[36m%}${ICON_GIT_BRANCH}%1v%{[m%}|)"
+  PROMPT="%{[31m%}${ICON_FOLDER}%~ ${PROMPT_FACE}%{[m%}"
+  PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
-  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] && 
-      PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
-  ;;
-esac
+  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
+    PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
+}
 
 # History ----------------------------------------------------------------------
 HISTFILE=$HOME/.zsh_history
