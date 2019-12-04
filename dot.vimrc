@@ -177,8 +177,8 @@ augroup END
 
 " wrap long lines in quickfix
 augroup quickfix
-    autocmd!
-    autocmd FileType qf setlocal wrap
+  autocmd!
+  autocmd FileType qf setlocal wrap
 augroup END
 "------------------------------------------------------------------------------
 " Indent
@@ -190,19 +190,19 @@ set softtabstop=2
 set tabstop=2
 set expandtab " タブをスペースに展開
 "------------------------------------------------------------------------------
-" Command complement and history
-set wildmenu            " コマンド補完を強化
-set wildchar=<tab>      " コマンド補完を開始するキー
-set wildmode=list:full  " リスト表示，最長マッチ
-set history=1000        " コマンド・検索パターンの履歴数
-set complete+=k         " 補完に辞書ファイル追加
+" Command completion and history
+set wildmenu           " コマンド補完を強化
+set wildchar=<tab>     " コマンド補完を開始するキー
+set wildmode=list:full " リスト表示，最長マッチ
+set history=1000       " コマンド・検索パターンの履歴数
+set complete+=k        " 補完に辞書ファイル追加
 "------------------------------------------------------------------------------
-" Search settings
-set nowrapscan          " 最後まで検索したら先頭へ戻らない
-set ignorecase          " 大文字小文字無視
-set smartcase           " 大文字ではじめたら大文字小文字無視しない
-set incsearch           " インクリメンタルサーチ
-set hlsearch            " 検索文字をハイライト
+" Search
+set nowrapscan " 最後まで検索したら先頭へ戻らない
+set ignorecase " 大文字小文字無視
+set smartcase  " 大文字ではじめたら大文字小文字無視しない
+set incsearch  " インクリメンタルサーチ
+set hlsearch   " 検索文字をハイライト
 
 if executable('ag')
   set grepprg=ag\ --nogroup\ -is
@@ -258,7 +258,6 @@ if has('win32unix')
 endif
 "------------------------------------------------------------------------------
 " Key mappings
-
 nnoremap j gj
 nnoremap k gk
 
@@ -284,19 +283,11 @@ nnoremap ; :
 vnoremap ; :
 "------------------------------------------------------------------------------
 " Filetype detection
-au BufRead,BufNewFile *.cson set filetype=coffee
-au BufRead,BufNewFile *.jsenv set filetype=javascript
-au BufRead,BufNewFile *.coffeeenv set filetype=coffee
-au BufRead,BufNewFile *.jmk set filetype=javascript
 au BufRead,BufNewFile *.prefab set filetype=yaml
-au BufRead,BufNewFile *.json set filetype=json
-au BufRead,BufNewFile *.contract set filetype=ruby
 au BufRead,BufNewFile *.shader set filetype=hlsl
-au BufRead,BufNewFile *.vue setlocal filetype=vue
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
 au BufRead,BufNewFile .envrc* set filetype=sh
-au BufRead,BufNewFile .dart* set filetype=dart
 "------------------------------------------------------------------------------
 " Custom commands
 
@@ -351,12 +342,6 @@ function! s:TabToggle()
 endfunction
 "------------------------------------------------------------------------------
 " Utilities
-
-" ヘルプを翻訳版に変更
-helptags $DOTVIM/doc
-set helplang=ja,en
-
-" タグファイル設定
 set tags=$DOTVIM/mytags
 
 if has("win32") || has("win64")
@@ -367,10 +352,9 @@ if has('path_extra')
   set tags+=tags;
 endif
 
-" クリップボードを使用
 set clipboard+=unnamed
 "------------------------------------------------------------------------------
-" terminal
+" Terminal
 if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC><ESC> <C-\><C-n>
