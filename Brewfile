@@ -80,6 +80,7 @@ cask 'docker'
 cask 'karabiner-elements'
 cask 'alacritty'
 cask 'vimr'
+cask 'marshallofsound-google-play-music-player'
 cask 'font-sourcecodepro-nerd-font'
 
 mas 'The Unarchiver', id: 425424353

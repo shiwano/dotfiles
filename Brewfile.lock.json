@@ -1169,6 +1169,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "marshallofsound-google-play-music-player": {
+        "version": "4.6.1",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
