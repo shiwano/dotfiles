@@ -31,7 +31,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'chriskempson/base16-vim'
 " Syntax highlight
 Plug 'vim-scripts/jQuery'
-Plug 'jelera/vim-javascript-syntax'
+Plug 'pangloss/vim-javascript'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'kchmck/vim-coffee-script'
 Plug 'othree/html5-syntax.vim'
@@ -647,3 +647,6 @@ let g:nomad_fmt_autosave = 0
 "------------------------------------------------------------------------------
 " rufo-vim
 let g:rufo_auto_formatting = 1
+"------------------------------------------------------------------------------
+" vim-javascript
+let g:javascript_plugin_jsdoc = 1
