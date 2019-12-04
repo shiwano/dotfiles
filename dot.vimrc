@@ -63,7 +63,6 @@ Plug 'bfontaine/Brewfile.vim'
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
 Plug 'Sixeight/unite-grep'
-Plug 'Shougo/vimfiler'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 " Code completion, debug
@@ -456,19 +455,6 @@ function! s:unite_my_settings()
   nmap <buffer> <C-p> k
   imap <buffer> <C-r> <Plug>(unite_redraw)
   nmap <buffer> <C-r> <Plug>(unite_redraw)
-  imap <buffer><expr> <C-e> unite#do_action('vimfiler')
-  nmap <buffer><expr> <C-e> unite#do_action('vimfiler')
-endfunction
-"------------------------------------------------------------------------------
-" vimfiler
-let g:vimfiler_safe_mode_by_default = 0
-nnoremap <silent> <C-e> :VimFilerBufferDir -simple<CR>
-
-autocmd! FileType vimfiler call s:vimfiler_my_settings()
-function! s:vimfiler_my_settings()
-  nmap qq <Plug>(vimfiler_exit)
-  nmap q <Plug>(vimfiler_exit)
-  nmap <buffer><expr><CR> vimfiler#smart_cursor_map("\<Plug>(vimfiler_expand_tree)", "\<Plug>(vimfiler_edit_file)")
 endfunction
 "------------------------------------------------------------------------------
 " Gist.vim
