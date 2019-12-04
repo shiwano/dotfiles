@@ -84,7 +84,6 @@ Plug 'ruby-formatter/rufo-vim'
 " Misc
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
-Plug 'jason0x43/vim-js-indent'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'thinca/vim-poslist'
