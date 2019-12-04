@@ -1153,6 +1153,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "font-sourcecodepro-nerd-font": {
+        "version": "2.0.0",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
