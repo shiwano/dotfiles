@@ -28,7 +28,7 @@ endif
 "------------------------------------------------------------------------------
 call plug#begin('~/.vim/plugged')
 " Color scheme
-Plug 'altercation/vim-colors-solarized'
+Plug 'chriskempson/base16-vim'
 " Syntax highlight
 Plug 'vim-scripts/jQuery'
 Plug 'jelera/vim-javascript-syntax'
@@ -108,15 +108,11 @@ call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
 syntax enable
-set background=dark
-colorscheme solarized
+colorscheme base16-default-dark
 
-if !has('gui_running')
-  set t_Co=256
-  let g:solarized_termcolors=256
-  let g:solarized_termtrans = 1
-  let g:solarized_contrast = 'high'
-  let g:solarized_visibility = 'low'
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+  source ~/.vimrc_background
 endif
 
 augroup highlightIdegraphicSpace
