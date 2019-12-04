@@ -80,6 +80,7 @@ Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'ruby-formatter/rufo-vim'
+Plug 'fatih/vim-hclfmt'
 " Misc
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
@@ -100,7 +101,6 @@ Plug 'tpope/vim-projectionist'
 Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
-Plug 'fatih/vim-hclfmt'
 call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
