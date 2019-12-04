@@ -64,7 +64,6 @@ Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
 Plug 'Sixeight/unite-grep'
 Plug 'Shougo/vimfiler'
-Plug 'thinca/vim-qfreplace'
 Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 " Code completion, debug
