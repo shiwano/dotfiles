@@ -1161,6 +1161,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "vimr": {
+        "version": "0.29.0-329",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
