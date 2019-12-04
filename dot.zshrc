@@ -1,15 +1,20 @@
-# 補完機能有効
+export TERM=xterm-256color
+export LANG=ja_JP.UTF-8
+
+# Completion -------------------------------------------------------------------
 fpath=($HOME/.zsh/completion ${fpath})
 autoload -U compinit
 compinit
 
-# 256色
-export TERM=xterm-256color
+# Color scheme -----------------------------------------------------------------
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1" ] && \
+    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
+        eval "$("$BASE16_SHELL/profile_helper.sh")"
 
-# 文字コードの設定
-export LANG=ja_JP.UTF-8
+base16_tomorrow-night
 
-# PATH
+# PATH -------------------------------------------------------------------------
 PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
@@ -58,19 +63,19 @@ fi
 
 export XDG_CONFIG_HOME=$HOME/.config
 
-# Go
+# Go ---------------------------------------------------------------------------
 export GOPATH=$HOME/code
 PATH="$GOPATH/bin:$PATH"
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 export GOENV_DISABLE_GOPATH=1
 
-# android sdks
+# Android SDK ------------------------------------------------------------------
 if [ -d /Applications/android-sdk-macosx ]; then
   PATH="/Applications/android-sdk-macosx/tools:$PATH"
 fi
 
-# vim
+# Vim --------------------------------------------------------------------------
 if [ -d $HOME/Applications/MacVim.app ]; then
   alias vim='$HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
   alias gvim='open -a $HOME/Applications/MacVim.app "$@"'
@@ -86,15 +91,12 @@ else
   export EDITOR='vim'
 fi
 
-# direnv
+# direnv -----------------------------------------------------------------------
 if type direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
-# vi風キーバインド
-# bindkey -v
-
-# 関数
+# Functions --------------------------------------------------------------------
 function find-grep { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
 function find-sed { find . -name $1 -type f | xargs gsed -i $2 }
 
@@ -169,7 +171,7 @@ function edit-git-changed-file {
   [ $s ] && shift $# && vi $s
 }
 
-# エイリアスの設定
+# Aliases ----------------------------------------------------------------------
 alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
@@ -200,7 +202,7 @@ alias lsof-listen='lsof -i -P | grep "LISTEN"'
 
 alias go-get='GO111MODULE=off go get -u'
 
-# プロンプトの設定
+# Prompt -----------------------------------------------------------------------
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '[%b]'
 zstyle ':vcs_info:*' actionformats '[%b|%a]'
@@ -236,10 +238,16 @@ case ${UID} in
   ;;
 esac
 
-# 補完設定
+# History ----------------------------------------------------------------------
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
+
+# Key binding ------------------------------------------------------------------
+
+bindkey -e
+
+# Utilities --------------------------------------------------------------------
 
 # シェルのプロセスごとに履歴を共有
 setopt share_history
@@ -350,11 +358,3 @@ bindkey '^r' peco-select-history
 
 # PATH の重複を消す
 typeset -U path PATH
-
-# Base16 Shell
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-base16_tomorrow-night
