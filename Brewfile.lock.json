@@ -946,14 +946,6 @@
           }
         }
       },
-      "iterm2": {
-        "version": "3.3.7",
-        "options": {
-          "args": {
-            "appdir": "/Applications"
-          }
-        }
-      },
       "appcleaner": {
         "version": "3.5",
         "options": {
