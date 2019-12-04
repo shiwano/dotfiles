@@ -78,6 +78,7 @@ cask 'slack'
 cask 'google-japanese-ime'
 cask 'docker'
 cask 'karabiner-elements'
+cask 'alacritty'
 cask 'font-sourcecodepro-nerd-font'
 
 mas 'The Unarchiver', id: 425424353
