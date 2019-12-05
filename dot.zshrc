@@ -178,6 +178,7 @@ alias search='ag -g . | ag '
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 
 alias s='git status'
+alias r='git restore' # hide 'r' which is zsh's built-in command
 alias g='move-to-ghq-directory'
 alias v='edit-git-changed-file'
 alias vv='edit-git-file'
