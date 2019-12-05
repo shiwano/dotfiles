@@ -71,7 +71,7 @@ else
     echo 'Installing vim-plug'
     curl -fLo $dotfiles_dir/dot.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   else
-    echo 'Not found Vim'
+    echo 'Vim is not found'
   fi
 fi
 
