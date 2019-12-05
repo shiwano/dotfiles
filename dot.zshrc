@@ -53,10 +53,6 @@ if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
   export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
-if [ -d "$HOME/Library/Android/sdk" ] ; then
-  export ANDROID_HOME="$HOME/Library/Android/sdk"
-fi
-
 if [ -d ${HOME}/.local ] ; then
   PATH="$HOME/.local/bin:$PATH"
 fi
@@ -209,6 +205,7 @@ ICON_KEY=$'\Uf805 '
 ICON_FOLDER=$'\Uf450 '
 ICON_USER=$'\Uf2c0 '
 ICON_CLOCK=$'\Uf017 '
+START_TIME=`date +%s`
 
 case ${UID} in
 0)
@@ -228,12 +225,19 @@ function precmd {
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-  RPROMPT="%{[35m%}${ICON_USER}%n%{[m%} %{[34m%}${ICON_CLOCK}%*%{[m%} %1(v|%{[36m%}${ICON_GIT_BRANCH}%1v%{[m%}|)"
+  local end_time=`date +%s`
+  local run_time=$((end_time - START_TIME))
+
+  RPROMPT="%{[35m%}${ICON_USER}%n%{[m%} %{[34m%}${ICON_CLOCK}${run_time}s%{[m%} %1(v|%{[36m%}${ICON_GIT_BRANCH}%1v%{[m%}|)"
   PROMPT="%{[31m%}${ICON_FOLDER}%~ ${PROMPT_FACE}%{[m%}"
   PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
   [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
     PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
+}
+
+function preexec {
+  START_TIME=`date +%s`
 }
 
 # History ----------------------------------------------------------------------
