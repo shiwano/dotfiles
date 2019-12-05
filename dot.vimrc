@@ -286,6 +286,9 @@ au BufRead,BufNewFile *.shader set filetype=hlsl
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
 au BufRead,BufNewFile .envrc* set filetype=sh
+au BufRead,BufNewFile dot.zshrc set filetype=zsh
+au BufRead,BufNewFile dot.tmux.conf set filetype=tmux
+au BufRead,BufNewFile dot.gitconfig set filetype=gitconfig
 "------------------------------------------------------------------------------
 " Custom commands
 
