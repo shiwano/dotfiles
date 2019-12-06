@@ -1,5 +1,12 @@
-export TERM=xterm-256color
-export LANG=ja_JP.UTF-8
+TERM=xterm-256color
+LANG=ja_JP.UTF-8
+XDG_CONFIG_HOME=$HOME/.config
+LS_COLORS='di=01;36'
+
+GOPATH=$HOME/code
+GO15VENDOREXPERIMENT=1
+GO111MODULE=on
+GOENV_DISABLE_GOPATH=1
 
 # Completion -------------------------------------------------------------------
 fpath=($HOME/.zsh/completion ${fpath})
@@ -15,8 +22,8 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 base16_tomorrow-night
 
 # PATH -------------------------------------------------------------------------
-PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$PATH
-export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
+PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
+MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
 if [ -d /usr/local/Cellar/coreutils ]; then
   PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
@@ -45,28 +52,18 @@ if [ -d ${HOME}/.anyenv ] ; then
 fi
 
 if [ -d /usr/local/heroku ] ; then
-  export PATH="/usr/local/heroku/bin:$PATH"
+  PATH="/usr/local/heroku/bin:$PATH"
 fi
 
 if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
-  export PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
-  export PATH="$HOME/.pub-cache/bin:$PATH"
+  PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
+  PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.local ] ; then
   PATH="$HOME/.local/bin:$PATH"
 fi
 
-export XDG_CONFIG_HOME=$HOME/.config
-
-# Go ---------------------------------------------------------------------------
-export GOPATH=$HOME/code
-PATH="$GOPATH/bin:$PATH"
-export GO15VENDOREXPERIMENT=1
-export GO111MODULE=on
-export GOENV_DISABLE_GOPATH=1
-
-# Android SDK ------------------------------------------------------------------
 if [ -d /Applications/android-sdk-macosx ]; then
   PATH="/Applications/android-sdk-macosx/tools:$PATH"
 fi
@@ -81,10 +78,10 @@ fi
 if type nvim > /dev/null; then
   alias vi='nvim'
   alias vimdiff='nvim -d'
-  export EDITOR='nvim'
+  EDITOR='nvim'
 else
   alias vi='vim'
-  export EDITOR='vim'
+  EDITOR='vim'
 fi
 
 # direnv -----------------------------------------------------------------------
@@ -200,45 +197,49 @@ alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias go-get='GO111MODULE=off go get -u'
 
 # Prompt -----------------------------------------------------------------------
-ICON_GIT_BRANCH=$'\Uf418 '
-ICON_CAT=$'\Uf61a '
-ICON_KEY=$'\Uf805 '
-ICON_FOLDER=$'\Uf450 '
-ICON_USER=$'\Uf2c0 '
-ICON_CLOCK=$'\Uf017 '
-START_TIME=`date +%s`
-
-case ${UID} in
-0)
-  PROMPT_FACE="${ICON_KEY}"
-  ;;
-*)
-  PROMPT_FACE="${ICON_CAT}"
-  ;;
-esac
-
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '%b'
 zstyle ':vcs_info:*' actionformats '%b|%a'
 
-function precmd {
-  psvar=()
-  LANG=en_US.UTF-8 vcs_info
-  [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+PREEXEC_START_TIME=`date +%s`
 
-  local end_time=`date +%s`
-  local run_time=$((end_time - START_TIME))
+() {
+  local icon_cat=$'\Uf61a '
+  local icon_key=$'\Uf805 '
+  local icon_folder=$'\Uf450 '
 
-  RPROMPT="%{[35m%}${ICON_USER}%n%{[m%} %{[34m%}${ICON_CLOCK}${run_time}s%{[m%} %1(v|%{[36m%}${ICON_GIT_BRANCH}%1v%{[m%}|)"
-  PROMPT="%{[31m%}${ICON_FOLDER}%~ ${PROMPT_FACE}%{[m%}"
+  case ${UID} in
+    0)
+      local prompt_face="${icon_key}"
+      ;;
+    *)
+      local prompt_face="${icon_cat}"
+      ;;
+  esac
+
+  PROMPT="%{[31m%}${icon_folder}%~ ${prompt_face}%{[m%}"
   PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
   [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
     PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
 }
 
+function precmd {
+  psvar=()
+  LANG=en_US.UTF-8 vcs_info
+  [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+
+  local icon_git_branch=$'\Uf418 '
+  local icon_user=$'\Uf2c0 '
+  local icon_clock=$'\Uf017 '
+  local end_time=`date +%s`
+  local run_time=$((end_time - PREEXEC_START_TIME))
+
+  RPROMPT="%{[35m%}${icon_user}%n%{[m%} %{[34m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[36m%}${icon_git_branch}%1v%{[m%}|)"
+}
+
 function preexec {
-  START_TIME=`date +%s`
+  PREEXEC_START_TIME=`date +%s`
 }
 
 # History ----------------------------------------------------------------------
@@ -317,9 +318,6 @@ setopt print_eight_bit
 
 # Ctrl+wで､直前の/までを削除する｡
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
-
-# ディレクトリを水色にする｡
-export LS_COLORS='di=01;36'
 
 # ファイルリスト補完でもlsと同様に色をつける｡
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
