@@ -1,12 +1,12 @@
-TERM=xterm-256color
-LANG=ja_JP.UTF-8
-XDG_CONFIG_HOME=$HOME/.config
-LS_COLORS='di=01;36'
+export TERM=xterm-256color
+export LANG=ja_JP.UTF-8
+export XDG_CONFIG_HOME=$HOME/.config
+export LS_COLORS='di=01;36'
 
-GOPATH=$HOME/code
-GO15VENDOREXPERIMENT=1
-GO111MODULE=on
-GOENV_DISABLE_GOPATH=1
+export GOPATH=$HOME/code
+export GO15VENDOREXPERIMENT=1
+export GO111MODULE=on
+export GOENV_DISABLE_GOPATH=1
 
 # Completion -------------------------------------------------------------------
 fpath=($HOME/.zsh/completion ${fpath})
@@ -22,29 +22,29 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 base16_tomorrow-night
 
 # PATH -------------------------------------------------------------------------
-PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
-MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
+export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
+export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
 if [ -d /usr/local/Cellar/coreutils ]; then
-  PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-  MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+  export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+  export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
 if [ -d /usr/local/Cellar/gnu-sed ]; then
-  PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-  MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
+  export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
+  export MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
 if [ -d /usr/local/Cellar/openssl ]; then
-  PATH="/usr/local/opt/openssl/bin:$PATH"
+  export PATH="/usr/local/opt/openssl/bin:$PATH"
 fi
 
 if [ -d /usr/local/Caskroom/google-cloud-sdk ]; then
-  PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:$PATH"
+  export PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
-  PATH="$HOME/.anyenv/bin:$PATH"
+  export PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
   for D in `find $HOME/.anyenv/envs -maxdepth 1 -type d`; do
     PATH="$D/shims:$PATH"
@@ -52,20 +52,20 @@ if [ -d ${HOME}/.anyenv ] ; then
 fi
 
 if [ -d /usr/local/heroku ] ; then
-  PATH="/usr/local/heroku/bin:$PATH"
+  export PATH="/usr/local/heroku/bin:$PATH"
 fi
 
 if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
-  PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
-  PATH="$HOME/.pub-cache/bin:$PATH"
+  export PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
+  export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.local ] ; then
-  PATH="$HOME/.local/bin:$PATH"
+  export PATH="$HOME/.local/bin:$PATH"
 fi
 
 if [ -d /Applications/android-sdk-macosx ]; then
-  PATH="/Applications/android-sdk-macosx/tools:$PATH"
+  export PATH="/Applications/android-sdk-macosx/tools:$PATH"
 fi
 
 # Vim --------------------------------------------------------------------------
@@ -78,10 +78,10 @@ fi
 if type nvim > /dev/null; then
   alias vi='nvim'
   alias vimdiff='nvim -d'
-  EDITOR='nvim'
+  export EDITOR='nvim'
 else
   alias vi='vim'
-  EDITOR='vim'
+  export EDITOR='vim'
 fi
 
 # direnv -----------------------------------------------------------------------
