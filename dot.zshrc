@@ -207,6 +207,7 @@ PREEXEC_START_TIME=`date +%s`
   local icon_cat=$'\Uf61a '
   local icon_key=$'\Uf805 '
   local icon_folder=$'\Uf450 '
+  local icon_network=$'\Ufbf1 '
 
   case ${UID} in
     0)
@@ -221,7 +222,7 @@ PREEXEC_START_TIME=`date +%s`
   PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
   [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-    PROMPT="%{[37m%}${HOST%%.*} ${PROMPT}"
+    PROMPT="%{[32m%}${icon_network}${HOST%%.*} ${PROMPT}"
 }
 
 function precmd {
@@ -229,9 +230,9 @@ function precmd {
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-  local icon_git_branch=$'\Uf418 '
   local icon_user=$'\Uf2c0 '
   local icon_clock=$'\Uf017 '
+  local icon_git_branch=$'\Uf418 '
   local end_time=`date +%s`
   local run_time=$((end_time - PREEXEC_START_TIME))
 
