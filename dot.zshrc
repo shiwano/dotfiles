@@ -8,6 +8,8 @@ export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 export GOENV_DISABLE_GOPATH=1
 
+bindkey -e
+
 # Completion -------------------------------------------------------------------
 
 fpath=($HOME/.zsh/completion ${fpath})
@@ -285,9 +287,6 @@ zle -N select-history
 bindkey '^r' select-history
 
 # Utilities --------------------------------------------------------------------
-
-# emacs 風のキーバインドに設定
-bindkey -e
 
 # シェルのプロセスごとに履歴を共有
 setopt share_history
