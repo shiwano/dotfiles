@@ -9,11 +9,13 @@ export GO111MODULE=on
 export GOENV_DISABLE_GOPATH=1
 
 # Completion -------------------------------------------------------------------
+
 fpath=($HOME/.zsh/completion ${fpath})
 autoload -U compinit
 compinit
 
 # Color scheme -----------------------------------------------------------------
+
 BASE16_SHELL="$HOME/.config/base16-shell/"
 [ -n "$PS1" ] && \
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
@@ -22,6 +24,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 base16_tomorrow-night
 
 # PATH -------------------------------------------------------------------------
+
 export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
@@ -69,6 +72,7 @@ if [ -d /Applications/android-sdk-macosx ]; then
 fi
 
 # Vim --------------------------------------------------------------------------
+
 if [ -d $HOME/Applications/MacVim.app ]; then
   alias vim='$HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
   alias gvim='open -a $HOME/Applications/MacVim.app "$@"'
@@ -85,13 +89,20 @@ else
 fi
 
 # direnv -----------------------------------------------------------------------
+
 if type direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
 # Functions --------------------------------------------------------------------
-function find-grep { find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2 }
-function find-sed { find . -name $1 -type f | xargs gsed -i $2 }
+
+function find-grep {
+  find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2
+}
+
+function find-sed {
+  find . -name $1 -type f | xargs gsed -i $2
+}
 
 function compress {
   if [ -f $1 ] ; then
@@ -160,19 +171,37 @@ function edit-git-file {
 }
 
 function edit-git-changed-file {
-  local s="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq | peco --select-1)"
+  local s="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | \
+    cat | sort | uniq | peco --select-1)"
   [ $s ] && shift $# && vi $s
 }
 
+function select-history() {
+  local tac
+  if which tac > /dev/null; then
+    tac="tac"
+  else
+    tac="tail -r"
+  fi
+  BUFFER=$(\history -n 1 | \
+    eval $tac | \
+    peco --query "$LBUFFER")
+  CURSOR=$#BUFFER
+  zle clear-screen
+}
+
 # Aliases ----------------------------------------------------------------------
+
 alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
-alias livereload='guard start -i -B -G ~/dotfiles/tools/livereload.Guardfile'
 alias tmux='tmuxx'
 alias search='ag -g . | ag '
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
+alias lsof-listen='lsof -i -P | grep "LISTEN"'
+alias reload-shell='exec $SHELL -l'
+alias go-get='GO111MODULE=off go get -u'
 
 alias s='git status'
 alias r='git restore' # hide 'r' which is zsh's built-in command
@@ -192,11 +221,8 @@ alias docker-rm-all='docker rm $(docker ps -a -q)'
 alias docker-rmi-all='docker rmi $(docker images -q)'
 alias docker-sh='docker run -it --entrypoint sh'
 
-alias lsof-listen='lsof -i -P | grep "LISTEN"'
-
-alias go-get='GO111MODULE=off go get -u'
-
 # Prompt -----------------------------------------------------------------------
+
 autoload -Uz vcs_info
 zstyle ':vcs_info:*' formats '%b'
 zstyle ':vcs_info:*' actionformats '%b|%a'
@@ -244,15 +270,24 @@ function preexec {
 }
 
 # History ----------------------------------------------------------------------
+
 HISTFILE=$HOME/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
-# Key binding ------------------------------------------------------------------
+autoload history-search-end
+zle -N history-beginning-search-backward-end history-search-end
+zle -N history-beginning-search-forward-end history-search-end
+bindkey "^P" history-beginning-search-backward-end
+bindkey "^N" history-beginning-search-forward-end
 
-bindkey -e
+zle -N select-history
+bindkey '^r' select-history
 
 # Utilities --------------------------------------------------------------------
+
+# emacs 風のキーバインドに設定
+bindkey -e
 
 # シェルのプロセスごとに履歴を共有
 setopt share_history
@@ -332,31 +367,7 @@ setopt auto_cd
 # C-s, C-qを無効にする。
 setopt no_flow_control
 
-# C-p C-n でコマンド履歴検索
-autoload history-search-end
-zle -N history-beginning-search-backward-end history-search-end
-zle -N history-beginning-search-forward-end history-search-end
-bindkey "^P" history-beginning-search-backward-end
-bindkey "^N" history-beginning-search-forward-end
+# .zshrc.local -----------------------------------------------------------------
 
-function peco-select-history() {
-    local tac
-    if which tac > /dev/null; then
-        tac="tac"
-    else
-        tac="tail -r"
-    fi
-    BUFFER=$(\history -n 1 | \
-        eval $tac | \
-        peco --query "$LBUFFER")
-    CURSOR=$#BUFFER
-    zle clear-screen
-}
-zle -N peco-select-history
-bindkey '^r' peco-select-history
-
-# ローカルの .zshrc を読み込む
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
-
-# PATH の重複を消す
-typeset -U path PATH
+typeset -U path PATH # Remove duplicated PATHs.
