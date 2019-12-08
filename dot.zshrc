@@ -248,7 +248,7 @@ PREEXEC_START_TIME=`date +%s`
   PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
   [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-    PROMPT="%{[32m%}${icon_network}${HOST%%.*} ${PROMPT}"
+    PROMPT="%{[31m%}${icon_network}${HOST%%.*} ${PROMPT}"
 }
 
 function precmd {
