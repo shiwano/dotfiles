@@ -1202,6 +1202,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "dbeaver-community": {
+        "version": "6.3.0",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
