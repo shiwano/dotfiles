@@ -51,6 +51,7 @@ brew 'ghq'
 brew 'anyenv'
 brew 'mysql'
 brew 'yarn'
+brew 'libidn'
 
 cask 'alfred'
 cask 'google-chrome'
