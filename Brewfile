@@ -53,6 +53,7 @@ brew 'mysql'
 brew 'yarn'
 brew 'libidn'
 brew 'awscli'
+brew 'amazon-ecs-cli'
 
 cask 'alfred'
 cask 'google-chrome'
