@@ -49,6 +49,7 @@ brew 'stern'
 brew 'mas'
 brew 'ghq'
 brew 'anyenv'
+brew 'mysql'
 
 cask 'alfred'
 cask 'google-chrome'

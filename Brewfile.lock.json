@@ -919,6 +919,27 @@
             }
           }
         }
+      },
+      "mysql": {
+        "version": "8.0.18_1",
+        "bottle": {
+          "cellar": "/usr/local/Cellar",
+          "prefix": "/usr/local",
+          "files": {
+            "catalina": {
+              "url": "https://homebrew.bintray.com/bottles/mysql-8.0.18_1.catalina.bottle.1.tar.gz",
+              "sha256": "48885b9bdbee8475973b8610b6088ed0e47b8a628ad1822b7b7e63df4f99a77a"
+            },
+            "mojave": {
+              "url": "https://homebrew.bintray.com/bottles/mysql-8.0.18_1.mojave.bottle.1.tar.gz",
+              "sha256": "fb790b94534ffa9f0393d33b27e4a3fb8876ab3818882a305d1a6fba653c3ab3"
+            },
+            "high_sierra": {
+              "url": "https://homebrew.bintray.com/bottles/mysql-8.0.18_1.high_sierra.bottle.1.tar.gz",
+              "sha256": "83237573cd7aa72103b3cda406079805a5a8fbe292c2ca460e1b8c1c3802cd83"
+            }
+          }
+        }
       }
     },
     "cask": {
