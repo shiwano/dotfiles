@@ -940,6 +940,10 @@
             }
           }
         }
+      },
+      "yarn": {
+        "version": "1.19.2",
+        "bottle": false
       }
     },
     "cask": {

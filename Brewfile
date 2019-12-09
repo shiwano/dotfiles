@@ -50,6 +50,7 @@ brew 'mas'
 brew 'ghq'
 brew 'anyenv'
 brew 'mysql'
+brew 'yarn'
 
 cask 'alfred'
 cask 'google-chrome'
