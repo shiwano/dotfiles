@@ -84,6 +84,7 @@ cask 'alacritty'
 cask 'vimr'
 cask 'marshallofsound-google-play-music-player'
 cask 'dbeaver-community'
+cask 'java'
 cask 'font-sourcecodepro-nerd-font'
 
 mas 'The Unarchiver', id: 425424353
