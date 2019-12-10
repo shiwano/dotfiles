@@ -204,6 +204,7 @@ alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authoriz
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 alias go-get='GO111MODULE=off go get -u'
+alias dotfiles='cd ~/dotfiles'
 
 alias s='git status'
 alias r='git restore' # hide 'r' which is zsh's built-in command
