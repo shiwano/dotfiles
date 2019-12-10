@@ -173,9 +173,11 @@ function edit-git-file {
 }
 
 function edit-git-changed-file {
-  local s="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | \
-    cat | sort | uniq | peco --select-1)"
-  [ $s ] && shift $# && vi $s
+  local s1="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq)"
+  if [ $s1 ]; then
+    local s2="$(echo $s1 | peco --select-1)"
+    [ $s2 ] && shift $# && vi $s2
+  fi
 }
 
 function select-history() {
