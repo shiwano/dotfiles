@@ -69,17 +69,12 @@ if [ -d ${HOME}/.local ] ; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
-if [ -d /Applications/android-sdk-macosx ]; then
-  export PATH="/Applications/android-sdk-macosx/tools:$PATH"
+if [ -d /usr/local/share/android-sdk ]; then
+  export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
+  export PATH="/usr/local/share/android-sdk/tools/bin:$PATH"
 fi
 
 # Vim --------------------------------------------------------------------------
-
-if [ -d $HOME/Applications/MacVim.app ]; then
-  alias vim='$HOME/Applications/MacVim.app/Contents/MacOS/Vim "$@"'
-  alias gvim='open -a $HOME/Applications/MacVim.app "$@"'
-  alias vimdiff=$HOME/Applications/MacVim.app/Contents/MacOS/vimdiff
-fi
 
 if type nvim > /dev/null; then
   alias vi='nvim'
