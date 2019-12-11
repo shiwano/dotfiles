@@ -1289,6 +1289,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "android-platform-tools": {
+        "version": "29.0.5",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
@@ -1308,9 +1316,9 @@
         "HOMEBREW_VERSION": "2.2.0",
         "HOMEBREW_PREFIX": "/usr/local",
         "Homebrew/homebrew-core": "426e46554969764449905ce883c24a1f7b43f396",
-        "CLT": "11.2.0.0.1.1571444319",
+        "CLT": "1100.0.33.16",
         "Xcode": "11.2.1",
-        "macOS": "10.15.1"
+        "macOS": "10.15.2"
       }
     }
   }
