@@ -79,8 +79,14 @@ Plug 'prabirshrestha/asyncomplete-buffer.vim'
 Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
-Plug 'ruby-formatter/rufo-vim'
 Plug 'fatih/vim-hclfmt'
+Plug 'prettier/vim-prettier', {
+  \ 'do': 'yarn install',
+  \ 'branch': 'release/1.x',
+  \ 'for': [
+    \ 'javascript', 'typescript', 'css', 'less', 'scss', 'json',
+    \ 'graphql', 'markdown', 'vue', 'lua', 'php', 'python', 'ruby',
+    \ 'html', 'swift' ] }
 " Misc
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
@@ -618,9 +624,6 @@ au User asyncomplete_setup call asyncomplete#register_source(asyncomplete#source
 let g:hcl_fmt_autosave = 1
 let g:tf_fmt_autosave = 0
 let g:nomad_fmt_autosave = 0
-"------------------------------------------------------------------------------
-" rufo-vim
-let g:rufo_auto_formatting = 1
 "------------------------------------------------------------------------------
 " vim-javascript
 let g:javascript_plugin_jsdoc = 1
