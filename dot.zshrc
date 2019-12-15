@@ -256,13 +256,17 @@ function precmd {
   LANG=en_US.UTF-8 vcs_info
   [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
 
-  local icon_user=$'\Uf2c0 '
   local icon_clock=$'\Uf017 '
   local icon_git_branch=$'\Uf418 '
   local end_time=`date +%s`
   local run_time=$((end_time - PREEXEC_START_TIME))
 
-  RPROMPT="%{[35m%}${icon_user}%n%{[m%} %{[34m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[36m%}${icon_git_branch}%1v%{[m%}|)"
+  if [ "$(whoami)" = 'shiwano' ]; then
+    RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|)"
+  else
+    local icon_user=$'\Uf2c0 '
+    RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|) %{[36m%}${icon_user}%n%{[m%}"
+  fi
 }
 
 function preexec {
