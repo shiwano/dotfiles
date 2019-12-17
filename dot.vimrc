@@ -631,3 +631,6 @@ let g:javascript_plugin_jsdoc = 1
 " vim-prettier
 let g:prettier#autoformat = 0
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.rb,*.graphql,*.md,*.vue,*.yaml,*.html PrettierAsync
+"------------------------------------------------------------------------------
+" ale
+highlight ALEWarning ctermbg=darkgray
