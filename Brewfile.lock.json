@@ -1318,6 +1318,14 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "ngrok": {
+        "version": "latest",
+        "options": {
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
