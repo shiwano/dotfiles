@@ -107,6 +107,7 @@ Plug 'tpope/vim-projectionist'
 Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
+Plug 'danro/rename.vim'
 call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
@@ -296,14 +297,12 @@ au BufRead,BufNewFile .envrc* set filetype=sh
 au BufRead,BufNewFile dot.zshrc set filetype=zsh
 au BufRead,BufNewFile dot.tmux.conf set filetype=tmux
 au BufRead,BufNewFile dot.gitconfig set filetype=gitconfig
+au BufRead,BufNewFile *.jb set filetype=ruby
 "------------------------------------------------------------------------------
 " Custom commands
 
 " 現在開いているディレクトリをルートディレクトリに
 command! Cd :cd %:h
-
-" ファイル名変更
-command! -nargs=+ -bang -complete=file Rename let pbnr=fnamemodify(bufname('%'), ':p')|exec 'f '.escape(<q-args>, ' ')|w<bang>|call delete(pbnr)
 
 " エンコード指定してファイルを開く
 command! -nargs=1 Reload :e ++enc=<f-args>
