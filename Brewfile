@@ -92,6 +92,7 @@ cask 'marshallofsound-google-play-music-player'
 cask 'dbeaver-community'
 cask 'font-sourcecodepro-nerd-font'
 cask 'ngrok'
+cask 'kindle'
 
 mas 'The Unarchiver', id: 425424353
 mas 'LINE', id: 539883307
