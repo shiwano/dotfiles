@@ -93,6 +93,7 @@ cask 'dbeaver-community'
 cask 'font-sourcecodepro-nerd-font'
 cask 'ngrok'
 cask 'kindle'
+cask 'blackhole'
 
-mas 'The Unarchiver', id: 425424353
-mas 'LINE', id: 539883307
+mas 'The Unarchiver', id: 425_424_353
+mas 'LINE', id: 539_883_307
