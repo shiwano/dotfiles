@@ -1336,6 +1336,15 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "zoomus": {
+        "version": "4.6.17383.0119",
+        "options": {
+          "full_name": "zoomus",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
