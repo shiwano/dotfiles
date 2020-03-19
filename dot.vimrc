@@ -59,6 +59,7 @@ Plug 'chr4/nginx.vim'
 Plug 'google/vim-maktaba'
 Plug 'bazelbuild/vim-bazel'
 Plug 'bfontaine/Brewfile.vim'
+Plug 'jparise/vim-graphql'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
