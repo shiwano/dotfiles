@@ -55,6 +55,7 @@ brew 'libidn'
 brew 'awscli'
 brew 'amazon-ecs-cli'
 brew 'graphviz'
+brew 'bazelisk'
 
 cask 'java'
 cask 'alfred'
