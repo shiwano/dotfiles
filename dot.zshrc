@@ -74,6 +74,10 @@ if [ -d /usr/local/share/android-sdk ]; then
   export PATH="/usr/local/share/android-sdk/tools/bin:$PATH"
 fi
 
+if [ -d /usr/local/heroku ] ; then
+  export PATH="/usr/local/heroku/bin:$PATH"
+fi
+
 # Vim --------------------------------------------------------------------------
 
 if type nvim > /dev/null; then
@@ -196,7 +200,6 @@ alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
 alias tmux='tmuxx'
-alias search='ag -g . | ag '
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
@@ -217,9 +220,19 @@ alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
-alias docker-rm-all='docker rm $(docker ps -a -q)'
-alias docker-rmi-all='docker rmi $(docker images -q)'
-alias docker-sh='docker run -it --entrypoint sh'
+if type ag > /dev/null; then
+  alias search='ag -g . | ag '
+fi
+
+if type docker > /dev/null; then
+  alias docker-rm-all='docker rm $(docker ps -a -q)'
+  alias docker-rmi-all='docker rmi $(docker images -q)'
+  alias docker-sh='docker run -it --entrypoint sh'
+fi
+
+if type bazelisk > /dev/null; then
+  alias bazel='bazelisk'
+fi
 
 # Prompt -----------------------------------------------------------------------
 
