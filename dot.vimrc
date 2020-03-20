@@ -76,6 +76,7 @@ Plug 'prabirshrestha/vim-lsp'
 Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/asyncomplete-file.vim'
 Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'mattn/vim-lsp-settings'
 " Lint and Format
 Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
@@ -557,7 +558,7 @@ inoremap <silent><expr> <TAB>
   \ <SID>check_back_space() ? "\<TAB>" :
   \ asyncomplete#force_refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
-
+"------------------------------------------------------------------------------
 " go-lsp
 let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 0
@@ -565,44 +566,6 @@ let g:lsp_diagnostics_echo_cursor = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
-
-if executable('bingo')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'bingo',
-        \ 'cmd': {server_info->['bingo', '-mode', 'stdio']},
-        \ 'whitelist': ['go'],
-        \ })
-    autocmd FileType go setlocal omnifunc=lsp#complete
-endif
-
-if executable('dart_language_server')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'dart_language_server',
-        \ 'cmd': {server_info->['dart_language_server']},
-        \ 'whitelist': ['dart'],
-        \ })
-    autocmd FileType dart setlocal omnifunc=lsp#complete
-endif
-
-if executable('typescript-language-server')
-  au User lsp_setup call lsp#register_server({
-    \ 'name': 'typescript-language-server',
-    \ 'cmd': { server_info->[&shell, &shellcmdflag, 'typescript-language-server --stdio']},
-    \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-    \ 'whitelist': ['typescript', 'javascript', 'javascript.jsx']
-    \ })
-  autocmd FileType typescript,javascript,javascript.jsx setlocal omnifunc=lsp#complete
-endif
-
-if executable('vls')
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'vls',
-        \ 'cmd': { server_info->[&shell, &shellcmdflag, 'vls --stdio']},
-        \ 'root_uri':{server_info->lsp#utils#path_to_uri(lsp#utils#find_nearest_parent_file_directory(lsp#utils#get_buffer_path(), 'tsconfig.json'))},
-        \ 'whitelist': ['vue'],
-        \ })
-    autocmd FileType vue setlocal omnifunc=lsp#complete
-endif
 "------------------------------------------------------------------------------
 " asyncomplete-buffer.vim
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
