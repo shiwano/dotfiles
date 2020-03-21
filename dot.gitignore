@@ -11,6 +11,7 @@ _ignored/
 _ignored.meta
 dump.rdb
 *.sln.DotSettings.user
+.projections.json
 
 */AssetCaches/
 */Assets/Editor/JetBrains/

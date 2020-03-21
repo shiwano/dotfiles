@@ -68,7 +68,6 @@ Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 " Code completion, debug
 Plug 'kana/vim-smartinput'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'sebdah/vim-delve'
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/async.vim'
@@ -82,6 +81,7 @@ Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'fatih/vim-hclfmt'
+Plug 'mattn/vim-goimports'
 Plug 'prettier/vim-prettier', {
   \ 'do': 'yarn install',
   \ 'branch': 'release/1.x',
@@ -496,10 +496,6 @@ nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() 
 " vim-json
 let g:vim_json_syntax_conceal = 0
 "------------------------------------------------------------------------------
-" vim-go
-let g:go_fmt_command = "goimports"
-let g:go_list_type = "quickfix"
-"------------------------------------------------------------------------------
 " auto-tags
 let g:auto_ctags = 1
 let g:auto_ctags_tags_args = '--tag-relative --recurse --sort=yes'
@@ -561,8 +557,6 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 "------------------------------------------------------------------------------
 " go-lsp
 let g:lsp_async_completion = 1
-let g:lsp_signs_enabled = 0
-let g:lsp_diagnostics_echo_cursor = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
