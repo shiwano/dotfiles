@@ -60,6 +60,7 @@ brew 'graphviz'
 brew 'bazelisk'
 brew 'shiwano/tap/ibazel'
 brew 'golangci/tap/golangci-lint'
+brew 'helm'
 
 cask 'java'
 cask 'alfred'
