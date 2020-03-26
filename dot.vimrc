@@ -592,3 +592,6 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 "------------------------------------------------------------------------------
 " ale
 highlight ALEWarning ctermbg=darkgray
+let g:ale_linters = {
+      \ 'go': ['golangci-lint'],
+      \ }
