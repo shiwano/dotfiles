@@ -45,7 +45,8 @@ if [ -d /usr/local/Cellar/openssl ]; then
 fi
 
 if [ -d /usr/local/Caskroom/google-cloud-sdk ]; then
-  export PATH="/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/bin:$PATH"
+  source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'
+  source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
