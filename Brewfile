@@ -100,6 +100,7 @@ cask 'ngrok'
 cask 'kindle'
 cask 'blackhole'
 cask 'zoomus'
+cask 'deepl'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307

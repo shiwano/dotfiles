@@ -1378,6 +1378,15 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "deepl": {
+        "version": "1.7.0",
+        "options": {
+          "full_name": "deepl",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
