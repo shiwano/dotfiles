@@ -61,6 +61,7 @@ brew 'bazelisk'
 brew 'shiwano/tap/ibazel'
 brew 'golangci/tap/golangci-lint'
 brew 'helm'
+brew 'certbot'
 
 cask 'java'
 cask 'alfred'
