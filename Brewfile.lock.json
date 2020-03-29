@@ -24,6 +24,9 @@
       },
       "golangci/tap": {
         "revision": "e77a41664ffb924373aaf569dae5fba3d8765ae0"
+      },
+      "mongodb/brew": {
+        "revision": "c15b827e8d8cafb9ae5c15703cc62a4fbfd2f450"
       }
     },
     "brew": {
@@ -1067,7 +1070,8 @@
             }
           }
         }
-      }
+      },
+      "mongodb/brew/mongodb-community": null
     },
     "cask": {
       "alfred": {
