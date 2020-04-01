@@ -6,7 +6,6 @@ export LS_COLORS='di=01;36'
 export GOPATH=$HOME/code
 export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
-export GOENV_DISABLE_GOPATH=1
 
 bindkey -e
 
@@ -162,7 +161,7 @@ function move-to-ghq-directory {
 function edit-git-grepped-file {
   if [ $@ ]; then
     local s="$(grep-git-files $@ | peco --select-1)"
-    [ $s ] && shift $# && vim +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
+    [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
   fi
 }
 
@@ -173,7 +172,11 @@ function edit-git-file {
 }
 
 function edit-git-changed-file {
-  local s1="$({ git diff --name-only | cat & git diff --cached --name-only | cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq)"
+  local s1="$({
+    (git diff --name-only | xargs -I '{}' realpath --relative-to=. $(git rev-parse --show-toplevel)/'{}') |
+    cat & (git diff --cached --name-only | xargs -I '{}' realpath --relative-to=. $(git rev-parse --show-toplevel)/'{}') |
+    cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq
+  )"
   if [ $s1 ]; then
     local s2="$(echo $s1 | peco --select-1)"
     [ $s2 ] && shift $# && vi $s2
