@@ -5,7 +5,7 @@
         "revision": "20e7cee19a59595d72a1b1886bd57fc69d97506e"
       },
       "homebrew/core": {
-        "revision": "f3a8769e6ae498ae98a46abf8b5d01647c133efb"
+        "revision": "916f7887cce6840ba28eb945b27d7c0333137c64"
       },
       "shiwano/formulas": {
         "revision": "39b0ced5182178b6c1e747c3b4432d84ffeefbe2"
@@ -14,7 +14,7 @@
         "revision": "7844f3da5fce482853b7edaca59cb8a511cc7ac7"
       },
       "homebrew/cask-fonts": {
-        "revision": "3a00503da565f42c1ac9b16825ac9484fd540ba3"
+        "revision": "54a3f585aafa8d308827a510a10214efc45258fe"
       },
       "bazelbuild/tap": {
         "revision": "b1eabbdbce87c2413f9c6c956c570d355b88c439"
@@ -27,6 +27,9 @@
       },
       "mongodb/brew": {
         "revision": "c15b827e8d8cafb9ae5c15703cc62a4fbfd2f450"
+      },
+      "shyiko/kubesec": {
+        "revision": "3667b1600528632e37ccefe5837ad329b89c6d79"
       }
     },
     "brew": {
@@ -148,22 +151,22 @@
         }
       },
       "cmake": {
-        "version": "3.17.0",
+        "version": "3.17.0_1",
         "bottle": {
           "cellar": ":any_skip_relocation",
           "prefix": "/usr/local",
           "files": {
             "catalina": {
-              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0.catalina.bottle.tar.gz",
-              "sha256": "abfd3a6d924a79f7c1872b1bedc0af44be391d28f54681158e3e57689a39affd"
+              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0_1.catalina.bottle.tar.gz",
+              "sha256": "e3d804107690769114dff9f807666f7b2aad6a9610423b99188207b3eef03682"
             },
             "mojave": {
-              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0.mojave.bottle.tar.gz",
-              "sha256": "e4db1daf08332b94998bf3af0fa90d0753e0724a2694b977e21a908b6ae12ffd"
+              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0_1.mojave.bottle.tar.gz",
+              "sha256": "f2c6d8483a8a1e07087590b06cdfba7081dc82c9c84c0c38cf932be4e9d9fd94"
             },
             "high_sierra": {
-              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0.high_sierra.bottle.tar.gz",
-              "sha256": "8540be0338aaefd8515e4f0369be0e7d5346656e7af81d755d6073892a4a501f"
+              "url": "https://homebrew.bintray.com/bottles/cmake-3.17.0_1.high_sierra.bottle.tar.gz",
+              "sha256": "d9f491b97fed02181a094e2dc96d42b7e01f7f086f88384371279382057dec7b"
             }
           }
         }
@@ -1071,7 +1074,8 @@
           }
         }
       },
-      "mongodb/brew/mongodb-community": null
+      "mongodb/brew/mongodb-community": null,
+      "shyiko/kubesec/kubesec": null
     },
     "cask": {
       "alfred": {
@@ -1336,7 +1340,7 @@
         }
       },
       "alacritty": {
-        "version": "0.4.1",
+        "version": "0.4.2",
         "options": {
           "full_name": "alacritty",
           "args": {
@@ -1460,7 +1464,7 @@
       "catalina": {
         "HOMEBREW_VERSION": "2.2.11",
         "HOMEBREW_PREFIX": "/usr/local",
-        "Homebrew/homebrew-core": "f3a8769e6ae498ae98a46abf8b5d01647c133efb",
+        "Homebrew/homebrew-core": "916f7887cce6840ba28eb945b27d7c0333137c64",
         "CLT": "11.0.33.16",
         "Xcode": "11.2.1",
         "macOS": "10.15.3"
