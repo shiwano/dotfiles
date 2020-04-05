@@ -558,6 +558,8 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 "------------------------------------------------------------------------------
 " go-lsp
 let g:lsp_async_completion = 1
+let g:lsp_signs_enabled = 1
+let g:lsp_diagnostics_echo_cursor = 1
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
@@ -595,3 +597,4 @@ highlight ALEWarning ctermbg=darkgray
 let g:ale_linters = {
       \ 'go': ['golangci-lint'],
       \ }
+let g:ale_go_golangci_lint_options = ''
