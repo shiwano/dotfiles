@@ -3,3 +3,4 @@ nnoremap oh :LspHover<CR>
 nnoremap of :LspReferences<CR>
 nnoremap op :LspImplementation<CR>
 nnoremap on :LspRename<CR>
+nnoremap oe :LspDocumentDiagnostics<cr>

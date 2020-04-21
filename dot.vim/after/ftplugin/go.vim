@@ -9,6 +9,7 @@ nnoremap oh :LspHover<CR>
 nnoremap of :LspReferences<CR>
 nnoremap op :LspImplementation<CR>
 nnoremap on :LspRename<cr>
+nnoremap oe :LspDocumentDiagnostics<cr>
 
 nnoremap odd :DlvTest<cr>
 nnoremap odc :DlvClearAll<cr>

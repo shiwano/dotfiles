@@ -40,7 +40,6 @@ Plug 'groenewege/vim-less'
 Plug 'wavded/vim-stylus'
 Plug 'hail2u/vim-css3-syntax'
 Plug 'digitaltoad/vim-jade'
-Plug 'leafgarland/typescript-vim'
 Plug 'aklt/plantuml-syntax'
 Plug 'gkz/vim-ls'
 Plug 'elzr/vim-json'
@@ -60,6 +59,7 @@ Plug 'google/vim-maktaba'
 Plug 'bazelbuild/vim-bazel'
 Plug 'bfontaine/Brewfile.vim'
 Plug 'jparise/vim-graphql'
+Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 " Environment
 Plug 'Shougo/unite.vim'
@@ -560,6 +560,7 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 1
 let g:lsp_diagnostics_echo_cursor = 1
+" let g:lsp_virtual_text_enabled = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')
 " let g:asyncomplete_log_file = expand('~/asyncomplete.log')
@@ -590,6 +591,7 @@ let g:javascript_plugin_jsdoc = 1
 "------------------------------------------------------------------------------
 " vim-prettier
 let g:prettier#autoformat = 0
+let g:prettier#quickfix_enabled = 0
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.html PrettierAsync
 "------------------------------------------------------------------------------
 " ale
