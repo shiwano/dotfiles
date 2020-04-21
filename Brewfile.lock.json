@@ -1366,15 +1366,6 @@
           }
         }
       },
-      "dbeaver-community": {
-        "version": "7.0.1",
-        "options": {
-          "full_name": "dbeaver-community",
-          "args": {
-            "appdir": "/Applications"
-          }
-        }
-      },
       "java": {
         "version": "14,36:076bab302c7b4508975440c56f6cc26a",
         "options": {
