@@ -1446,6 +1446,15 @@
             "appdir": "/Applications"
           }
         }
+      },
+      "tableplus": {
+        "version": "3.1.2,296",
+        "options": {
+          "full_name": "tableplus",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
       }
     },
     "mas": {
