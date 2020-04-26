@@ -1075,7 +1075,28 @@
         }
       },
       "mongodb/brew/mongodb-community": null,
-      "shyiko/kubesec/kubesec": null
+      "shyiko/kubesec/kubesec": null,
+      "docker-slim": {
+        "version": "1.29.0",
+        "bottle": {
+          "cellar": ":any_skip_relocation",
+          "prefix": "/usr/local",
+          "files": {
+            "catalina": {
+              "url": "https://homebrew.bintray.com/bottles/docker-slim-1.29.0.catalina.bottle.tar.gz",
+              "sha256": "a38712870dab03f740f73860a7aaab80e6957975554d45a0a271842c07a133f6"
+            },
+            "mojave": {
+              "url": "https://homebrew.bintray.com/bottles/docker-slim-1.29.0.mojave.bottle.tar.gz",
+              "sha256": "a38712870dab03f740f73860a7aaab80e6957975554d45a0a271842c07a133f6"
+            },
+            "high_sierra": {
+              "url": "https://homebrew.bintray.com/bottles/docker-slim-1.29.0.high_sierra.bottle.tar.gz",
+              "sha256": "a38712870dab03f740f73860a7aaab80e6957975554d45a0a271842c07a133f6"
+            }
+          }
+        }
+      }
     },
     "cask": {
       "alfred": {

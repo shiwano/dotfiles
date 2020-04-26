@@ -66,6 +66,7 @@ brew 'helm'
 brew 'certbot'
 brew 'mongodb/brew/mongodb-community'
 brew 'shyiko/kubesec/kubesec'
+brew 'docker-slim'
 
 cask 'java'
 cask 'alfred'
