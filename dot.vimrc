@@ -569,7 +569,7 @@ let g:lsp_diagnostics_echo_cursor = 1
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
     \ 'name': 'buffer',
     \ 'whitelist': ['*'],
-    \ 'blacklist': ['go', 'typescript', 'javascript', 'javascript.jsx', 'vue'],
+    \ 'blacklist': ['go', 'typescript', 'typescript.tsx', 'javascript', 'javascript.jsx', 'vue'],
     \ 'completor': function('asyncomplete#sources#buffer#completor'),
     \ }))
 "------------------------------------------------------------------------------
@@ -592,7 +592,7 @@ let g:javascript_plugin_jsdoc = 1
 " vim-prettier
 let g:prettier#autoformat = 0
 let g:prettier#quickfix_enabled = 0
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.md,*.vue,*.html PrettierAsync
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.html PrettierAsync
 "------------------------------------------------------------------------------
 " ale
 highlight ALEWarning ctermbg=darkgray
@@ -600,3 +600,10 @@ let g:ale_linters = {
       \ 'go': ['golangci-lint'],
       \ }
 let g:ale_go_golangci_lint_options = ''
+"------------------------------------------------------------------------------
+" vim-gh-line
+let g:gh_line_map_default = 0
+let g:gh_line_blame_map_default = 0
+let g:gh_line_map = 'og'
+let g:gh_line_blame_map = 'ob'
+let g:gh_use_canonical = 0
