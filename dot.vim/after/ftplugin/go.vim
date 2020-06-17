@@ -7,7 +7,7 @@ setlocal listchars=tab:\ \ ,trail:_,extends:>,precedes:< " 不可視文字の表
 nnoremap od :LspDefinition<CR>
 nnoremap oh :LspHover<CR>
 nnoremap of :LspReferences<CR>
-nnoremap op :LspImplementation<CR>
+nnoremap oi :LspImplementation<CR>
 nnoremap on :LspRename<cr>
 nnoremap oe :LspDocumentDiagnostics<cr>
 
