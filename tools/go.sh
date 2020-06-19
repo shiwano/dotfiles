@@ -11,3 +11,5 @@ go get -u github.com/go-delve/delve/cmd/dlv
 go get -u github.com/hashicorp/hcl2/cmd/hclfmt
 go get -u golang.org/x/tools/cmd/goimports
 go get -u github.com/pwaller/goimports-update-ignore
+go get -u github.com/pwaller/goimports-update-ignore
+go get -u github.com/davidrjenni/reftools/cmd/fillstruct
