@@ -374,6 +374,7 @@ if has('nvim')
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
+  tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
 
   autocmd TermOpen * setlocal scrollback=100000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
@@ -592,6 +593,7 @@ let g:javascript_plugin_jsdoc = 1
 " vim-prettier
 let g:prettier#autoformat = 0
 let g:prettier#quickfix_enabled = 0
+let g:prettier#exec_cmd_async = 1
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.html PrettierAsync
 "------------------------------------------------------------------------------
 " ale
