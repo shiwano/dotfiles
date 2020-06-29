@@ -30,10 +30,8 @@ call plug#begin('~/.vim/plugged')
 " Color scheme
 Plug 'chriskempson/base16-vim'
 " Syntax highlight
-Plug 'vim-scripts/jQuery'
 Plug 'pangloss/vim-javascript'
 Plug 'mustache/vim-mustache-handlebars'
-Plug 'kchmck/vim-coffee-script'
 Plug 'othree/html5-syntax.vim'
 Plug 'timcharper/textile.vim'
 Plug 'groenewege/vim-less'
@@ -61,6 +59,7 @@ Plug 'bfontaine/Brewfile.vim'
 Plug 'jparise/vim-graphql'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
+Plug 'mechatroner/rainbow_csv'
 " Environment
 Plug 'Shougo/unite.vim'
 Plug 'Shougo/neomru.vim'
