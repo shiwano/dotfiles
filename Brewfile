@@ -69,6 +69,7 @@ brew 'shyiko/kubesec/kubesec'
 brew 'docker-slim'
 brew 'fzf'
 brew 'ripgrep'
+brew 'bat'
 
 cask 'java'
 cask 'alfred'
