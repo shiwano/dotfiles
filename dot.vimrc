@@ -552,8 +552,8 @@ function! s:search()
   endif
 endfunction
 
-nnoremap <silent> ,uf :GFiles<C-R>=getcwd()<CR><CR>
-nnoremap <silent> ,ud :GFiles<C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> ,uf :GFiles <C-R>=getcwd()<CR><CR>
+nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
 nnoremap <silent> ,us :GFiles?<CR>
 nnoremap <silent> ,ub :Lines<CR>
 nnoremap <silent> ,um :History<CR>
