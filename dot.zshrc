@@ -101,6 +101,13 @@ if type direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+# fzf -----------------------------------------------------------------------
+
+if type fzf > /dev/null; then
+  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
+fi
+
 # Functions --------------------------------------------------------------------
 
 function find-grep {
@@ -156,24 +163,24 @@ function static-httpd {
 }
 
 function grep-git-files {
-  [ $@ ] && git ls-files -z . | xargs -0 ag --pager="less -R --no-init --quit-if-one-screen" --smart-case $@
+  [ $@ ] && git ls-files -z . | xargs -0 rg -n -p $@ | less -R --no-init --quit-if-one-screen
 }
 
 function move-to-ghq-directory {
-  local p="$(ghq list | peco --select-1)"
+  local p="$(ghq list | fzf)"
   [ $p ] && cd $(ghq root)/$p
 }
 
 function edit-git-grepped-file {
   if [ $@ ]; then
-    local s="$(grep-git-files $@ | peco --select-1)"
+    local s="$(git ls-files -z . | xargs -0 rg -n $@ | fzf)"
     [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
   fi
 }
 
 function edit-git-file {
   local dir=${1-.}
-  local s="$(git ls-files $dir | peco --select-1)"
+  local s="$(git ls-files $dir | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}')"
   [ $s ] && shift $# && vi $s
 }
 
@@ -184,23 +191,14 @@ function edit-git-changed-file {
     cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq
   )"
   if [ $s1 ]; then
-    local s2="$(echo $s1 | peco --select-1)"
+    local s2="$(echo $s1 | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}')"
     [ $s2 ] && shift $# && vi $s2
   fi
 }
 
 function select-history() {
-  local tac
-  if which tac > /dev/null; then
-    tac="tac"
-  else
-    tac="tail -r"
-  fi
-  BUFFER=$(\history -n 1 | \
-    eval $tac | \
-    peco --query "$LBUFFER")
+  BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt="History > ")
   CURSOR=$#BUFFER
-  zle clear-screen
 }
 
 # Aliases ----------------------------------------------------------------------
@@ -230,10 +228,6 @@ alias zmv='noglob zmv -W'
 alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
-
-if type ag > /dev/null; then
-  alias search='ag -g . | ag '
-fi
 
 if type docker > /dev/null; then
   alias docker-rm-all='docker rm $(docker ps -a -q)'
