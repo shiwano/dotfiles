@@ -367,11 +367,12 @@ augroup END
 " Terminal
 if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
-  tnoremap <silent> <ESC><ESC> <C-\><C-n>
+  tnoremap <silent> <ESC> <C-\><C-n>
   tnoremap <silent> <C-j> <C-\><C-n><C-w>j
   tnoremap <silent> <C-k> <C-\><C-n><C-w>k
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
+  tnoremap <silent> <C-z> <C-\><C-n>:bd!<CR>
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
   tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
 
@@ -380,9 +381,6 @@ if has('nvim')
 
   command! T :call s:T()
   function! s:T()
-    vsplit
-    wincmd l
-    vertical resize 100
     terminal
     normal i
   endfunction
@@ -538,16 +536,16 @@ let g:asyncomplete_smart_completion = 1
 let g:asyncomplete_auto_popup = 1
 set completeopt=menuone
 
-inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<cr>"
+inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
 imap <c-space> <Plug>(asyncomplete_force_refresh)
-autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-autocmd InsertLeave * if pumvisible() == 0 | pclose | endif
+" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
+" autocmd! InsertLeave * if pumvisible() == 0 | pclose | endif
 
 function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~ '\s'
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~ '\s'
 endfunction
 
 inoremap <silent><expr> <TAB>
@@ -558,8 +556,9 @@ inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 "------------------------------------------------------------------------------
 " go-lsp
 let g:lsp_async_completion = 1
-let g:lsp_signs_enabled = 1
+let g:lsp_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
+let g:lsp_highlights_enabled = 0
 " let g:lsp_virtual_text_enabled = 0
 " let g:lsp_log_verbose = 1
 " let g:lsp_log_file = expand('~/vim-lsp.log')

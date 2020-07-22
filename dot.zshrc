@@ -214,6 +214,7 @@ alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authoriz
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 alias go-get='GO111MODULE=off go get -u'
+alias go-test-build-all='go test -run=^$ ./...'
 alias dotfiles='cd ~/dotfiles'
 
 alias s='git status'
@@ -242,6 +243,10 @@ fi
 
 if type bazelisk > /dev/null; then
   alias bazel='bazelisk'
+fi
+
+if type ibazel > /dev/null; then
+  alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
 fi
 
 # Prompt -----------------------------------------------------------------------
