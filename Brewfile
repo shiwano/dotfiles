@@ -68,6 +68,7 @@ brew 'mongodb/brew/mongodb-community'
 brew 'shyiko/kubesec/kubesec'
 brew 'docker-slim'
 brew 'fzf'
+brew 'ripgrep'
 
 cask 'java'
 cask 'alfred'
