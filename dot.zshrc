@@ -167,20 +167,20 @@ function grep-git-files {
 }
 
 function move-to-ghq-directory {
-  local p="$(ghq list | fzf)"
+  local p="$(ghq list | fzf -1)"
   [ $p ] && cd $(ghq root)/$p
 }
 
 function edit-git-grepped-file {
   if [ $@ ]; then
-    local s="$(git ls-files -z . | xargs -0 rg -n $@ | fzf)"
+    local s="$(git ls-files -z . | xargs -0 rg -n $@ | fzf -1)"
     [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
   fi
 }
 
 function edit-git-file {
   local dir=${1-.}
-  local s="$(git ls-files $dir | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}')"
+  local s="$(git ls-files $dir | fzf -1 --preview 'bat --style=numbers --color=always --line-range :500 {}')"
   [ $s ] && shift $# && vi $s
 }
 
@@ -191,7 +191,7 @@ function edit-git-changed-file {
     cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq
   )"
   if [ $s1 ]; then
-    local s2="$(echo $s1 | fzf --preview 'bat --style=numbers --color=always --line-range :500 {}')"
+    local s2="$(echo $s1 | fzf -1 --preview 'bat --style=numbers --color=always --line-range :500 {}')"
     [ $s2 ] && shift $# && vi $s2
   fi
 }
