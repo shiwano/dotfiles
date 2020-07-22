@@ -1,13 +1,15 @@
 "------------------------------------------------------------------------------
 set nocompatible " Vim!
-"------------------------------------------------------------------------------
-" Variables
+
 let $TODAY = strftime('%Y%m%d')
-let $DESKTOP = expand('~/desktop')
+
+if has("win32") || has("win64")
+  let $DOTVIM = expand('~/vimfiles')
+else
+  let $DOTVIM = expand('~/.vim')
+endif
 
 if has("macunix")
-  let $LUA_DLL = '/usr/local/Cellar/lua/5.2.3_1/lib/liblua.dylib'
-
   augroup cpp-path
     autocmd!
     autocmd FileType cpp setlocal path=.,/usr/include,/usr/local/include,/usr/lib/c++/v1
@@ -19,16 +21,13 @@ if has("macunix")
     let g:clang_library_path = '/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/libclang.dylib'
   endif
 endif
-
-if has("win32") || has("win64")
-  let $DOTVIM = expand('~/vimfiles')
-else
-  let $DOTVIM = expand('~/.vim')
-endif
 "------------------------------------------------------------------------------
+" Plugins
 call plug#begin('~/.vim/plugged')
+
 " Color scheme
 Plug 'chriskempson/base16-vim'
+
 " Syntax highlight
 Plug 'pangloss/vim-javascript'
 Plug 'mustache/vim-mustache-handlebars'
@@ -60,15 +59,12 @@ Plug 'jparise/vim-graphql'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
-" Environment
-Plug 'Shougo/unite.vim'
-Plug 'Shougo/neomru.vim'
-Plug 'Sixeight/unite-grep'
-Plug 'Shougo/vimproc.vim', { 'do': 'make' }
-Plug 'jmcantrell/vim-virtualenv'
-" Code completion, debug
-Plug 'kana/vim-smartinput'
-Plug 'sebdah/vim-delve'
+
+" Finder
+Plug 'junegunn/fzf'
+Plug 'junegunn/fzf.vim'
+
+" Code completion
 Plug 'prabirshrestha/asyncomplete.vim'
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
@@ -76,7 +72,19 @@ Plug 'prabirshrestha/asyncomplete-lsp.vim'
 Plug 'prabirshrestha/asyncomplete-file.vim'
 Plug 'prabirshrestha/asyncomplete-buffer.vim'
 Plug 'mattn/vim-lsp-settings'
-" Lint and Format
+
+" Input support
+Plug 'kana/vim-smartinput'
+Plug 'buoto/gotests-vim'
+Plug 'kburdett/vim-nuuid'
+Plug 'LeafCage/yankround.vim'
+Plug 'scrooloose/nerdcommenter'
+
+" Test and debug
+Plug 'sebdah/vim-delve'
+Plug 'thinca/vim-quickrun'
+
+" Lint and format
 Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'Vimjas/vim-python-pep8-indent'
@@ -89,27 +97,24 @@ Plug 'prettier/vim-prettier', {
     \ 'javascript', 'typescript', 'css', 'less', 'scss', 'json',
     \ 'graphql', 'markdown', 'vue', 'lua', 'php', 'python', 'ruby',
     \ 'html', 'swift' ] }
+
 " Misc
+Plug 'Shougo/vimproc.vim', { 'do': 'make' }
+Plug 'jmcantrell/vim-virtualenv'
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
 Plug 'tpope/vim-rails'
 Plug 'tpope/vim-surround'
 Plug 'thinca/vim-poslist'
-Plug 'thinca/vim-quickrun'
-Plug 'scrooloose/nerdcommenter'
-Plug 'mattn/webapi-vim'
-Plug 'mattn/gist-vim'
 Plug 'thinca/vim-splash'
-Plug 'LeafCage/yankround.vim'
 Plug 'vim-scripts/matchit.zip'
 Plug 'vim-scripts/Align'
 Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
-Plug 'buoto/gotests-vim'
-Plug 'kburdett/vim-nuuid'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
+
 call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
@@ -135,14 +140,14 @@ endif
 syntax on
 "------------------------------------------------------------------------------
 " Status line
-set laststatus=2    " 常にステータスラインを表示
+set laststatus=2 " always show status line
 set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASCII=%03.3b,HEX=%02.2B)\ %l/%L(%P)%m
 
 " 入力モード時、ステータスラインのカラーを変更
 augroup InsertHook
   autocmd!
-  autocmd InsertEnter * highlight StatusLine guifg=#ccdc90 guibg=#2E4340
-  autocmd InsertLeave * highlight StatusLine guifg=#2E4340 guibg=#ccdc90
+  autocmd InsertEnter * highlight StatusLine ctermfg=White ctermbg=DarkGrey
+  autocmd InsertLeave * highlight StatusLine ctermfg=20 ctermbg=19
 augroup END
 "------------------------------------------------------------------------------
 " General settings
@@ -166,6 +171,7 @@ set nomodeline                 " ファイルごとにオプション指定す�
 set breakindent                " インデントのある長い行の折り返しの見た目を整える
 set undofile                   " アンドゥファイルを作成する
 set undodir=$DOTVIM/undo       " アンドゥファイルの出力先
+set clipboard+=unnamed         " クリップボードとの連携を有効にする
 "------------------------------------------------------------------------------
 " View
 set showcmd                                       " 入力中のコマンドを表示
@@ -188,6 +194,12 @@ augroup quickfix
   autocmd!
   autocmd FileType qf setlocal wrap
 augroup END
+
+" move to last cursor position
+augroup lastCursor
+  au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
+  \ exe "normal g`\"" | endif
+augroup END
 "------------------------------------------------------------------------------
 " Indent
 set autoindent
@@ -205,23 +217,12 @@ set wildmode=list:full " リスト表示，最長マッチ
 set history=1000       " コマンド・検索パターンの履歴数
 set complete+=k        " 補完に辞書ファイル追加
 "------------------------------------------------------------------------------
-" Search
+" Current buffer search
 set nowrapscan " 最後まで検索したら先頭へ戻らない
 set ignorecase " 大文字小文字無視
 set smartcase  " 大文字ではじめたら大文字小文字無視しない
 set incsearch  " インクリメンタルサーチ
 set hlsearch   " 検索文字をハイライト
-
-if executable('ag')
-  set grepprg=ag\ --nogroup\ -is
-  set grepformat=%f:%l:%m
-elseif executable('ack')
-  set grepprg=ack\ --nogroup
-  set grepformat=%f:%l:%m
-else
-  set grepprg=grep\ -Hnd\ skip\ -r
-  set grepformat=%f:%l:%m,%f:%l%m,%f\ \ %l%m
-endif
 
 " 選択した文字列を検索
 vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
@@ -232,8 +233,8 @@ vnoremap <silent> /n y:%s/<C-R>=escape(@", '\\/.*$^~[]')<CR>/&/gn<CR>
 " 選択した文字列を置換
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 
-" 選択した文字列を Grep
-vnoremap /g y:Unite -no-quit grep:.::<C-R>=escape(@", '\\.*$^[]')<CR><CR>
+" 選択した文字列を fzf で Grep
+vnoremap /g y:Rg <C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " Encodings
 set ffs=unix,dos,mac    " 改行
@@ -284,11 +285,13 @@ nnoremap <C-l> <C-w>l
 nnoremap <C-h> <C-w>h
 
 nnoremap <silent> L :nohl<CR>
-nnoremap qq <ESC>
 cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 nnoremap ; :
 vnoremap ; :
+
+" disable recording q macro
+nnoremap qq <ESC>
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.prefab set filetype=yaml
@@ -321,28 +324,14 @@ function! s:Normalize()
   set ff=unix
   set fenc=utf-8
   try
-    %s///g
+    %s///g
   catch
   endtry
-endfunction
-
-command! SaveMarkdownToDropbox :call s:SaveMarkdownToDropbox()
-function! s:SaveMarkdownToDropbox()
-  try
-    w $HOME/Dropbox/Memo/$TODAY-$RANDOM.md
-  catch
-  endtry
-endfunction
-
-" Insert separator string.
-command! Sep :call s:Sep()
-function! s:Sep()
-  execute ":normal i# =============================================================================="
 endfunction
 
 " Toggle expandtab
-command! TabToggle :call s:TabToggle()
-function! s:TabToggle()
+command! TabToggle :call s:tabToggle()
+function! s:tabToggle()
   if &expandtab
     set noexpandtab
   else
@@ -350,31 +339,43 @@ function! s:TabToggle()
   endif
 endfunction
 "------------------------------------------------------------------------------
-" Utilities
+" Memo
+command! SaveMemo :call s:saveMemo()
+function! s:saveMemo()
+  try
+    w $HOME/Dropbox/Memo/$TODAY-$RANDOM.md
+  catch
+  endtry
+endfunction
+
+command! -bang -nargs=* SearchMemo
+  \ call fzf#vim#grep(
+  \   'rg --column --line-number --no-heading --color=always --smart-case -- '.shellescape(<q-args>).' ~/Dropbox/Memo', 1,
+  \   fzf#vim#with_preview(), <bang>0)
+"------------------------------------------------------------------------------
+" Tags
 set tags=$DOTVIM/mytags
 
 if has('path_extra')
   set tags+=tags;
 endif
-
-set clipboard+=unnamed
-
-augroup lastEditedPosition
-  au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
-  \ exe "normal g`\"" | endif
-augroup END
 "------------------------------------------------------------------------------
 " Terminal
 if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
-  tnoremap <silent> <C-j> <C-\><C-n><C-w>j
-  tnoremap <silent> <C-k> <C-\><C-n><C-w>k
   tnoremap <silent> <C-l> <C-\><C-n><C-w>l
   tnoremap <silent> <C-h> <C-\><C-n><C-w>h
   tnoremap <silent> <C-z> <C-\><C-n>:bd!<CR>
+  tnoremap <silent> qq <C-\><C-n>:bd!<CR>
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
   tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
+
+  " key mappings considering fzf
+  tnoremap <expr> <TAB> &filetype == 'fzf' ? "<C-j>" : "kk"
+  tnoremap <expr> <S-TAB> &filetype == 'fzf' ? "<C-k>" : "kk"
+  tnoremap <expr> <C-j> &filetype == 'fzf' ? "<C-j>" : "<C-\><C-n><C-w>j"
+  tnoremap <expr> <C-k> &filetype == 'fzf' ? "<C-k>" : "<C-\><C-n><C-w>k"
 
   autocmd TermOpen * setlocal scrollback=100000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
@@ -407,72 +408,6 @@ nmap <C-n> <Plug>(yankround-next)
 if has("macunix")
   let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
 endif
-"------------------------------------------------------------------------------
-" unite.vim
-let g:unite_enable_start_insert = 1
-let g:unite_update_time = 10
-let g:unite_source_file_mru_limit = 10000
-call unite#custom_source('file_rec/git', 'ignore_pattern', '\.log$')
-call unite#custom_source('grep', 'ignore_pattern', '\.log$')
-
-" 大文字小文字を区別しない
-let g:unite_enable_ignore_case = 1
-let g:unite_enable_smart_case = 1
-
-if executable('ag')
-  let g:unite_source_grep_command = 'ag'
-  let g:unite_source_grep_default_opts = '--nogroup --nocolor --column --smart-case -U'
-  let g:unite_source_grep_recursive_opt = ''
-endif
-
-" バッファ一覧
-nnoremap <silent> ,ub :<C-u>Unite buffer<CR>
-
-" カレントディレクトリ一覧
-nnoremap <silent> ,ud :<C-u>UniteWithCurrentDir file<CR>
-
-" バッファのディレクトリ一覧
-nnoremap <silent> ,uf :<C-u>UniteWithBufferDir -buffer-name=files file<CR>
-
-" レジスタ一覧
-nnoremap <silent> ,ur :<C-u>Unite -buffer-name=register register<CR>
-
-" 最近使用したファイル一覧
-nnoremap <silent> ,um :<C-u>Unite file_mru<CR>
-
-" 再帰的ファイル一覧
-nnoremap <silent> ,uu :<C-u>Unite file_rec/git<CR>
-
-" grep
-nnoremap <silent> ,ug :<C-u>Unite -no-quit grep:. -buffer-name=search-buffer<CR><BS>
-
-autocmd FileType unite call s:unite_my_settings()
-function! s:unite_my_settings()
-  nmap <buffer> i <Plug>(unite_insert_enter)
-  imap <buffer> qq <Plug>(unite_exit)
-  nmap <buffer> qq <Plug>(unite_exit)
-  nmap <buffer> q <Plug>(unite_exit)
-  imap <buffer> jj <Plug>(unite_insert_leave)
-  imap <buffer> kk <Plug>(unite_insert_leave)
-  imap <buffer> <C-w> <Plug>(unite_delete_backward_path)
-  nmap <buffer> <C-w> <Plug>(unite_delete_backward_path)
-  imap <buffer> <TAB> <Plug>(unite_select_next_line)<ESC>
-  imap <buffer> <S-TAB> <Plug>(unite_select_previous_line)<ESC>
-  nmap <buffer> <Tab> j
-  nmap <buffer> <S-TAB> k
-  imap <buffer> <C-n> <Plug>(unite_select_next_line)<ESC>
-  imap <buffer> <C-p> <Plug>(unite_select_previous_line)<ESC>
-  nmap <buffer> <C-n> j
-  nmap <buffer> <C-p> k
-  imap <buffer> <C-r> <Plug>(unite_redraw)
-  nmap <buffer> <C-r> <Plug>(unite_redraw)
-endfunction
-"------------------------------------------------------------------------------
-" Gist.vim
-let g:gist_clip_command = 'pbcopy'
-let g:gist_detect_filetype = 1
-let g:gist_open_browser_after_post = 1
-let g:gist_post_private = 1
 "------------------------------------------------------------------------------
 " poslist
 nmap <C-f> <Plug>(poslist-next-pos)
@@ -540,8 +475,6 @@ inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
 inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
 imap <c-space> <Plug>(asyncomplete_force_refresh)
-" autocmd! CompleteDone * if pumvisible() == 0 | pclose | endif
-" autocmd! InsertLeave * if pumvisible() == 0 | pclose | endif
 
 function! s:check_back_space() abort
   let col = col('.') - 1
@@ -559,10 +492,6 @@ let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlights_enabled = 0
-" let g:lsp_virtual_text_enabled = 0
-" let g:lsp_log_verbose = 1
-" let g:lsp_log_file = expand('~/vim-lsp.log')
-" let g:asyncomplete_log_file = expand('~/asyncomplete.log')
 "------------------------------------------------------------------------------
 " asyncomplete-buffer.vim
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
@@ -607,3 +536,26 @@ let g:gh_line_blame_map_default = 0
 let g:gh_line_map = 'og'
 let g:gh_line_blame_map = 'ob'
 let g:gh_use_canonical = 0
+"------------------------------------------------------------------------------
+" fzf
+let g:fzf_layout = {
+      \ 'up': '~40%' }
+
+let g:fzf_action = {
+      \ 'ctrl-x': 'split',
+      \ 'ctrl-v': 'vsplit' }
+
+function! s:search()
+  let text = input('Search: ')
+  if len(text) > 0
+    exec 'Rg ' . text
+  endif
+endfunction
+
+nnoremap <silent> ,uf :GFiles<C-R>=getcwd()<CR><CR>
+nnoremap <silent> ,ud :GFiles<C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> ,us :GFiles?<CR>
+nnoremap <silent> ,ub :Lines<CR>
+nnoremap <silent> ,um :History<CR>
+nnoremap <silent> ,uu :Files <C-R>=expand('%:h')<CR><CR>
+nnoremap <silent> ,ug :call <SID>search()<CR>
