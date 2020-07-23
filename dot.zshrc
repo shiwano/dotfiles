@@ -8,6 +8,8 @@ export GO15VENDOREXPERIMENT=1
 export GO111MODULE=on
 
 bindkey -e
+bindkey '^]'   vi-find-next-char
+bindkey '^[^]' vi-find-prev-char
 
 # Completion -------------------------------------------------------------------
 
