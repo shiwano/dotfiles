@@ -542,6 +542,7 @@ let g:fzf_layout = {
       \ 'up': '~40%' }
 
 let g:fzf_action = {
+      \ 'ctrl-w': 'unix-word-rubout+top',
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
@@ -555,7 +556,7 @@ endfunction
 nnoremap <silent> ,uf :GFiles <C-R>=getcwd()<CR><CR>
 nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
 nnoremap <silent> ,us :GFiles?<CR>
-nnoremap <silent> ,ub :Lines<CR>
+nnoremap <silent> ,ub :Buffers<CR>
 nnoremap <silent> ,um :History<CR>
 nnoremap <silent> ,uu :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> ,ug :call <SID>search()<CR>
