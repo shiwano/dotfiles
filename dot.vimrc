@@ -372,10 +372,10 @@ if has('nvim')
   tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
 
   " key mappings considering fzf
-  tnoremap <expr> <TAB> &filetype == 'fzf' ? "<C-j>" : "kk"
-  tnoremap <expr> <S-TAB> &filetype == 'fzf' ? "<C-k>" : "kk"
   tnoremap <expr> <C-j> &filetype == 'fzf' ? "<C-j>" : "<C-\><C-n><C-w>j"
   tnoremap <expr> <C-k> &filetype == 'fzf' ? "<C-k>" : "<C-\><C-n><C-w>k"
+  tnoremap <expr> <C-h> &filetype == 'fzf' ? "<C-h>" : "<C-\><C-n><C-w>h"
+  tnoremap <expr> <C-l> &filetype == 'fzf' ? "<C-l>" : "<C-\><C-n><C-w>l"
 
   autocmd TermOpen * setlocal scrollback=100000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
@@ -542,7 +542,6 @@ let g:fzf_layout = {
       \ 'up': '~40%' }
 
 let g:fzf_action = {
-      \ 'ctrl-w': 'unix-word-rubout+top',
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
