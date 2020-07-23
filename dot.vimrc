@@ -364,18 +364,9 @@ endif
 if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
-  tnoremap <silent> <C-l> <C-\><C-n><C-w>l
-  tnoremap <silent> <C-h> <C-\><C-n><C-w>h
-  tnoremap <silent> <C-z> <C-\><C-n>:bd!<CR>
   tnoremap <silent> qq <C-\><C-n>:bd!<CR>
   tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
   tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
-
-  " key mappings considering fzf
-  tnoremap <expr> <C-j> &filetype == 'fzf' ? "<C-j>" : "<C-\><C-n><C-w>j"
-  tnoremap <expr> <C-k> &filetype == 'fzf' ? "<C-k>" : "<C-\><C-n><C-w>k"
-  tnoremap <expr> <C-h> &filetype == 'fzf' ? "<C-h>" : "<C-\><C-n><C-w>h"
-  tnoremap <expr> <C-l> &filetype == 'fzf' ? "<C-l>" : "<C-\><C-n><C-w>l"
 
   autocmd TermOpen * setlocal scrollback=100000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
