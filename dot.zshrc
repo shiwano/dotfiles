@@ -26,7 +26,7 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
 
 base16_tomorrow-night
 
-# PATH -------------------------------------------------------------------------
+# Envs -------------------------------------------------------------------------
 
 export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
@@ -76,8 +76,13 @@ if [ -d /usr/local/share/android-sdk ]; then
   export PATH="/usr/local/share/android-sdk/tools/bin:$PATH"
 fi
 
-if [ -d /usr/local/heroku ] ; then
-  export PATH="/usr/local/heroku/bin:$PATH"
+if type fzf > /dev/null; then
+  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
+fi
+
+if type direnv > /dev/null; then
+  eval "$(direnv hook zsh)"
 fi
 
 # Vim --------------------------------------------------------------------------
@@ -95,19 +100,6 @@ if type nvim > /dev/null; then
 else
   alias vi='vim'
   export EDITOR='vim'
-fi
-
-# direnv -----------------------------------------------------------------------
-
-if type direnv > /dev/null; then
-  eval "$(direnv hook zsh)"
-fi
-
-# fzf -----------------------------------------------------------------------
-
-if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
 fi
 
 # Functions --------------------------------------------------------------------
@@ -213,8 +205,6 @@ alias tmux='tmuxx'
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
-alias go-get='GO111MODULE=off go get -u'
-alias go-test-build-all='go test -run=^$ ./...'
 alias dotfiles='cd ~/dotfiles'
 
 alias s='git status'
@@ -231,6 +221,11 @@ alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
+if type go > /dev/null; then
+  alias go-get='GO111MODULE=off go get -u'
+  alias go-test-build-all='go test -run=^$ ./...'
+fi
+
 if type docker > /dev/null; then
   alias docker-rm-all='docker rm $(docker ps -a -q)'
   alias docker-rmi-all='docker rmi $(docker images -q)'
@@ -243,6 +238,10 @@ fi
 
 if type ibazel > /dev/null; then
   alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
+fi
+
+if type bat > /dev/null; then
+  alias cat='bat'
 fi
 
 # Prompt -----------------------------------------------------------------------
