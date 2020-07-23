@@ -77,7 +77,13 @@ if [ -d /usr/local/share/android-sdk ]; then
 fi
 
 if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden"
+  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden --no-sort --ansi --cycle --filepath-word --marker='X'
+    --bind=tab:down
+    --bind=shift-tab:up
+    --bind=ctrl-l:toggle
+    --bind=ctrl-h:toggle
+    --bind=ctrl-u:preview-page-up
+    --bind=ctrl-d:preview-page-down"
   export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
 fi
 
@@ -156,6 +162,31 @@ function static-httpd {
   fi
 }
 
+function fzf-preview-file() {
+  echo 'f() {
+    if [ -d $@ ]; then
+      ls -la $@
+    else
+      bat --style=numbers --color=always --line-range :500 $@
+    fi
+  }; f {}'
+}
+
+function fzf-preview-git-file() {
+  echo 'f() {
+    local args="$(echo $@ | cut -c4-)"
+    if [ "$(git diff --name-only $args)" ]; then
+      git diff --color $args
+    elif [ "$(git diff --cached --name-only $args)" ]; then
+      git diff --color --cached $args
+    elif [ -d $args ]; then
+      ls -la $args
+    else
+      bat --style=numbers --color=always --line-range :500 $args
+    fi
+  }; f {}'
+}
+
 function grep-git-files {
   [ $@ ] && git ls-files -z . | xargs -0 rg -n -p $@ | less -R --no-init --quit-if-one-screen
 }
@@ -174,20 +205,21 @@ function edit-git-grepped-file {
 
 function edit-git-file {
   local dir=${1-.}
-  local s="$(git ls-files $dir | fzf -1 --preview 'bat --style=numbers --color=always --line-range :500 {}')"
+  local s="$(git ls-files $dir | fzf -1 --preview "$(fzf-preview-file)")"
   [ $s ] && shift $# && vi $s
 }
 
 function edit-git-changed-file {
-  local s1="$({
-    (git diff --name-only | xargs -I '{}' realpath --relative-to=. $(git rev-parse --show-toplevel)/'{}') |
-    cat & (git diff --cached --name-only | xargs -I '{}' realpath --relative-to=. $(git rev-parse --show-toplevel)/'{}') |
-    cat & git ls-files --others --exclude-standard | cat } | cat | sort | uniq
-  )"
+  local s1="$(git status -s -u)"
   if [ $s1 ]; then
-    local s2="$(echo $s1 | fzf -1 --preview 'bat --style=numbers --color=always --line-range :500 {}')"
+    local s2="$(echo -e $s1 | fzf -1 --preview "$(fzf-preview-git-file)" | cut -c4-)"
     [ $s2 ] && shift $# && vi $s2
   fi
+}
+
+function add-git-files() {
+  local s="$(git status -s -u | grep -v -E "^M ")"
+  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git add
 }
 
 function select-history() {
@@ -207,13 +239,14 @@ alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 alias dotfiles='cd ~/dotfiles'
 
+alias a="add-git-files"
 alias s='git status'
 alias r='git restore' # hide 'r' which is zsh's built-in command
 alias g='move-to-ghq-directory'
-alias v='edit-git-changed-file'
-alias vv='edit-git-file'
+alias e='edit-git-changed-file'
+alias v='edit-git-file'
 alias gg='grep-git-files'
-alias ggv='edit-git-grepped-file'
+alias vv='edit-git-grepped-file'
 
 autoload zmv
 alias zmv='noglob zmv -W'
