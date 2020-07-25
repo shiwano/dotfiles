@@ -79,6 +79,7 @@ Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'LeafCage/yankround.vim'
 Plug 'scrooloose/nerdcommenter'
+Plug 'vim-scripts/Align'
 
 " Test and debug
 Plug 'sebdah/vim-delve'
@@ -108,7 +109,6 @@ Plug 'tpope/vim-surround'
 Plug 'thinca/vim-poslist'
 Plug 'thinca/vim-splash'
 Plug 'vim-scripts/matchit.zip'
-Plug 'vim-scripts/Align'
 Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
@@ -237,15 +237,16 @@ vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~
 vnoremap /g y:Rg <C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " Encodings
-set ffs=unix,dos,mac    " 改行
-let $LANG='ja_JP.UTF-8' " Default
+set ffs=unix,dos,mac
 set encoding=utf-8
 set fileencoding=utf-8
 
-if has('win32') && has('kaoriya')
-  set ambiwidth=auto
-else
-  set ambiwidth=double
+if !has('nvim')
+  if has('win32') && has('kaoriya')
+    set ambiwidth=auto
+  else
+    set ambiwidth=double
+  endif
 endif
 
 if has('iconv')
@@ -310,7 +311,7 @@ au BufRead,BufNewFile *.jb set filetype=ruby
 command! Cd :cd %:h
 
 " エンコード指定してファイルを開く
-command! -nargs=1 Reload :e ++enc=<f-args>
+command! -nargs=1 Enc :e ++enc=<f-args>
 
 " 末尾スペース削除
 command! Rstrip :%s/\s\+$//e
@@ -338,6 +339,9 @@ function! s:tabToggle()
     set expandtab
   endif
 endfunction
+
+" Reload .vimrc
+command! Reload :source ~/.vimrc
 "------------------------------------------------------------------------------
 " Memo
 command! SaveMemo :call s:saveMemo()
@@ -544,9 +548,48 @@ function! s:search()
 endfunction
 
 nnoremap <silent> ,uf :GFiles <C-R>=getcwd()<CR><CR>
-nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
+" nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
 nnoremap <silent> ,us :GFiles?<CR>
 nnoremap <silent> ,ub :Buffers<CR>
 nnoremap <silent> ,um :History<CR>
 nnoremap <silent> ,uu :Files <C-R>=expand('%:h')<CR><CR>
 nnoremap <silent> ,ug :call <SID>search()<CR>
+"------------------------------------------------------------------------------
+" twf
+if has('nvim')
+  function! s:twfExit(path)
+    function! s:twfExitClosure(job_id, data, event) closure
+      if a:data == '2'
+        bd!
+        return
+      endif
+      try
+        let out = filereadable(a:path) ? readfile(a:path) : []
+      finally
+        silent! call delete(a:path)
+      endtry
+      if !empty(out)
+        bd!
+        if !isdirectory(out[0])
+          execute 'edit! ' . out[0]
+        endif
+      endif
+    endfunction
+    return funcref('s:twfExitClosure')
+  endfunction
+
+  function! s:twf(path)
+    wincmd n
+    setlocal nonumber norelativenumber signcolumn=no listchars=
+    setlocal nocursorcolumn nocursorline
+    let temp = tempname()
+    call termopen('twf '
+          \ . '-previewCmd "bat --style=numbers --color=always --line-range :500 {}" '
+          \ . '-bind "q::,ctrl-c::,esc::,ctrl-j::tree:next,ctrl-k::tree:prev,ctrl-h::tree:parent;tree:close,ctrl-l::tree:open;tree:next" '
+          \ . a:path . ' > ' . temp, { 'on_exit': s:twfExit(temp) })
+    startinsert
+  endfunction
+
+  command! Twf :call s:twf(resolve(@%))
+  nmap <silent> ,ud :Twf<CR>
+endif

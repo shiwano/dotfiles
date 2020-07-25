@@ -243,8 +243,8 @@ alias a="add-git-files"
 alias s='git status'
 alias r='git restore' # hide 'r' which is zsh's built-in command
 alias g='move-to-ghq-directory'
-alias e='edit-git-changed-file'
-alias v='edit-git-file'
+alias v='edit-git-changed-file'
+alias t='edit-git-file'
 alias gg='grep-git-files'
 alias vv='edit-git-grepped-file'
 
@@ -288,53 +288,51 @@ zstyle ':vcs_info:*' actionformats '%b|%a'
   local icon_key=$'\Uf805 '
   local icon_folder=$'\Uf450 '
   local icon_network=$'\Ufbf1 '
-
-  case ${UID} in
-    0)
-      local prompt_face="${icon_key}"
-      ;;
-    *)
-      local prompt_face="${icon_cat}"
-      ;;
-  esac
+  local icon_vim=$'\Ue62b '
 
   if [ -n "${NVIM_LISTEN_ADDRESS}" ]; then
-    PROMPT="%{[31m%}nvim $ %{[m%}"
+    local prompt_face="${icon_vim}"
   else
-    PROMPT="%{[31m%}${icon_folder}%~ ${prompt_face}%{[m%}"
+    case ${UID} in
+      0)
+        local prompt_face="${icon_key}"
+        ;;
+      *)
+        local prompt_face="${icon_cat}"
+        ;;
+    esac
   fi
 
+  PROMPT="%{[31m%}${icon_folder}%~ ${prompt_face}%{[m%}"
   PROMPT2="%{[31m%}| %{[m%}"
   SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
   [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
     PROMPT="%{[31m%}${icon_network}${HOST%%.*} ${PROMPT}"
 }
 
-if [ -z "${NVIM_LISTEN_ADDRESS}" ]; then
+PREEXEC_START_TIME=`date +%s`
+
+function precmd {
+  psvar=()
+  LANG=en_US.UTF-8 vcs_info
+  [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+
+  local icon_clock=$'\Uf017 '
+  local icon_git_branch=$'\Uf418 '
+  local end_time=`date +%s`
+  local run_time=$((end_time - PREEXEC_START_TIME))
+
+    if [ "$(whoami)" = 'shiwano' ]; then
+      RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|)"
+    else
+      local icon_user=$'\Uf2c0 '
+      RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|) %{[36m%}${icon_user}%n%{[m%}"
+    fi
+}
+
+function preexec {
   PREEXEC_START_TIME=`date +%s`
-
-  function precmd {
-    psvar=()
-    LANG=en_US.UTF-8 vcs_info
-    [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
-
-    local icon_clock=$'\Uf017 '
-    local icon_git_branch=$'\Uf418 '
-    local end_time=`date +%s`
-    local run_time=$((end_time - PREEXEC_START_TIME))
-
-      if [ "$(whoami)" = 'shiwano' ]; then
-        RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|)"
-      else
-        local icon_user=$'\Uf2c0 '
-        RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|) %{[36m%}${icon_user}%n%{[m%}"
-      fi
-  }
-
-  function preexec {
-    PREEXEC_START_TIME=`date +%s`
-  }
-fi
+}
 
 # History ----------------------------------------------------------------------
 
