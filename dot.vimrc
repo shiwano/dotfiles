@@ -100,7 +100,6 @@ Plug 'prettier/vim-prettier', {
     \ 'html', 'swift' ] }
 
 " Misc
-Plug 'Shougo/vimproc.vim', { 'do': 'make' }
 Plug 'jmcantrell/vim-virtualenv'
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
@@ -548,7 +547,8 @@ function! s:search()
 endfunction
 
 nnoremap <silent> ,uf :GFiles <C-R>=getcwd()<CR><CR>
-" nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
+nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
+nnoremap <silent> ,ug :GFiles<CR>
 nnoremap <silent> ,us :GFiles?<CR>
 nnoremap <silent> ,ub :Buffers<CR>
 nnoremap <silent> ,um :History<CR>
@@ -591,5 +591,5 @@ if has('nvim')
   endfunction
 
   command! Twf :call s:twf(resolve(@%))
-  nmap <silent> ,ud :Twf<CR>
+  nmap <silent> ,ue :Twf<CR>
 endif

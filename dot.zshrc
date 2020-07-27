@@ -77,7 +77,7 @@ if [ -d /usr/local/share/android-sdk ]; then
 fi
 
 if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--layout=reverse --info hidden --no-sort --ansi --cycle --filepath-word --marker='X'
+  export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --no-sort --ansi --cycle --filepath-word --marker='X'
     --bind=tab:down
     --bind=shift-tab:up
     --bind=ctrl-l:toggle
