@@ -82,8 +82,12 @@ if type fzf > /dev/null; then
     --bind=shift-tab:up
     --bind=ctrl-l:toggle
     --bind=ctrl-h:toggle
-    --bind=ctrl-u:preview-page-up
-    --bind=ctrl-d:preview-page-down"
+    --bind=ctrl-w:backward-kill-word
+    --bind=ctrl-u:word-rubout
+    --bind=up:preview-page-up
+    --bind=down:preview-page-down
+    --bind=ctrl-u:half-page-up
+    --bind=ctrl-d:half-page-down"
   export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
 fi
 
@@ -222,6 +226,16 @@ function add-git-files() {
   [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git add
 }
 
+function restore-git-files() {
+  local s="$(git status -s -u | grep -v -E "^M " | grep -v -E "^A ")"
+  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git restore
+}
+
+function unstage-git-files() {
+  local s="$(git status -s -u | grep -E "^[MA]")"
+  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD
+}
+
 function select-history() {
   BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt="History > ")
   CURSOR=$#BUFFER
@@ -241,7 +255,8 @@ alias dotfiles='cd ~/dotfiles'
 
 alias a="add-git-files"
 alias s='git status'
-alias r='git restore' # hide 'r' which is zsh's built-in command
+alias u='unstage-git-files'
+alias r='restore-git-files' # hide 'r' which is zsh's built-in command
 alias g='move-to-ghq-directory'
 alias v='edit-git-changed-file'
 alias t='edit-git-file'

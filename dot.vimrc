@@ -481,11 +481,29 @@ inoremap <silent><expr> <TAB>
   \ asyncomplete#force_refresh()
 inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
 "------------------------------------------------------------------------------
-" go-lsp
+" vim-lsp
 let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlights_enabled = 0
+"------------------------------------------------------------------------------
+" vim-lsp-settings
+let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+let g:lsp_settings = {}
+let g:lsp_settings['gopls'] = {
+  \  'workspace_config': {
+  \    'usePlaceholders': v:true,
+  \    'analyses': {
+  \      'fillstruct': v:true,
+  \    },
+  \  },
+  \  'initialization_options': {
+  \    'usePlaceholders': v:true,
+  \    'analyses': {
+  \      'fillstruct': v:true,
+  \    },
+  \  },
+  \}
 "------------------------------------------------------------------------------
 " asyncomplete-buffer.vim
 call asyncomplete#register_source(asyncomplete#sources#buffer#get_source_options({
@@ -539,57 +557,59 @@ let g:fzf_action = {
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
-function! s:search()
+function! s:fzf_search()
   let text = input('Search: ')
   if len(text) > 0
     exec 'Rg ' . text
   endif
 endfunction
 
-nnoremap <silent> ,uf :GFiles <C-R>=getcwd()<CR><CR>
-nnoremap <silent> ,ud :GFiles <C-R>=expand('%:p:h')<CR><CR>
-nnoremap <silent> ,ug :GFiles<CR>
+function! s:fzf_gitfile_buffer_dir_recursive()
+  let git_root = split(system('git rev-parse --show-toplevel'), '\n')[0]
+  let root = v:shell_error ? '' : git_root
+  let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
+
+  if len(buffer_dir) > 0
+    call fzf#vim#gitfiles(getcwd(), {'options': ['--query=^' . buffer_dir . '/']}, 0)
+  else
+    call fzf#vim#gitfiles(getcwd(), {}, 0)
+  endif
+endfunction
+
+function! s:fzf_gitfiles_buffer_dir()
+  let git_root = split(system('git rev-parse --show-toplevel'), '\n')[0]
+  let root = v:shell_error ? '' : git_root
+  let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
+
+  if len(buffer_dir) > 0
+    call fzf#vim#gitfiles(buffer_dir . ' | grep -E "^' . buffer_dir . '/[^/]+$" ', {'options': ['--query=^' . buffer_dir . '/']}, 0)
+  else
+    call fzf#vim#gitfiles(' | grep -E "^[^/]+$" ', {}, 0)
+  endif
+endfunction
+
+nnoremap <silent> ,uf :call <SID>fzf_gitfile_buffer_dir_recursive()<CR>
+nnoremap <silent> ,ud :call <SID>fzf_gitfiles_buffer_dir()<CR>
+nnoremap <silent> ,uu :GFiles <C-R>=getcwd()<CR><CR>
 nnoremap <silent> ,us :GFiles?<CR>
 nnoremap <silent> ,ub :Buffers<CR>
 nnoremap <silent> ,um :History<CR>
-nnoremap <silent> ,uu :Files <C-R>=expand('%:h')<CR><CR>
-nnoremap <silent> ,ug :call <SID>search()<CR>
+nnoremap <silent> ,ua :Files <C-R>=getcwd()<CR><CR>
+nnoremap <silent> ,ug :call <SID>fzf_search()<CR>
 "------------------------------------------------------------------------------
-" twf
-if has('nvim')
-  function! s:twfExit(path)
-    function! s:twfExitClosure(job_id, data, event) closure
-      if a:data == '2'
-        bd!
-        return
-      endif
-      try
-        let out = filereadable(a:path) ? readfile(a:path) : []
-      finally
-        silent! call delete(a:path)
-      endtry
-      if !empty(out)
-        bd!
-        if !isdirectory(out[0])
-          execute 'edit! ' . out[0]
-        endif
-      endif
-    endfunction
-    return funcref('s:twfExitClosure')
-  endfunction
+" netrw
+nnoremap <silent> ,ue :Hexplore!<CR>
+let g:netrw_liststyle=1
+let g:netrw_banner=0
+let g:netrw_sizestyle="H"
+let g:netrw_timefmt="%Y/%m/%d(%a) %H:%M:%S"
+let g:netrw_preview=0
 
-  function! s:twf(path)
-    wincmd n
-    setlocal nonumber norelativenumber signcolumn=no listchars=
-    setlocal nocursorcolumn nocursorline
-    let temp = tempname()
-    call termopen('twf '
-          \ . '-previewCmd "bat --style=numbers --color=always --line-range :500 {}" '
-          \ . '-bind "q::,ctrl-c::,esc::,ctrl-j::tree:next,ctrl-k::tree:prev,ctrl-h::tree:parent;tree:close,ctrl-l::tree:open;tree:next" '
-          \ . a:path . ' > ' . temp, { 'on_exit': s:twfExit(temp) })
-    startinsert
-  endfunction
+augroup Netrw
+  au!
+  autocmd FileType netrw :call s:setup_netrw()
+augroup END
 
-  command! Twf :call s:twf(resolve(@%))
-  nmap <silent> ,ue :Twf<CR>
-endif
+function! s:setup_netrw()
+  nnoremap <buffer> qq :q<CR>
+endfunction

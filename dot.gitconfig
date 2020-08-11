@@ -28,6 +28,7 @@
   diw = diff --color --word-diff
   di-csv = diff --color --word-diff-regex="[^[:blank:],]"
   dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
+  diff-branch = !git diff origin/master $(git current-branch)
   mt = mergetool
   topic = switch origin/master -c
   topic-develop = switch origin/develop -c
