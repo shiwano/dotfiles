@@ -80,6 +80,7 @@ if type fzf > /dev/null; then
   export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --no-sort --ansi --cycle --filepath-word --marker='X'
     --bind=tab:down
     --bind=shift-tab:up
+    --bind=ctrl-a:select-all
     --bind=ctrl-l:toggle
     --bind=ctrl-h:toggle
     --bind=ctrl-w:backward-kill-word
