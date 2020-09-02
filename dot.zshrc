@@ -254,7 +254,8 @@ alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 alias dotfiles='cd ~/dotfiles'
 
-alias a="add-git-files"
+alias a='add-git-files'
+alias k='kubectl'
 alias s='git status'
 alias u='unstage-git-files'
 alias r='restore-git-files' # hide 'r' which is zsh's built-in command
