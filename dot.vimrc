@@ -32,16 +32,12 @@ Plug 'chriskempson/base16-vim'
 Plug 'pangloss/vim-javascript'
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'othree/html5-syntax.vim'
-Plug 'timcharper/textile.vim'
 Plug 'groenewege/vim-less'
-Plug 'wavded/vim-stylus'
 Plug 'hail2u/vim-css3-syntax'
-Plug 'digitaltoad/vim-jade'
 Plug 'aklt/plantuml-syntax'
-Plug 'gkz/vim-ls'
 Plug 'elzr/vim-json'
 Plug 'ekalinin/Dockerfile.vim'
-Plug 'godlygeek/tabular' " vim-markdown required
+Plug 'godlygeek/tabular' " required by vim-markdown
 Plug 'plasticboy/vim-markdown'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'cespare/vim-toml'
@@ -52,7 +48,7 @@ Plug 'keith/swift.vim'
 Plug 'hashivim/vim-terraform'
 Plug 'shiwano/vim-hcl'
 Plug 'chr4/nginx.vim'
-Plug 'google/vim-maktaba'
+Plug 'google/vim-maktaba' " required by vim-bazel
 Plug 'bazelbuild/vim-bazel'
 Plug 'bfontaine/Brewfile.vim'
 Plug 'jparise/vim-graphql'
@@ -61,7 +57,7 @@ Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
 
 " Finder
-Plug 'junegunn/fzf'
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
 " Code completion
@@ -81,14 +77,15 @@ Plug 'LeafCage/yankround.vim'
 Plug 'scrooloose/nerdcommenter'
 Plug 'vim-scripts/Align'
 
-" Test and debug
+" Debug
 Plug 'sebdah/vim-delve'
 Plug 'thinca/vim-quickrun'
 
-" Lint and format
+" Lint
 Plug 'w0rp/ale'
+
+" Format
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
-Plug 'Vimjas/vim-python-pep8-indent'
 Plug 'fatih/vim-hclfmt'
 Plug 'mattn/vim-goimports'
 Plug 'prettier/vim-prettier', {
@@ -554,6 +551,8 @@ let g:fzf_layout = {
       \ 'up': '~40%' }
 
 let g:fzf_action = {
+      \ 'ctrl-q': 'topleft copen',
+      \ 'ctrl-t': 'tab split',
       \ 'ctrl-x': 'split',
       \ 'ctrl-v': 'vsplit' }
 
