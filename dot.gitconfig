@@ -44,6 +44,7 @@
   log-stat = log --stat --summary --color
   lp = log --patch --color
   log-patch = log --patch --color
+  log-shallow-since = log --date=raw
   ignore = update-index --assume-unchanged
   unignore = update-index --no-assume-unchanged
   ignored = !git ls-files -v | grep "^[a-z]"
