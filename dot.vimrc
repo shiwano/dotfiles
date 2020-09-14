@@ -338,6 +338,36 @@ endfunction
 
 " Reload .vimrc
 command! Reload :source ~/.vimrc
+
+" Open the specific buffer
+command! -nargs=1 BufSel :call s:bufSel("<args>")
+function! s:bufSel(pattern)
+  let bufcount = bufnr("$")
+  let currbufnr = 1
+  let nummatches = 0
+  let firstmatchingbufnr = 0
+  while currbufnr <= bufcount
+    if(bufexists(currbufnr))
+      let currbufname = bufname(currbufnr)
+      if(match(currbufname, a:pattern) > -1)
+        echo currbufnr . ": ". bufname(currbufnr)
+        let nummatches += 1
+        let firstmatchingbufnr = currbufnr
+      endif
+    endif
+    let currbufnr = currbufnr + 1
+  endwhile
+  if(nummatches == 1)
+    execute ":buffer " . firstmatchingbufnr
+  elseif(nummatches > 1)
+    let desiredbufnr = input("Enter buffer number: ")
+    if(strlen(desiredbufnr) != 0)
+      execute ":buffer ". desiredbufnr
+    endif
+  else
+    echo "No matching buffers"
+  endif
+endfunction
 "------------------------------------------------------------------------------
 " Memo
 command! SaveMemo :call s:saveMemo()
@@ -364,16 +394,24 @@ endif
 if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
-  tnoremap <silent> qq <C-\><C-n>:bd!<CR>
-  tnoremap <silent> fg<CR> <C-\><C-n>:bd!<CR>
-  tnoremap <silent> exit<CR> <C-\><C-n>:bd!<CR>
+
+  tnoremap <silent> fg<CR> <C-\><C-n><C-o>
+  tnoremap <silent> exit<CR> <C-\><C-n><C-o>
+  tnoremap <silent> <C-z> <C-\><C-n><C-o>
+  tnoremap <silent> <C-o> <C-\><C-n><C-o>
+  tnoremap <silent> <C-i> <C-\><C-n><C-i>
 
   autocmd TermOpen * setlocal scrollback=100000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
 
   command! T :call s:T()
   function! s:T()
-    terminal
+    if exists('s:term_buf_name') && !empty(s:term_buf_name)
+      call s:bufSel(s:term_buf_name)
+    else
+      terminal
+      let s:term_buf_name = bufname('%')
+    endif
     normal i
   endfunction
 endif
