@@ -392,18 +392,6 @@ endif
 "------------------------------------------------------------------------------
 " Terminal
 if has('nvim')
-  nnoremap <silent> <C-z> :T<CR>
-  tnoremap <silent> <ESC> <C-\><C-n>
-
-  tnoremap <silent> fg<CR> <C-\><C-n><C-o>
-  tnoremap <silent> exit<CR> <C-\><C-n><C-o>
-  tnoremap <silent> <C-z> <C-\><C-n><C-o>
-  tnoremap <silent> <C-o> <C-\><C-n><C-o>
-  tnoremap <silent> <C-i> <C-\><C-n><C-i>
-
-  autocmd TermOpen * setlocal scrollback=100000
-  autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
-
   command! T :call s:T()
   function! s:T()
     if exists('s:term_buf_name') && !empty(s:term_buf_name)
@@ -414,6 +402,26 @@ if has('nvim')
     endif
     normal i
   endfunction
+
+  function! s:close_terminal()
+    if bufname('%') == s:term_buf_name
+      execute "normal \<C-O>"
+      return
+    endif
+    bd!
+  endfunction
+
+  nnoremap <silent> <C-z> :T<CR>
+  tnoremap <silent> <ESC> <C-\><C-n>
+
+  tnoremap <silent> qq <C-\><C-n>:call <SID>close_terminal()<CR>
+  tnoremap <silent> fg<CR> <C-\><C-n>:call <SID>close_terminal()<CR>
+  tnoremap <silent> exit<CR> <C-\><C-n>:call <SID>close_terminal()<CR>
+  tnoremap <silent> <C-z> <C-\><C-n>:call <SID>close_terminal()<CR>
+  tnoremap <silent> <C-o> <C-\><C-n>:call <SID>close_terminal()<CR>
+
+  autocmd TermOpen * setlocal scrollback=1000
+  autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
 endif
 "------------------------------------------------------------------------------
 " matchit.vim
