@@ -404,7 +404,7 @@ if has('nvim')
   endfunction
 
   function! s:close_terminal()
-    if bufname('%') == s:term_buf_name
+    if exists('s:term_buf_name') && !empty(s:term_buf_name) && bufname('%') == s:term_buf_name
       execute "normal \<C-O>"
       return
     endif
