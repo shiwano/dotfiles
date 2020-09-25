@@ -613,11 +613,12 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   let git_root = split(system('git rev-parse --show-toplevel'), '\n')[0]
   let root = v:shell_error ? '' : git_root
   let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
+  let cwd = root == '' ? getcwd() : git_root
 
   if len(buffer_dir) > 0
-    call fzf#vim#gitfiles(getcwd(), {'options': ['--query=^' . buffer_dir . '/']}, 0)
+    call fzf#vim#gitfiles(cwd, {'options': ['--query=^' . buffer_dir . '/']}, 0)
   else
-    call fzf#vim#gitfiles(getcwd(), {}, 0)
+    call fzf#vim#gitfiles(cwd, {}, 0)
   endif
 endfunction
 
