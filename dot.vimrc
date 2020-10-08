@@ -55,6 +55,7 @@ Plug 'jparise/vim-graphql'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
+Plug 'zchee/vim-vgo'
 
 " Finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
