@@ -616,7 +616,7 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   let cwd = root == '' ? getcwd() : git_root
 
   if len(buffer_dir) > 0
-    call fzf#vim#gitfiles(cwd, {'options': ['--query=^' . buffer_dir . '/']}, 0)
+    call fzf#vim#gitfiles(cwd, {'options': ['--query=^' . buffer_dir . '/ ']}, 0)
   else
     call fzf#vim#gitfiles(cwd, {}, 0)
   endif
