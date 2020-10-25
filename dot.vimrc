@@ -177,6 +177,7 @@ set ruler                                         " ルーラーの表示
 set list                                          " 不可視文字表示
 set listchars=tab:>.,trail:_,extends:>,precedes:< " 不可視文字の表示形式
 set display=uhex                                  " 印字不可能文字を16進数で表示
+set viminfo='1000                                 " file history length
 
 " 現在行にラインを引く
 augroup cch
@@ -531,7 +532,7 @@ let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlights_enabled = 0
 "------------------------------------------------------------------------------
 " vim-lsp-settings
-let g:lsp_settings_filetype_go = ['gopls', 'golangci-lint-langserver']
+let g:lsp_settings_filetype_go = ['gopls']
 let g:lsp_settings = {}
 let g:lsp_settings['gopls'] = {
   \  'workspace_config': {
@@ -581,7 +582,7 @@ autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.gra
 " ale
 highlight ALEWarning ctermbg=darkgray
 let g:ale_linters = {
-      \ 'go': ['golangci-lint'],
+      \ 'go': ['gobuild', 'golangci-lint'],
       \ }
 let g:ale_go_golangci_lint_options = ''
 "------------------------------------------------------------------------------

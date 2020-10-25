@@ -193,7 +193,7 @@ function fzf-preview-git-file() {
 }
 
 function grep-git-files {
-  [ $@ ] && git ls-files -z . | xargs -0 rg -n -p $@ | less -R --no-init --quit-if-one-screen
+  rg --hidden -g '!.git' -n -p "$@" | less -R --no-init --quit-if-one-screen
 }
 
 function move-to-ghq-directory {
