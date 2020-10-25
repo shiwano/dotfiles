@@ -616,27 +616,16 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
   let cwd = root == '' ? getcwd() : git_root
 
-  if len(buffer_dir) > 0
+  if buffer_dir =~ '^/'
+    call fzf#vim#files(expand('%:p:h'), {}, 0)
+  elseif len(buffer_dir) > 0
     call fzf#vim#gitfiles(cwd, {'options': ['--query=^' . buffer_dir . '/ ']}, 0)
   else
     call fzf#vim#gitfiles(cwd, {}, 0)
   endif
 endfunction
 
-function! s:fzf_gitfiles_buffer_dir()
-  let git_root = split(system('git rev-parse --show-toplevel'), '\n')[0]
-  let root = v:shell_error ? '' : git_root
-  let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
-
-  if len(buffer_dir) > 0
-    call fzf#vim#gitfiles(buffer_dir . ' | grep -E "^' . buffer_dir . '/[^/]+$" ', {'options': ['--query=^' . buffer_dir . '/']}, 0)
-  else
-    call fzf#vim#gitfiles(' | grep -E "^[^/]+$" ', {}, 0)
-  endif
-endfunction
-
 nnoremap <silent> ,uf :call <SID>fzf_gitfile_buffer_dir_recursive()<CR>
-nnoremap <silent> ,ud :call <SID>fzf_gitfiles_buffer_dir()<CR>
 nnoremap <silent> ,uu :GFiles <C-R>=getcwd()<CR><CR>
 nnoremap <silent> ,us :GFiles?<CR>
 nnoremap <silent> ,ub :Buffers<CR>
@@ -645,7 +634,7 @@ nnoremap <silent> ,ua :Files <C-R>=getcwd()<CR><CR>
 nnoremap <silent> ,ug :call <SID>fzf_search()<CR>
 "------------------------------------------------------------------------------
 " netrw
-nnoremap <silent> ,ue :Hexplore!<CR>
+nnoremap <silent> ,ud :Hexplore!<CR>
 let g:netrw_liststyle=1
 let g:netrw_banner=0
 let g:netrw_sizestyle="H"
