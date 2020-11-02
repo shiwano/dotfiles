@@ -242,6 +242,10 @@ function select-history() {
   CURSOR=$#BUFFER
 }
 
+function count() {
+  echo -n "${1-.}" | wc -m
+}
+
 # Aliases ----------------------------------------------------------------------
 
 alias ls='ls --color=auto'
