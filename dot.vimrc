@@ -110,6 +110,7 @@ Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
+Plug 'thinca/vim-qfreplace'
 
 call plug#end()
 "------------------------------------------------------------------------------
@@ -530,6 +531,16 @@ let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlights_enabled = 0
+let g:lsp_diagnostics_enabled = 0
+
+" function! s:change_lsp_settings()
+  " let g:lsp_diagnostics_enabled = 0
+" endfun
+
+" augroup VimLsp
+  " autocmd!
+  " autocmd FileType go call s:change_lsp_settings()
+" augroup END
 "------------------------------------------------------------------------------
 " vim-lsp-settings
 let g:lsp_settings_filetype_go = ['gopls']
@@ -619,9 +630,9 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   if buffer_dir =~ '^/'
     call fzf#vim#files(expand('%:p:h'), {}, 0)
   elseif len(buffer_dir) > 0
-    call fzf#vim#gitfiles(cwd, {'options': ['--query=^' . buffer_dir . '/ ']}, 0)
+    call fzf#vim#files(cwd, {'options': ['--prompt=> ',  '--query=^' . buffer_dir . '/ ']}, 0)
   else
-    call fzf#vim#gitfiles(cwd, {}, 0)
+    call fzf#vim#files(cwd, {'options': ['--prompt=> ']}, 0)
   endif
 endfunction
 
