@@ -77,7 +77,7 @@ if [ -d /usr/local/share/android-sdk ]; then
 fi
 
 if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --no-sort --ansi --cycle --filepath-word --marker='X' --history-size=5000
+  export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --ansi --cycle --filepath-word --marker='X' --history-size=5000 --tiebreak=index
     --bind=tab:down
     --bind=shift-tab:up
     --bind=ctrl-a:select-all
@@ -89,7 +89,7 @@ if type fzf > /dev/null; then
     --bind=down:preview-page-down
     --bind=ctrl-u:half-page-up
     --bind=ctrl-d:half-page-down"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git'"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git' --sort path"
 fi
 
 if type direnv > /dev/null; then
@@ -276,7 +276,7 @@ alias zsy='noglob zmv -Ls'
 
 if type go > /dev/null; then
   alias go-get='GO111MODULE=off go get -u'
-  alias go-test-build-all='go test -run=^$ ./...'
+  alias go-build-all='go test -run=^$ ./... 1>/dev/null'
 fi
 
 if type docker > /dev/null; then
