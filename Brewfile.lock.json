@@ -20,7 +20,7 @@
         "revision": "02f7cb8ea548e0c8daafa13429626a577ab40113"
       },
       "shiwano/tap": {
-        "revision": "75964b6f8a734680d33ad1badbb00d00e90b7f90"
+        "revision": "5e9aba847d033966598a60c85f5b0906e4832f91"
       },
       "golangci/tap": {
         "revision": "ac23aa119322076ddfca7ba73dc6594cbfd76c25"
@@ -993,7 +993,6 @@
           }
         }
       },
-      "bazelbuild/tap/ibazel": null,
       "shiwano/tap/ibazel": null,
       "golangci/tap/golangci-lint": null,
       "helm": {
@@ -1060,10 +1059,6 @@
             }
           }
         }
-      },
-      "ibazel": {
-        "version": "0.13.1",
-        "bottle": false
       },
       "fzf": {
         "version": "0.24.3",
