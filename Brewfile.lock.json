@@ -1591,15 +1591,6 @@
           }
         }
       },
-      "zoomus": {
-        "version": "5.4.58903.1122,alias",
-        "options": {
-          "full_name": "zoomus",
-          "args": {
-            "appdir": "/Applications"
-          }
-        }
-      },
       "deepl": {
         "version": "1.7.0",
         "options": {
@@ -1622,6 +1613,15 @@
         "version": "3.1.2,296",
         "options": {
           "full_name": "tableplus",
+          "args": {
+            "appdir": "/Applications"
+          }
+        }
+      },
+      "zoom": {
+        "version": "5.4.59301.1211",
+        "options": {
+          "full_name": "zoom",
           "args": {
             "appdir": "/Applications"
           }
