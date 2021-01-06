@@ -55,6 +55,7 @@ Plug 'jparise/vim-graphql'
 Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
+Plug 'cespare/vim-go-templates'
 
 " Finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -466,6 +467,9 @@ nnoremap t :QuickRun<CR>
 nnoremap tt :Q<CR>
 nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 "------------------------------------------------------------------------------
+" vim-qfreplace
+nnoremap qf :Qfreplace<CR>
+"------------------------------------------------------------------------------
 " vim-json
 let g:vim_json_syntax_conceal = 0
 "------------------------------------------------------------------------------
@@ -531,16 +535,16 @@ let g:lsp_async_completion = 1
 let g:lsp_signs_enabled = 0
 let g:lsp_diagnostics_echo_cursor = 1
 let g:lsp_highlights_enabled = 0
-let g:lsp_diagnostics_enabled = 0
+" let g:lsp_diagnostics_enabled = 0
 
-" function! s:change_lsp_settings()
-  " let g:lsp_diagnostics_enabled = 0
-" endfun
+function! s:change_lsp_settings()
+  let g:lsp_diagnostics_enabled = 0
+endfun
 
-" augroup VimLsp
-  " autocmd!
-  " autocmd FileType go call s:change_lsp_settings()
-" augroup END
+augroup VimLsp
+  autocmd!
+  autocmd FileType go call s:change_lsp_settings()
+augroup END
 "------------------------------------------------------------------------------
 " vim-lsp-settings
 let g:lsp_settings_filetype_go = ['gopls']

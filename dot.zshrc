@@ -282,7 +282,7 @@ fi
 if type docker > /dev/null; then
   alias docker-rm-all='docker rm $(docker ps -a -q)'
   alias docker-rmi-all='docker rmi $(docker images -q)'
-  alias docker-sh='docker run -it --entrypoint sh'
+  alias docker-run-sh='docker run -it --entrypoint sh'
 fi
 
 if type bazelisk > /dev/null; then
