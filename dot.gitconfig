@@ -15,6 +15,7 @@
   r = restore
   rc = "!sh -c 'git restore -s $0 .'"
   sw = switch
+  swd = switch --detach
   ci = commit
   cim = commit -m
   cia = commit --amend -C HEAD
