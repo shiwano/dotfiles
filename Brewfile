@@ -70,6 +70,7 @@ brew 'docker-slim'
 brew 'fzf'
 brew 'ripgrep'
 brew 'bat'
+brew 'git-lfs'
 
 cask 'java'
 cask 'alfred'
