@@ -19,8 +19,9 @@
   ci = commit
   cim = commit -m
   cia = commit --amend -C HEAD
-  aa = add -A
+  a = add -A
   au = add -u
+  ap = add -p
   s = status
   up = pull --rebase
   diff = diff --color
@@ -57,14 +58,6 @@
   rank = shortlog -s -n -e
   prune-branches = !git branch --delete $(git branch --merged origin/master | grep -v '^*\\|  master$')
   prune-branches-develop = !git branch --delete $(git branch --merged origin/develop | grep -v '^*\\|  master$')
-  prune-remote-branches = "!sh -c ' \
-                           git branch -r --merged | \
-                           grep origin | \
-                           grep -v \">\" | \
-                           grep -v master | \
-                           sed \"/>|master/d;/origin/!d;s:origin/::\" | \
-                           xargs git push origin --delete \
-                         ' __dummy__"
   sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'" # git sed '**/*.go' $'s/foo/bar/g'
   sed-help = !echo "git sed '**/*.go' $'s/foo/bar/g'"
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
@@ -72,9 +65,9 @@
   mru = for-each-ref --format='%(refname:short) (%(authordate:relative))' --sort=committerdate refs/heads/
   reset-remote = "!sh -c 'git fetch && git reset --hard `git current-remote-branch`'"
   upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
-  mg = "!sh -c 'git fetch && git merge `git upstream-branch`'"
   editor = "!sh -c 'if type nvim > /dev/null; then echo nvim; else echo vim; fi'"
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
+  log-shallow-since = log --date=raw
 [merge]
   tool = nvimdiff
 [diff]

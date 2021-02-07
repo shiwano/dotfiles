@@ -56,6 +56,7 @@ Plug 'leafgarland/typescript-vim'
 Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
 Plug 'cespare/vim-go-templates'
+Plug 'mattn/vim-gomod'
 
 " Finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -89,13 +90,7 @@ Plug 'w0rp/ale'
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'fatih/vim-hclfmt'
 Plug 'mattn/vim-goimports'
-Plug 'prettier/vim-prettier', {
-  \ 'do': 'yarn install',
-  \ 'branch': 'release/1.x',
-  \ 'for': [
-    \ 'javascript', 'typescript', 'css', 'less', 'scss', 'json',
-    \ 'graphql', 'markdown', 'vue', 'lua', 'php', 'python', 'ruby',
-    \ 'html', 'swift' ] }
+Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 
 " Misc
 Plug 'jmcantrell/vim-virtualenv'

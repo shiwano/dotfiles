@@ -215,7 +215,7 @@ function edit-git-file {
 }
 
 function edit-git-changed-file {
-  local s1="$(git status -s -u)"
+  local s1="$(git status -s -u --no-renames | grep -v -E '^D ')"
   if [ $s1 ]; then
     local s2="$(echo -e $s1 | fzf -1 --preview "$(fzf-preview-git-file)" | cut -c4-)"
     [ $s2 ] && shift $# && vi $s2
@@ -223,17 +223,17 @@ function edit-git-changed-file {
 }
 
 function add-git-files() {
-  local s="$(git status -s -u | grep -v -E "^M ")"
+  local s="$(git status -s -u --no-renames | grep -v -E "^M ")"
   [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git add
 }
 
 function restore-git-files() {
-  local s="$(git status -s -u | grep -v -E "^M " | grep -v -E "^A ")"
+  local s="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
   [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git restore
 }
 
 function unstage-git-files() {
-  local s="$(git status -s -u | grep -E "^[MA]")"
+  local s="$(git status -s -u --no-renames | grep -E "^[MA] ")"
   [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD
 }
 
