@@ -68,6 +68,7 @@
   editor = "!sh -c 'if type nvim > /dev/null; then echo nvim; else echo vim; fi'"
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
   log-shallow-since = log --date=raw
+  empty-commit = commit --allow-empty -m
 [merge]
   tool = nvimdiff
 [diff]
