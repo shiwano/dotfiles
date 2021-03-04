@@ -29,31 +29,21 @@ call plug#begin('~/.vim/plugged')
 Plug 'chriskempson/base16-vim'
 
 " Syntax highlight
-Plug 'pangloss/vim-javascript'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'mustache/vim-mustache-handlebars'
-Plug 'othree/html5-syntax.vim'
-Plug 'groenewege/vim-less'
-Plug 'hail2u/vim-css3-syntax'
 Plug 'aklt/plantuml-syntax'
-Plug 'elzr/vim-json'
 Plug 'ekalinin/Dockerfile.vim'
 Plug 'godlygeek/tabular' " required by vim-markdown
 Plug 'plasticboy/vim-markdown'
 Plug 'vim-scripts/ShaderHighLight'
 Plug 'cespare/vim-toml'
 Plug 'posva/vim-vue'
-Plug 'vim-jp/cpp-vim', { 'for': 'cpp' }
-Plug 'dart-lang/dart-vim-plugin'
-Plug 'keith/swift.vim'
 Plug 'hashivim/vim-terraform'
 Plug 'shiwano/vim-hcl'
 Plug 'chr4/nginx.vim'
 Plug 'google/vim-maktaba' " required by vim-bazel
 Plug 'bazelbuild/vim-bazel'
 Plug 'bfontaine/Brewfile.vim'
-Plug 'jparise/vim-graphql'
-Plug 'leafgarland/typescript-vim'
-Plug 'peitalin/vim-jsx-typescript'
 Plug 'mechatroner/rainbow_csv'
 Plug 'cespare/vim-go-templates'
 Plug 'mattn/vim-gomod'
@@ -339,32 +329,21 @@ command! Reload :source ~/.vimrc
 
 " Open the specific buffer
 command! -nargs=1 BufSel :call s:bufSel("<args>")
-function! s:bufSel(pattern)
+function! s:bufSel(name)
   let bufcount = bufnr("$")
   let currbufnr = 1
-  let nummatches = 0
-  let firstmatchingbufnr = 0
   while currbufnr <= bufcount
     if(bufexists(currbufnr))
       let currbufname = bufname(currbufnr)
-      if(match(currbufname, a:pattern) > -1)
+      if(currbufname == a:name)
         echo currbufnr . ": ". bufname(currbufnr)
-        let nummatches += 1
-        let firstmatchingbufnr = currbufnr
+        execute ":buffer " . currbufnr
+        return
       endif
     endif
     let currbufnr = currbufnr + 1
   endwhile
-  if(nummatches == 1)
-    execute ":buffer " . firstmatchingbufnr
-  elseif(nummatches > 1)
-    let desiredbufnr = input("Enter buffer number: ")
-    if(strlen(desiredbufnr) != 0)
-      execute ":buffer ". desiredbufnr
-    endif
-  else
-    echo "No matching buffers"
-  endif
+  echo "No matching buffers"
 endfunction
 "------------------------------------------------------------------------------
 " Memo
@@ -392,6 +371,7 @@ endif
 if has('nvim')
   command! T :call s:T()
   function! s:T()
+    sp
     if exists('s:term_buf_name') && !empty(s:term_buf_name)
       call s:bufSel(s:term_buf_name)
     else
@@ -402,11 +382,7 @@ if has('nvim')
   endfunction
 
   function! s:close_terminal()
-    if exists('s:term_buf_name') && !empty(s:term_buf_name) && bufname('%') == s:term_buf_name
-      execute "normal \<C-O>"
-      return
-    endif
-    bd!
+    q
   endfunction
 
   nnoremap <silent> <C-z> :T<CR>
@@ -660,3 +636,14 @@ augroup END
 function! s:setup_netrw()
   nnoremap <buffer> qq :q<CR>
 endfunction
+"------------------------------------------------------------------------------
+" nvim-treesitter
+lua <<EOF
+require'nvim-treesitter.configs'.setup {
+  highlight = {
+    enable = true,
+    disable = {},
+  },
+  ensure_installed = 'all',
+}
+EOF

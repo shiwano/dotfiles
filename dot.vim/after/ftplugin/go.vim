@@ -12,7 +12,8 @@ nnoremap on :LspRename<CR>
 nnoremap oe :LspDocumentDiagnostics<CR>
 nnoremap os :LspCodeAction<CR>
 
-nnoremap odd :DlvTest<CR>
+nnoremap odd :DlvDebug<CR>
+nnoremap odt :DlvTest<CR>
 nnoremap odc :DlvClearAll<CR>
 nnoremap odb :DlvToggleBreakpoint<CR>
-nnoremap odt :DlvToggleTracepoint<CR>
+" nnoremap odt :DlvToggleTracepoint<CR>
