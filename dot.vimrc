@@ -326,25 +326,6 @@ endfunction
 
 " Reload .vimrc
 command! Reload :source ~/.vimrc
-
-" Open the specific buffer
-command! -nargs=1 BufSel :call s:bufSel("<args>")
-function! s:bufSel(name)
-  let bufcount = bufnr("$")
-  let currbufnr = 1
-  while currbufnr <= bufcount
-    if(bufexists(currbufnr))
-      let currbufname = bufname(currbufnr)
-      if(currbufname == a:name)
-        echo currbufnr . ": ". bufname(currbufnr)
-        execute ":buffer " . currbufnr
-        return
-      endif
-    endif
-    let currbufnr = currbufnr + 1
-  endwhile
-  echo "No matching buffers"
-endfunction
 "------------------------------------------------------------------------------
 " Memo
 command! SaveMemo :call s:saveMemo()
@@ -373,12 +354,29 @@ if has('nvim')
   function! s:T()
     sp
     if exists('s:term_buf_name') && !empty(s:term_buf_name)
-      call s:bufSel(s:term_buf_name)
+      call s:open_buf(s:term_buf_name)
     else
       terminal
       let s:term_buf_name = bufname('%')
     endif
     normal i
+  endfunction
+
+  function! s:open_buf(name)
+    let bufcount = bufnr("$")
+    let currbufnr = 1
+    while currbufnr <= bufcount
+      if(bufexists(currbufnr))
+        let currbufname = bufname(currbufnr)
+        if(currbufname == a:name)
+          echo currbufnr . ": ". bufname(currbufnr)
+          execute ":buffer " . currbufnr
+          return
+        endif
+      endif
+      let currbufnr = currbufnr + 1
+    endwhile
+    echo "No matching buffers"
   endfunction
 
   function! s:close_terminal()
