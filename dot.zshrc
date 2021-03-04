@@ -449,6 +449,11 @@ setopt auto_cd
 # C-s, C-qを無効にする。
 setopt no_flow_control
 
+# Change open files limit and user processes limit.
+# See: https://gist.github.com/tombigel/d503800a282fcadbee14b537735d202c
+ulimit -n 200000
+ulimit -u 2048
+
 # .zshrc.local -----------------------------------------------------------------
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
