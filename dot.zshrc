@@ -96,6 +96,12 @@ if type direnv > /dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
+# Nix --------------------------------------------------------------------------
+
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+    . $HOME/.nix-profile/etc/profile.d/nix.sh;
+fi
+
 # Vim --------------------------------------------------------------------------
 
 if type nvim > /dev/null; then

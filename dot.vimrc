@@ -604,9 +604,9 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   if buffer_dir =~ '^/'
     call fzf#vim#files(expand('%:p:h'), {}, 0)
   elseif len(buffer_dir) > 0
-    call fzf#vim#files(cwd, {'options': ['--prompt=> ',  '--query=^' . buffer_dir . '/ ']}, 0)
+    call fzf#vim#files(cwd, fzf#vim#with_preview({'options': ['--prompt=> ',  '--query=^' . buffer_dir . '/ ']}), 0)
   else
-    call fzf#vim#files(cwd, {'options': ['--prompt=> ']}, 0)
+    call fzf#vim#files(cwd, fzf#vim#with_preview({'options': ['--prompt=> ']}), 0)
   endif
 endfunction
 
