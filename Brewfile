@@ -13,7 +13,6 @@ tap 'shiwano/tap'
 
 brew 'zsh'
 brew 'git'
-brew 'the_silver_searcher'
 brew 'reattach-to-user-namespace'
 brew 'ctags'
 brew 'cmake'
