@@ -19,9 +19,6 @@
       "golangci/tap": {
         "revision": "99ee83071974a569be1c0b762ea0ef5797141ea2"
       },
-      "mongodb/brew": {
-        "revision": "6551db87bd38cae1e4b03e79d9fd6d06c7922447"
-      },
       "shyiko/kubesec": {
         "revision": "3667b1600528632e37ccefe5837ad329b89c6d79"
       },

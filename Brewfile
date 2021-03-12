@@ -7,7 +7,6 @@ tap 'homebrew/cask-fonts'
 tap 'shiwano/formulas'
 tap 'cosmo0920/mingw_w64'
 tap 'golangci/tap'
-tap 'mongodb/brew'
 tap 'shyiko/kubesec'
 tap 'shiwano/tap'
 
