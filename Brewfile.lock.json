@@ -1303,10 +1303,6 @@
           }
         }
       },
-      "mongodb/brew/mongodb-community": {
-        "version": "4.4.3",
-        "bottle": false
-      },
       "shyiko/kubesec/kubesec": {
         "version": "0.9.2",
         "bottle": false
