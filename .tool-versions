@@ -6,3 +6,4 @@ helm latest
 helmfile latest
 yq latest
 terraform latest
+direnv latest
