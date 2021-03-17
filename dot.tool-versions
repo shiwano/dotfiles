@@ -1,0 +1,7 @@
+jq latest
+kubectl latest
+kustomize latest
+kubesec latest
+helm latest
+helmfile latest
+yq latest
