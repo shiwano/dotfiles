@@ -5,6 +5,7 @@ asdf plugin add kubesec
 asdf plugin add helm
 asdf plugin add helmfile
 asdf plugin add yq
+asdf plugin-add terraform
 
 cd ~
 asdf install

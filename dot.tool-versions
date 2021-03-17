@@ -5,3 +5,4 @@ kubesec latest
 helm latest
 helmfile latest
 yq latest
+terraform latest
