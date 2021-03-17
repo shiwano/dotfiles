@@ -92,8 +92,10 @@ if type fzf > /dev/null; then
   export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git' --sort path"
 fi
 
-if type direnv > /dev/null; then
-  eval "$(direnv hook zsh)"
+# asdf -------------------------------------------------------------------------
+
+if [ -e /usr/local/opt/asdf/asdf.sh ]; then
+    . /usr/local/opt/asdf/asdf.sh
 fi
 
 # Nix --------------------------------------------------------------------------
@@ -464,3 +466,9 @@ ulimit -u 2048
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
 typeset -U path PATH # Remove duplicated PATHs.
+
+# direnv -----------------------------------------------------------------------
+
+if type direnv > /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
