@@ -97,6 +97,7 @@ Plug 'tpope/vim-projectionist'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
 Plug 'thinca/vim-qfreplace'
+Plug 'arthurxavierx/vim-caser'
 
 call plug#end()
 "------------------------------------------------------------------------------
@@ -126,7 +127,7 @@ syntax on
 set laststatus=2 " always show status line
 set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASCII=%03.3b,HEX=%02.2B)\ %l/%L(%P)%m
 
-" 入力モード時、ステータスラインのカラーを変更
+" Change the color of the status line in input mode
 augroup InsertHook
   autocmd!
   autocmd InsertEnter * highlight StatusLine ctermfg=White ctermbg=DarkGrey
@@ -166,20 +167,20 @@ set listchars=tab:>.,trail:_,extends:>,precedes:< " 不可視文字の表示形�
 set display=uhex                                  " 印字不可能文字を16進数で表示
 set viminfo='5000                                 " file history length
 
-" 現在行にラインを引く
+" Draw a line on the current line.
 augroup cch
   autocmd! cch
   autocmd WinLeave * set nocursorline
   autocmd WinEnter,BufRead * set cursorline
 augroup END
 
-" wrap long lines in quickfix
+" Wrap long lines in quickfix
 augroup quickfix
   autocmd!
   autocmd FileType qf setlocal wrap
 augroup END
 
-" move to last cursor position
+" Move to last cursor position
 augroup lastCursor
   au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
   \ exe "normal g`\"" | endif
@@ -207,18 +208,6 @@ set ignorecase " 大文字小文字無視
 set smartcase  " 大文字ではじめたら大文字小文字無視しない
 set incsearch  " インクリメンタルサーチ
 set hlsearch   " 検索文字をハイライト
-
-" 選択した文字列を検索
-vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
-
-" 選択した文字列の出現回数をカウント
-vnoremap <silent> /n y:%s/<C-R>=escape(@", '\\/.*$^~[]')<CR>/&/gn<CR>
-
-" 選択した文字列を置換
-vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
-
-" 選択した文字列を fzf で Grep
-vnoremap /g y:Rg <C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " Encodings
 set ffs=unix,dos,mac
@@ -257,10 +246,6 @@ nnoremap k gk
 
 nnoremap n nzz
 nnoremap N Nzz
-nnoremap * *zz
-nnoremap # #zz
-nnoremap g* g*zz
-nnoremap g# g#zz
 nnoremap G Gzz
 nnoremap aa @a
 
@@ -274,9 +259,23 @@ cnoremap <C-p> <Up>
 cnoremap <C-n> <Down>
 nnoremap ; :
 vnoremap ; :
+nnoremap : q:
+vnoremap : q:
 
-" disable recording q macro
+" Disable recording q macro.
 nnoremap qq <ESC>
+
+" Search for the selected string.
+vnoremap <silent> // y/<C-R>=escape(@", '\\/.*$^~[]')<CR><CR>
+
+" Count the number of times the selected string appears.
+vnoremap <silent> /n y:%s/<C-R>=escape(@", '\\/.*$^~[]')<CR>/&/gn<CR>
+
+" Replace the selected string.
+vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
+
+" Grep the selected string with fzf.
+vnoremap /g y:Rg <C-R>=escape(@", '\\.*$^[]')<CR><CR>
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.prefab set filetype=yaml
