@@ -15,13 +15,16 @@ bindkey '^[^]' vi-find-prev-char
 
 zstyle ':completion:*:*:make:*' tag-order 'targets'
 
-if [ -d /usr/local/Cellar/zsh-completions ]; then
-  FPATH=$(brew --prefix)/share/zsh-completions:$FPATH
-  autoload -Uz compinit
-  compinit
+if [ -d /usr/local/share/zsh/zsh-completions ]; then
+  FPATH=/usr/local/share/zsh/zsh-completions:$FPATH
 fi
 
-zstyle ':completion:*:*:make:*' tag-order 'targets'
+if type brew &>/dev/null; then
+  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+fi
+
+autoload -Uz compinit
+compinit
 # Color scheme -----------------------------------------------------------------
 
 BASE16_SHELL="$HOME/.config/base16-shell/"

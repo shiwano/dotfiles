@@ -378,20 +378,17 @@ if has('nvim')
     echo "No matching buffers"
   endfunction
 
-  function! s:close_terminal()
-    q
-  endfunction
-
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
 
-  tnoremap <silent> qq <C-\><C-n>:call <SID>close_terminal()<CR>
-  tnoremap <silent> fg<CR> <C-\><C-n>:call <SID>close_terminal()<CR>
-  tnoremap <silent> exit<CR> <C-\><C-n>:call <SID>close_terminal()<CR>
-  tnoremap <silent> <C-z> <C-\><C-n>:call <SID>close_terminal()<CR>
-  tnoremap <silent> <C-o> <C-\><C-n>:call <SID>close_terminal()<CR>
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:q<CR>
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:q<CR>
+  autocmd TermOpen term://*/bin/zsh* setlocal scrollback=1000
 
-  autocmd TermOpen * setlocal scrollback=1000
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
 endif
 "------------------------------------------------------------------------------
