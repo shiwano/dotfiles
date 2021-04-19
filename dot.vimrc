@@ -26,7 +26,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " Color scheme
-Plug 'chriskempson/base16-vim'
+Plug 'fnune/base16-vim'
 
 " Syntax highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -67,6 +67,7 @@ Plug 'vim-scripts/Align'
 " Debug
 Plug 'sebdah/vim-delve'
 Plug 'thinca/vim-quickrun'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 
 " Lint
 Plug 'w0rp/ale'
@@ -98,12 +99,13 @@ call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
 syntax enable
-colorscheme base16-default-dark
 
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
   source ~/.vimrc_background
 endif
+
+colorscheme base16-default-dark
 
 augroup highlightIdegraphicSpace
   autocmd!
@@ -425,8 +427,7 @@ let g:quickrun_config._ = {
       \ 'outputter/buffer/split'  : ':rightbelow 16sp',
       \ 'outputter/buffer/close_on_empty' : 1,
       \ }
-nnoremap t :QuickRun<CR>
-nnoremap tt :Q<CR>
+nnoremap tt :QuickRun<CR>
 nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() : "\<C-c>"
 "------------------------------------------------------------------------------
 " vim-qfreplace
@@ -491,10 +492,8 @@ nmap <silent> of <Plug>(coc-references)
 nmap <silent> on <Plug>(coc-rename)
 nmap <silent> os <Plug>(coc-codeaction-selected)<down>
 
-nnoremap <silent> K :call <SID>show_documentation()<CR>
-
-" Highlight the symbol and its references when holding the cursor.
-autocmd CursorHold * silent call CocActionAsync('highlight')
+nnoremap <silent> or :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
+nnoremap <silent> ok :call <SID>show_documentation()<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)
@@ -543,9 +542,6 @@ command! -nargs=0 Format :call CocAction('format')
 " Add `:Fold` command to fold current buffer.
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
@@ -566,7 +562,6 @@ let g:prettier#exec_cmd_async = 1
 autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.html PrettierAsync
 "------------------------------------------------------------------------------
 " ale
-highlight ALEWarning ctermbg=darkgray
 let g:ale_linters = {
       \ 'go': ['gobuild', 'golangci-lint'],
       \ }
