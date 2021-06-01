@@ -494,6 +494,7 @@ nmap <silent> os <Plug>(coc-codeaction-selected)<down>
 
 nnoremap <silent> or :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
 nnoremap <silent> ok :call <SID>show_documentation()<CR>
+nnoremap <silent> ol :ALEDetail<CR>
 
 function! s:show_documentation()
   if (index(['vim','help'], &filetype) >= 0)

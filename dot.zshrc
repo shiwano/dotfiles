@@ -218,10 +218,8 @@ function move-to-ghq-directory {
 }
 
 function edit-git-grepped-file {
-  if [ $@ ]; then
-    local s="$(git ls-files -z . | xargs -0 rg -n $@ | fzf -1)"
-    [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
-  fi
+  local s="$(git ls-files . | fzf -1 --preview "$(fzf-preview-file)")"
+  [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
 }
 
 function edit-git-file {
