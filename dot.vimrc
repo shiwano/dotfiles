@@ -381,10 +381,10 @@ if has('nvim')
   tnoremap <silent> <ESC> <C-\><C-n>
 
   autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:q<CR>
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
+  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
+  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
+  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
+  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
   autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:q<CR>
   autocmd TermOpen term://*/bin/zsh* setlocal scrollback=1000
 
@@ -560,7 +560,8 @@ let g:javascript_plugin_jsdoc = 1
 let g:prettier#autoformat = 0
 let g:prettier#quickfix_enabled = 0
 let g:prettier#exec_cmd_async = 1
-autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.html PrettierAsync
+autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.graphql,*.vue,*.html PrettierAsync
+" autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.json,*.graphql,*.vue,*.html PrettierAsync
 "------------------------------------------------------------------------------
 " ale
 let g:ale_linters = {

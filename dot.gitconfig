@@ -35,6 +35,7 @@
   mt = mergetool
   topic = switch origin/master -c
   topic-develop = switch origin/develop -c
+  topic-production = switch origin/production -c
   current-branch = describe --all --contains HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
