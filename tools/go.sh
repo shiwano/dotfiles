@@ -9,6 +9,5 @@ go get -u github.com/cweill/gotests/...
 go get -u golang.org/x/tools/cmd/goimports
 go get -u github.com/go-delve/delve/cmd/dlv
 
-go get -u github.com/nathany/looper
 go get -u github.com/motemen/gore/cmd/gore
 go get -u github.com/pwaller/goimports-update-ignore
