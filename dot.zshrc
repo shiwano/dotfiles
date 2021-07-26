@@ -15,12 +15,12 @@ bindkey '^[^]' vi-find-prev-char
 
 zstyle ':completion:*:*:make:*' tag-order 'targets'
 
-if [ -d /usr/local/share/zsh/zsh-completions ]; then
-  FPATH=/usr/local/share/zsh/zsh-completions:$FPATH
+if [ -d /opt/homebrew/share/zsh/zsh-completions ]; then
+  FPATH=/opt/homebrew/share/zsh/zsh-completions:$FPATH
 fi
 
-if type brew &>/dev/null; then
-  FPATH=$(brew --prefix)/share/zsh/site-functions:$FPATH
+if [ -d /opt/homebrew/share/zsh/site-functions ]; then
+  FPATH=/opt/homebrew/share/zsh/site-functions:$FPATH
 fi
 
 autoload -Uz compinit
@@ -36,26 +36,31 @@ base16_tomorrow-night
 
 # Envs -------------------------------------------------------------------------
 
-export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:$GOPATH/bin:$PATH
+export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:/opt/homebrew/bin:$GOPATH/bin:$PATH
 export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
 
-if [ -d /usr/local/Cellar/coreutils ]; then
-  export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
-  export MANPATH="/usr/local/opt/coreutils/libexec/gnuman:$MANPATH"
+if [ -d /opt/homebrew/Cellar/coreutils ]; then
+  export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
+  export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d /usr/local/Cellar/gnu-sed ]; then
-  export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-  export MANPATH="/usr/local/opt/gnu-sed/libexec/gnuman:$MANPATH"
+if [ -d /opt/homebrew/Cellar/gnu-sed ]; then
+  export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
+  export MANPATH="/opt/homebrew/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d /usr/local/Cellar/openssl ]; then
-  export PATH="/usr/local/opt/openssl/bin:$PATH"
+if [ -d /opt/homebrew/Cellar/openssl ]; then
+  export PATH="/opt/homebrew/opt/openssl/bin:$PATH"
 fi
 
-if [ -d /usr/local/Caskroom/google-cloud-sdk ]; then
-  source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'
-  source '/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
+if [ -d /opt/homebrew/Caskroom/google-cloud-sdk ]; then
+  source '/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'
+  source '/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
+fi
+
+if [ -d /opt/homebrew/share/android-sdk ]; then
+  export ANDROID_SDK_ROOT="/opt/homebrew/share/android-sdk"
+  export PATH="/opt/homebrew/share/android-sdk/tools/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
@@ -66,10 +71,6 @@ if [ -d ${HOME}/.anyenv ] ; then
   done
 fi
 
-if [ -d /usr/local/heroku ] ; then
-  export PATH="/usr/local/heroku/bin:$PATH"
-fi
-
 if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
   export PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
   export PATH="$HOME/.pub-cache/bin:$PATH"
@@ -77,11 +78,6 @@ fi
 
 if [ -d ${HOME}/.local ] ; then
   export PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d /usr/local/share/android-sdk ]; then
-  export ANDROID_SDK_ROOT="/usr/local/share/android-sdk"
-  export PATH="/usr/local/share/android-sdk/tools/bin:$PATH"
 fi
 
 if type fzf > /dev/null; then
@@ -102,14 +98,14 @@ fi
 
 # asdf -------------------------------------------------------------------------
 
-if [ -e /usr/local/opt/asdf/asdf.sh ]; then
-    . /usr/local/opt/asdf/asdf.sh
+if [ -e /opt/homebrew/opt/asdf/asdf.sh ]; then
+  . /opt/homebrew/opt/asdf/asdf.sh
 fi
 
 # Nix --------------------------------------------------------------------------
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-    . $HOME/.nix-profile/etc/profile.d/nix.sh;
+  . $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
 
 # Vim --------------------------------------------------------------------------
@@ -415,7 +411,7 @@ setopt hist_ignore_all_dups
 LISTMAX=0
 
 # sudo でも補完の対象
-zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+zstyle ':completion:*:sudo:*' command-path /opt/homebrew/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
 # cdのタイミングで自動的にpushd
 setopt auto_pushd
@@ -471,7 +467,7 @@ setopt no_flow_control
 # Change open files limit and user processes limit.
 # See: https://gist.github.com/tombigel/d503800a282fcadbee14b537735d202c
 ulimit -n 200000
-ulimit -u 2048
+ulimit -u 2000
 
 # .zshrc.local -----------------------------------------------------------------
 
