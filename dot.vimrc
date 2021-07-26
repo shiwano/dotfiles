@@ -642,5 +642,6 @@ require'nvim-treesitter.configs'.setup {
     disable = {},
   },
   ensure_installed = 'all',
+  ignore_install = { 'haskell' }
 }
 EOF
