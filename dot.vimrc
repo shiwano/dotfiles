@@ -1,5 +1,6 @@
 "------------------------------------------------------------------------------
 set nocompatible " Vim!
+scriptencoding utf-8
 
 let $TODAY = strftime('%Y%m%d')
 
@@ -105,13 +106,13 @@ if filereadable(expand("~/.vimrc_background"))
   source ~/.vimrc_background
 endif
 
-colorscheme base16-default-dark
-
 augroup highlightIdegraphicSpace
   autocmd!
   autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=DarkGreen guibg=DarkGreen
   autocmd VimEnter,WinEnter * match IdeographicSpace /　/
 augroup END
+
+colorscheme base16-default-dark
 
 if exists('+colorcolumn')
   autocmd Filetype * set colorcolumn=81
