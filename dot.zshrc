@@ -248,8 +248,8 @@ function unstage-git-files() {
 }
 
 function select-history() {
-  local buffer=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt="History > ")
-  CURSOR=$#buffer
+  BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt="History > ")
+  CURSOR=$#BUFFER
 }
 
 function goimports-all() {
