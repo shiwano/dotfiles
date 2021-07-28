@@ -59,8 +59,8 @@
   rank = shortlog -s -n -e
   prune-branches = !git branch --delete $(git branch --merged origin/master | grep -v '^*\\|  master$')
   prune-branches-develop = !git branch --delete $(git branch --merged origin/develop | grep -v '^*\\|  master$')
-  sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'" # git sed '**/*.go' $'s/foo/bar/g'
-  sed-help = !echo "git sed '**/*.go' $'s/foo/bar/g'"
+  sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'"
+  sed-help = "!echo \"git sed '**/*.go' 's/foo/bar/g'\""
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
   upstream = "!sh -c 'git branch --set-upstream-to=$0 `git current-branch`'"
   mru = for-each-ref --format='%(refname:short) (%(authordate:relative))' --sort=committerdate refs/heads/
