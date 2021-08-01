@@ -11,16 +11,22 @@ bindkey -e
 bindkey '^]'   vi-find-next-char
 bindkey '^[^]' vi-find-prev-char
 
+if type brew > /dev/null; then
+  export BREW_PREFIX=$(brew --prefix)
+else
+  export BREW_PREFIX='/usr/local'
+fi
+
 # Completion -------------------------------------------------------------------
 
 zstyle ':completion:*:*:make:*' tag-order 'targets'
 
-if [ -d /opt/homebrew/share/zsh/zsh-completions ]; then
-  FPATH=/opt/homebrew/share/zsh/zsh-completions:$FPATH
+if [ -d $BREW_PREFIX/share/zsh/zsh-completions ]; then
+  FPATH=$BREW_PREFIX/share/zsh/zsh-completions:$FPATH
 fi
 
-if [ -d /opt/homebrew/share/zsh/site-functions ]; then
-  FPATH=/opt/homebrew/share/zsh/site-functions:$FPATH
+if [ -d $BREW_PREFIX/share/zsh/site-functions ]; then
+  FPATH=$BREW_PREFIX/share/zsh/site-functions:$FPATH
 fi
 
 autoload -Uz compinit
@@ -36,31 +42,31 @@ base16_tomorrow-night
 
 # Envs -------------------------------------------------------------------------
 
-export PATH=$HOME/bin:/usr/local/bin:/usr/local/sbin:/opt/homebrew/bin:$GOPATH/bin:$PATH
-export MANPATH=/usr/local/share/man:/usr/local/man:/usr/share/man
+export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
+export MANPATH=$BREW_PREFIX/share/man:$BREW_PREFIX/man:/usr/share/man
 
-if [ -d /opt/homebrew/Cellar/coreutils ]; then
-  export PATH="/opt/homebrew/opt/coreutils/libexec/gnubin:$PATH"
-  export MANPATH="/opt/homebrew/opt/coreutils/libexec/gnuman:$MANPATH"
+if [ -d $BREW_PREFIX/Cellar/coreutils ]; then
+  export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+  export MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d /opt/homebrew/Cellar/gnu-sed ]; then
-  export PATH="/opt/homebrew/opt/gnu-sed/libexec/gnubin:$PATH"
-  export MANPATH="/opt/homebrew/opt/gnu-sed/libexec/gnuman:$MANPATH"
+if [ -d $BREW_PREFIX/Cellar/gnu-sed ]; then
+  export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
+  export MANPATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d /opt/homebrew/Cellar/openssl ]; then
-  export PATH="/opt/homebrew/opt/openssl/bin:$PATH"
+if [ -d $BREW_PREFIX/Cellar/openssl ]; then
+  export PATH="$BREW_PREFIX/opt/openssl/bin:$PATH"
 fi
 
-if [ -d /opt/homebrew/Caskroom/google-cloud-sdk ]; then
-  source '/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc'
-  source '/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc'
+if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
+  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -d /opt/homebrew/share/android-sdk ]; then
-  export ANDROID_SDK_ROOT="/opt/homebrew/share/android-sdk"
-  export PATH="/opt/homebrew/share/android-sdk/tools/bin:$PATH"
+if [ -d $BREW_PREFIX/share/android-sdk ]; then
+  export ANDROID_SDK_ROOT="$BREW_PREFIX/share/android-sdk"
+  export PATH="$BREW_PREFIX/share/android-sdk/tools/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.anyenv ] ; then
@@ -98,8 +104,8 @@ fi
 
 # asdf -------------------------------------------------------------------------
 
-if [ -e /opt/homebrew/opt/asdf/asdf.sh ]; then
-  . /opt/homebrew/opt/asdf/asdf.sh
+if [ -e $BREW_PREFIX/opt/asdf/asdf.sh ]; then
+  . $BREW_PREFIX/opt/asdf/asdf.sh
 fi
 
 # Nix --------------------------------------------------------------------------
@@ -411,7 +417,7 @@ setopt hist_ignore_all_dups
 LISTMAX=0
 
 # sudo でも補完の対象
-zstyle ':completion:*:sudo:*' command-path /opt/homebrew/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+zstyle ':completion:*:sudo:*' command-path $BREW_PREFIX/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
 
 # cdのタイミングで自動的にpushd
 setopt auto_pushd
