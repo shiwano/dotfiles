@@ -33,10 +33,12 @@
   dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
   diff-branch = !git diff origin/master $(git current-branch)
   mt = mergetool
+  merge-prefer-current-branch = merge branch -X ours
+  merge-prefer-target-branch = merge branch -X theirs
   topic = switch origin/master -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
-  current-branch = describe --all --contains HEAD
+  current-branch = symbolic-ref --short HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
   upstream-remote = "!sh -c 'git upstream-branch | cut -d / -f 1'"
