@@ -33,8 +33,8 @@
   dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
   diff-branch = !git diff origin/master $(git current-branch)
   mt = mergetool
-  merge-prefer-current-branch = merge branch -X ours
-  merge-prefer-target-branch = merge branch -X theirs
+  merge-prefer-current-branch = merge -X ours
+  merge-prefer-target-branch = merge -X theirs
   topic = switch origin/master -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c

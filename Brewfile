@@ -103,6 +103,7 @@ cask 'zoom'
 cask 'deepl'
 cask 'google-cloud-sdk'
 cask 'tableplus'
+cask 'discord'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307

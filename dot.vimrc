@@ -491,6 +491,7 @@ nmap <silent> oi <Plug>(coc-implementation)
 nmap <silent> of <Plug>(coc-references)
 nmap <silent> on <Plug>(coc-rename)
 nmap <silent> os <Plug>(coc-codeaction-selected)<down>
+vmap <silent> os <Plug>(coc-codeaction-selected)<down>
 
 nnoremap <silent> or :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
 nnoremap <silent> ok :call <SID>show_documentation()<CR>
