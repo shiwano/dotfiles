@@ -362,6 +362,7 @@ function precmd {
   local icon_git_branch=$'\Uf418 '
   local end_time=`date +%s`
   local run_time=$((end_time - PREEXEC_START_TIME))
+  PREEXEC_START_TIME=$end_time
 
     if [ "$(whoami)" = 'shiwano' ]; then
       RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|)"
