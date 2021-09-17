@@ -31,13 +31,14 @@
   diw = diff --color --word-diff
   di-csv = diff --color --word-diff-regex="[^[:blank:],]"
   dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
-  diff-branch = !git diff origin/master $(git current-branch)
+  diff-branch = !git diff $(git main-branch) $(git current-branch)
   mt = mergetool
   merge-prefer-current-branch = merge -X ours
   merge-prefer-target-branch = merge -X theirs
-  topic = switch origin/master -c
+  topic = !git switch $(git main-branch) -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
+  main-branch = "!sh -c 'if [ `git branch --list origin/master` ]; then echo origin/master; else echo origin/main; fi'"
   current-branch = symbolic-ref --short HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
@@ -59,8 +60,6 @@
   back = reset HEAD~
   stash-ls = stash list --stat
   rank = shortlog -s -n -e
-  prune-branches = !git branch --delete $(git branch --merged origin/master | grep -v '^*\\|  master$')
-  prune-branches-develop = !git branch --delete $(git branch --merged origin/develop | grep -v '^*\\|  master$')
   sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'"
   sed-help = "!echo \"git sed '**/*.go' 's/foo/bar/g'\""
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
