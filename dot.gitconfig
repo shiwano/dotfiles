@@ -38,7 +38,7 @@
   topic = !git switch $(git main-branch) -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
-  main-branch = "!sh -c 'if [ `git branch --list origin/master` ]; then echo origin/master; else echo origin/main; fi'"
+  main-branch = "!sh -c 'if [ `git branch -r --list origin/master` ]; then echo origin/master; else echo origin/main; fi'"
   current-branch = symbolic-ref --short HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
