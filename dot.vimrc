@@ -48,6 +48,7 @@ Plug 'bfontaine/Brewfile.vim'
 Plug 'mechatroner/rainbow_csv'
 Plug 'cespare/vim-go-templates'
 Plug 'mattn/vim-gomod'
+Plug 'aklt/plantuml-syntax'
 
 " Finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -94,6 +95,7 @@ Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
 Plug 'thinca/vim-qfreplace'
 Plug 'arthurxavierx/vim-caser'
+Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
 
 call plug#end()
 "------------------------------------------------------------------------------

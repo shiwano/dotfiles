@@ -63,6 +63,7 @@ brew 'git-lfs'
 brew 'asdf'
 brew 'java'
 brew 'node'
+brew 'plantuml'
 
 cask 'alfred'
 cask 'google-chrome'
