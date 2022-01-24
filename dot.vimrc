@@ -96,6 +96,7 @@ Plug 'danro/rename.vim'
 Plug 'thinca/vim-qfreplace'
 Plug 'arthurxavierx/vim-caser'
 Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+" Plug 'github/copilot.vim'
 
 call plug#end()
 "------------------------------------------------------------------------------
@@ -352,7 +353,6 @@ endif
 if has('nvim')
   command! T :call s:T()
   function! s:T()
-    sp
     if exists('s:term_buf_name') && !empty(s:term_buf_name)
       call s:open_buf(s:term_buf_name)
     else
@@ -382,12 +382,13 @@ if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
 
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:q<CR>
   " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
   " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
   " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
   " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:q<CR>
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:edit #<CR>
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:edit #<CR>
+  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> fg<CR> <C-\><C-n>:edit #<CR>
   autocmd TermOpen term://*/bin/zsh* setlocal scrollback=1000
 
   autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
@@ -654,7 +655,7 @@ require'nvim-treesitter.configs'.setup {
     disable = {},
   },
   ensure_installed = 'all',
-  ignore_install = { 'haskell', 'typescript' }
+  ignore_install = { 'haskell', 'typescript', 'elixir' }
 }
 EOF
 autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight

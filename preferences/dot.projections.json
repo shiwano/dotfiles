@@ -2,5 +2,7 @@
   "*_test.go": {"alternate": "{}.go"},
   "*.go": {"alternate": "{}_test.go"},
   "*.test.ts": {"alternate": "{}.ts"},
-  "*.ts": {"alternate": "{}.test.ts"}
+  "*.ts": {"alternate": "{}.test.ts"},
+  "*.test.tsx": {"alternate": "{}.tsx"},
+  "*.tsx": {"alternate": "{}.test.tsx"}
 }
