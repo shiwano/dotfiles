@@ -1,4 +1,5 @@
 {
+  "go.goplsPath": "~/code/bin/gopls",
   "coc.preferences.useQuickfixForLocations": true,
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.suggest.completeFunctionCalls": false
