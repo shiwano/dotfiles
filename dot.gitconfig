@@ -71,6 +71,8 @@
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
   log-shallow-since = log --date=raw
   empty-commit = commit --allow-empty -m
+  diff-master = "!sh -c 'git diff origin/master `git current-branch`'"
+  diff-main = "!sh -c 'git diff origin/main `git current-branch`'"
 [merge]
   tool = nvimdiff
 [diff]
