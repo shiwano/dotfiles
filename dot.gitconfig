@@ -35,6 +35,8 @@
   mt = mergetool
   merge-prefer-current-branch = merge -X ours
   merge-prefer-target-branch = merge -X theirs
+  checkout-prefer-current-branch = checkout --ours
+  checkout-prefer-target-branch = checkout --theirs
   topic = !git switch $(git main-branch) -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
