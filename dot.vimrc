@@ -176,10 +176,10 @@ augroup cch
   autocmd WinEnter,BufRead * set cursorline
 augroup END
 
-" Wrap long lines in quickfix
+" Nowrap long lines in quickfix
 augroup quickfix
   autocmd!
-  autocmd FileType qf setlocal wrap
+  autocmd FileType qf setlocal nowrap
 augroup END
 
 " Move to last cursor position
@@ -566,7 +566,7 @@ let g:prettier#quickfix_enabled = 0
 let g:prettier#exec_cmd_async = 1
 
 augroup PrettierAutoGroup
-  autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.graphql,*.vue,*.html PrettierAsync
+  autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.graphql,*.vue PrettierAsync
 augroup END
 
 command! DisablePrettier :call s:disable_prettier()
