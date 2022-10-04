@@ -64,6 +64,7 @@ brew 'asdf'
 brew 'java'
 brew 'node'
 brew 'plantuml'
+brew 'gh'
 
 cask 'alfred'
 cask 'google-chrome'
