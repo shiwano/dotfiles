@@ -104,8 +104,8 @@ fi
 
 # asdf -------------------------------------------------------------------------
 
-if [ -e $BREW_PREFIX/opt/asdf/asdf.sh ]; then
-  . $BREW_PREFIX/opt/asdf/asdf.sh
+if [ -e $BREW_PREFIX/opt/asdf/libexec/asdf.sh ]; then
+  . $BREW_PREFIX/opt/asdf/libexec/asdf.sh
 fi
 
 # Nix --------------------------------------------------------------------------
