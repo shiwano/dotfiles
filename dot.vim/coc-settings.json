@@ -3,5 +3,6 @@
   "go.goplsPath": "~/code/bin/gopls",
   "go.goplsArgs": ["-remote=auto", "-remote.listen.timeout=180m"],
   "typescript.preferences.importModuleSpecifier": "non-relative",
-  "typescript.suggest.completeFunctionCalls": false
+  "typescript.suggest.completeFunctionCalls": false,
+  "suggest.noselect": true
 }
