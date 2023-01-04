@@ -72,7 +72,7 @@ cask 'appcleaner'
 cask 'dropbox'
 cask 'skype'
 cask 'keepassx'
-cask 'virtualbox'
+# cask 'virtualbox'
 cask 'vagrant'
 cask 'growlnotify'
 cask 'qlcolorcode'
@@ -108,4 +108,3 @@ cask 'discord'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
-mas 'GIF Brewery 3 by Gfycat', id: 1081413713
