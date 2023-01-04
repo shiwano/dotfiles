@@ -2,7 +2,7 @@
 
 set -exu
 
-go install github.com/hashicorp/hcl/cmd/hclfmt@latest
+go install github.com/hashicorp/hcl/v2/cmd/hclfmt@latest
 go install github.com/cweill/gotests/...@latest
 go install golang.org/x/tools/cmd/goimports@latest
 go install github.com/go-delve/delve/cmd/dlv@latest
