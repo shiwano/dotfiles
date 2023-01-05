@@ -8,6 +8,7 @@ tap 'shiwano/formulas'
 tap 'cosmo0920/mingw_w64'
 tap 'golangci/tap'
 tap 'shiwano/tap'
+tap 'leoafarias/fvm'
 
 brew 'zsh'
 brew 'zsh-completions'
@@ -64,6 +65,7 @@ brew 'java'
 brew 'node'
 brew 'plantuml'
 brew 'gh'
+brew 'fvm'
 
 cask 'alfred'
 cask 'google-chrome'
@@ -105,6 +107,7 @@ cask 'deepl'
 cask 'google-cloud-sdk'
 cask 'tableplus'
 cask 'discord'
+cask 'android-studio'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
