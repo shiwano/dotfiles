@@ -64,11 +64,6 @@ if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
   source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -d $BREW_PREFIX/share/android-sdk ]; then
-  export ANDROID_SDK_ROOT="$BREW_PREFIX/share/android-sdk"
-  export PATH="$BREW_PREFIX/share/android-sdk/tools/bin:$PATH"
-fi
-
 if [ -d ${HOME}/.anyenv ] ; then
   export PATH="$HOME/.anyenv/bin:$PATH"
   eval "$(anyenv init -)"
@@ -77,17 +72,12 @@ if [ -d ${HOME}/.anyenv ] ; then
   done
 fi
 
-if [ -d "$HOME/code/src/github.com/flutter/flutter" ] ; then
-  export PATH="$HOME/code/src/github.com/flutter/flutter/bin:$PATH"
-  export PATH="$HOME/.pub-cache/bin:$PATH"
-fi
-
 if [ -d ${HOME}/.local ] ; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.pub-cache ] ; then
-  export PATH="$HOME/.pub-cache/bin:$PATH" # For fvm.
+  export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
 if type fzf > /dev/null; then
@@ -116,6 +106,29 @@ fi
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
   . $HOME/.nix-profile/etc/profile.d/nix.sh;
+fi
+
+# fvm --------------------------------------------------------------------------
+
+if type fvm > /dev/null; then
+  alias flutter="fvm flutter"
+  alias dart="fvm dart"
+fi
+
+# Android Studio and Android SDK -----------------------------------------------
+
+if [ -d '/Applications/Android Studio.app/Contents/jre/Contents/Home' ]; then
+  export JAVA_HOME='/Applications/Android Studio.app/Contents/jre/Contents/Home'
+  export PATH=$JAVA_HOME/bin:$PATH
+else
+  if [ -d $BREW_PREFIX/opt/openjdk ]; then
+    export JAVA_HOME="$BREW_PREFIX/opt/openjdk"
+    export PATH=$JAVA_HOME/bin:$PATH
+  fi
+fi
+
+if [ -d "$HOME/Library/Android/sdk" ]; then
+  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
 fi
 
 # Vim --------------------------------------------------------------------------
