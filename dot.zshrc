@@ -86,6 +86,10 @@ if [ -d ${HOME}/.local ] ; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
 
+if [ -d ${HOME}/.pub-cache ] ; then
+  export PATH="$HOME/.pub-cache/bin:$PATH" # For fvm.
+fi
+
 if type fzf > /dev/null; then
   export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --ansi --cycle --filepath-word --marker='X' --history-size=5000 --tiebreak=index
     --bind=tab:down
