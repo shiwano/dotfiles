@@ -66,6 +66,7 @@ brew 'node'
 brew 'plantuml'
 brew 'gh'
 brew 'fvm'
+brew 'openapi-generator'
 
 cask 'alfred'
 cask 'google-chrome'
