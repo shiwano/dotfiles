@@ -95,7 +95,8 @@ Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
 Plug 'thinca/vim-qfreplace'
 Plug 'arthurxavierx/vim-caser'
-Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() }, 'for': ['markdown', 'vim-plug']}
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
+Plug 'moorereason/vim-markdownfmt'
 " Plug 'github/copilot.vim'
 
 call plug#end()
@@ -681,3 +682,8 @@ require'nvim-treesitter.configs'.setup {
 }
 EOF
 autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
+"------------------------------------------------------------------------------
+" vim-markdownfmt
+let g:markdownfmt_command = 'markdownfmt'
+let g:markdownfmt_options = ''
+let g:markdownfmt_autosave=1
