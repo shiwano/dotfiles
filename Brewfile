@@ -111,6 +111,7 @@ cask 'tableplus'
 cask 'discord'
 cask 'android-studio'
 cask 'gitify'
+cask 'microsoft-edge'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
