@@ -4,6 +4,7 @@ cask_args appdir: '/Applications'
 tap 'homebrew/bundle'
 tap 'homebrew/core'
 tap 'homebrew/cask-fonts'
+tap 'homebrew/cask-versions'
 tap 'shiwano/formulas'
 tap 'cosmo0920/mingw_w64'
 tap 'golangci/tap'
@@ -111,7 +112,7 @@ cask 'tableplus'
 cask 'discord'
 cask 'android-studio'
 cask 'gitify'
-cask 'microsoft-edge'
+cask 'microsoft-edge-dev'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
