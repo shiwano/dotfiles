@@ -328,6 +328,15 @@ endfunction
 
 " Reload .vimrc
 command! Reload :source ~/.vimrc
+
+" Random number
+function! s:insertRandomNumber(digit)
+  let max_num = str2nr('9' . repeat('0', a:digit - 1))
+  let rand_num = rand() % max_num
+  call append(line("."), rand_num)
+endfunction
+
+command! -nargs=1 Random call s:insertRandomNumber(<args>)
 "------------------------------------------------------------------------------
 " Memo
 command! SaveMemo :call s:saveMemo()
