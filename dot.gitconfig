@@ -53,6 +53,8 @@
   log-stat = log --stat --summary --color
   lp = log --patch --color
   log-patch = log --patch --color
+  lo = log --color --oneline
+  log-oneline = log --color --oneline
   log-shallow-since = log --date=raw
   ignore = update-index --assume-unchanged
   unignore = update-index --no-assume-unchanged
