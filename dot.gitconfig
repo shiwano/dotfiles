@@ -40,7 +40,7 @@
   topic = !git switch $(git main-branch) -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
-  main-branch = "!sh -c 'if [ `git branch -r --list origin/master` ]; then echo origin/master; else echo origin/main; fi'"
+  main-branch = rev-parse --abbrev-ref origin/HEAD
   current-branch = symbolic-ref --short HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
@@ -75,8 +75,7 @@
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
   log-shallow-since = log --date=raw
   empty-commit = commit --allow-empty -m
-  diff-master = "!sh -c 'git diff origin/master `git current-branch`'"
-  diff-main = "!sh -c 'git diff origin/main `git current-branch`'"
+  diff-main = "!sh -c 'git diff `git main-branch` `git current-branch`'"
 [merge]
   tool = nvimdiff
 [diff]
