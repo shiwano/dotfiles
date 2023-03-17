@@ -66,7 +66,6 @@ brew 'java'
 brew 'node'
 brew 'plantuml'
 brew 'gh'
-brew 'fvm'
 brew 'openapi-generator'
 brew 'stripe/stripe-cli/stripe'
 

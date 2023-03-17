@@ -108,13 +108,6 @@ if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
   . $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
 
-# fvm --------------------------------------------------------------------------
-
-if type fvm > /dev/null; then
-  alias flutter="fvm flutter"
-  alias dart="fvm dart"
-fi
-
 # Android Studio and Android SDK -----------------------------------------------
 
 if [ -d '/Applications/Android Studio.app/Contents/jre/Contents/Home' ]; then
