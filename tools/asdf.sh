@@ -12,5 +12,7 @@ asdf plugin add helmfile || true
 asdf plugin add yq || true
 asdf plugin add terraform || true
 asdf plugin add direnv || true
+asdf plugin add ruby || true
+asdf plugin add flutter || true
 
 asdf install
