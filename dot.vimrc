@@ -97,7 +97,7 @@ Plug 'thinca/vim-qfreplace'
 Plug 'arthurxavierx/vim-caser'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
 Plug 'moorereason/vim-markdownfmt'
-" Plug 'github/copilot.vim'
+Plug 'github/copilot.vim'
 
 call plug#end()
 "------------------------------------------------------------------------------
@@ -326,17 +326,19 @@ function! s:tabToggle()
   endif
 endfunction
 
-" Reload .vimrc
 command! Reload :source ~/.vimrc
 
-" Random number
+command! -nargs=1 RandomNumber call s:insertRandomNumber(<args>)
 function! s:insertRandomNumber(digit)
   let max_num = str2nr('9' . repeat('0', a:digit - 1))
   let rand_num = rand() % max_num
   call append(line("."), rand_num)
 endfunction
 
-command! -nargs=1 Random call s:insertRandomNumber(<args>)
+command! JSONFormat :call s:JSONFormat()
+function! s:JSONFormat()
+  %!jq .
+endfunction
 "------------------------------------------------------------------------------
 " Memo
 command! SaveMemo :call s:saveMemo()
@@ -696,3 +698,15 @@ autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
 let g:markdownfmt_command = 'markdownfmt'
 let g:markdownfmt_options = ''
 let g:markdownfmt_autosave=1
+"------------------------------------------------------------------------------
+" copilot.vim
+inoremap <silent><script><expr> <CR> exists('b:_copilot.suggestions') ? copilot#Accept("\<CR>") : "\<CR>"
+inoremap <silent><script><expr> <C-l> exists('b:_copilot.suggestions') ? copilot#Accept("\<CR>") : copilot#Suggest()
+inoremap <silent><script><expr> <C-j> copilot#Next()
+inoremap <silent><script><expr> <C-k> copilot#Previous()
+inoremap <silent><script><expr> <C-h> copilot#Dismiss()
+
+let g:copilot_no_maps = v:true
+let g:copilot_filetypes = {
+  \ '*': v:false,
+  \ }
