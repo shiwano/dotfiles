@@ -689,7 +689,7 @@ require'nvim-treesitter.configs'.setup {
     disable = {},
   },
   ensure_installed = 'all',
-  ignore_install = { 'haskell', 'typescript', 'elixir' }
+  ignore_install = { 'haskell', 'typescript', 'elixir', 'wgsl', 'wgsl_bevy', 'sql', 'gleam', 'markdown_inline' },
 }
 EOF
 autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
@@ -709,4 +709,5 @@ inoremap <silent><script><expr> <C-h> copilot#Dismiss()
 let g:copilot_no_maps = v:true
 let g:copilot_filetypes = {
   \ '*': v:false,
+  \ '.md': v:true,
   \ }
