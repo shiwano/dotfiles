@@ -114,8 +114,9 @@ if (has("termguicolors"))
 endif
 
 if filereadable(expand("~/.vimrc_background"))
-  let base16colorspace=256
   source ~/.vimrc_background
+else
+  colorscheme base16-tomorrow-night
 endif
 
 augroup highlightIdegraphicSpace
@@ -124,7 +125,6 @@ augroup highlightIdegraphicSpace
   autocmd VimEnter,WinEnter * match IdeographicSpace /　/
 augroup END
 
-colorscheme base16-tomorrow-night
 
 if exists('+colorcolumn')
   autocmd Filetype * set colorcolumn=81
