@@ -1,3 +1,4 @@
+export TERM=xterm-256color
 export LANG=ja_JP.UTF-8
 export XDG_CONFIG_HOME=$HOME/.config
 export LS_COLORS='di=01;36'

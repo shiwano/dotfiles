@@ -125,7 +125,6 @@ augroup highlightIdegraphicSpace
   autocmd VimEnter,WinEnter * match IdeographicSpace /　/
 augroup END
 
-
 if exists('+colorcolumn')
   autocmd Filetype * set colorcolumn=81
   autocmd Filetype Scratch set colorcolumn=''
@@ -709,7 +708,6 @@ let g:markdownfmt_options = ''
 let g:markdownfmt_autosave=1
 "------------------------------------------------------------------------------
 " copilot.vim
-inoremap <silent><script><expr> <CR> exists('b:_copilot.suggestions') ? copilot#Accept("\<CR>") : "\<CR>"
 inoremap <silent><script><expr> <C-l> exists('b:_copilot.suggestions') ? copilot#Accept("\<CR>") : copilot#Suggest()
 inoremap <silent><script><expr> <C-j> copilot#Next()
 inoremap <silent><script><expr> <C-k> copilot#Previous()
