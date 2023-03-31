@@ -27,7 +27,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
 " Color scheme
-Plug 'fnune/base16-vim'
+Plug 'RRethy/nvim-base16'
 
 " Syntax highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
@@ -102,7 +102,16 @@ Plug 'github/copilot.vim'
 call plug#end()
 "------------------------------------------------------------------------------
 " Color scheme
+if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
+  let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+  let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+endif
+
 syntax enable
+
+if (has("termguicolors"))
+ set termguicolors
+endif
 
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
@@ -115,7 +124,7 @@ augroup highlightIdegraphicSpace
   autocmd VimEnter,WinEnter * match IdeographicSpace /　/
 augroup END
 
-colorscheme base16-default-dark
+colorscheme base16-tomorrow-night
 
 if exists('+colorcolumn')
   autocmd Filetype * set colorcolumn=81
