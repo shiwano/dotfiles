@@ -277,6 +277,11 @@ function count() {
   echo -n "${1-.}" | wc -m
 }
 
+function remove-last-command() {
+  local last_command=$(fc -ln -1)
+  fc -p $last_command
+}
+
 # Aliases ----------------------------------------------------------------------
 
 alias ls='ls --color=auto'
