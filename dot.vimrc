@@ -697,7 +697,7 @@ require'nvim-treesitter.configs'.setup {
     disable = {},
   },
   ensure_installed = 'all',
-  ignore_install = { 'haskell', 'typescript', 'elixir', 'wgsl', 'wgsl_bevy', 'sql', 'gleam', 'markdown_inline' },
+  ignore_install = { 'wgsl', 'wgsl_bevy', 'gleam', 'markdown_inline' },
 }
 EOF
 autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
