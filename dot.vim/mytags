@@ -1,15 +1,12 @@
 brew	$HOME/dotfiles/Brewfile	1
 git	$HOME/.gitconfig	1
-gitconfig	$HOME/.gitconfig	1
 gitignore	$HOME/.gitignore	1
 grc	$HOME/.gvimrc	1
 rc	$HOME/.vimrc	1
-vim	$HOME/.vimrc	1
 tag	$DOTVIM/mytags	1
-zshrc	$HOME/.zshrc	1
 zsh	$HOME/.zshrc	1
+zshlocal	$HOME/.zshrc.local	1
 tmux	$HOME/.tmux.conf	1
-tmuxconf	$HOME/.tmux.conf	1
 go	$HOME/dotfiles/dot.vim/after/ftplugin/go.vim	1
 dart	$HOME/dotfiles/dot.vim/after/ftplugin/dart.vim	1
 coc	$HOME/dotfiles/dot.vim/coc-settings.json	1
