@@ -78,6 +78,7 @@ Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'fatih/vim-hclfmt'
 Plug 'mattn/vim-goimports'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
+Plug 'dart-lang/dart-vim-plugin'
 
 " Misc
 Plug 'jmcantrell/vim-virtualenv'
@@ -486,7 +487,7 @@ function! NERDCommenter_after()
 endfunction
 "------------------------------------------------------------------------------
 " dart-vim-plugin
-let g:dart_style_guide = 2
+" let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
 "------------------------------------------------------------------------------
 " nuuid.vim
@@ -697,7 +698,7 @@ require'nvim-treesitter.configs'.setup {
     disable = {},
   },
   ensure_installed = 'all',
-  ignore_install = { 'wgsl', 'wgsl_bevy', 'gleam', 'markdown_inline' },
+  ignore_install = { },
 }
 EOF
 autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
@@ -715,6 +716,6 @@ inoremap <silent><script><expr> <C-h> copilot#Dismiss()
 
 let g:copilot_no_maps = v:true
 let g:copilot_filetypes = {
-  \ '*': v:false,
-  \ '.md': v:true,
+  \ 'gitcommit': v:true,
+  \ 'markdown': v:true,
   \ }
