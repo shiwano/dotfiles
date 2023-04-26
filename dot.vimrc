@@ -33,22 +33,14 @@ Plug 'RRethy/nvim-base16'
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'mustache/vim-mustache-handlebars'
 Plug 'aklt/plantuml-syntax'
-Plug 'ekalinin/Dockerfile.vim'
 Plug 'godlygeek/tabular' " required by vim-markdown
-Plug 'plasticboy/vim-markdown'
-Plug 'vim-scripts/ShaderHighLight'
-Plug 'cespare/vim-toml'
-Plug 'posva/vim-vue'
-Plug 'hashivim/vim-terraform'
-Plug 'shiwano/vim-hcl'
-Plug 'chr4/nginx.vim'
 Plug 'google/vim-maktaba' " required by vim-bazel
 Plug 'bazelbuild/vim-bazel'
 Plug 'bfontaine/Brewfile.vim'
 Plug 'mechatroner/rainbow_csv'
 Plug 'cespare/vim-go-templates'
 Plug 'mattn/vim-gomod'
-Plug 'aklt/plantuml-syntax'
+Plug 'brenoprata10/nvim-highlight-colors'
 
 " Finder
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
@@ -111,7 +103,8 @@ endif
 syntax enable
 
 if (has("termguicolors"))
- set termguicolors
+  set termguicolors
+  set t_Co=256
 endif
 
 if filereadable(expand("~/.vimrc_background"))
@@ -489,6 +482,7 @@ endfunction
 " dart-vim-plugin
 " let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
+let g:dartfmt_options = ['--line-length 120']
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
@@ -701,7 +695,6 @@ require'nvim-treesitter.configs'.setup {
   ignore_install = { },
 }
 EOF
-autocmd BufEnter,BufWinEnter,WinEnter *ts,*.tsx TSBufDisable highlight
 "------------------------------------------------------------------------------
 " vim-markdownfmt
 let g:markdownfmt_command = 'markdownfmt'
@@ -719,3 +712,11 @@ let g:copilot_filetypes = {
   \ 'gitcommit': v:true,
   \ 'markdown': v:true,
   \ }
+"------------------------------------------------------------------------------
+" nvim-highlight-colors
+lua <<EOF
+require("nvim-highlight-colors").setup {
+  enable_named_colors = false,
+  enable_tailwind = false
+}
+EOF
