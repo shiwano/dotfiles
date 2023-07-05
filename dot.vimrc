@@ -77,7 +77,7 @@ Plug 'jmcantrell/vim-virtualenv'
 Plug 'ruanyl/vim-gh-line'
 Plug 'vim-scripts/taglist.vim'
 Plug 'tpope/vim-rails'
-Plug 'tpope/vim-surround'
+Plug 'machakann/vim-sandwich'
 Plug 'thinca/vim-poslist'
 Plug 'thinca/vim-splash'
 Plug 'vim-scripts/matchit.zip'
@@ -482,7 +482,7 @@ endfunction
 " dart-vim-plugin
 " let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
-let g:dartfmt_options = ['--line-length 120']
+let g:dartfmt_options = ['--line-length 180']
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
