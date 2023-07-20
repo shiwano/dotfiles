@@ -340,7 +340,7 @@ zstyle ':vcs_info:*' formats '%b'
 zstyle ':vcs_info:*' actionformats '%b|%a'
 
 () {
-  local icon_cat=$'\Uf61a '
+  local icon_cat=$'\Uf011b '
   local icon_key=$'\Uf805 '
   local icon_folder=$'\Uf450 '
   local icon_network=$'\Ufbf1 '
