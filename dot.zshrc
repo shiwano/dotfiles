@@ -81,19 +81,37 @@ if [ -d ${HOME}/.pub-cache ] ; then
 fi
 
 if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--exact --layout=reverse --info hidden --ansi --cycle --filepath-word --marker='X' --history-size=5000 --tiebreak=index
-    --bind=tab:down
-    --bind=shift-tab:up
-    --bind=ctrl-a:select-all
-    --bind=ctrl-l:toggle
-    --bind=ctrl-h:toggle
-    --bind=ctrl-w:backward-kill-word
-    --bind=ctrl-u:word-rubout
-    --bind=up:preview-page-up
-    --bind=down:preview-page-down
-    --bind=ctrl-u:half-page-up
+  export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word \
+    --layout=reverse \
+    --info hidden \
+    --marker='X' \
+    --history-size=5000 \
+    --tiebreak=index \
+    --bind=tab:down \
+    --bind=shift-tab:up \
+    --bind=ctrl-a:select-all \
+    --bind=ctrl-l:toggle \
+    --bind=ctrl-h:toggle \
+    --bind=ctrl-w:backward-kill-word \
+    --bind=ctrl-u:word-rubout \
+    --bind=up:preview-page-up \
+    --bind=down:preview-page-down \
+    --bind=ctrl-u:half-page-up \
     --bind=ctrl-d:half-page-down"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden -g '!.git' --sort path"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path"
+
+  # For fzf.vim
+  export FZF_COMMAND_NO_IGNORE="rg --files --hidden --follow --no-ignore --sort path \
+    -g '!**/node_modules' \
+    -g '!**/fvm' \
+    -g '!**/.DS_Store' \
+    -g '!**/.asdf' \
+    -g '!**/.bundle' \
+    -g '!**/.android' \
+    -g '!**/.cocoapods' \
+    -g '!**/.zsh_sessions' \
+    -g '!**/.gradle' \
+    -g '!**/.git'"
 fi
 
 # asdf -------------------------------------------------------------------------

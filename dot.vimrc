@@ -643,11 +643,12 @@ function! s:fzf_search()
   endif
 endfunction
 
-function! s:fzf_gitfile_buffer_dir_recursive()
+function! s:fzf_files_from_buffer_dir()
   let git_root = split(system('git rev-parse --show-toplevel'), '\n')[0]
-  let root = v:shell_error ? '' : git_root
+  let is_git_repo = v:shell_error == 0
+  let cwd = is_git_repo ? git_root : getcwd()
+  let root = is_git_repo ? git_root : expand('%:p:h')
   let buffer_dir = substitute(expand('%:p:h'), root.'/\?', '', 'g')
-  let cwd = root == '' ? getcwd() : git_root
 
   if buffer_dir =~ '^/'
     call fzf#vim#files(expand('%:p:h'), {}, 0)
@@ -658,16 +659,23 @@ function! s:fzf_gitfile_buffer_dir_recursive()
   endif
 endfunction
 
-nnoremap <silent> ,uf :call <SID>fzf_gitfile_buffer_dir_recursive()<CR>
-nnoremap <silent> ,uu :GFiles <C-R>=getcwd()<CR><CR>
-nnoremap <silent> ,us :GFiles?<CR>
-nnoremap <silent> ,ub :Buffers<CR>
-nnoremap <silent> ,um :History<CR>
-nnoremap <silent> ,ua :Files <C-R>=getcwd()<CR><CR>
-nnoremap <silent> ,ug :call <SID>fzf_search()<CR>
+function! s:fzf_all_files_from_buffer_dir()
+  let old_fzf_default_command = $FZF_DEFAULT_COMMAND
+  let $FZF_DEFAULT_COMMAND=$FZF_COMMAND_NO_IGNORE
+  call s:fzf_files_from_buffer_dir()
+  let $FZF_DEFAULT_COMMAND=old_fzf_default_command
+endfunction
+
+nnoremap <silent> <Leader>uf :call <SID>fzf_files_from_buffer_dir()<CR>
+nnoremap <silent> <Leader>uu :GFiles <C-R>=getcwd()<CR><CR>
+nnoremap <silent> <Leader>us :GFiles?<CR>
+nnoremap <silent> <Leader>ub :Buffers<CR>
+nnoremap <silent> <Leader>ud :call <SID>fzf_all_files_from_buffer_dir()<CR>
+nnoremap <silent> <Leader>um :History<CR>
+nnoremap <silent> <Leader>ug :call <SID>fzf_search()<CR>
 "------------------------------------------------------------------------------
 " netrw
-nnoremap <silent> ,ud :Hexplore!<CR>
+nnoremap <silent> <Leader>ue :Hexplore!<CR>
 let g:netrw_liststyle=1
 let g:netrw_banner=0
 let g:netrw_sizestyle="H"
