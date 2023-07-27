@@ -720,6 +720,27 @@ let g:copilot_filetypes = {
   \ 'gitcommit': v:true,
   \ 'markdown': v:true,
   \ }
+
+function! s:copilot_suggest()
+  startinsert
+  call feedkeys("\<Right>", 'n')
+  call copilot#OnInsertEnter()
+  call copilot#Suggest()
+  call timer_start(500, function('s:copilot_accept_suggestion'), {'repeat': 10})
+endfunction
+
+function! s:copilot_accept_suggestion(timer_id)
+  if exists('b:_copilot.suggestions') && len(b:_copilot.suggestions) > 0
+    let firstSuggestion = b:_copilot.suggestions[0]
+    let displayText = firstSuggestion['displayText']
+    execute "normal! i" . displayText
+    stopinsert
+
+    call timer_stop(a:timer_id)
+  endif
+endfunction
+
+command! CopilotSuggest :call s:copilot_suggest()
 "------------------------------------------------------------------------------
 " nvim-highlight-colors
 lua <<EOF
