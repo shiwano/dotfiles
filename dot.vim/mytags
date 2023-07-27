@@ -7,6 +7,7 @@ tag	$DOTVIM/mytags	1
 zsh	$HOME/.zshrc	1
 zshlocal	$HOME/.zshrc.local	1
 tmux	$HOME/.tmux.conf	1
+tmuxdarwin	$HOME/.tmux.darwin.conf	1
 go	$HOME/dotfiles/dot.vim/after/ftplugin/go.vim	1
 dart	$HOME/dotfiles/dot.vim/after/ftplugin/dart.vim	1
 coc	$HOME/dotfiles/dot.vim/coc-settings.json	1
