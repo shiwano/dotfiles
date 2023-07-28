@@ -103,7 +103,6 @@ if type fzf > /dev/null; then
   # For fzf.vim
   export FZF_COMMAND_NO_IGNORE="rg --files --hidden --follow --no-ignore --sort path \
     -g '!**/node_modules' \
-    -g '!**/fvm' \
     -g '!**/.DS_Store' \
     -g '!**/.asdf' \
     -g '!**/.bundle' \
