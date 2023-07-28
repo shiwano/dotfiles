@@ -102,14 +102,18 @@ if type fzf > /dev/null; then
 
   # For fzf.vim
   export FZF_COMMAND_NO_IGNORE="rg --files --hidden --follow --no-ignore --sort path \
-    -g '!**/node_modules' \
     -g '!**/.DS_Store' \
+    -g '!**/node_modules' \
+    -g '!**/__pycache__' \
+    -g '!**/.pub-cache' \
+    -g '!**/code/pkg/mod' \
+    -g '!**/code/pkg/sumdb' \
     -g '!**/.asdf' \
     -g '!**/.bundle' \
     -g '!**/.android' \
     -g '!**/.cocoapods' \
-    -g '!**/.zsh_sessions' \
     -g '!**/.gradle' \
+    -g '!**/.zsh_sessions' \
     -g '!**/.git'"
 fi
 
