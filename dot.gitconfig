@@ -77,7 +77,6 @@
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
   log-shallow-since = log --date=raw
   empty-commit = commit --allow-empty -m
-  rebase-i-from = "!sh -c 'git rebase -i $0^'"
 [merge]
   tool = nvimdiff
 [diff]
