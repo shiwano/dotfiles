@@ -8,6 +8,7 @@
   excludesfile = ~/.gitignore
   autocrlf = false
   editor = nvim
+  pager = delta
 [color]
   ui = auto
 [alias]
@@ -79,8 +80,9 @@
   empty-commit = commit --allow-empty -m
 [merge]
   tool = nvimdiff
+  conflictstyle = zdiff3
 [diff]
-  tool = nvimdiff
+  colorMoved = default
 [difftool "nvimdiff"]
   cmd = "$(git editor) -R -d -c \"wincmd l\" -d \"$LOCAL\" \"$REMOTE\""
 [mergetool "nvimdiff"]
@@ -102,3 +104,10 @@
   smudge = git-lfs smudge -- %f
 [init]
   defaultBranch = main
+[interactive]
+  diffFilter = delta --color-only
+[delta]
+  navigate = true # use n and N to move between diff sections
+  light = false   # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  line-numbers = true
+  syntax-theme = base16
