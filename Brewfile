@@ -69,6 +69,7 @@ brew 'plantuml'
 brew 'gh'
 brew 'openapi-generator'
 brew 'stripe/stripe-cli/stripe'
+brew 'git-delta'
 
 cask 'alfred'
 cask 'google-chrome'
