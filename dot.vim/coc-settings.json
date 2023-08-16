@@ -4,5 +4,6 @@
   "go.goplsArgs": ["-remote=auto", "-remote.listen.timeout=180m"],
   "typescript.preferences.importModuleSpecifier": "non-relative",
   "typescript.suggest.completeFunctionCalls": false,
-  "suggest.noselect": true
+  "suggest.noselect": true,
+  "flutter.sdk.flutter-lookup": "asdf which flutter"
 }
