@@ -303,6 +303,10 @@ function remove-last-command() {
   fc -p $last_command
 }
 
+function local-ip-address() {
+  ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+'
+}
+
 # Aliases ----------------------------------------------------------------------
 
 alias ls='ls --color=auto'
