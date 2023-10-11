@@ -1,11 +1,6 @@
 #!/bin/bash
 
 # attach to an existing tmux session, or create one if none exist
-# also set up access to the system clipboard from within tmux when possible
-#
-# e.g.
-# https://gist.github.com/1462391
-# https://github.com/ChrisJohnsen/tmux-MacOSX-pasteboard
 
 if ! type tmux >/dev/null 2>&1; then
   echo 'Error: tmux command not found' 2>&1
@@ -18,13 +13,7 @@ if [ -n "$TMUX" ]; then
 fi
 
 if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-  # detached session exists
-  tmux attach && echo "tmux attached session "
+  tmux attach
 else
-  if [[ $OSTYPE == darwin* && -x $(command -v reattach-to-user-namespace) ]]; then
-    tweaked_config=$(cat <(echo 'set-option -g default-command "reattach-to-user-namespace -l $SHELL"') $HOME/.tmux.conf)
-    tmux attach || tmux -f <(echo "$tweaked_config") new-session  && echo "tmux created new session supported OS X"
-  else
-    tmux attach || tmux new-session && echo "tmux created new session"
-  fi
+  tmux attach || tmux new-session
 fi
