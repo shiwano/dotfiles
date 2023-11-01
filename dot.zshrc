@@ -354,7 +354,6 @@ alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
 if type go > /dev/null; then
-  alias go-get='GO111MODULE=off go get -u'
   alias go-build-all='go test -run=^$ ./... 1>/dev/null'
 fi
 
