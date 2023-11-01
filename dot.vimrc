@@ -280,7 +280,7 @@ vnoremap <silent> /n y:%s/<C-R>=escape(@", '\\/.*$^~[]')<CR>/&/gn<CR>
 vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/gc<Left><Left><Left>
 
 " Grep the selected string with fzf.
-vnoremap /g y:Rg <C-R>=escape(@", '\\.*$^[]')<CR><CR>
+vnoremap /g y:Rg <C-R>=escape(@", '\\.*$+?^[]\\(\\)\\{\\}\\|')<CR><CR>
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.prefab set filetype=yaml
@@ -639,7 +639,8 @@ let g:fzf_action = {
 function! s:fzf_search()
   let text = input('Search: ')
   if len(text) > 0
-    exec 'Rg ' . text
+    let escaped_text = escape(text, '\\.*$+?^[]\\(\\)\\{\\}\\|')
+    exec 'Rg ' . escaped_text
   endif
 endfunction
 
