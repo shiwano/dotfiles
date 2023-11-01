@@ -2,3 +2,5 @@
 .~lock.*
 .local.vimrc
 .projections.json
+
+_ignored/
