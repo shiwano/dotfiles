@@ -43,6 +43,7 @@ Plug 'mattn/vim-gomod'
 Plug 'brenoprata10/nvim-highlight-colors'
 
 " Finder
+Plug 'kevinhwang91/nvim-bqf'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 
@@ -482,7 +483,7 @@ endfunction
 " dart-vim-plugin
 " let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
-let g:dartfmt_options = ['--line-length 140']
+let g:dartfmt_options = ['--line-length 120']
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
