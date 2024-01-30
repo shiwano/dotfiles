@@ -14,8 +14,7 @@
   ui = auto
 [alias]
   gommit = commit
-  r = restore
-  rc = "!sh -c 'git restore -s $0 .'"
+  re = !git restore -s $(git upstream-branch)
   sw = switch
   swd = switch --detach
   ci = commit
@@ -78,7 +77,7 @@
   upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
   log-shallow-since = log --date=raw
-  empty-commit = commit --allow-empty -m
+  empty-commit = commit --allow-empty
 [merge]
   tool = nvimdiff
   conflictstyle = zdiff3
