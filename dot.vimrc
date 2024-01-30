@@ -254,6 +254,7 @@ nnoremap n nzz
 nnoremap N Nzz
 nnoremap G Gzz
 nnoremap aa @a
+nnoremap qa qa<ESC>
 
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -288,6 +289,7 @@ au BufRead,BufNewFile *.prefab set filetype=yaml
 au BufRead,BufNewFile *.shader set filetype=hlsl
 au BufRead,BufNewFile Guardfile set filetype=ruby
 au BufRead,BufNewFile Fastfile set filetype=ruby
+au BufRead,BufNewFile Appfile set filetype=ruby
 au BufRead,BufNewFile .envrc* set filetype=sh
 au BufRead,BufNewFile dot.zshrc set filetype=zsh
 au BufRead,BufNewFile dot.tmux.conf set filetype=tmux
@@ -619,6 +621,9 @@ let g:ale_linters = {
       \ }
 let g:ale_go_golangci_lint_options = ''
 let g:ale_go_golangci_lint_package = 1
+
+au BufRead,BufNewFile */.github/*/*.y{,a}ml
+      \ let b:ale_linters = {'yaml': ['actionlint']}
 "------------------------------------------------------------------------------
 " vim-gh-line
 let g:gh_line_map_default = 0
