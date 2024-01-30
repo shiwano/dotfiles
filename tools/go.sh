@@ -12,3 +12,4 @@ go install github.com/x-motemen/gore/cmd/gore@latest
 go install github.com/pwaller/goimports-update-ignore@latest
 go install github.com/cespare/reflex@latest
 go install github.com/shurcooL/markdownfmt@latest
+go install github.com/rhysd/actionlint/cmd/actionlint@latest
