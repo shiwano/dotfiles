@@ -17,12 +17,16 @@ else
   export BREW_PREFIX='/usr/local'
 fi
 
-# Completion -------------------------------------------------------------------
+# Completions and Site Functions -----------------------------------------------
 
 zstyle ':completion:*:*:make:*' tag-order 'targets'
 
-if [ -d $BREW_PREFIX/share/zsh/zsh-completions ]; then
-  FPATH=$BREW_PREFIX/share/zsh/zsh-completions:$FPATH
+# If you receive "zsh compinit: insecure directories" warnings when attempting
+# to load these completions, you may need to run these commands:
+#  chmod go-w '/opt/homebrew/share'
+#  chmod -R go-w '/opt/homebrew/share/zsh'
+if [ -d $BREW_PREFIX/share/zsh-completions ]; then
+  FPATH=$BREW_PREFIX/share/zsh-completions:$FPATH
 fi
 
 if [ -d $BREW_PREFIX/share/zsh/site-functions ]; then
@@ -31,6 +35,7 @@ fi
 
 autoload -Uz compinit
 compinit
+
 # Color scheme -----------------------------------------------------------------
 
 BASE16_SHELL="$HOME/.config/base16-shell/"
