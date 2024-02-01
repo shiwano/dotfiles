@@ -7,7 +7,7 @@ readonly local_dotconfig_dir=$HOME/.config
 readonly dotfiles_dir=$HOME/dotfiles
 
 function topic {
-	echo -en "\033[1;30m"
+	echo -en "\033[0;34m"
 	echo "$*"
 	echo -en "\033[0m"
 }
