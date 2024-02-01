@@ -11,3 +11,4 @@ tmuxdarwin	$HOME/.tmux.darwin.conf	1
 go	$HOME/dotfiles/dot.vim/after/ftplugin/go.vim	1
 dart	$HOME/dotfiles/dot.vim/after/ftplugin/dart.vim	1
 coc	$HOME/dotfiles/dot.vim/coc-settings.json	1
+asdf	$HOME/.tool-versions	1
