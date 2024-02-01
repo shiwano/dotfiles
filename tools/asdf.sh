@@ -14,5 +14,7 @@ asdf plugin add terraform || true
 asdf plugin add direnv || true
 asdf plugin add ruby || true
 asdf plugin add flutter || true
+asdf plugin add nodejs || true
 
 asdf install
+asdf reshim
