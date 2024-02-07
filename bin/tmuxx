@@ -1,19 +1,22 @@
 #!/bin/bash
 
-# attach to an existing tmux session, or create one if none exist
-
 if ! type tmux >/dev/null 2>&1; then
-  echo 'Error: tmux command not found' 2>&1
+  echo 'tmux command not found' 2>&1
   exit 1
 fi
 
-if [ -n "$TMUX" ]; then
-  echo "Error: tmux session has been already attached" 2>&1
-  exit 1
-fi
+if [ "$#" -eq 0 ] || [ "$1" = "new" ] || [ "$1" = "new-session" ]; then
+  if [ -n "$TMUX" ]; then
+    echo "tmux session has been already attached" 2>&1
+    exit 1
+  fi
 
-if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-  tmux attach
+  # attach to an existing tmux session, or create one if none exist
+  if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
+    tmux attach
+  else
+    tmux attach || tmux new-session
+  fi
 else
-  tmux attach || tmux new-session
+  tmux "$@"
 fi
