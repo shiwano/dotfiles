@@ -82,7 +82,6 @@ Plug 'machakann/vim-sandwich'
 Plug 'thinca/vim-poslist'
 Plug 'thinca/vim-splash'
 Plug 'vim-scripts/matchit.zip'
-Plug 'thinca/vim-singleton'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
 Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
