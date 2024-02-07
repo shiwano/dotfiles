@@ -1,7 +1,6 @@
 brew	$HOME/dotfiles/Brewfile	1
 git	$HOME/.gitconfig	1
 gitignore	$HOME/.gitignore	1
-grc	$HOME/.gvimrc	1
 rc	$HOME/.vimrc	1
 tag	$DOTVIM/mytags	1
 zsh	$HOME/.zshrc	1
@@ -12,3 +11,4 @@ go	$HOME/dotfiles/dot.vim/after/ftplugin/go.vim	1
 dart	$HOME/dotfiles/dot.vim/after/ftplugin/dart.vim	1
 coc	$HOME/dotfiles/dot.vim/coc-settings.json	1
 asdf	$HOME/.tool-versions	1
+alacritty	$HOME/.config/alacritty/alacritty.toml	1
