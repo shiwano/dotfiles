@@ -538,6 +538,12 @@ setopt no_flow_control
 ulimit -n 200000
 ulimit -u 2000
 
+# Disable C-d to exit shell
+function _do_nothing() {}
+zle -N _do_nothing
+bindkey "^D" _do_nothing
+setopt IGNORE_EOF
+
 # .zshrc.local -----------------------------------------------------------------
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
