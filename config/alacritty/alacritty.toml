@@ -29,8 +29,3 @@ lines = 70
 [window.padding]
 x = 3
 y = 3
-
-[[keyboard.bindings]]
-key = "D"
-mods = "Control"
-action = "None"
