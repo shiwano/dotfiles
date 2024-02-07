@@ -43,7 +43,9 @@ BASE16_SHELL="$HOME/.config/base16-shell/"
     [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
         source "$BASE16_SHELL/profile_helper.sh"
 
-base16_tomorrow-night
+# To hide errors such as ".base16_theme: File exists"
+# when launching multiple shells at the same time.
+base16_tomorrow-night 2>/dev/null
 
 # Envs -------------------------------------------------------------------------
 
