@@ -23,7 +23,7 @@ save_to_clipboard = true
 decorations = "buttonless"
 
 [window.dimensions]
-columns = 180
+columns = 240
 lines = 70
 
 [window.padding]
