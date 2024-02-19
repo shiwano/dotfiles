@@ -2,5 +2,6 @@
 .~lock.*
 .local.vimrc
 .projections.json
+flutter_jank_metrics_*.json
 
 _ignored/
