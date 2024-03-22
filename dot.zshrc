@@ -4,8 +4,6 @@ export XDG_CONFIG_HOME=$HOME/.config
 export LS_COLORS='di=01;36'
 
 export GOPATH=$HOME/code
-export GO15VENDOREXPERIMENT=1
-export GO111MODULE=on
 
 bindkey -e
 bindkey '^]'   vi-find-next-char
@@ -497,7 +495,7 @@ setopt auto_list
 # auto_list の補完候補一覧で、ls -F のようにファイルの種別をマーク表示しない
 setopt no_list_types
 
-# 保管結果をできるだけ詰める
+# 補完結果をできるだけ詰める
 setopt list_packed
 
 # 補完キー（Tab, Ctrl+I) を連打するだけで順に補完候補を自動で補完
