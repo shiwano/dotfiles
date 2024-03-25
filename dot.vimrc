@@ -107,9 +107,7 @@ if (has("termguicolors"))
   set t_Co=256
 endif
 
-if filereadable(expand("~/.vimrc_background"))
-  source ~/.vimrc_background
-else
+if !exists('g:colors_name') || g:colors_name != 'base16-tomorrow-night'
   colorscheme base16-tomorrow-night
 endif
 
