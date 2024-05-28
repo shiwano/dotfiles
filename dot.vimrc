@@ -55,8 +55,8 @@ Plug 'kana/vim-smartinput'
 Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'LeafCage/yankround.vim'
-Plug 'scrooloose/nerdcommenter'
 Plug 'vim-scripts/Align'
+Plug 'folke/ts-comments.nvim'
 
 " Debug
 Plug 'sebdah/vim-delve'
@@ -252,6 +252,7 @@ nnoremap N Nzz
 nnoremap G Gzz
 nnoremap aa @a
 nnoremap qa qa<ESC>
+nnoremap gf gF
 
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
@@ -411,10 +412,6 @@ endif
 " matchit.vim
 let b:match_words="{{t:{{/t}}" " % で対応するフレーズに移動
 "------------------------------------------------------------------------------
-" nerd_commenter.vim
-let NERDSpaceDelims = 1
-let NERDShutUp = 1
-"------------------------------------------------------------------------------
 " yankround.vim
 nmap p <Plug>(yankround-p)
 xmap p <Plug>(yankround-p)
@@ -482,7 +479,7 @@ endfunction
 " dart-vim-plugin
 " let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
-let g:dartfmt_options = ['--line-length 120']
+" let g:dartfmt_options = ['--line-length 120']
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
