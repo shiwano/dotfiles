@@ -218,6 +218,8 @@ function static-httpd {
     else
       python -m SimpleHTTPServer ${1-5000}
     fi
+  elif type python3 > /dev/null; then
+    python3 -m http.server ${1-5000}
   fi
 }
 
