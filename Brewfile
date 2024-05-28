@@ -93,7 +93,6 @@ cask 'google-japanese-ime'
 cask 'docker'
 cask 'karabiner-elements'
 cask 'alacritty'
-cask 'vimr'
 cask 'font-sauce-code-pro-nerd-font'
 cask 'ngrok'
 cask 'kindle'
@@ -106,6 +105,7 @@ cask 'android-studio'
 cask 'gitify'
 cask 'microsoft-edge-dev'
 cask 'imageoptim'
+cask 'neovide'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
