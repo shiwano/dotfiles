@@ -281,6 +281,10 @@ vnoremap /r "xy:%s/<C-R>=escape(@x, '\\/.*$^~[]')<CR>/<C-R>=escape(@x, '\\/.*$^~
 
 " Grep the selected string with fzf.
 vnoremap /g y:Rg <C-R>=escape(@", '\\.*$+?^[]\\(\\)\\{\\}\\|')<CR><CR>
+
+" Toggle comment out.
+vmap <Leader>cs gc
+nmap <Leader>cs gcc
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.prefab set filetype=yaml
@@ -752,10 +756,15 @@ require("nvim-highlight-colors").setup {
 EOF
 "------------------------------------------------------------------------------
 " neovide
-lua <<EOF
-if vim.g.neovide then
-  vim.keymap.set({ "n", "v" }, "<D-=>", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor + 0.1<CR>")
-  vim.keymap.set({ "n", "v" }, "<D-->", ":lua vim.g.neovide_scale_factor = vim.g.neovide_scale_factor - 0.1<CR>")
-  vim.keymap.set({ "n", "v" }, "<D-0>", ":lua vim.g.neovide_scale_factor = 1<CR>")
-end
-EOF
+if exists('g:neovide')
+  nnoremap <D-=> :let g:neovide_scale_factor = g:neovide_scale_factor + 0.1<CR>
+  vnoremap <D-=> :let g:neovide_scale_factor = g:neovide_scale_factor + 0.1<CR>
+
+  nnoremap <D--> :let g:neovide_scale_factor = g:neovide_scale_factor - 0.1<CR>
+  vnoremap <D--> :let g:neovide_scale_factor = g:neovide_scale_factor - 0.1<CR>
+
+  nnoremap <D-0> :let g:neovide_scale_factor = 1<CR>
+  vnoremap <D-0> :let g:neovide_scale_factor = 1<CR>
+
+  let g:coc_node_path = trim(system('asdf which node'))
+endif
