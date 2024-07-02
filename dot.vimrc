@@ -285,6 +285,8 @@ vnoremap /g y:Rg <C-R>=escape(@", '\\.*$+?^[]\\(\\)\\{\\}\\|')<CR><CR>
 " Toggle comment out.
 vmap <Leader>cs gc
 nmap <Leader>cs gcc
+vmap <Leader>c<Space> gc
+nmap <Leader>c<Space> gcc
 "------------------------------------------------------------------------------
 " Filetype detection
 au BufRead,BufNewFile *.prefab set filetype=yaml
