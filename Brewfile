@@ -106,6 +106,7 @@ cask 'gitify'
 cask 'microsoft-edge-dev'
 cask 'imageoptim'
 cask 'neovide'
+cask 'wireshark'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
