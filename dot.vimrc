@@ -159,6 +159,7 @@ set undodir=$DOTVIM/undo       " アンドゥファイルの出力先
 set clipboard+=unnamed         " クリップボードとの連携を有効にする
 set shortmess+=c               " Don't pass messages to |ins-completion-menu|.
 set updatetime=300             " Avaid delays and poor user experienve (default is 4000 ms).
+set backupcopy=yes             " Make a copy of the file and overwrite the original one.
 "------------------------------------------------------------------------------
 " View
 set showcmd                                       " 入力中のコマンドを表示
