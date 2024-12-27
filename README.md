@@ -1,10 +1,8 @@
-dotfiles
-========
+# dotfiles
 
 My dotfiles.
 
-Install
--------
+## Install
 
 If install on the new environment, execute the follwing command.
 
