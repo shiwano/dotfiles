@@ -88,7 +88,6 @@ cask 'slack'
 cask 'google-japanese-ime'
 cask 'docker'
 cask 'karabiner-elements'
-cask 'alacritty'
 cask 'font-sauce-code-pro-nerd-font'
 cask 'ngrok'
 cask 'kindle'
@@ -102,6 +101,7 @@ cask 'microsoft-edge-dev'
 cask 'imageoptim'
 cask 'neovide'
 cask 'wireshark'
+cask 'ghostty'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
