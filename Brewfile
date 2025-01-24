@@ -62,6 +62,7 @@ brew 'openapi-generator'
 brew 'stripe/stripe-cli/stripe'
 brew 'git-delta'
 brew 'imagemagick'
+brew 'kitty'
 
 cask 'alfred'
 cask 'google-chrome'
