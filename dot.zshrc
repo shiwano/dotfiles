@@ -9,7 +9,8 @@ bindkey -e
 bindkey '^]'   vi-find-next-char
 bindkey '^[^]' vi-find-prev-char
 
-if type brew > /dev/null; then
+
+if command -v brew 2>&1 >/dev/null; then
   export BREW_PREFIX=$(brew --prefix)
 else
   export BREW_PREFIX='/usr/local'
@@ -69,14 +70,6 @@ if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
   source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -d ${HOME}/.anyenv ] ; then
-  export PATH="$HOME/.anyenv/bin:$PATH"
-  eval "$(anyenv init -)"
-  for D in `find $HOME/.anyenv/envs -maxdepth 1 -type d`; do
-    PATH="$D/shims:$PATH"
-  done
-fi
-
 if [ -d ${HOME}/.local ] ; then
   export PATH="$HOME/.local/bin:$PATH"
 fi
@@ -85,8 +78,10 @@ if [ -d ${HOME}/.pub-cache ] ; then
   export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
-if type fzf > /dev/null; then
-  export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word \
+# fzf --------------------------------------------------------------------------
+
+if command -v fzf 2>&1 >/dev/null; then
+  export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
     --layout=reverse \
     --info hidden \
     --marker='X' \
@@ -153,7 +148,7 @@ fi
 
 # Vim --------------------------------------------------------------------------
 
-if type nvim > /dev/null; then
+if command -v nvim 2>&1 >/dev/null; then
   if [ -n "${NVIM_LISTEN_ADDRESS}" ]; then
     alias vi='echo "already open nvim"'
     alias vim='echo "already open nvim"'
@@ -169,14 +164,6 @@ else
 fi
 
 # Functions --------------------------------------------------------------------
-
-function find-grep {
-  find . -name $1 -type f -print | xargs grep -n --binary-files=without-match $2
-}
-
-function find-sed {
-  find . -name $1 -type f | xargs gsed -i $2
-}
 
 function compress {
   if [ -f $1 ] ; then
@@ -213,13 +200,13 @@ function extract {
 }
 
 function static-httpd {
-  if type python > /dev/null; then
+  if command -v python 2>&1 >/dev/null; then
     if python -V 2>&1 | grep -qm1 'Python 3\.'; then
       python -m http.server ${1-5000}
     else
       python -m SimpleHTTPServer ${1-5000}
     fi
-  elif type python3 > /dev/null; then
+  elif command -v python3 2>&1 >/dev/null; then
     python3 -m http.server ${1-5000}
   fi
 }
@@ -247,25 +234,41 @@ function edit-git-file {
 
 function edit-git-changed-file {
   local changed="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  if [ $changed ]; then
-    local s="$(echo -e $changed | fzf -1 --preview 'fzf-preview diff {}' | cut -c4-)"
-    [ $s ] && print -s "vi $s" && fc -AI && vi $s
-  fi
+  local s="$(echo -e $changed | fzf -1 --preview 'fzf-preview diff {}' | cut -c4-)"
+  [ $s ] && print -s "vi $s" && fc -AI && vi $s
+}
+
+function copy-file-path-to-clipboard {
+  local dir=${1-.}
+  local s="$(rg --files --hidden --follow --sort path $dir 2>/dev/null | fzf -1 --preview 'fzf-preview file {}')"
+  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
+}
+
+function copy-changed-file-path-to-clipboard {
+  local changed="$(git status -s -u --no-renames | grep -v -E '^D ')"
+  local s="$(echo -e $changed | fzf -1 --preview 'fzf-preview diff {}' | cut -c4-)"
+  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
+}
+
+function copy-image-path-to-clipboard {
+  local dir=${1-.}
+  local s="$(rg --files --hidden --follow --sort path -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null | fzf -1 --preview 'fzf-preview file {}')"
+  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
 }
 
 function add-git-files() {
   local s="$(git status -s -u --no-renames | grep -v -E "^M ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git add
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
 }
 
 function restore-git-files() {
   local s="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
 }
 
 function unstage-git-files() {
   local s="$(git status -s -u --no-renames | grep -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
 }
 
 function select-history() {
@@ -292,21 +295,21 @@ function local-ip-address() {
 }
 
 function run-n-times() {
-    if [ "$#" -ne 2 ]; then
-        echo "Usage: run-n-times <times> <command>"
-        return 1
-    fi
-    local times="$1"
-    local command="$2"
-    if ! echo "$times" | grep -E '^[0-9]+$' > /dev/null; then
-        echo "Invalid times. Only numeric values are allowed." "$times"
-        return 1
-    fi
-    for i in $(seq 1 $times); do
-        eval $command || { echo "FAILED"; break; }
-    done
-    echo -e "\e[90mTo run the same command again, use:"
-    echo -e "for i in \$(seq 1 $times); do $command || { echo \"FAILED\"; break; }; done\e[0m"
+  if [ "$#" -ne 2 ]; then
+    echo "Usage: run-n-times <times> <command>"
+    return 1
+  fi
+  local times="$1"
+  local command="$2"
+  if ! echo "$times" | grep -E '^[0-9]+$' > /dev/null; then
+    echo "Invalid times. Only numeric values are allowed." "$times"
+    return 1
+  fi
+  for i in $(seq 1 $times); do
+    eval $command || { echo "FAILED"; break; }
+  done
+  echo -e "\e[90mTo run the same command again, use:"
+  echo -e "for i in \$(seq 1 $times); do $command || { echo \"FAILED\"; break; }; done\e[0m"
 }
 
 # Aliases ----------------------------------------------------------------------
@@ -329,6 +332,9 @@ alias g='move-to-ghq-directory'
 alias v='edit-git-changed-file'
 alias vv='edit-git-file'
 alias gg='edit-git-grepped-file'
+alias files='copy-file-path-to-clipboard'
+alias files-changed='copy-changed-file-path-to-clipboard'
+alias images='copy-image-path-to-clipboard'
 
 autoload zmv
 alias zmv='noglob zmv -W'
@@ -336,27 +342,40 @@ alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
-if type go > /dev/null; then
+if command -v go 2>&1 >/dev/null; then
   alias go-build-all='go test -run=^$ ./... 1>/dev/null'
 fi
 
-if type docker > /dev/null; then
+if command -v docker 2>&1 >/dev/null; then
   alias docker-rm-all='docker rm $(docker ps -a -q)'
   alias docker-rmi-all='docker rmi $(docker images -q)'
   alias docker-rm-volumes-all='docker volume rm $(docker volume ls -qf dangling=true)'
   alias docker-run-sh='docker run -it --entrypoint sh'
 fi
 
-if type bazelisk > /dev/null; then
+if command -v bazelisk 2>&1 >/dev/null; then
   alias bazel='bazelisk'
 fi
 
-if type ibazel > /dev/null; then
+if command -v ibazel 2>&1 >/dev/null; then
   alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
 fi
 
-if type bat > /dev/null; then
+if command -v bat 2>&1 >/dev/null; then
   alias cat='bat'
+fi
+
+if ! command -v pbcopy 2>&1 >/dev/null; then
+  if command -v xsel 2>&1 >/dev/null; then
+    alias pbcopy='xsel --clipboard --input'
+    alias pbpaste='xsel --clipboard --output'
+  elif command -v xsel 2>&1 >/dev/null; then
+    alias pbcopy='xclip -selection clipboard'
+    alias pbpaste='xclip -selection clipboard -o'
+  else
+    alias pbcopy='echo "pbcopy: command not found" >&2'
+    alias pbpaste='echo "pbpaste: command not found" >&2'
+  fi
 fi
 
 # Prompt -----------------------------------------------------------------------
@@ -530,6 +549,6 @@ typeset -U path PATH # Remove duplicated PATHs.
 
 # direnv -----------------------------------------------------------------------
 
-if type direnv > /dev/null; then
+if command -v direnv 2>&1 >/dev/null; then
   eval "$(direnv hook zsh)"
 fi
