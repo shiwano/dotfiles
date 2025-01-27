@@ -1,17 +1,55 @@
 #!/bin/bash
 
-main() {
-  set -euo pipefail
+preview_file() {
+  local target="$1"
+  local line="${2:-}"
 
-  if [ -d $@ ]; then
-    ls -la $@
-  elif file --mime-type $@ | grep -qF image/; then
-    kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 $@
-  elif file --dereference --mime $@ | grep -qF binary; then
-    file --dereference --mime -- $@
+  if [ -d "$target" ]; then
+    ls -la "$target"
+  elif file --mime-type "$target" | grep -qF image/; then
+    kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0 "$target"
+  elif file --dereference --mime "$target" | grep -qF binary; then
+    file --dereference --mime -- "$target"
   else
-    bat --style=numbers --color=always --pager=never --line-range :500 $@
+    if [ -n "$line" ]; then
+      local start_line=$(( (line - 10) < 0 ? 0 : (line - 10) ))
+      bat --style=numbers --color=always --pager=never --line-range "$start_line:+500" --highlight-line "$line" "$target"
+    else
+      bat --style=numbers --color=always --pager=never --line-range :500 "$target"
+    fi
   fi
 }
 
-main "${@}"
+main() {
+  set -euo pipefail
+
+  local mode="$1"
+  shift
+  local target="$@"
+
+  if [ "$mode" = "file" ]; then
+    preview_file "$target"
+  elif [ "$mode" = "diff" ]; then
+    local diff_target="$(echo "$target" | cut -c4-)"
+
+    if [ "$(git diff --name-only "$diff_target")" ]; then
+      git diff --color "$diff_target"
+    elif [ "$(git diff --cached --name-only "$diff_target")" ]; then
+      git diff --color --cached "$diff_target"
+    else
+      preview_file "$diff_target"
+    fi
+  elif [ "$mode" = "grepped" ]; then
+    local file="$(echo "$target" | cut -d: -f1)"
+    local line="$(echo "$target" | cut -d: -f2)"
+    preview_file "$file" "$line"
+  else
+    echo "unknown mode" >&2
+    exit 1
+  fi
+}
+
+# fzf-preview file /path/to/file
+# fzf-preview diff /path/to/file
+# fzf-preview grepped /path/to/file
+main "$@"
