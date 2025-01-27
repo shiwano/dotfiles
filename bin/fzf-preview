@@ -1,0 +1,17 @@
+#!/bin/bash
+
+main() {
+  set -euo pipefail
+
+  if [ -d $@ ]; then
+    ls -la $@
+  elif file --mime-type $@ | grep -qF image/; then
+    kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS}x${FZF_PREVIEW_LINES}@0x0 $@
+  elif file --dereference --mime $@ | grep -qF binary; then
+    file --dereference --mime -- $@
+  else
+    bat --style=numbers --color=always --pager=never --line-range :500 $@
+  fi
+}
+
+main "${@}"

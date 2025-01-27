@@ -103,7 +103,8 @@ if type fzf > /dev/null; then
     --bind=down:preview-page-down \
     --bind=ctrl-u:half-page-up \
     --bind=ctrl-d:half-page-down"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path \
+    -g '!**/.git'"
 
   # For fzf.vim
   export FZF_COMMAND_NO_IGNORE="rg --files --hidden --follow --no-ignore --sort path \
@@ -223,31 +224,6 @@ function static-httpd {
   fi
 }
 
-function fzf-preview-file() {
-  echo 'f() {
-    if [ -d $@ ]; then
-      ls -la $@
-    else
-      bat --style=numbers --color=always --line-range :500 $@
-    fi
-  }; f {}'
-}
-
-function fzf-preview-git-file() {
-  echo 'f() {
-    local args="$(echo $@ | cut -c4-)"
-    if [ "$(git diff --name-only $args)" ]; then
-      git diff --color $args
-    elif [ "$(git diff --cached --name-only $args)" ]; then
-      git diff --color --cached $args
-    elif [ -d $args ]; then
-      ls -la $args
-    else
-      bat --style=numbers --color=always --line-range :500 $args
-    fi
-  }; f {}'
-}
-
 function grep-git-files {
   rg --hidden -g '!.git' -n -p "$@" | less -R --no-init --quit-if-one-screen
 }
@@ -258,37 +234,37 @@ function move-to-ghq-directory {
 }
 
 function edit-git-grepped-file {
-  local s="$(git ls-files . | fzf -1 --preview "$(fzf-preview-file)")"
+  local s="$(git ls-files . | fzf -1 --preview 'fzf-preview {}')"
   [ $s ] && shift $# && vi +"$(echo $s | cut -d : -f2)" "$(echo $s | cut -d : -f1)"
 }
 
 function edit-git-file {
   local dir=${1-.}
-  local s="$(git ls-files $dir | fzf -1 --preview "$(fzf-preview-file)")"
+  local s="$(git ls-files $dir | fzf -1 --preview 'fzf-preview {}')"
   [ $s ] && shift $# && vi $s
 }
 
 function edit-git-changed-file {
   local s1="$(git status -s -u --no-renames | grep -v -E '^D ')"
   if [ $s1 ]; then
-    local s2="$(echo -e $s1 | fzf -1 --preview "$(fzf-preview-git-file)" | cut -c4-)"
+    local s2="$(echo -e $s1 | fzf -1 --preview 'fzf-preview-git {}' | cut -c4-)"
     [ $s2 ] && shift $# && vi $s2
   fi
 }
 
 function add-git-files() {
   local s="$(git status -s -u --no-renames | grep -v -E "^M ")"
-  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git add
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview-git {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git add
 }
 
 function restore-git-files() {
   local s="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git restore
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview-git {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore
 }
 
 function unstage-git-files() {
   local s="$(git status -s -u --no-renames | grep -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview "$(fzf-preview-git-file)" | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD
+  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview-git {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD
 }
 
 function select-history() {
