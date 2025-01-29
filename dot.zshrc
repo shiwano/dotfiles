@@ -82,6 +82,7 @@ fi
 
 if command -v fzf 2>&1 >/dev/null; then
   export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
+    --preview='fzf-preview file {}' \
     --layout=reverse \
     --info hidden \
     --marker='X' \
@@ -212,63 +213,76 @@ function static-httpd {
 }
 
 function move-to-ghq-directory {
-  local p="$(ghq list | fzf -1)"
+  local p="$(ghq list | fzf)"
   [ $p ] && cd $(ghq root)/$p
 }
 
 function edit-git-grepped-file {
   local search=$1
-  if [ $search ]; then
-    local s="$(git grep -n --color=always "$search" | fzf -1 --preview 'fzf-preview grepped {}')"
-    local file="$(echo "$s" | cut -d : -f1)"
-    local line="$(echo "$s" | cut -d : -f2)"
-    [ $s ] && print -s "vi $file" && fc -AI && vi +"$line" "$file"
-  fi
+  [ -z "$search" ] && return
+  local files="$(git grep -n --color=always "$search")"
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}')"
+  [ -z "$s" ] && return
+  local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
+  vi -c "cexpr '$escaped_s' | copen"
 }
 
 function edit-git-file {
   local dir=${1-.}
-  local s="$(git ls-files $dir | fzf -1 --preview 'fzf-preview file {}')"
-  [ $s ] && print -s "vi $s" && fc -AI && vi $s
+  local files="$(git ls-files $dir)"
+  local s="$(echo -e $files | fzf)"
+  [ -z "$s" ] && return
+  print -s "vi $s" && fc -AI
+  vi $s
 }
 
 function edit-git-changed-file {
-  local changed="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $changed | fzf -1 --preview 'fzf-preview diff {}' | cut -c4-)"
-  [ $s ] && print -s "vi $s" && fc -AI && vi $s
+  local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4-)"
+  [ -z "$s" ] && return
+  print -s "vi $s" && fc -AI
+  vi $s
 }
 
 function copy-file-path-to-clipboard {
-  local dir=${1-.}
-  local s="$(rg --files --hidden --follow --sort path $dir 2>/dev/null | fzf -1 --preview 'fzf-preview file {}')"
-  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
+  local dir=${1-}
+  local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
+  local s="$(echo -e $files | fzf)"
+  [ -z "$s" ] && return
+  printf "%s" "$s" | pbcopy
+  echo "Copied to clipboard: $s"
 }
 
 function copy-changed-file-path-to-clipboard {
-  local changed="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $changed | fzf -1 --preview 'fzf-preview diff {}' | cut -c4-)"
-  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
+  local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4-)"
+  [ -z "$s" ] && return
+  printf "%s" "$s" | pbcopy
+  echo "Copied to clipboard: $s"
 }
 
 function copy-image-path-to-clipboard {
-  local dir=${1-.}
-  local s="$(rg --files --hidden --follow --sort path -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null | fzf -1 --preview 'fzf-preview file {}')"
-  [ $s ] && echo -n $s | pbcopy && echo "Copied to clipboard: $s"
+  local dir=${1-}
+  local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
+  local s="$(echo -e $files | fzf)"
+  [ -z "$s" ] && return
+  printf "%s" "$s" | pbcopy
+  echo "Copied to clipboard: $s"
 }
 
 function add-git-files() {
-  local s="$(git status -s -u --no-renames | grep -v -E "^M ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
+  local files="$(git status -s -u --no-renames | grep -v -E "^M ")"
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
 }
 
 function restore-git-files() {
-  local s="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
+  local files="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
 }
 
 function unstage-git-files() {
-  local s="$(git status -s -u --no-renames | grep -E "^[MA] ")"
-  [ $s ] && echo -e $s | fzf -m --preview 'fzf-preview diff {}' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
+  local files="$(git status -s -u --no-renames | grep -E "^[MA] ")"
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
 }
 
 function select-history() {

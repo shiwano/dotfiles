@@ -30,14 +30,12 @@ main() {
   if [ "$mode" = "file" ]; then
     preview_file "$target"
   elif [ "$mode" = "diff" ]; then
-    local diff_target="$(echo "$target" | cut -c4-)"
-
-    if [ "$(git diff --name-only "$diff_target")" ]; then
-      git diff --color "$diff_target"
-    elif [ "$(git diff --cached --name-only "$diff_target")" ]; then
-      git diff --color --cached "$diff_target"
+    if [ "$(git diff --name-only "$target")" ]; then
+      git diff --color "$target"
+    elif [ "$(git diff --cached --name-only "$target")" ]; then
+      git diff --color --cached "$target"
     else
-      preview_file "$diff_target"
+      preview_file "$target"
     fi
   elif [ "$mode" = "grepped" ]; then
     local file="$(echo "$target" | cut -d: -f1)"
