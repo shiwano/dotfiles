@@ -29,7 +29,7 @@ call plug#begin('~/.vim/plugged')
 " Color scheme
 Plug 'RRethy/nvim-base16'
 
-" Syntax highlight
+" Highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 Plug 'mechatroner/rainbow_csv'
 Plug 'brenoprata10/nvim-highlight-colors'
