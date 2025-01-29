@@ -41,14 +41,20 @@ Plug 'junegunn/fzf.vim'
 
 " Code completion
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'github/copilot.vim'
 
-" Input support
+" Coding support
 Plug 'kana/vim-smartinput'
 Plug 'buoto/gotests-vim'
 Plug 'kburdett/vim-nuuid'
 Plug 'LeafCage/yankround.vim'
 Plug 'vim-scripts/Align'
 Plug 'folke/ts-comments.nvim'
+Plug 'machakann/vim-sandwich'
+Plug 'vim-scripts/matchit.zip'
+Plug 'danro/rename.vim'
+Plug 'thinca/vim-qfreplace'
+Plug 'arthurxavierx/vim-caser'
 
 " Debug
 Plug 'sebdah/vim-delve'
@@ -62,23 +68,17 @@ Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
 Plug 'mattn/vim-goimports'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'dart-lang/dart-vim-plugin'
+Plug 'moorereason/vim-markdownfmt'
 
 " Misc
 Plug 'ruanyl/vim-gh-line'
 Plug 'tpope/vim-rails'
-Plug 'machakann/vim-sandwich'
 Plug 'thinca/vim-splash'
-Plug 'vim-scripts/matchit.zip'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
-Plug 'danro/rename.vim'
-Plug 'thinca/vim-qfreplace'
-Plug 'arthurxavierx/vim-caser'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-Plug 'moorereason/vim-markdownfmt'
-Plug 'github/copilot.vim'
-Plug '3rd/image.nvim'
 Plug 'MeanderingProgrammer/render-markdown.nvim'
+Plug '3rd/image.nvim'
 
 call plug#end()
 "------------------------------------------------------------------------------
