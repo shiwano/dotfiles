@@ -31,15 +31,7 @@ Plug 'RRethy/nvim-base16'
 
 " Syntax highlight
 Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'mustache/vim-mustache-handlebars'
-Plug 'aklt/plantuml-syntax'
-Plug 'godlygeek/tabular' " required by vim-markdown
-Plug 'google/vim-maktaba' " required by vim-bazel
-Plug 'bazelbuild/vim-bazel'
-Plug 'bfontaine/Brewfile.vim'
 Plug 'mechatroner/rainbow_csv'
-Plug 'cespare/vim-go-templates'
-Plug 'mattn/vim-gomod'
 Plug 'brenoprata10/nvim-highlight-colors'
 
 " Finder
@@ -61,30 +53,24 @@ Plug 'folke/ts-comments.nvim'
 " Debug
 Plug 'sebdah/vim-delve'
 Plug 'thinca/vim-quickrun'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}
 
 " Lint
 Plug 'w0rp/ale'
 
 " Format
 Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
-Plug 'fatih/vim-hclfmt'
 Plug 'mattn/vim-goimports'
 Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
 Plug 'dart-lang/dart-vim-plugin'
 
 " Misc
-Plug 'jmcantrell/vim-virtualenv'
 Plug 'ruanyl/vim-gh-line'
-Plug 'vim-scripts/taglist.vim'
 Plug 'tpope/vim-rails'
 Plug 'machakann/vim-sandwich'
-Plug 'thinca/vim-poslist'
 Plug 'thinca/vim-splash'
 Plug 'vim-scripts/matchit.zip'
 Plug 'thinca/vim-localrc'
 Plug 'tpope/vim-projectionist'
-Plug 'soramugi/auto-ctags.vim', { 'for': ['c', 'cpp'] }
 Plug 'danro/rename.vim'
 Plug 'thinca/vim-qfreplace'
 Plug 'arthurxavierx/vim-caser'
@@ -431,22 +417,10 @@ nmap gP <Plug>(yankround-gP)
 nmap <C-p> <Plug>(yankround-prev)
 nmap <C-n> <Plug>(yankround-next)
 "------------------------------------------------------------------------------
-" taglist.vim
-if has("macunix")
-  let Tlist_Ctags_Cmd = '/usr/local/bin/ctags'
-endif
-"------------------------------------------------------------------------------
-" poslist
-nmap <C-f> <Plug>(poslist-next-pos)
-imap <C-f> <C-o><Plug>(poslist-next-pos)
-nmap <C-b> <Plug>(poslist-prev-pos)
-imap <C-b> <C-o><Plug>(poslist-prev-pos)
-"------------------------------------------------------------------------------
 " QuickRun
 let g:quickrun_config = get(g:, 'quickrun_config', {})
 let g:quickrun_config._ = {
-      \ 'runner'    : 'vimproc',
-      \ 'runner/vimproc/updatetime' : 60,
+      \ 'runner'    : 'system',
       \ 'outputter/buffer/split'  : ':rightbelow 16sp',
       \ 'outputter/buffer/close_on_empty' : 1,
       \ }
@@ -458,10 +432,6 @@ nnoremap qf :Qfreplace<CR>
 "------------------------------------------------------------------------------
 " vim-json
 let g:vim_json_syntax_conceal = 0
-"------------------------------------------------------------------------------
-" auto-tags
-let g:auto_ctags = 1
-let g:auto_ctags_tags_args = '--tag-relative --recurse --sort=yes'
 "------------------------------------------------------------------------------
 " vim-vue
 autocmd FileType vue syntax sync fromstart
@@ -593,14 +563,6 @@ command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.org
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
 " provide custom statusline: lightline.vim, vim-airline.
 set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-"------------------------------------------------------------------------------
-" vim-hclfmt
-let g:hcl_fmt_autosave = 1
-let g:tf_fmt_autosave = 0
-let g:nomad_fmt_autosave = 0
-"------------------------------------------------------------------------------
-" vim-javascript
-let g:javascript_plugin_jsdoc = 1
 "------------------------------------------------------------------------------
 " vim-prettier
 let g:prettier#autoformat = 0
