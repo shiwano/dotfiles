@@ -13,3 +13,4 @@ go install github.com/pwaller/goimports-update-ignore@latest
 go install github.com/cespare/reflex@latest
 go install github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt@latest
 go install github.com/rhysd/actionlint/cmd/actionlint@latest
+go install oss.terrastruct.com/d2@latest
