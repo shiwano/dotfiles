@@ -63,6 +63,7 @@ brew 'stripe/stripe-cli/stripe'
 brew 'git-delta'
 brew 'imagemagick'
 brew 'kitty'
+brew 'gnuplot'
 
 cask 'alfred'
 cask 'google-chrome'
