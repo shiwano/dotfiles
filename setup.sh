@@ -39,6 +39,12 @@ for src in `find $dotfiles_dir/config -maxdepth 1 -mindepth 1`; do
 	ln -sfn $src $dest
 done
 
+echo 'Linking' $dotfiles_dir/dot.vim '->' $HOME/.config/nvim
+ln -sfn $dotfiles_dir/dot.vim $HOME/.config/nvim
+
+echo 'Linking' $dotfiles_dir/dot.vimrc '->' $HOME/.config/init.vim
+ln -sfn $dotfiles_dir/dot.vimrc $HOME/.config/nvim/init.vim
+
 topic 'Setup dotfiles'
 
 for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -name 'dot.*' | grep -v 'example'`; do
@@ -54,26 +60,6 @@ for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -type f -name 'dot.*.
 		cp $dotfile $dest
 	fi
 done
-
-topic 'Setup Vim'
-
-if [ ! -d $HOME/.config/nvim ]; then
-	echo 'Linking neovim config'
-	mkdir -p $HOME/.config
-	ln -sfn $dotfiles_dir/dot.vim $HOME/.config/nvim
-	ln -sfn $dotfiles_dir/dot.vimrc $HOME/.config/nvim/init.vim
-fi
-
-if [ -f $dotfiles_dir/dot.vim/autoload/plug.vim ]; then
-	echo 'vim-plug is already installed'
-else
-	if type vim > /dev/null 2>&1; then
-		echo 'Installing vim-plug'
-		curl -fLo $dotfiles_dir/dot.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-	else
-		echo 'Vim is not found'
-	fi
-fi
 
 topic 'Setup Homebrew'
 

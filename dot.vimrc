@@ -2,8 +2,6 @@
 set nocompatible " Vim!
 scriptencoding utf-8
 
-let $TODAY = strftime('%Y%m%d')
-
 if has("win32") || has("win64")
   let $DOTVIM = expand('~/vimfiles')
 else
@@ -11,7 +9,7 @@ else
 endif
 
 if has("macunix")
-  augroup cpp-path
+  augroup cpp_path
     autocmd!
     autocmd FileType cpp setlocal path=.,/usr/include,/usr/local/include,/usr/lib/c++/v1
   augroup END
@@ -24,66 +22,87 @@ if has("macunix")
 endif
 "------------------------------------------------------------------------------
 " Plugins
-call plug#begin('~/.vim/plugged')
+lua <<EOF
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nPress any key to exit..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
 
-" Color scheme
-Plug 'RRethy/nvim-base16'
+vim.g.mapleader = ","
+vim.g.maplocalleader = "\\"
 
-" Highlight
-Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
-Plug 'mechatroner/rainbow_csv'
-Plug 'brenoprata10/nvim-highlight-colors'
+require("lazy").setup({
+  spec = {
+    -- Colorscheme
+    { "RRethy/nvim-base16" },
 
-" Finder
-Plug 'kevinhwang91/nvim-bqf'
-Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-Plug 'junegunn/fzf.vim'
+    -- Syntax highlighting
+    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
+    { "mechatroner/rainbow_csv" },
+    { "brenoprata10/nvim-highlight-colors" },
 
-" Code completion
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'github/copilot.vim'
+    -- Finder
+    { "kevinhwang91/nvim-bqf" },
+    { "junegunn/fzf" },
+    { "junegunn/fzf.vim" },
 
-" Coding support
-Plug 'kana/vim-smartinput'
-Plug 'buoto/gotests-vim'
-Plug 'kburdett/vim-nuuid'
-Plug 'LeafCage/yankround.vim'
-Plug 'vim-scripts/Align'
-Plug 'folke/ts-comments.nvim'
-Plug 'machakann/vim-sandwich'
-Plug 'vim-scripts/matchit.zip'
-Plug 'danro/rename.vim'
-Plug 'thinca/vim-qfreplace'
-Plug 'arthurxavierx/vim-caser'
+    -- Code completion and LSP
+    { "neoclide/coc.nvim", branch = "release" },
+    { "github/copilot.vim" },
 
-" Debug
-Plug 'sebdah/vim-delve'
-Plug 'thinca/vim-quickrun'
+    -- Coding utilities
+    { "kana/vim-smartinput" },
+    { "buoto/gotests-vim" },
+    { "kburdett/vim-nuuid" },
+    { "LeafCage/yankround.vim" },
+    { "vim-scripts/Align" },
+    { "folke/ts-comments.nvim" },
+    { "machakann/vim-sandwich" },
+    { "danro/rename.vim" },
+    { "thinca/vim-qfreplace" },
+    { "arthurxavierx/vim-caser" },
 
-" Lint
-Plug 'w0rp/ale'
+    -- Debugging
+    { "sebdah/vim-delve" },
+    { "thinca/vim-quickrun" },
 
-" Format
-Plug 'rhysd/vim-clang-format', { 'for': ['c', 'cpp', 'objc'] }
-Plug 'mattn/vim-goimports'
-Plug 'prettier/vim-prettier', { 'do': 'yarn install' }
-Plug 'dart-lang/dart-vim-plugin'
-Plug 'moorereason/vim-markdownfmt'
+    -- Linting
+    { "w0rp/ale" },
 
-" Image
-Plug '3rd/image.nvim' " required by diagram.nvim
-Plug '3rd/diagram.nvim'
+    -- Code formatter
+    { "rhysd/vim-clang-format", ft = { "c", "cpp", "objc" } },
+    { "mattn/vim-goimports" },
+    { "prettier/vim-prettier", build = "yarn install" },
+    { "dart-lang/dart-vim-plugin" },
+    { "moorereason/vim-markdownfmt" },
 
-" Misc
-Plug 'ruanyl/vim-gh-line'
-Plug 'tpope/vim-rails'
-Plug 'thinca/vim-splash'
-Plug 'thinca/vim-localrc'
-Plug 'tpope/vim-projectionist'
-Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install' }
-Plug 'MeanderingProgrammer/render-markdown.nvim'
+    -- Documentation and Image
+    { "3rd/image.nvim" },
+    { "3rd/diagram.nvim", dependencies = { "3rd/image.nvim" } },
+    { "iamcco/markdown-preview.nvim", build = "cd app && yarn install" },
+    { "MeanderingProgrammer/render-markdown.nvim" },
 
-call plug#end()
+    -- Misc
+    { "ruanyl/vim-gh-line" },
+    { "tpope/vim-rails" },
+    { "thinca/vim-localrc" },
+    { "tpope/vim-projectionist" },
+  },
+  install = { colorscheme = { "habamax" } },
+  checker = { enabled = false },
+})
+EOF
 "------------------------------------------------------------------------------
 " Color scheme
 if !has('gui_running') && &term =~ '^\%(screen\|tmux\)'
@@ -102,15 +121,18 @@ if !exists('g:colors_name') || g:colors_name != 'base16-tomorrow-night'
   colorscheme base16-tomorrow-night
 endif
 
-augroup highlightIdegraphicSpace
+augroup highlight_idegraphic_space
   autocmd!
   autocmd Colorscheme * highlight IdeographicSpace term=underline ctermbg=DarkGreen guibg=DarkGreen
   autocmd VimEnter,WinEnter * match IdeographicSpace /　/
 augroup END
 
 if exists('+colorcolumn')
-  autocmd Filetype * set colorcolumn=81
-  autocmd Filetype Scratch set colorcolumn=''
+  augroup colorcolumn
+    autocmd!
+    autocmd Filetype * set colorcolumn=81
+    autocmd Filetype Scratch set colorcolumn=''
+  augroup END
 endif
 
 syntax on
@@ -120,14 +142,13 @@ set laststatus=2 " always show status line
 set statusline=%<%F\ %r%h%w%y%{'['.(&fenc!=''?&fenc:&enc).']['.&ff.']'}%=%4v(ASCII=%03.3b,HEX=%02.2B)\ %l/%L(%P)%m
 
 " Change the color of the status line in input mode
-augroup InsertHook
+augroup insert_hook
   autocmd!
   autocmd InsertEnter * highlight StatusLine ctermfg=White ctermbg=DarkGrey
   autocmd InsertLeave * highlight StatusLine ctermfg=20 ctermbg=19
 augroup END
 "------------------------------------------------------------------------------
 " General settings
-let mapleader = ","            " キーマップリーダー
 set notitle                    " タイトル変更しない
 set scrolloff=5                " スクロール時の余白確保
 set nowritebackup              " バックアップファイルを作らない
@@ -176,7 +197,7 @@ augroup quickfix
 augroup END
 
 " Move to last cursor position
-augroup lastCursor
+augroup last_cursor
   au BufRead * if line("'\"") > 0 && line("'\"") <= line("$") |
   \ exe "normal g`\"" | endif
 augroup END
@@ -307,8 +328,8 @@ command! Rstrip :%s/\s\+$//e
 command! -nargs=1 -complete=file D vertical diffsplit <args>
 
 " 改行コードをLF、エンコーディングをutf-8の状態にする
-command! Normalize :call s:Normalize()
-function! s:Normalize()
+command! Normalize :call <SID>normalize()
+function! s:normalize()
   set ff=unix
   set fenc=utf-8
   try
@@ -318,8 +339,8 @@ function! s:Normalize()
 endfunction
 
 " Toggle expandtab
-command! TabToggle :call s:tabToggle()
-function! s:tabToggle()
+command! TabToggle :call <SID>tab_toggle()
+function! s:tab_toggle()
   if &expandtab
     set noexpandtab
   else
@@ -329,23 +350,41 @@ endfunction
 
 command! Reload :source ~/.vimrc
 
-command! -nargs=1 RandomNumber call s:insertRandomNumber(<args>)
-function! s:insertRandomNumber(digit)
-  let max_num = str2nr('9' . repeat('0', a:digit - 1))
+command! RandomNumber :call <SID>insert_random_number()
+function! s:insert_random_number()
+  let input_digit = input('Number of digits (default=10):')
+  if input_digit == ''
+    let digit = 10
+  else
+    let digit = str2nr(input_digit)
+  endif
+  if digit < 1
+    echoerr 'invalid number'
+    return
+  endif
+  let max_num = str2nr('9' . repeat('0', digit - 1))
   let rand_num = rand() % max_num
-  call append(line("."), rand_num)
+  let insert_text = string(rand_num)
+  let current_line = getline('.')
+  let col_idx = col('.') - 1
+  let new_line = strpart(current_line, 0, col_idx) . insert_text . strpart(current_line, col_idx)
+  call setline('.', new_line)
+  call cursor(line('.'), col_idx + len(insert_text) + 1)
 endfunction
 
-command! JSONFormat :call s:JSONFormat()
-function! s:JSONFormat()
+command! JSONFormat :call <SID>json_format()
+function! s:json_format()
   %!jq .
 endfunction
 "------------------------------------------------------------------------------
 " Memo
-command! SaveMemo :call s:saveMemo()
-function! s:saveMemo()
+command! SaveMemo :call <SID>save_memo()
+function! s:save_memo()
+  let today = strftime('%Y%m%d')
+  let rnd = rand()
+  let filename = expand('$HOME') . '/Dropbox/Memo/' . today . '-' . rnd . '.md'
   try
-    w $HOME/Dropbox/Memo/$TODAY-$RANDOM.md
+    execute 'w ' . filename
   catch
   endtry
 endfunction
@@ -364,8 +403,8 @@ endif
 "------------------------------------------------------------------------------
 " Terminal
 if has('nvim')
-  command! T :call s:T()
-  function! s:T()
+  command! T :call <SID>t()
+  function! s:t()
     if exists('s:term_buf_name') && !empty(s:term_buf_name)
       call s:open_buf(s:term_buf_name)
     else
@@ -395,17 +434,118 @@ if has('nvim')
   nnoremap <silent> <C-z> :T<CR>
   tnoremap <silent> <ESC> <C-\><C-n>
 
-  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
-  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
-  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
-  " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:edit #<CR>
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:edit #<CR>
-  autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> fg<CR> <C-\><C-n>:edit #<CR>
-  autocmd TermOpen term://*/bin/zsh* setlocal scrollback=1000
-
-  autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
+  augroup terminal_settings
+    autocmd!
+    " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-j> <C-\><C-n><C-w>j
+    " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-k> <C-\><C-n><C-w>k
+    " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-h> <C-\><C-n><C-w>h
+    " autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-l> <C-\><C-n><C-w>l
+    autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> <C-z> <C-\><C-n>:edit #<CR>
+    autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> exit<CR> <C-\><C-n>:edit #<CR>
+    autocmd TermOpen term://*/bin/zsh* tnoremap <buffer> <silent> fg<CR> <C-\><C-n>:edit #<CR>
+    autocmd TermOpen term://*/bin/zsh* setlocal scrollback=1000
+    autocmd BufEnter,BufWinEnter,WinEnter term://* startinsert
+  augroup END
 endif
+"------------------------------------------------------------------------------
+" splash
+" ref: https://github.com/thinca/vim-splash
+lua <<EOF
+local function splash()
+  if vim.fn.argc() ~= 0 or vim.fn.bufnr('$') ~= 1 then return end
+  local foldenable = vim.wo.foldenable
+  local orig_bufnr = vim.api.nvim_get_current_buf()
+
+  vim.cmd("hide enew")
+  vim.bo.buftype   = "nofile"
+  vim.bo.bufhidden = "wipe"
+  vim.wo.wrap      = false
+  vim.wo.list      = false
+  vim.wo.number    = false
+  vim.wo.foldenable= false
+
+  local content = {
+    "                         ﾒ __-─-,-- _",
+    "                       ,ｲ >:::::::::::< ヽ〟",
+    "                 ヽ─イ /,::::,::::::::＼  ＞─r",
+    "                   ヾ〟//:!:::ﾊ::::::|:!:ヽ ,丿",
+    "                     ソ r:ﾘﾔ ハ::::::ﾊ:ﾊ::|rﾍ〟",
+    "                     Ⅲ:|:| V―ﾍ::::/-ﾙﾞ|/ ﾊﾘ＼     Happy",
+    "                     !|:ﾊ:|,-=〟ヽ／,-=.ｿﾊﾘ H        Vimming♡",
+    "                     !ヽriｿﾞUｿｿﾞ   \"ﾊUｿﾉﾞhNﾉｿ",
+    "                     |!ﾊヾヾ｀      ｀´ﾉlﾘ´",
+    "                     ﾉ:ﾉﾊ ﾊ      丶     ｸﾊ        ____",
+    "      _＿_______(ヽ/(ヾ/ﾊ,:ヽ    冖   ∠||ヽ _-==|リリ!)",
+    "  ,-´￢￢─-─／＼＼ ＼ﾉ:ﾊ＼ゝ =- ハvﾉリ:ヾ丿::(⊃´ ｲ==-──´",
+    " ((-====Ξ二二::-´＼ヾ ＼-ヾ::``丶^ )／|:!)!:::<(___/卜-'ヾ=-―´",
+    "／ｿ  ／ﾊ／ ∠/ --===(  ) ⊂)ヽへ:::)==Η!ηv 》:!>====|≡≡)",
+    "! ｀ !/ﾘ  ﾘ/:-==\"ヽ:ヽ'\"   |,   -ﾘﾘﾉ  |!＼乂  ヾ:ﾙ | ﾙ=-\"ヾヽ",
+    "     | | ハヽ-=/:ﾘヽ::(>___|) -=='\" =-v-\"===ヽ》|| ﾊ ||ヾ)ﾊ",
+    "     ﾊ ! !!ヾ !:/ﾘ/ヽ:ヽ   |/    ‖   /＼ Vim ヽ》 ! ||   ﾘ",
+    "_＿／ｿ    V   //／'|ヽ:ﾊ) |Ｙ   ‖   /:::＼ !  }‖  !||   /",
+    "             ‖  | |/ヽ!ﾘ | |   |   / |:::|＼ヽＶ   |||  (",
+    "                 ＼＼ハ|| | |   |   ! |:::| ＼(!＼   ﾘ|   `",
+    "                   ＼＼!| | | | |   / |:::|  ＼＼＼__!ﾉ",
+    "                       )! | ヾ! /  /  ^::::^   ﾍ ヾ",
+    "                      <,/ |  \" /  / __!--==-!__ ﾊ ヽ=-- __",
+    "                  __====>ヾ／／ ／三二＝＝＝二三!＼＼--    =-- __",
+    "               (-== イ    ／    ‖/ / /   | | ＼＼ ＼   ＼ ＼_=-|",
+    "               ＼    ＼,∠     ‖/ / /    | |   ＼＼＼＼  ｀/  /",
+    "                 ＼ ／ ＼      ﾙ ／      仝    !  ＼＼＼,／ ＼/",
+    "                 (       >   ////    i   ||  |  i|  ＼＼＼    )",
+    "                  ヽ ／_      //     |   ||  |   |   ヽヽ ゞ\"",
+    "                    ヽヽ/￢/- <\" - _ |   Ｙ  |   ||   ヽヽ＜",
+    "                      ^\"  /\"  '  ||  》 /  __|  _||    >  >",
+    "                       > > |     || <_____=--_=--->_=->_=ﾞ",
+    "                        ヾ_|    /::ヽ_   /    //   !   > >",
+    "                            |／\":::::ヽ=/,   //    /<=-´",
+    "                            |:::::|:::| |===//-===/´",
+    "                            ヽ::::|:::|/:::::::::/",
+    "                             |::::|:::ﾘ:::::/:::/",
+    "                             |::::|::::ﾘ:::/:::/",
+  }
+
+  local new_bufnr = vim.api.nvim_get_current_buf()
+  local restore_command = (orig_bufnr == new_bufnr and "enew" or orig_bufnr .. " buffer")
+    .. " | let &l:foldenable = " .. (foldenable and 1 or 0)
+
+  local sw, sh = vim.api.nvim_win_get_width(0), vim.api.nvim_win_get_height(0)
+  local top_pad = math.floor((sh - #content) / 2)
+  local max_width = 0
+  for _, line in ipairs(content) do
+    local w = vim.fn.strdisplaywidth(line)
+    if w > max_width then max_width = w end
+  end
+  local left_pad = string.rep(" ", math.floor((sw - max_width) / 2))
+
+  local lines = {}
+  for _ = 1, top_pad do
+    lines[#lines+1] = ""
+  end
+  for _, line in ipairs(content) do
+    lines[#lines+1] = left_pad .. line
+  end
+
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+  vim.cmd("redraw")
+  local raw = vim.fn.getchar()
+  local ch = type(raw) == "number" and vim.fn.nr2char(raw) or raw
+  if ch == ";" then
+    ch = ":"
+  end
+  vim.cmd("silent! " .. restore_command)
+  vim.api.nvim_feedkeys(ch, "n", false)
+end
+
+local group = vim.api.nvim_create_augroup("splash", { clear = true })
+vim.api.nvim_create_autocmd("VimEnter", { group = group, callback = splash })
+vim.api.nvim_create_autocmd("StdinReadPre", {
+  group = group,
+  callback = function()
+    vim.api.nvim_clear_autocmds({ group = group, event = "VimEnter" })
+  end,
+})
+EOF
 "------------------------------------------------------------------------------
 " matchit.vim
 let b:match_words="{{t:{{/t}}" " % で対応するフレーズに移動
@@ -433,41 +573,12 @@ nnoremap <expr><silent> <C-c> quickrun#is_running() ? quickrun#sweep_sessions() 
 " vim-qfreplace
 nnoremap qf :Qfreplace<CR>
 "------------------------------------------------------------------------------
-" vim-json
-let g:vim_json_syntax_conceal = 0
-"------------------------------------------------------------------------------
-" vim-vue
-autocmd FileType vue syntax sync fromstart
-let g:ft = ''
-function! NERDCommenter_before()
-  if &ft == 'vue'
-    let g:ft = 'vue'
-    let stack = synstack(line('.'), col('.'))
-    if len(stack) > 0
-      let syn = synIDattr((stack)[0], 'name')
-      if len(syn) > 0
-        exe 'setf ' . substitute(tolower(syn), '^vue_', '', '')
-      endif
-    endif
-  endif
-endfunction
-function! NERDCommenter_after()
-  if g:ft == 'vue'
-    setf vue
-    let g:ft = ''
-  endif
-endfunction
-"------------------------------------------------------------------------------
 " dart-vim-plugin
 " let g:dart_style_guide = 2
 let g:dart_format_on_save = 1
-" let g:dartfmt_options = ['--line-length 120']
 "------------------------------------------------------------------------------
 " nuuid.vim
 let g:nuuid_no_mappings = 1
-"------------------------------------------------------------------------------
-" vim-terraform
-let g:terraform_fmt_on_save = 1
 "------------------------------------------------------------------------------
 " coc.nvim
 
@@ -513,10 +624,10 @@ nmap <silent> os <Plug>(coc-codeaction-selected)<down>
 vmap <silent> os <Plug>(coc-codeaction-selected)<down>
 
 nnoremap <silent> or :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
-nnoremap <silent> ok :call ShowDocumentation()<CR>
 nnoremap <silent> ol :ALEDetail<CR>
 
-function! ShowDocumentation()
+nnoremap <silent> ok :call <SID>show_documentation()<CR>
+function! s:show_documentation()
   if CocAction('hasProvider', 'hover')
     call CocActionAsync('doHover')
   else
@@ -560,7 +671,7 @@ command! -nargs=0 Format :call CocAction('format')
 command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
 " Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocActionAsync('runCommand', 'editor.action.organizeImport')
+command! -nargs=0 OR :call CocActionAsync('runCommand', 'editor.action.organizeImport')
 
 " Add (Neo)Vim's native statusline support.
 " NOTE: Please see `:h coc-status` for integrations with external plugins that
@@ -572,13 +683,13 @@ let g:prettier#autoformat = 0
 let g:prettier#quickfix_enabled = 0
 let g:prettier#exec_cmd_async = 1
 
-augroup PrettierAutoGroup
+augroup prettier_auto_group
   autocmd BufWritePre *.js,*.jsx,*.mjs,*.ts,*.tsx,*.css,*.less,*.scss,*.graphql,*.vue PrettierAsync
 augroup END
 
-command! DisablePrettier :call s:disable_prettier()
+command! DisablePrettier :call <SID>disable_prettier()
 function! s:disable_prettier()
-  augroup PrettierAutoGroup
+  augroup prettier_auto_group
     autocmd!
   augroup END
 endfunction
@@ -658,9 +769,9 @@ let g:netrw_timefmt="%Y/%m/%d(%a) %H:%M:%S"
 let g:netrw_preview=0
 let g:netrw_maxfilenamelen=80
 
-augroup Netrw
+augroup netrw
   au!
-  autocmd FileType netrw :call s:setup_netrw()
+  autocmd FileType netrw :call <SID>setup_netrw()
 augroup END
 
 function! s:setup_netrw()
@@ -695,27 +806,6 @@ let g:copilot_filetypes = {
   \ 'gitcommit': v:true,
   \ 'markdown': v:true,
   \ }
-
-function! s:copilot_suggest()
-  startinsert
-  call feedkeys("\<Right>", 'n')
-  call copilot#OnInsertEnter()
-  call copilot#Suggest()
-  call timer_start(500, function('s:copilot_accept_suggestion'), {'repeat': 10})
-endfunction
-
-function! s:copilot_accept_suggestion(timer_id)
-  if exists('b:_copilot.suggestions') && len(b:_copilot.suggestions) > 0
-    let firstSuggestion = b:_copilot.suggestions[0]
-    let displayText = firstSuggestion['displayText']
-    execute "normal! i" . displayText
-    stopinsert
-
-    call timer_stop(a:timer_id)
-  endif
-endfunction
-
-command! CopilotSuggest :call s:copilot_suggest()
 "------------------------------------------------------------------------------
 " nvim-highlight-colors
 lua <<EOF
@@ -743,11 +833,11 @@ endif
 lua <<EOF
 require("image").setup({
   backend = "kitty",
-  processor = "magick_cli",
+  processor = "magick_rock",
   integrations = {
     markdown = {
       enabled = true,
-      clear_in_insert_mode = false,
+      clear_in_insert_mode = true,
       download_remote_images = true,
       only_render_image_at_cursor = false,
       floating_windows = true, -- if true, images will be rendered in floating markdown windows
@@ -774,9 +864,9 @@ require("image").setup({
   max_height_window_percentage = 50,
   window_overlap_clear_enabled = false, -- toggles images when windows are overlapped
   window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
-  editor_only_render_when_focused = false, -- auto show/hide images when the editor gains/looses focus
-  tmux_show_only_in_active_window = false, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
-  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif" }, -- render image files as images when opened
+  editor_only_render_when_focused = true, -- auto show/hide images when the editor gains/looses focus
+  tmux_show_only_in_active_window = true, -- auto show/hide images in the correct Tmux window (needs visual-activity off)
+  hijack_file_patterns = { "*.png", "*.jpg", "*.jpeg", "*.gif", "*.webp", "*.avif", "*.svg" }, -- render image files as images when opened
 })
 EOF
 "------------------------------------------------------------------------------

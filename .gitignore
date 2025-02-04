@@ -1,8 +1,5 @@
 .DS_Store
 Brewfile.lock.json
-dot.vim/autoload/plug.vim
-dot.vim/autoload/plug.vim.old
-dot.vim/plugged/
 dot.vim/init.vim
 dot.vim/.netrwhist
 dot.vim/doc/tags
