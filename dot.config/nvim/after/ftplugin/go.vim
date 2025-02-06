@@ -8,4 +8,4 @@ nnoremap odd :DlvDebug<CR>
 nnoremap odt :DlvTest<CR>
 nnoremap odc :DlvClearAll<CR>
 nnoremap odb :DlvToggleBreakpoint<CR>
-" nnoremap odt :DlvToggleTracepoint<CR>
+nnoremap odr :DlvToggleTracepoint<CR>

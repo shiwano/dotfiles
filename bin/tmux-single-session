@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 if ! type tmux >/dev/null 2>&1; then
   echo 'tmux command not found' 2>&1
   exit 1

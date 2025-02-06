@@ -9,7 +9,6 @@ bindkey -e
 bindkey '^]'   vi-find-next-char
 bindkey '^[^]' vi-find-prev-char
 
-
 if command -v brew 2>&1 >/dev/null; then
   export BREW_PREFIX=$(brew --prefix)
 else
@@ -37,14 +36,14 @@ compinit
 
 # Color scheme -----------------------------------------------------------------
 
-BASE16_SHELL="$HOME/.config/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        source "$BASE16_SHELL/profile_helper.sh"
+if [ -z "$NVIM" ]; then
+  BASE16_SHELL="$HOME/.config/base16-shell/"
 
-# To hide errors such as ".base16_theme: File exists"
-# when launching multiple shells at the same time.
-base16_tomorrow-night 2>/dev/null
+  if [ -n "$PS1" ] && [ -s "$BASE16_SHELL/profile_helper.sh" ]; then
+    source "$BASE16_SHELL/profile_helper.sh"
+    base16_tomorrow-night 2>/dev/null
+  fi
+fi
 
 # Envs -------------------------------------------------------------------------
 
@@ -101,22 +100,6 @@ if command -v fzf 2>&1 >/dev/null; then
     --bind=ctrl-d:half-page-down"
   export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path \
     -g '!**/.git'"
-
-  # For fzf.vim
-  export FZF_COMMAND_NO_IGNORE="rg --files --hidden --follow --no-ignore --sort path \
-    -g '!**/.DS_Store' \
-    -g '!**/node_modules' \
-    -g '!**/__pycache__' \
-    -g '!**/.pub-cache' \
-    -g '!**/code/pkg/mod' \
-    -g '!**/code/pkg/sumdb' \
-    -g '!**/.asdf' \
-    -g '!**/.bundle' \
-    -g '!**/.android' \
-    -g '!**/.cocoapods' \
-    -g '!**/.gradle' \
-    -g '!**/.zsh_sessions' \
-    -g '!**/.git'"
 fi
 
 # asdf -------------------------------------------------------------------------
@@ -150,7 +133,7 @@ fi
 # Vim --------------------------------------------------------------------------
 
 if command -v nvim 2>&1 >/dev/null; then
-  if [ -n "${NVIM_LISTEN_ADDRESS}" ]; then
+  if [ -n "${NVIM}" ]; then
     alias vi='echo "already open nvim"'
     alias vim='echo "already open nvim"'
     alias nvim='echo "already open nvim"'
@@ -213,15 +196,17 @@ function static-httpd {
 }
 
 function move-to-ghq-directory {
-  local p="$(ghq list | fzf)"
-  [ $p ] && cd $(ghq root)/$p
+  local items="$(echo 'dotfiles'; ghq list)"
+  local s="$(echo -e $items | fzf -1 --preview '' --prompt 'GitRepos> ')"
+  [ -z "$s" ] && return
+  [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
 
 function edit-git-grepped-file {
   local search=$1
   [ -z "$search" ] && return
   local files="$(git grep -n --color=always "$search")"
-  local s="$(echo -e $files | fzf -1 -m --preview 'fzf-preview grepped {}')"
+  local s="$(echo -e $files | fzf -1 -m --preview 'fzf-preview grepped {}' --prompt 'GitFiles> ')"
   [ -z "$s" ] && return
   local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
   vi -c "cexpr '$escaped_s' | copen"
@@ -230,7 +215,7 @@ function edit-git-grepped-file {
 function edit-git-file {
   local dir=${1-.}
   local files="$(git ls-files $dir)"
-  local s="$(echo -e $files | fzf -1)"
+  local s="$(echo -e $files | fzf -1 --prompt 'GitFiles> ')"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -238,7 +223,11 @@ function edit-git-file {
 
 function edit-git-changed-file {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4-)"
+  if [ -z "$files" ]; then
+    edit-git-file
+    return
+  fi
+  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'GitFiles> ' | cut -c4-)"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -247,7 +236,7 @@ function edit-git-changed-file {
 function copy-file-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf -1)"
+  local s="$(echo -e $files | fzf -1 --prompt 'Files> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -255,7 +244,7 @@ function copy-file-path-to-clipboard {
 
 function copy-changed-file-path-to-clipboard {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4-)"
+  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4-)"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -264,35 +253,40 @@ function copy-changed-file-path-to-clipboard {
 function copy-image-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf -1)"
+  local s="$(echo -e $files | fzf -1 --prompt 'Images> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
 }
 
+function switch-git-branch() {
+  local branches=$(git mru | tac)
+  local s="$(echo -e $branches | fzf -1 --no-sort --preview '' --prompt 'GitBranches> ' | cut -d' ' -f1)"
+  [ -z "$s" ] && return
+  git switch $s
+}
+
 function add-git-files() {
   local files="$(git status -s -u --no-renames | grep -v -E "^M ")"
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
+  [ -z "$files" ] && return
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
 }
 
 function restore-git-files() {
   local files="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
+  [ -z "$files" ] && return
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
 }
 
 function unstage-git-files() {
   local files="$(git status -s -u --no-renames | grep -E "^[MA] ")"
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
+  [ -z "$files" ] && return
+  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
 }
 
 function select-history() {
-  BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt="History > ")
+  BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt 'History> ' --preview="")
   CURSOR=$#BUFFER
-}
-
-function goimports-all() {
-  local files=($(go list -f '{{$p := .}}{{range $f := .GoFiles}}{{$p.Dir}}/{{$f}} {{end}} {{range $f := .TestGoFiles}}{{$p.Dir}}/{{$f}} {{end}}' ./... | xargs))
-  test -z "$(goimports -w $files | tee /dev/stderr)"
 }
 
 function count() {
@@ -332,13 +326,13 @@ alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
-alias tmux='tmuxx'
+alias tmux='tmux-single-session'
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
-alias dotfiles='cd ~/dotfiles'
 
 alias a='add-git-files'
+alias b='switch-git-branch'
 alias s='git status'
 alias u='unstage-git-files'
 alias r='restore-git-files' # hide 'r' which is zsh's built-in command
@@ -405,7 +399,7 @@ zstyle ':vcs_info:*' actionformats '%b|%a'
   local icon_network=$'\Ufbf1 '
   local icon_vim=$'\Ue62b '
 
-  if [ -n "${NVIM_LISTEN_ADDRESS}" ]; then
+  if [ -n "${NVIM}" ]; then
     local prompt_face="${icon_vim}"
   else
     case ${UID} in

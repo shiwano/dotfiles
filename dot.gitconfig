@@ -3,7 +3,6 @@
   email = shiwano@gmail.com
 [github]
   user = shiwano
-  token = !security 2>&1 >/dev/null find-generic-password -gs \"GitHub API Token\" | ruby -e 'print $1 if STDIN.gets =~ /^password: \\\"(.*)\\\"$/'
 [core]
   excludesfile = ~/.gitignore
   autocrlf = false
@@ -14,41 +13,36 @@
   ui = auto
 [alias]
   gommit = commit
+  s = status
   re = !git restore -s $(git upstream-branch)
   sw = switch
   swd = switch --detach
   ci = commit
   cim = commit -m
   cia = commit --amend -C HEAD
-  a = add -A
-  au = add -u
-  ap = add -p
-  s = status
   up = pull --rebase
-  diff = diff --color
+  upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
   di = diff --color
-  dica = diff --color --cached
   dist = diff --color --staged
-  diw = diff --color --word-diff
-  di-csv = diff --color --word-diff-regex="[^[:blank:],]"
-  dist-csv = diff --staged --color --word-diff-regex="[^[:blank:],]"
+  diff = diff --color
   diff-branch = !git diff $(git main-branch) $(git current-branch)
-  dm = diff-main
   diff-main = !git diff $(git main-branch) $(git current-branch)
+  diff-csv = diff --color --word-diff-regex="[^[:blank:],]"
   mt = mergetool
   merge-keep-current = merge -X ours
   merge-keep-target = merge -X theirs
   checkout-current = checkout --ours
   checkout-target = checkout --theirs
-  topic = !git switch $(git main-branch) -c
+  topic = "!sh -c 'git switch origin/$0 -c $1'"
+  topic-main = !git switch $(git main-branch) -c
   topic-develop = switch origin/develop -c
   topic-production = switch origin/production -c
-  topic-dev = switch origin/dev -c
   main-branch = rev-parse --abbrev-ref origin/HEAD
   current-branch = symbolic-ref --short HEAD
   current-remote-branch = "!sh -c 'echo `git upstream-remote`/`git current-branch`'"
   upstream-branch = "!sh -c 'git branch -vv --list `git current-branch` --format=\"%(upstream:short)\"'"
   upstream-remote = "!sh -c 'git upstream-branch | cut -d / -f 1'"
+  upstream = "!sh -c 'git branch --set-upstream-to=$0 `git current-branch`'"
   la = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
   log-all = log --graph --all --color --pretty='%x09%h %cn%x09%s %Cred%d%Creset'
   lg = log --graph --date=short --pretty=format:'%Cgreen%h %cd %Cblue%cn %Creset%s'
@@ -59,25 +53,22 @@
   log-patch = log --patch --color
   lo = log --color --oneline
   log-oneline = log --color --oneline
-  log-shallow-since = log --date=raw
+  lu = log --date=unix
+  log-unix = log --date=unix
   ignore = update-index --assume-unchanged
   unignore = update-index --no-assume-unchanged
   ignored = !git ls-files -v | grep "^[a-z]"
-  unstage = reset HEAD
   us = reset HEAD
+  unstage = reset HEAD
   back = reset HEAD~
+  reset-remote = "!sh -c 'git fetch && git reset --hard `git current-remote-branch`'"
+  commit-empty = commit --allow-empty
   stash-ls = stash list --stat
-  rank = shortlog -s -n -e
   sed = "!sh -c 'cd ${GIT_PREFIX:-.} && git ls-files \"$0\" | xargs sed -i -e \"$1\"'"
   sed-help = "!echo \"git sed '**/*.go' 's/foo/bar/g'\""
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
-  upstream = "!sh -c 'git branch --set-upstream-to=$0 `git current-branch`'"
-  mru = for-each-ref --format='%(refname:short) (%(authordate:relative))' --sort=committerdate refs/heads/
-  reset-remote = "!sh -c 'git fetch && git reset --hard `git current-remote-branch`'"
-  upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
+  mru = for-each-ref --format='%(refname:short) (%(committerdate:relative))' --sort=committerdate refs/heads/
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
-  log-shallow-since = log --date=raw
-  empty-commit = commit --allow-empty
 [merge]
   tool = nvimdiff
   conflictstyle = zdiff3
@@ -107,8 +98,8 @@
 [interactive]
   diffFilter = delta --color-only
 [delta]
-  navigate = true # use n and N to move between diff sections
-  light = false   # set to true if you're in a terminal w/ a light background color (e.g. the default macOS terminal)
+  navigate = true
+  light = false
   line-numbers = true
   syntax-theme = base16-256
 [mergetool]

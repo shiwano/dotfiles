@@ -7,7 +7,7 @@ preview_file() {
   if [ -d "$target" ]; then
     ls -la "$target"
   elif file --mime-type "$target" | grep -qF image/; then
-    kitty icat --clear --transfer-mode=memory --stdin=no --place=${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0 "$target"
+    kitty icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place=${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0 "$target"
   elif file --dereference --mime "$target" | grep -qF binary; then
     file --dereference --mime -- "$target"
   else
@@ -23,9 +23,19 @@ preview_file() {
 main() {
   set -euo pipefail
 
+  if [ "$#" -ne 2 ]; then
+    cat << EOF >&2
+Usage: fzf-preview <mode> <target>
+
+Example: fzf-preview file /path/to/file
+         fzf-preview diff /path/to/file
+         fzf-preview grepped /path/to/file
+EOF
+    exit 1
+  fi
+
   local mode="$1"
-  shift
-  local target="$@"
+  local target="$2"
 
   if [ "$mode" = "file" ]; then
     preview_file "$target"
@@ -42,12 +52,8 @@ main() {
     local line="$(echo "$target" | cut -d: -f2)"
     preview_file "$file" "$line"
   else
-    echo "unknown mode" >&2
     exit 1
   fi
 }
 
-# fzf-preview file /path/to/file
-# fzf-preview diff /path/to/file
-# fzf-preview grepped /path/to/file
 main "$@"

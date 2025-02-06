@@ -6,5 +6,6 @@
   "typescript.suggest.completeFunctionCalls": false,
   "suggest.noselect": true,
   "flutter.sdk.flutter-lookup": "asdf which flutter",
-  "inlayHint.enable": false
+  "inlayHint.enable": false,
+  "sumneko-lua.enableNvimLuaDev": true,
 }

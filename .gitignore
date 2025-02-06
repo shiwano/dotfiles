@@ -1,7 +1,7 @@
 .DS_Store
 Brewfile.lock.json
-dot.vim/init.vim
-dot.vim/.netrwhist
-dot.vim/doc/tags
-dot.vim/view
-dot.vim/undo
+dot.config/nvim/init.vim
+dot.config/nvim/.netrwhist
+dot.config/nvim/doc/tags
+dot.config/nvim/view
+dot.config/nvim/undo
