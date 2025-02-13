@@ -1,17 +1,17 @@
 #!/bin/bash
 
+function topic {
+  echo -en "\033[0;34m"
+  echo "$*"
+  echo -en "\033[0m"
+}
+
 main() {
   set -euo pipefail
 
   local local_bin_dir=$HOME/bin
   local local_dotconfig_dir=$HOME/.config
   local dotfiles_dir=$HOME/dotfiles
-
-  function topic {
-    echo -en "\033[0;34m"
-    echo "$*"
-    echo -en "\033[0m"
-  }
 
   topic 'Clone the repository'
 
