@@ -25,7 +25,7 @@ main() {
 
   mkdir -p $local_bin_dir
 
-  for bin in `find $dotfiles_dir/bin -type f -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'`; do
+  for bin in $(find $dotfiles_dir/bin -type f -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'); do
     echo 'Linking' $bin '->' $local_bin_dir
     ln -sf $bin $local_bin_dir
   done
@@ -34,25 +34,26 @@ main() {
 
   mkdir -p $local_dotconfig_dir
 
-  for src in `find $dotfiles_dir/dot.config -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'`; do
-    dest=$local_dotconfig_dir/`basename $src`
-    echo 'Linking' $src '->' $dest
-    ln -sfn $src $dest
+  for src in $(find $dotfiles_dir/dot.config -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'); do
+    echo 'Linking' $src '->' $local_dotconfig_dir
+    ln -sf $src $local_dotconfig_dir
   done
 
   topic 'Setup dotfiles'
 
   for dotfile in $(find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type f -name 'dot.*' | grep -v 'example'); do
-    dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./'`
+    local dest="$HOME/$(basename $dotfile | sed -e 's/^dot\./\./')"
     echo 'Linking' $dotfile '->' $dest
     ln -sfn $dotfile $dest
   done
 
-  for dotfile in `find $dotfiles_dir -maxdepth 1 -mindepth 1 -type f -name 'dot.*.example'`; do
-    dest=$HOME/`basename $dotfile | sed -e 's/^dot\./\./' | sed -e 's/\.example//'`
+  for dotfile in $(find $dotfiles_dir -maxdepth 1 -mindepth 1 -type f -name 'dot.*.example'); do
+    local dest="$HOME/$(basename $dotfile | sed -e 's/^dot\./\./' | sed -e 's/\.example//')"
     if [ ! -f $dest ]; then
       echo 'Copying' $dotfile '->' $dest
       cp $dotfile $dest
+    else
+      echo 'Already copied' $dotfile '->' $dest
     fi
   done
 }
