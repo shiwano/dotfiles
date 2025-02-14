@@ -189,7 +189,21 @@ local pluginSpec = {
     end,
   },
   { "kevinhwang91/nvim-bqf", dependencies = { "junegunn/fzf" } },
-  { "mattn/vim-molder" },
+  {
+    "mattn/vim-molder",
+    init = function()
+      vim.api.nvim_create_augroup("molder", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        group = "molder",
+        pattern = "molder",
+        callback = function()
+          vim.keymap.set("n", "<BS>", function()
+            vim.call("molder#up")
+          end, { silent = true, buffer = true })
+        end,
+      })
+    end,
+  },
 
   -----------------------------------------------------------------------------
   -- Code completion and LSP
@@ -391,7 +405,9 @@ local pluginSpec = {
       vim.g.ale_go_golangci_lint_options = ""
       vim.g.ale_go_golangci_lint_package = 1
 
+      vim.api.nvim_create_augroup("ale", { clear = true })
       vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+        group = "ale",
         pattern = "*/.github/*/*.y{,a}ml",
         callback = function()
           vim.b.ale_linters = { yaml = { "actionlint" } }
@@ -822,8 +838,10 @@ local filetype_mappings = {
   [".envrc*"] = "sh",
   ["*.jb"] = "ruby",
 }
+vim.api.nvim_create_augroup("filetype_detection", { clear = true })
 for pattern, filetype in pairs(filetype_mappings) do
   vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    group = "filetype_detection",
     pattern = pattern,
     command = "set filetype=" .. filetype,
   })
