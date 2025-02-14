@@ -289,17 +289,13 @@ function select-history() {
   CURSOR=$#BUFFER
 }
 
-function count() {
-  echo -n "${1-.}" | wc -m
-}
-
 function remove-last-command() {
   local last_command=$(fc -ln -1)
   fc -p $last_command
 }
 
 function local-ip-address() {
-  ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+'
+  ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
 function run-n-times() {
