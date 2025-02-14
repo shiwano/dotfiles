@@ -138,19 +138,19 @@ local pluginSpec = {
         local source, pathByName = {}, {}
         for _, line in pairs(bookmarks) do
           local name, path = line[1], line[2]
-          table.insert(source, name .. ": " .. vim.fn.expand(path))
+          table.insert(source, name .. ": " .. path)
           pathByName[name] = path
         end
         vim.fn["fzf#run"](vim.fn["fzf#wrap"]({
           source = source,
           options = {
             "--prompt=Bookmarks> ",
-            "--preview=fzf-preview file $(echo {} | cut -d: -f2)",
+            "--preview=fzf-preview file $(echo {} | cut -d: -f2 | sed 's|^ ~|'$HOME'|')",
           },
           sink = function(selected)
             local path = pathByName[selected:match("^(.-):")]
             if path then
-              vim.cmd("edit " .. path)
+              vim.cmd("edit " .. vim.fn.expand(path))
             end
           end,
         }))
@@ -202,6 +202,62 @@ local pluginSpec = {
           end, { silent = true, buffer = true })
         end,
       })
+    end,
+  },
+  {
+    "rgroli/other.nvim",
+    init = function()
+      local function p(pattern, ignorePattern)
+        return function(file)
+          if file:match(ignorePattern) then
+            return nil
+          end
+          local match = { file:match(pattern) }
+          return #match > 0 and match or nil
+        end
+      end
+      require("other-nvim").setup({
+        rememberBuffers = false,
+        mappings = {
+          "rails",
+          "rust",
+          -- Go
+          { pattern = p("(.+)%.go$", "_test%.go$"), target = "%1_test.go" },
+          { pattern = "(.+)_test%.go$", target = "%1.go" },
+          -- TypeScript
+          { pattern = p("(.+)%.ts$", "%.test%.ts$"), target = "%1.test.ts" },
+          { pattern = "(.+)%.test%.ts$", target = "%1.ts" },
+          { pattern = p("(.+)%.tsx$", "%.test%.tsx$"), target = "%1.test.tsx" },
+          { pattern = "(.+)%.test%.tsx$", target = "%1.tsx" },
+          -- JavaScript
+          { pattern = p("(.+)%.js$", "%.test%.js$"), target = "%1.test.js" },
+          { pattern = "(.+)%.test%.js$", target = "%1.js" },
+          { pattern = p("(.+)%.jsx$", "%.test%.jsx$"), target = "%1.test.jsx" },
+          { pattern = "(.+)%.test%.jsx$", target = "%1.jsx" },
+          -- Flutter
+          {
+            pattern = p("lib/(.+)%.dart$", "%.g%.dart$"),
+            target = {
+              { context = "test", target = "test/%1_test.dart" },
+              { context = "generated", target = "lib/%1.g.dart" },
+            },
+          },
+          { pattern = "test/(.+)_test%.dart$", target = "lib/%1.dart" },
+          { pattern = "lib/(.+)%.g%.dart$", target = "lib/%1.dart" },
+          -- Python
+          { pattern = p("(.+)/([^/]+)%.py$", "/test_[^/]+%.py$"), target = "%1/test_%2.py" },
+          { pattern = "(.+)/test_(.+)%.py$", target = "%1/%2.py" },
+          -- C
+          { pattern = "(.+)%.c$", target = "%1.h" },
+          { pattern = "(.+)%.h$", target = "%1.c" },
+          -- C++
+          { pattern = "(.+)%.cpp$", target = "%1.hpp" },
+          { pattern = "(.+)%.hpp$", target = "%1.cpp" },
+        },
+      })
+      vim.api.nvim_create_user_command("A", function()
+        require("other-nvim").open()
+      end, { nargs = "*" })
     end,
   },
 
@@ -373,7 +429,24 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Debugging
   -----------------------------------------------------------------------------
-  { "sebdah/vim-delve", ft = { "go" } },
+  {
+    "sebdah/vim-delve",
+    ft = { "go" },
+    init = function()
+      vim.api.nvim_create_augroup("delve", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        group = "delve",
+        pattern = "go",
+        callback = function()
+          vim.keymap.set("n", "odd", ":DlvDebug<CR>", { silent = true, buffer = true })
+          vim.keymap.set("n", "odt", ":DlvTest<CR>", { silent = true, buffer = true })
+          vim.keymap.set("n", "odc", ":DlvClearAll<CR>", { silent = true, buffer = true })
+          vim.keymap.set("n", "odb", ":DlvToggleBreakpoint<CR>", { silent = true, buffer = true })
+          vim.keymap.set("n", "odr", ":DlvToggleTracepoint<CR>", { silent = true, buffer = true })
+        end,
+      })
+    end,
+  },
   {
     "thinca/vim-quickrun",
     init = function()
@@ -536,8 +609,6 @@ local pluginSpec = {
       vim.g.gh_use_canonical = 0
     end,
   },
-  { "tpope/vim-rails", ft = { "ruby", "erb", "haml", "slim" } },
-  { "tpope/vim-projectionist" },
   { "nvim-tree/nvim-web-devicons" },
   {
     "nvim-lualine/lualine.nvim",
@@ -650,10 +721,6 @@ local pluginSpec = {
           lualine_y = {},
           lualine_z = {},
         },
-        tabline = {},
-        winbar = {},
-        inactive_winbar = {},
-        extensions = {},
       })
     end,
   },
@@ -815,7 +882,6 @@ vim.opt.hlsearch = true -- Highlight search results.
 -- Encodings
 -------------------------------------------------------------------------------
 vim.opt.ffs = "unix,dos,mac"
-
 vim.opt.fileencodings:append("iso-2022-jp-3")
 vim.opt.fileencodings:append("cp932")
 vim.opt.fileencodings:append("euc-jisx0213")

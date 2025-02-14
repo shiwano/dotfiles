@@ -8,7 +8,7 @@ if ! type tmux >/dev/null 2>&1; then
 fi
 
 if [ "$#" -eq 0 ] || [ "$1" = "new" ] || [ "$1" = "new-session" ]; then
-  if [ -n "$TMUX" ]; then
+  if [ -n "${TMUX-}" ]; then
     echo "tmux session has been already attached" 2>&1
     exit 1
   fi

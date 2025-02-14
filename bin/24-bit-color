@@ -1,15 +1,18 @@
 #!/bin/bash
+# ref: https://github.com/gnachman/iTerm2/blob/7d2ae0bf414315296831a51f06b06ae2c1272dc8/tests/24-bit-color.sh
 #
-#   This file echoes a bunch of 24-bit color codes
-#   to the terminal to demonstrate its functionality.
+#   This file echoes four gradients with 24-bit color codes
+#   to the terminal to demonstrate their functionality.
 #   The foreground escape sequence is ^[38;2;<r>;<g>;<b>m
 #   The background escape sequence is ^[48;2;<r>;<g>;<b>m
 #   <r> <g> <b> range from 0 to 255 inclusive.
 #   The escape sequence ^[0m returns output to default
 
+SEPARATOR=':'
+
 setBackgroundColor()
 {
-    echo -en "\x1b[48;2;$1;$2;$3""m"
+    echo -en "\x1b[48${SEPARATOR}2${SEPARATOR}$1${SEPARATOR}$2${SEPARATOR}$3""m"
 }
 
 resetOutput()
@@ -96,4 +99,3 @@ for i in `seq 255 128`; do
     echo -n " "
 done
 resetOutput
-

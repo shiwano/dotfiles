@@ -21,6 +21,7 @@
   "nvim-treesitter-endwise": { "branch": "master", "commit": "cb718aab7fa66e43187674e875713097492a6618" },
   "nvim-ts-autotag": { "branch": "main", "commit": "1cca23c9da708047922d3895a71032bc0449c52d" },
   "nvim-web-devicons": { "branch": "master", "commit": "1020869742ecb191f260818234517f4a1515cfe8" },
+  "other.nvim": { "branch": "main", "commit": "933aa489ad02f8f973269a565bfea16cc784cbbf" },
   "rainbow_csv": { "branch": "master", "commit": "3dbbfd7d17536aebfb80f571255548495574c32b" },
   "rename.vim": { "branch": "master", "commit": "f133763b0bbd79039f4e071a467ea8fc27d97dbd" },
   "render-markdown.nvim": { "branch": "main", "commit": "e05a9f22f31c088ece3fa5928daf546a015b66ee" },
@@ -30,10 +31,8 @@
   "vim-gh-line": { "branch": "master", "commit": "731751fdfa4f64a061dbc7088cb7b2f12e0828ad" },
   "vim-molder": { "branch": "master", "commit": "b517d0346cf7e8d884f2706836e73169311ed805" },
   "vim-nuuid": { "branch": "master", "commit": "6abc11a7943e5777c27b6271f3b6243f426d68fd" },
-  "vim-projectionist": { "branch": "master", "commit": "5ff7bf79a6ef741036d2038a226bcb5f8b1cd296" },
   "vim-qfreplace": { "branch": "master", "commit": "707a895f9f86eeed106f64da0bd9fa07b3cd9cee" },
   "vim-quickrun": { "branch": "master", "commit": "77b4d6ea9972a206f02c736882c2398c36d2983c" },
-  "vim-rails": { "branch": "master", "commit": "d3954dfe3946c9330dc91b4fbf79ccacb2c626c0" },
   "vim-sandwich": { "branch": "master", "commit": "74cf93d58ccc567d8e2310a69860f1b93af19403" },
   "yankround.vim": { "branch": "master", "commit": "9dca96ed35b09de9fe5474de40da323d75fa3204" }
 }
