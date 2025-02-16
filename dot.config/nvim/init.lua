@@ -136,10 +136,9 @@ local pluginSpec = {
       local function find_bookmarks()
         local bookmarks = require("bookmarks")
         local source, pathByName = {}, {}
-        for _, line in pairs(bookmarks) do
-          local name, path = line[1], line[2]
-          table.insert(source, name .. ": " .. path)
-          pathByName[name] = path
+        for _, b in pairs(bookmarks) do
+          table.insert(source, b.name .. ": " .. b.path)
+          pathByName[b.name] = b.path
         end
         vim.fn["fzf#run"](vim.fn["fzf#wrap"]({
           source = source,
