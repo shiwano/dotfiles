@@ -28,7 +28,7 @@ local pluginSpec = {
   { "RRethy/nvim-base16" },
 
   -----------------------------------------------------------------------------
-  -- Syntax highlighting
+  -- Highlighting
   -----------------------------------------------------------------------------
   {
     "nvim-treesitter/nvim-treesitter",
@@ -50,6 +50,7 @@ local pluginSpec = {
   { "mechatroner/rainbow_csv", ft = { "csv" } },
   {
     "brenoprata10/nvim-highlight-colors",
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
       enable_named_colors = false,
       enable_tailwind = false,
@@ -196,7 +197,7 @@ local pluginSpec = {
       end, { nargs = "*" })
     end,
   },
-  { "kevinhwang91/nvim-bqf" },
+  { "kevinhwang91/nvim-bqf", ft = "qf" },
   {
     "mattn/vim-molder",
     init = function()
@@ -214,6 +215,7 @@ local pluginSpec = {
   },
   {
     "rgroli/other.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     init = function()
       local function p(pattern, ignorePattern)
         return function(file)
@@ -383,20 +385,9 @@ local pluginSpec = {
         capabilities = capabilities,
       })
 
-      lspconfig.lua_ls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-
-      lspconfig.ts_ls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
-
-      lspconfig.dartls.setup({
-        on_attach = on_attach,
-        capabilities = capabilities,
-      })
+      lspconfig.lua_ls.setup({ on_attach = on_attach, capabilities = capabilities })
+      lspconfig.ts_ls.setup({ on_attach = on_attach, capabilities = capabilities })
+      lspconfig.dartls.setup({ on_attach = on_attach, capabilities = capabilities })
     end,
   },
   {
@@ -451,12 +442,12 @@ local pluginSpec = {
       vim.keymap.set("x", "<C-n>", "<Plug>(yankround-next)")
     end,
   },
-  { "vim-scripts/Align" },
-  { "folke/ts-comments.nvim" },
-  { "machakann/vim-sandwich" },
-  { "danro/rename.vim" },
-  { "thinca/vim-qfreplace" },
-  { "arthurxavierx/vim-caser" },
+  { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
+  { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
+  { "machakann/vim-sandwich", event = { "BufReadPre", "BufNewFile" } },
+  { "danro/rename.vim", event = { "BufReadPre", "BufNewFile" } },
+  { "arthurxavierx/vim-caser", event = { "BufReadPre", "BufNewFile" } },
+  { "thinca/vim-qfreplace", ft = "qf" },
 
   -----------------------------------------------------------------------------
   -- Debugging
@@ -503,6 +494,7 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   {
     "w0rp/ale",
+    event = { "BufReadPre", "BufNewFile" },
     init = function()
       vim.g.ale_linters = {
         go = { "gobuild", "golangci-lint" },
@@ -524,6 +516,7 @@ local pluginSpec = {
   },
   {
     "stevearc/conform.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     opts = {
       formatters_by_ft = {
         go = { "goimports" },
@@ -774,6 +767,7 @@ require("lazy").setup({
 -------------------------------------------------------------------------------
 vim.opt.termguicolors = true
 vim.o.background = "dark" -- or "light" for light mode
+vim.o.colorcolumn = "81"
 
 if vim.g.colors_name ~= "base16-tomorrow-night" then
   vim.cmd("colorscheme base16-tomorrow-night")
@@ -785,22 +779,10 @@ vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
   pattern = { "*" },
   command = [[call matchadd('IdeographicSpace', '[\u00A0\u2000-\u200B\u3000]')]],
 })
-vim.api.nvim_create_autocmd({ "VimEnter" }, {
+vim.api.nvim_create_autocmd("VimEnter", {
   group = "highlight_idegraphic_space",
   pattern = { "*" },
   command = [[highlight default IdeographicSpace ctermbg=DarkGreen guibg=DarkGreen]],
-})
-
-vim.api.nvim_create_augroup("colorcolumn", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  group = "colorcolumn",
-  pattern = "*",
-  command = "set colorcolumn=81",
-})
-vim.api.nvim_create_autocmd("FileType", {
-  group = "colorcolumn",
-  pattern = "Scratch",
-  command = "set colorcolumn=",
 })
 
 -------------------------------------------------------------------------------
@@ -853,14 +835,6 @@ vim.api.nvim_create_autocmd({ "WinEnter", "BufRead" }, {
   group = "cch",
   pattern = "*",
   command = "set cursorline",
-})
-
--- No wrap long lines in quickfix
-vim.api.nvim_create_augroup("quickfix", { clear = true })
-vim.api.nvim_create_autocmd("FileType", {
-  group = "quickfix",
-  pattern = "qf",
-  command = "setlocal nowrap",
 })
 
 -- Move to last cursor position
@@ -1134,6 +1108,7 @@ local function splash()
   local list = vim.opt_local.list
   local number = vim.opt_local.number
   local foldenable = vim.opt_local.foldenable
+  local colorcolumn = vim.o.colorcolumn
   local orig_bufnr = vim.api.nvim_get_current_buf()
 
   vim.cmd("hide enew")
@@ -1143,6 +1118,7 @@ local function splash()
   vim.opt_local.list = false
   vim.opt_local.number = false
   vim.opt_local.foldenable = false
+  vim.o.colorcolumn = ""
 
   local art = [[
                          ﾒ __-─-,-- _
@@ -1221,6 +1197,7 @@ _＿／ｿ    V   //／'|ヽ:ﾊ) |Ｙ   ‖   /:::＼ !  }‖  !||   /
   vim.opt_local.list = list
   vim.opt_local.number = number
   vim.opt_local.foldenable = foldenable
+  vim.o.colorcolumn = colorcolumn
 
   vim.api.nvim_feedkeys("\x1B", "n", false) -- <ESC>
   vim.api.nvim_input(ch)
