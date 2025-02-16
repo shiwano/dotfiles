@@ -82,31 +82,39 @@ local pluginSpec = {
         return (git_root and root:gsub(escape_pattern(git_root) .. "/?", "", 1)) or root
       end
 
-      local function find_files_from_buffer_dir(custom_cmd)
+      local function find_file_from_buffer_dir(custom_source)
+        local opts = {
+          options = { "--prompt=Files> ", "--select-1", "--scheme=path" },
+          sink = function(selected)
+            if selected and #selected > 0 then
+              vim.cmd("edit " .. vim.fn.expand(selected))
+            end
+          end,
+        }
+
+        if custom_source then
+          opts.source = custom_source
+        end
+
         local buffer_dir = get_buffer_dir()
-        local base_opts = { options = { "--prompt=Files> " } }
-        if custom_cmd then
-          base_opts.source = custom_cmd
-        end
         if buffer_dir:match("^/") then
-          local opts = vim.call("fzf#vim#with_preview", base_opts)
-          vim.call("fzf#vim#files", buffer_dir, opts, 0)
-        elseif #buffer_dir > 0 then
-          base_opts.options[#base_opts.options + 1] = "--query=^" .. buffer_dir .. "/ "
-          local opts = vim.call("fzf#vim#with_preview", base_opts)
-          vim.call("fzf#vim#files", vim.fn.getcwd(), opts, 0)
+          opts.dir = buffer_dir
         else
-          local opts = vim.call("fzf#vim#with_preview", base_opts)
-          vim.call("fzf#vim#files", vim.fn.getcwd(), opts, 0)
+          opts.dir = vim.fn.getcwd()
+          if #buffer_dir > 0 then
+            table.insert(opts.options, "--query=" .. buffer_dir .. "/ ")
+          end
         end
+
+        vim.fn["fzf#run"](vim.fn["fzf#wrap"](vim.call("fzf#vim#with_preview", opts)))
       end
 
-      local function find_files_from_buffer_dir_default()
-        find_files_from_buffer_dir(nil)
+      local function find_file_from_buffer_dir_default()
+        find_file_from_buffer_dir(nil)
       end
 
-      local function find_files_from_buffer_dir_noignore()
-        local no_ignore_cmd = table.concat({
+      local function find_file_from_buffer_dir_noignore()
+        local noignore_source = table.concat({
           "rg --files --hidden --follow --no-ignore --sort path",
           "-g '!**/.DS_Store'",
           "-g '!**/node_modules'",
@@ -122,7 +130,7 @@ local pluginSpec = {
           "-g '!**/.zsh_sessions'",
           "-g '!**/.git'",
         }, " ")
-        find_files_from_buffer_dir(no_ignore_cmd)
+        find_file_from_buffer_dir(noignore_source)
       end
 
       local function search_files_with_text()
@@ -133,7 +141,7 @@ local pluginSpec = {
         end
       end
 
-      local function find_bookmarks()
+      local function find_bookmark()
         local bookmarks = require("bookmarks")
         local source, pathByName = {}, {}
         for _, b in pairs(bookmarks) do
@@ -172,14 +180,14 @@ local pluginSpec = {
         vim.call("fzf#vim#grep", source, 1, vim.call("fzf#vim#with_preview"))
       end
 
-      vim.keymap.set("n", "<Leader>uf", find_files_from_buffer_dir_default, { silent = true })
+      vim.keymap.set("n", "<Leader>uf", find_file_from_buffer_dir_default, { silent = true })
       vim.keymap.set("n", "<Leader>uu", ":GFiles " .. vim.fn.getcwd() .. "<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>us", ":GFiles?<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>ub", ":Buffers<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>ud", find_files_from_buffer_dir_noignore, { silent = true })
+      vim.keymap.set("n", "<Leader>ud", find_file_from_buffer_dir_noignore, { silent = true })
       vim.keymap.set("n", "<Leader>um", ":History<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>ug", search_files_with_text, { silent = true })
-      vim.keymap.set("n", "<Leader>ut", find_bookmarks, { silent = true })
+      vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true })
       vim.keymap.set("v", "/g", search_files_with_selected_text, { silent = true })
 
       vim.api.nvim_create_user_command("SearchMemo", function(opts)
@@ -666,11 +674,7 @@ local pluginSpec = {
           always_divide_middle = true,
           always_show_tabline = true,
           globalstatus = false,
-          refresh = {
-            statusline = 100,
-            tabline = 100,
-            winbar = 100,
-          },
+          refresh = { statusline = 100, tabline = 100, winbar = 100 },
         },
         sections = {
           lualine_a = { "mode" },
