@@ -7,7 +7,7 @@ return {
   { name = "gitignore", path = "~/.gitignore" },
   { name = "tmux", path = "~/.tmux.conf" },
   { name = "tmuxdarwin", path = "~/.tmux.darwin.conf" },
-  { name = "homebrew", path = "~/dotfiles/Brewfile" },
+  { name = "homebrew", path = "~/dotfiles/tools/Brewfile" },
   { name = "asdf", path = "~/.tool-versions" },
   { name = "ghostty", path = "~/.config/ghostty/config" },
   { name = "go", path = "~/.config/nvim/after/ftplugin/go.lua" },
