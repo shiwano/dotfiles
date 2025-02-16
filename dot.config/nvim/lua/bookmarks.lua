@@ -10,7 +10,6 @@ return {
   { name = "homebrew", path = "~/dotfiles/Brewfile" },
   { name = "asdf", path = "~/.tool-versions" },
   { name = "ghostty", path = "~/.config/ghostty/config" },
-  { name = "coc", path = "~/.config/nvim/coc-settings.json" },
   { name = "go", path = "~/.config/nvim/after/ftplugin/go.lua" },
   { name = "gomod", path = "~/.config/nvim/after/ftplugin/gomod.lua" },
   { name = "dart", path = "~/.config/nvim/after/ftplugin/dart.lua" },

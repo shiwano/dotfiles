@@ -35,13 +35,15 @@ local pluginSpec = {
     build = ":TSUpdate",
     config = function()
       require("nvim-treesitter.configs").setup({
-        highlight = {
-          enable = true,
-          disable = {},
-        },
-        indent = { enable = true },
+        modules = {},
+        sync_install = false,
         ensure_installed = "all",
+        auto_install = false,
         ignore_install = {},
+        parser_install_dir = nil,
+        highlight = { enable = true, disable = {} },
+        indent = { enable = true },
+        endwise = { enable = true },
       })
     end,
   },
@@ -60,7 +62,6 @@ local pluginSpec = {
   { "junegunn/fzf" },
   {
     "junegunn/fzf.vim",
-    dependencies = { "junegunn/fzf" },
     init = function()
       vim.g.fzf_layout = { up = "~40%" }
 
@@ -195,7 +196,7 @@ local pluginSpec = {
       end, { nargs = "*" })
     end,
   },
-  { "kevinhwang91/nvim-bqf", dependencies = { "junegunn/fzf" } },
+  { "kevinhwang91/nvim-bqf" },
   {
     "mattn/vim-molder",
     init = function()
@@ -272,98 +273,130 @@ local pluginSpec = {
   -- Code completion and LSP
   -----------------------------------------------------------------------------
   {
-    "neoclide/coc.nvim",
-    branch = "release",
-    init = function()
-      vim.cmd([[
-        " Use tab for trigger completion with characters ahead and navigate.
-        " NOTE: There's always complete item selected by default, you may want to enable
-        " no select by `"suggest.noselect": true` in your configuration file.
-        " NOTE: Use command ':verbose imap <tab>' to make sure tab is not mapped by
-        " other plugin before putting this into your config.
-        inoremap <silent><expr> <TAB> coc#pum#visible() ? coc#pum#next(1) : CheckBackspace() ? "\<Tab>" : coc#refresh()
-        inoremap <expr><S-TAB> coc#pum#visible() ? coc#pum#prev(1) : "\<C-h>"
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
+  { "hrsh7th/cmp-nvim-lsp", lazy = true },
+  { "hrsh7th/cmp-path", lazy = true },
+  { "hrsh7th/cmp-buffer", lazy = true },
+  {
+    "hrsh7th/nvim-cmp",
+    config = function()
+      local cmp = require("cmp")
 
-        " Make <CR> to accept selected completion item or notify coc.nvim to format
-        " <C-g>u breaks current undo, please make your own choice.
-        inoremap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() : "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+      local has_words_before = function()
+        local line, col = unpack(vim.api.nvim_win_get_cursor(0))
+        if col == 0 then
+          return false
+        end
+        local line_text = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
+        return line_text:sub(col, col):match("%s") == nil
+      end
 
-        function! CheckBackspace() abort
-          let col = col('.') - 1
-          " return !col || getline('.')[col - 1]  =~# '\s'
-          return !col || getline('.')[col - 1]  =~ '\s'
-        endfunction
+      cmp.setup({
+        mapping = cmp.mapping.preset.insert({
+          ["<Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_next_item()
+            elseif has_words_before() then
+              cmp.complete()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<S-Tab>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.select_prev_item()
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<CR>"] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+              cmp.confirm({ select = true })
+            else
+              fallback()
+            end
+          end, { "i", "s" }),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<C-f>"] = cmp.mapping.scroll_docs(4),
+          ["<C-b>"] = cmp.mapping.scroll_docs(-4),
+        }),
+        sources = cmp.config.sources({
+          { name = "nvim_lsp" },
+          { name = "path" },
+          { name = "buffer" },
+          { name = "lazydev", group_index = 0 },
+        }),
+        preselect = cmp.PreselectMode.None,
+        matching = {
+          disallow_fuzzy_matching = true,
+          disallow_fullfuzzy_matching = true,
+          disallow_partial_fuzzy_matching = true,
+          disallow_partial_matching = true,
+          disallow_prefix_unmatching = true,
+          disallow_symbol_nonprefix_matching = true,
+        },
+      })
+    end,
+  },
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      local on_attach = function(client, bufnr)
+        vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true })
+        vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true })
+        vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true })
+        vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true })
+        vim.keymap.set("n", "on", vim.lsp.buf.rename, { silent = true, buffer = true })
+        vim.keymap.set({ "n", "v" }, "os", vim.lsp.buf.code_action, { silent = true, buffer = true })
+        vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true })
 
-        " Use <c-space> to trigger completion.
-        if has('nvim')
-          inoremap <silent><expr> <c-space> coc#refresh()
-        else
-          inoremap <silent><expr> <c-@> coc#refresh()
-        endif
+        vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
+          vim.lsp.buf.format({ async = true })
+        end, {})
 
-        nmap <silent> od <Plug>(coc-definition)
-        nmap <silent> ot <Plug>(coc-type-definition)
-        nmap <silent> oi <Plug>(coc-implementation)
-        nmap <silent> of <Plug>(coc-references)
-        nmap <silent> on <Plug>(coc-rename)
-        nmap <silent> os <Plug>(coc-codeaction-selected)<down>
-        vmap <silent> os <Plug>(coc-codeaction-selected)<down>
+        if client.name == "ts_ls" then
+          vim.keymap.set("n", "or", function()
+            vim.lsp.buf.execute_command({
+              command = "_typescript.organizeImports",
+              arguments = { vim.api.nvim_buf_get_name(0) },
+            })
+          end, { silent = true, buffer = true })
+        end
+      end
 
-        nnoremap <silent> or :call CocAction('runCommand', 'editor.action.organizeImport')<CR>
-        nnoremap <silent> ol :ALEDetail<CR>
+      require("cmp").setup({ sources = { { name = "nvim_lsp" } } })
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
+      capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
-        nnoremap <silent> ok :call Lazy_show_documentation()<CR>
-        function! Lazy_show_documentation()
-          if CocAction('hasProvider', 'hover')
-            call CocActionAsync('doHover')
-          else
-            call feedkeys('K', 'in')
-          endif
-        endfunction
+      local lspconfig = require("lspconfig")
 
-        " Highlight the symbol and its references when holding the cursor.
-        " autocmd CursorHold * silent call CocActionAsync('highlight')
+      lspconfig.gopls.setup({
+        cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
 
-        " Map function and class text objects
-        " NOTE: Requires 'textDocument.documentSymbol' support from the language server.
-        xmap if <Plug>(coc-funcobj-i)
-        omap if <Plug>(coc-funcobj-i)
-        xmap af <Plug>(coc-funcobj-a)
-        omap af <Plug>(coc-funcobj-a)
-        xmap ic <Plug>(coc-classobj-i)
-        omap ic <Plug>(coc-classobj-i)
-        xmap ac <Plug>(coc-classobj-a)
-        omap ac <Plug>(coc-classobj-a)
+      lspconfig.lua_ls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
 
-        " Remap <C-f> and <C-b> for scroll float windows/popups.
-        if has('nvim-0.4.0') || has('patch-8.2.0750')
-          nnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-          nnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-          inoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
-          inoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
-          vnoremap <silent><nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
-          vnoremap <silent><nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
-        endif
+      lspconfig.ts_ls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
 
-        " Use CTRL-S for selections ranges.
-        " Requires 'textDocument/selectionRange' support of language server.
-        nmap <silent> <C-s> <Plug>(coc-range-select)
-        xmap <silent> <C-s> <Plug>(coc-range-select)
-
-        " Add `:Format` command to format current buffer.
-        command! -nargs=0 Format :call CocAction('format')
-
-        " Add `:Fold` command to fold current buffer.
-        command! -nargs=? Fold :call CocAction('fold', <f-args>)
-
-        " Add `:OR` command for organize imports of the current buffer.
-        command! -nargs=0 OR :call CocActionAsync('runCommand', 'editor.action.organizeImport')
-
-        " Add (Neo)Vim's native statusline support.
-        " NOTE: Please see `:h coc-status` for integrations with external plugins that
-        " provide custom statusline: lightline.vim, vim-airline.
-        set statusline^=%{coc#status()}%{get(b:,'coc_current_function','')}
-      ]])
+      lspconfig.dartls.setup({
+        on_attach = on_attach,
+        capabilities = capabilities,
+      })
     end,
   },
   {
@@ -394,19 +427,11 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
   { "windwp/nvim-ts-autotag", event = { "BufReadPre", "BufNewFile" }, config = true },
-  {
-    "RRethy/nvim-treesitter-endwise",
-    dependencies = { "nvim-treesitter/nvim-treesitter" },
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        endwise = { enable = true },
-      })
-    end,
-  },
+  { "RRethy/nvim-treesitter-endwise", event = { "BufReadPre", "BufNewFile" } },
   { "buoto/gotests-vim", ft = { "go" } },
   {
     "kburdett/vim-nuuid",
+    event = "InsertEnter",
     init = function()
       vim.g.nuuid_no_mappings = 1
     end,
@@ -474,7 +499,7 @@ local pluginSpec = {
   },
 
   -----------------------------------------------------------------------------
-  -- Linting
+  -- Linting and code formatting
   -----------------------------------------------------------------------------
   {
     "w0rp/ale",
@@ -484,6 +509,8 @@ local pluginSpec = {
       }
       vim.g.ale_go_golangci_lint_options = ""
       vim.g.ale_go_golangci_lint_package = 1
+
+      vim.keymap.set("n", "ol", ":ALEDetail<CR>", { silent = true })
 
       vim.api.nvim_create_augroup("ale", { clear = true })
       vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -495,10 +522,6 @@ local pluginSpec = {
       })
     end,
   },
-
-  -----------------------------------------------------------------------------
-  -- Code formatter
-  -----------------------------------------------------------------------------
   {
     "stevearc/conform.nvim",
     opts = {
@@ -524,7 +547,7 @@ local pluginSpec = {
   },
 
   -----------------------------------------------------------------------------
-  -- Documentation and Image
+  -- Documentation
   -----------------------------------------------------------------------------
   {
     "3rd/image.nvim",
@@ -560,7 +583,6 @@ local pluginSpec = {
   {
     "3rd/diagram.nvim",
     ft = { "markdown", "vimwiki", "neorg", "typst" },
-    dependencies = { "3rd/image.nvim" },
     config = function()
       require("diagram").setup({
         integrations = {
@@ -616,10 +638,10 @@ local pluginSpec = {
       vim.g.gh_use_canonical = 0
     end,
   },
-  { "nvim-tree/nvim-web-devicons" },
+  { "nvim-tree/nvim-web-devicons", lazy = true },
+  { "nvim-lua/lsp-status.nvim", lazy = true },
   {
     "nvim-lualine/lualine.nvim",
-    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       local colors = {
         bg = "#282a2e",
@@ -695,6 +717,7 @@ local pluginSpec = {
           },
           lualine_c = { "filesize", "diagnostics" },
           lualine_x = {
+            "require'lsp-status'.status()",
             { "encoding", show_bomb = true },
             "fileformat",
             "filetype",
@@ -848,7 +871,7 @@ vim.api.nvim_create_autocmd("BufRead", {
   callback = function()
     local last_pos = vim.fn.line("'\"")
     if last_pos > 0 and last_pos <= vim.fn.line("$") then
-      vim.cmd('normal! g`"')
+      vim.cmd('normal! g`"zz')
     end
   end,
 })
@@ -974,10 +997,10 @@ vim.keymap.set(
 )
 
 -- Comment toggle
-vim.keymap.set("v", "<Leader>cs", "gc")
-vim.keymap.set("n", "<Leader>cs", "gcc")
-vim.keymap.set("v", "<Leader>c<Space>", "gc")
-vim.keymap.set("n", "<Leader>c<Space>", "gcc")
+vim.keymap.set("v", "<Leader>cs", "gc", { remap = true })
+vim.keymap.set("n", "<Leader>cs", "gcc", { remap = true })
+vim.keymap.set("v", "<Leader>c<Space>", "gc", { remap = true })
+vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true })
 
 -------------------------------------------------------------------------------
 -- Custom commands

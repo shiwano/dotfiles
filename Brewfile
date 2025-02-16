@@ -55,6 +55,7 @@ brew 'imagemagick'
 brew 'kitty'
 brew 'gnuplot'
 brew 'stylua'
+brew 'lua-language-server'
 
 cask 'alfred'
 cask 'google-chrome'
