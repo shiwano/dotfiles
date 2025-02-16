@@ -623,6 +623,7 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   {
     "ruanyl/vim-gh-line",
+    event = { "BufReadPre", "BufNewFile" },
     init = function()
       vim.g.gh_line_map_default = 0
       vim.g.gh_line_blame_map_default = 0
