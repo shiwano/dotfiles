@@ -364,12 +364,12 @@ local pluginSpec = {
         end, {})
 
         if client.name == "ts_ls" then
-          vim.keymap.set("n", "or", function()
+          vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
             vim.lsp.buf.execute_command({
               command = "_typescript.organizeImports",
               arguments = { vim.api.nvim_buf_get_name(0) },
             })
-          end, { silent = true, buffer = true })
+          end, {})
         end
       end
 
