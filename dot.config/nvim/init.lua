@@ -709,12 +709,16 @@ local pluginSpec = {
               },
             },
           },
-          lualine_c = { "filesize", "diagnostics" },
+          lualine_c = { "diagnostics" },
           lualine_x = {
             "require'lsp-status'.status()",
             { "encoding", show_bomb = true },
             "fileformat",
-            "filetype",
+            {
+              "filetype",
+              icon_only = false,
+              icon = { align = "right" },
+            },
           },
           lualine_y = { "branch", "diff" },
           lualine_z = { "selectioncount", "progress", "location" },
