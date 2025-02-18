@@ -6,6 +6,7 @@
   "cmp-path": { "branch": "main", "commit": "91ff86cd9c29299a64f968ebb45846c485725f23" },
   "conform.nvim": { "branch": "master", "commit": "a6f5bdb78caa305496357d17e962bbc4c0b392e2" },
   "copilot.vim": { "branch": "release", "commit": "87038123804796ca7af20d1b71c3428d858a9124" },
+  "dart-vim-flutter-layout": { "branch": "master", "commit": "9105781d713f03ede4fae4857bab2be585eb6aaf" },
   "diagram.nvim": { "branch": "master", "commit": "554d4f407d68662e5f5e41882241302077682225" },
   "fzf": { "branch": "master", "commit": "38e4020aa86b806cab988d5b26ac16af94d2bd29" },
   "fzf.vim": { "branch": "master", "commit": "6cda389bdea953c9c66a3cfe57e40463ffd61ae9" },

@@ -336,14 +336,6 @@ local pluginSpec = {
           { name = "lazydev", group_index = 0 },
         }),
         preselect = cmp.PreselectMode.None,
-        matching = {
-          disallow_fuzzy_matching = true,
-          disallow_fullfuzzy_matching = true,
-          disallow_partial_fuzzy_matching = true,
-          disallow_partial_matching = true,
-          disallow_prefix_unmatching = true,
-          disallow_symbol_nonprefix_matching = true,
-        },
       })
     end,
   },
@@ -373,21 +365,20 @@ local pluginSpec = {
         end
       end
 
-      require("cmp").setup({ sources = { { name = "nvim_lsp" } } })
-      local capabilities = vim.lsp.protocol.make_client_capabilities()
-      capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
+      local caps = vim.lsp.protocol.make_client_capabilities()
+      caps = require("cmp_nvim_lsp").default_capabilities(caps)
 
-      local lspconfig = require("lspconfig")
+      local cfg = require("lspconfig")
 
-      lspconfig.gopls.setup({
+      cfg.gopls.setup({
         cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
         on_attach = on_attach,
-        capabilities = capabilities,
+        capabilities = caps,
       })
 
-      lspconfig.lua_ls.setup({ on_attach = on_attach, capabilities = capabilities })
-      lspconfig.ts_ls.setup({ on_attach = on_attach, capabilities = capabilities })
-      lspconfig.dartls.setup({ on_attach = on_attach, capabilities = capabilities })
+      cfg.lua_ls.setup({ on_attach = on_attach, capabilities = caps })
+      cfg.ts_ls.setup({ on_attach = on_attach, capabilities = caps })
+      cfg.dartls.setup({ on_attach = on_attach, capabilities = caps })
     end,
   },
   {
@@ -448,6 +439,7 @@ local pluginSpec = {
   { "danro/rename.vim", event = { "BufReadPre", "BufNewFile" } },
   { "arthurxavierx/vim-caser", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
+  { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
 
   -----------------------------------------------------------------------------
   -- Debugging
