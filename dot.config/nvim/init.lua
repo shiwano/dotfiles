@@ -58,7 +58,7 @@ local pluginSpec = {
   },
 
   -----------------------------------------------------------------------------
-  -- Finder and file explorer
+  -- File explorer
   -----------------------------------------------------------------------------
   { "junegunn/fzf" },
   {
@@ -86,7 +86,7 @@ local pluginSpec = {
 
       local function find_file_from_buffer_dir(custom_source)
         local opts = {
-          options = { "--prompt=Files> ", "--select-1", "--scheme=path" },
+          options = { "--prompt=Files> ", "--scheme=path" },
           sink = function(selected)
             if selected and #selected > 0 then
               vim.cmd("edit " .. vim.fn.expand(selected))
@@ -175,18 +175,14 @@ local pluginSpec = {
       end
 
       local function search_memo_with(text)
-        local source = "rg --sortr path --column --line-number --no-heading --color=always --smart-case "
-          .. " -- "
-          .. vim.fn.shellescape(text)
-          .. " ~/Dropbox/Memo"
+        local source = "rg --sortr path --column --line-number --no-heading --color=always --smart-case " .. " -- " .. vim.fn.shellescape(text) .. " ~/Dropbox/Memo"
         vim.call("fzf#vim#grep", source, 1, vim.call("fzf#vim#with_preview"))
       end
 
       vim.keymap.set("n", "<Leader>uf", find_file_from_buffer_dir_default, { silent = true })
       vim.keymap.set("n", "<Leader>uu", ":GFiles " .. vim.fn.getcwd() .. "<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>us", ":GFiles?<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>ub", ":Buffers<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>ud", find_file_from_buffer_dir_noignore, { silent = true })
+      vim.keymap.set("n", "<Leader>ua", find_file_from_buffer_dir_noignore, { silent = true })
       vim.keymap.set("n", "<Leader>um", ":History<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>ug", search_files_with_text, { silent = true })
       vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true })
@@ -270,9 +266,104 @@ local pluginSpec = {
       end, { nargs = "*" })
     end,
   },
+  {
+    "sindrets/diffview.nvim",
+    config = function()
+      local actions = require("diffview.actions")
+
+      vim.keymap.set("n", "<Leader>uc", ":DiffviewFileHistory<CR>", { silent = true })
+      vim.keymap.set("n", "<Leader>ud", ":DiffviewOpen<CR>", { silent = true })
+
+      local function close()
+        vim.cmd("tabclose")
+      end
+
+      local bufnr = nil
+      local function goto_file_and_close()
+        if bufnr and vim.api.nvim_buf_is_valid(bufnr) then
+          vim.api.nvim_buf_delete(bufnr, {})
+          bufnr = nil
+        end
+        actions.goto_file_split()
+        bufnr = vim.api.nvim_get_current_buf()
+        vim.keymap.set("n", "<C-c>", close, { silent = true, buffer = true })
+        vim.cmd("wincmd =")
+      end
+
+      require("diffview").setup({
+        keymaps = {
+          disable_defaults = true,
+          view = {
+            { "n", "<tab>", actions.select_next_entry, { desc = "Open the diff for the next file" } },
+            { "n", "<s-tab>", actions.select_prev_entry, { desc = "Open the diff for the previous file" } },
+            { "n", "N", actions.prev_conflict, { desc = "In the merge-tool: jump to the previous conflict" } },
+            { "n", "n", actions.next_conflict, { desc = "In the merge-tool: jump to the next conflict" } },
+            unpack(actions.compat.fold_cmds),
+          },
+          diff1 = {
+            { "n", "g?", actions.help({ "view", "diff1" }), { desc = "Open the help panel" } },
+          },
+          diff2 = {
+            { "n", "g?", actions.help({ "view", "diff2" }), { desc = "Open the help panel" } },
+          },
+          diff3 = {
+            { { "n", "x" }, "2do", actions.diffget("ours"), { desc = "Obtain the diff hunk from the OURS version of the file" } },
+            { { "n", "x" }, "3do", actions.diffget("theirs"), { desc = "Obtain the diff hunk from the THEIRS version of the file" } },
+            { "n", "g?", actions.help({ "view", "diff3" }), { desc = "Open the help panel" } },
+          },
+          diff4 = {
+            { { "n", "x" }, "1do", actions.diffget("base"), { desc = "Obtain the diff hunk from the BASE version of the file" } },
+            { { "n", "x" }, "2do", actions.diffget("ours"), { desc = "Obtain the diff hunk from the OURS version of the file" } },
+            { { "n", "x" }, "3do", actions.diffget("theirs"), { desc = "Obtain the diff hunk from the THEIRS version of the file" } },
+            { "n", "g?", actions.help({ "view", "diff4" }), { desc = "Open the help panel" } },
+          },
+          file_panel = {
+            { "n", "<c-c>", close, { desc = "Close the panel" } },
+            { "n", "<cr>", goto_file_and_close, { desc = "Open the diff for the selected entry" } },
+            { "n", "j", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
+            { "n", "<down>", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
+            { "n", "k", actions.select_prev_entry, { desc = "Bring the cursor to the previous file entry" } },
+            { "n", "<up>", actions.select_prev_entry, { desc = "Bring the cursor to the previous file entry" } },
+            { "n", "N", actions.prev_conflict, { desc = "Go to the previous conflict" } },
+            { "n", "n", actions.next_conflict, { desc = "Go to the next conflict" } },
+            { "n", "<c-b>", actions.scroll_view(-0.25), { desc = "Scroll the view up" } },
+            { "n", "<c-f>", actions.scroll_view(0.25), { desc = "Scroll the view down" } },
+            { "n", "<tab>", actions.select_next_entry, { desc = "Open the diff for the next file" } },
+            { "n", "<s-tab>", actions.select_prev_entry, { desc = "Open the diff for the previous file" } },
+            { "n", "R", actions.refresh_files, { desc = "Update stats and entries in the file list" } },
+            { "n", "g?", actions.help("file_panel"), { desc = "Open the help panel" } },
+          },
+          file_history_panel = {
+            { "n", "<c-c>", close, { desc = "Close the panel" } },
+            { "n", "<cr>", goto_file_and_close, { desc = "Open the diff for the selected entry" } },
+            { "n", "j", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
+            { "n", "<down>", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
+            { "n", "k", actions.select_prev_entry, { desc = "Bring the cursor to the previous file entry" } },
+            { "n", "<up>", actions.select_prev_entry, { desc = "Bring the cursor to the previous file entry" } },
+            { "n", "g!", actions.options, { desc = "Open the option panel" } },
+            { "n", "y", actions.copy_hash, { desc = "Copy the commit hash of the entry under the cursor" } },
+            { "n", "<c-b>", actions.scroll_view(-0.25), { desc = "Scroll the view up" } },
+            { "n", "<c-f>", actions.scroll_view(0.25), { desc = "Scroll the view down" } },
+            { "n", "<tab>", actions.select_next_entry, { desc = "Open the diff for the next file" } },
+            { "n", "<s-tab>", actions.select_prev_entry, { desc = "Open the diff for the previous file" } },
+            { "n", "g?", actions.help("file_history_panel"), { desc = "Open the help panel" } },
+          },
+          option_panel = {
+            { "n", "<tab>", actions.select_entry, { desc = "Change the current option" } },
+            { "n", "q", actions.close, { desc = "Close the panel" } },
+            { "n", "g?", actions.help("option_panel"), { desc = "Open the help panel" } },
+          },
+          help_panel = {
+            { "n", "q", actions.close, { desc = "Close help menu" } },
+            { "n", "<esc>", actions.close, { desc = "Close help menu" } },
+          },
+        },
+      })
+    end,
+  },
 
   -----------------------------------------------------------------------------
-  -- Code completion and LSP
+  -- Code completion
   -----------------------------------------------------------------------------
   {
     "folke/lazydev.nvim",
@@ -460,24 +551,6 @@ local pluginSpec = {
           vim.keymap.set("n", "odr", ":DlvToggleTracepoint<CR>", { silent = true, buffer = true })
         end,
       })
-    end,
-  },
-  {
-    "thinca/vim-quickrun",
-    init = function()
-      vim.g.quickrun_config = vim.g.quickrun_config or {}
-      vim.g.quickrun_config._ = {
-        runner = "system",
-        ["outputter/buffer/split"] = ":rightbelow 16sp",
-        ["outputter/buffer/close_on_empty"] = 1,
-      }
-
-      vim.keymap.set("n", "<C-c>", function()
-        if vim.fn["quickrun#session#exists()"]() == 0 then
-          return "<C-c>"
-        end
-        vim.fn["quickrun#session#sweep()"]()
-      end, { expr = true, silent = true })
     end,
   },
 
@@ -961,11 +1034,7 @@ vim.keymap.set("v", "//", 'y/<C-R>=escape(@", "\\/.*$^~[]")<CR><CR>', { silent =
 vim.keymap.set("v", "/n", 'y:%s/<C-R>=escape(@", "\\/.*$^~[]")<CR>/&/gn<CR>', { silent = true })
 
 -- Replace the selected string
-vim.keymap.set(
-  "v",
-  "/r",
-  '"xy:%s/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/gc<Left><Left><Left>'
-)
+vim.keymap.set("v", "/r", '"xy:%s/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/gc<Left><Left><Left>')
 
 -- Comment toggle
 vim.keymap.set("v", "<Leader>cs", "gc", { remap = true })
@@ -1047,14 +1116,13 @@ end, {})
 -------------------------------------------------------------------------------
 -- Terminal
 -------------------------------------------------------------------------------
-local term_buf_name = nil
-
+local term_bufnr = nil
 local function open_terminal()
-  if term_buf_name and vim.fn.bufexists(term_buf_name) ~= 0 then
-    vim.cmd("buffer " .. term_buf_name)
+  if term_bufnr and vim.api.nvim_buf_is_valid(term_bufnr) then
+    vim.cmd("buffer " .. term_bufnr)
   else
     vim.cmd("terminal")
-    term_buf_name = vim.fn.bufname("%")
+    term_bufnr = vim.api.nvim_get_current_buf()
   end
   vim.cmd("startinsert")
 end

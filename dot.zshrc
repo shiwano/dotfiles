@@ -197,7 +197,7 @@ function static-httpd {
 
 function move-to-ghq-directory {
   local items="$(echo 'dotfiles'; ghq list)"
-  local s="$(echo -e $items | fzf -1 --preview '' --prompt 'GitRepos> ')"
+  local s="$(echo -e $items | fzf --preview '' --prompt 'GitRepos> ')"
   [ -z "$s" ] && return
   [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
@@ -206,7 +206,7 @@ function edit-git-grepped-file {
   local search=$1
   [ -z "$search" ] && return
   local files="$(git grep -n --color=always "$search")"
-  local s="$(echo -e $files | fzf -1 -m --preview 'fzf-preview grepped {}' --prompt 'GitFiles> ')"
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'GitFiles> ')"
   [ -z "$s" ] && return
   local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
   vi -c "cexpr '$escaped_s' | copen"
@@ -215,7 +215,7 @@ function edit-git-grepped-file {
 function edit-git-file {
   local dir=${1-.}
   local files="$(git ls-files $dir)"
-  local s="$(echo -e $files | fzf -1 --prompt 'GitFiles> ')"
+  local s="$(echo -e $files | fzf --prompt 'GitFiles> ')"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -227,7 +227,7 @@ function edit-git-changed-file {
     edit-git-file
     return
   fi
-  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'GitFiles> ' | cut -c4-)"
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'GitFiles> ' | cut -c4-)"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -236,7 +236,7 @@ function edit-git-changed-file {
 function copy-file-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf -1 --prompt 'Files> ')"
+  local s="$(echo -e $files | fzf --prompt 'Files> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -244,7 +244,7 @@ function copy-file-path-to-clipboard {
 
 function copy-changed-file-path-to-clipboard {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $files | fzf -1 --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4-)"
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4-)"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -253,7 +253,7 @@ function copy-changed-file-path-to-clipboard {
 function copy-image-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf -1 --prompt 'Images> ')"
+  local s="$(echo -e $files | fzf --prompt 'Images> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -261,7 +261,7 @@ function copy-image-path-to-clipboard {
 
 function switch-git-branch() {
   local branches=$(git mru | tac)
-  local s="$(echo -e $branches | fzf -1 --no-sort --preview '' --prompt 'GitBranches> ' | cut -d' ' -f1)"
+  local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitBranches> ' | cut -d' ' -f1)"
   [ -z "$s" ] && return
   git switch $s
 }
