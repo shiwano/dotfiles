@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function topic {
-  echo -en "\033[0;34m"
+  echo -en "\033[1;34m"
   echo "$*"
   echo -en "\033[0m"
 }
