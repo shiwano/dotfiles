@@ -56,6 +56,14 @@ main() {
       echo 'Already copied' $dotfile '->' $dest
     fi
   done
+
+  topic 'Setup bat themes'
+
+  if command -v bat 2>&1 >/dev/null; then
+    cd "$(bat --config-dir)/themes"
+    bat cache --build
+    cd -
+  fi
 }
 
 main "$@"

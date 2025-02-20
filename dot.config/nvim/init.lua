@@ -25,7 +25,7 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Colorscheme
   -----------------------------------------------------------------------------
-  { "RRethy/nvim-base16" },
+  { "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} },
 
   -----------------------------------------------------------------------------
   -- Highlighting
@@ -271,8 +271,12 @@ local pluginSpec = {
     config = function()
       local actions = require("diffview.actions")
 
+      vim.keymap.set("n", "<Leader>us", ":DiffviewOpen<CR>", { silent = true })
       vim.keymap.set("n", "<Leader>uc", ":DiffviewFileHistory<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>ud", ":DiffviewOpen<CR>", { silent = true })
+
+      vim.keymap.set("n", "<Leader>ud", function()
+        vim.cmd("DiffviewFileHistory " .. vim.fn.expand("%"))
+      end, { silent = true })
 
       local function close()
         vim.cmd("tabclose")
@@ -684,6 +688,29 @@ local pluginSpec = {
   },
 
   -----------------------------------------------------------------------------
+  -- Terminal
+  -----------------------------------------------------------------------------
+  {
+    "akinsho/toggleterm.nvim",
+    config = function()
+      vim.keymap.set("t", "<ESC>", "<C-\\><C-n>", { silent = true })
+
+      require("toggleterm").setup({
+        size = 100,
+        open_mapping = [[<C-z>]],
+        hide_numbers = true,
+        shade_terminals = true,
+        shading_factor = 2,
+        start_in_insert = true,
+        insert_mappings = true,
+        persist_size = true,
+        direction = "float",
+        close_on_exit = true,
+      })
+    end,
+  },
+
+  -----------------------------------------------------------------------------
   -- Misc
   -----------------------------------------------------------------------------
   {
@@ -702,49 +729,10 @@ local pluginSpec = {
   {
     "nvim-lualine/lualine.nvim",
     config = function()
-      local colors = {
-        bg = "#282a2e",
-        alt_bg = "#373b41",
-        dark_fg = "#969896",
-        fg = "#b4b7b4",
-        light_fg = "#c5c8c6",
-        normal = "#969896",
-        insert = "#b5bd68",
-        visual = "#b294bb",
-        replace = "#de935f",
-        terminal = "#81a2ba",
-      }
       require("lualine").setup({
         options = {
           icons_enabled = true,
-          theme = {
-            normal = {
-              a = { fg = colors.bg, bg = colors.normal },
-              b = { fg = colors.light_fg, bg = colors.alt_bg },
-              c = { fg = colors.fg, bg = colors.bg },
-            },
-            insert = {
-              a = { fg = colors.bg, bg = colors.insert },
-              b = { fg = colors.light_fg, bg = colors.alt_bg },
-            },
-            visual = {
-              a = { fg = colors.bg, bg = colors.visual },
-              b = { fg = colors.light_fg, bg = colors.alt_bg },
-            },
-            replace = {
-              a = { fg = colors.bg, bg = colors.replace },
-              b = { fg = colors.light_fg, bg = colors.alt_bg },
-            },
-            terminal = {
-              a = { fg = colors.bg, bg = colors.terminal },
-              b = { fg = colors.light_fg, bg = colors.alt_bg },
-            },
-            inactive = {
-              a = { fg = colors.dark_fg, bg = colors.bg },
-              b = { fg = colors.dark_fg, bg = colors.bg },
-              c = { fg = colors.dark_fg, bg = colors.bg },
-            },
-          },
+          theme = "tokyonight",
           component_separators = { left = "", right = "" },
           section_separators = { left = "", right = "" },
           disabled_filetypes = {
@@ -769,8 +757,8 @@ local pluginSpec = {
               symbols = {
                 modified = "[modified]",
                 readonly = "[readonly]",
+                newfile = "[new]",
                 unnamed = "NO NAME",
-                newfile = "NEW",
               },
             },
           },
@@ -782,11 +770,10 @@ local pluginSpec = {
             {
               "filetype",
               icon_only = false,
-              icon = { align = "right" },
             },
           },
-          lualine_y = { "branch", "diff" },
-          lualine_z = { "selectioncount", "progress", "location" },
+          lualine_y = { "branch", "selectioncount", "%2v", "%l/%L(%P)" },
+          lualine_z = {},
         },
         inactive_sections = {
           lualine_a = {},
@@ -839,9 +826,7 @@ vim.opt.termguicolors = true
 vim.o.background = "dark" -- or "light" for light mode
 vim.o.colorcolumn = "81"
 
-if vim.g.colors_name ~= "base16-tomorrow-night" then
-  vim.cmd("colorscheme base16-tomorrow-night")
-end
+vim.cmd([[colorscheme tokyonight-night]])
 
 vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
 vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
@@ -1112,54 +1097,6 @@ vim.api.nvim_create_user_command("SaveMemo", function()
     vim.api.nvim_err_writeln("Failed to save memo: " .. err)
   end
 end, {})
-
--------------------------------------------------------------------------------
--- Terminal
--------------------------------------------------------------------------------
-local term_bufnr = nil
-local function open_terminal()
-  if term_bufnr and vim.api.nvim_buf_is_valid(term_bufnr) then
-    vim.cmd("buffer " .. term_bufnr)
-  else
-    vim.cmd("terminal")
-    term_bufnr = vim.api.nvim_get_current_buf()
-  end
-  vim.cmd("startinsert")
-end
-
-local function close_terminal()
-  local keys = vim.api.nvim_replace_termcodes("<C-\\><C-n>", true, false, true)
-  vim.api.nvim_feedkeys(keys, "n", true)
-  if vim.fn.bufname("#") ~= "" then
-    vim.cmd("edit #")
-  else
-    vim.cmd("enew")
-  end
-end
-
-vim.api.nvim_create_user_command("Terminal", open_terminal, {})
-vim.cmd([[
-  cnoreabbrev <expr> terminal getcmdtype() == ':' && getcmdline() =~ '^terminal\>' ? 'Terminal' : 'terminal'
-]])
-
-vim.keymap.set("n", "<C-z>", open_terminal, { silent = true })
-vim.keymap.set("t", "<ESC>", "<C-\\><C-n>", { silent = true })
-
-vim.api.nvim_create_augroup("terminal_settings", { clear = true })
-vim.api.nvim_create_autocmd("TermOpen", {
-  group = "terminal_settings",
-  pattern = "term://*/bin/zsh*",
-  callback = function()
-    vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
-    vim.keymap.set("t", "fg<CR>", close_terminal, { buffer = true, silent = true })
-    vim.opt_local.scrollback = 1000
-  end,
-})
-vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
-  group = "terminal_settings",
-  pattern = "term://*",
-  command = "startinsert",
-})
 
 -------------------------------------------------------------------------------
 -- Splash

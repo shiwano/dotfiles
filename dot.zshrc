@@ -34,17 +34,6 @@ fi
 autoload -Uz compinit
 compinit
 
-# Color scheme -----------------------------------------------------------------
-
-if [ -z "$NVIM" ]; then
-  BASE16_SHELL="$HOME/.config/base16-shell/"
-
-  if [ -n "$PS1" ] && [ -s "$BASE16_SHELL/profile_helper.sh" ]; then
-    source "$BASE16_SHELL/profile_helper.sh"
-    base16_tomorrow-night 2>/dev/null
-  fi
-fi
-
 # Envs -------------------------------------------------------------------------
 
 export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
@@ -384,9 +373,32 @@ fi
 
 # Prompt -----------------------------------------------------------------------
 
-autoload -Uz vcs_info
-zstyle ':vcs_info:*' formats '%b'
-zstyle ':vcs_info:*' actionformats '%b|%a'
+setopt prompt_subst
+ZLE_RPROMPT_INDENT=0
+
+function prompt_pwd() {
+  local dir="$(print -P '%~')"
+  local icon_repo=$'\Uea62 '
+
+  if [[ $dir =~ '^~\/code\/src\/[^/]+\/[^/]+\/(.*)$' ]]; then
+    echo "$icon_repo${match[1]}"
+  elif [[ $dir =~ '^~\/dotfiles\/?(.*)$' ]]; then
+    echo "$icon_repo${dir#*/}"
+  else
+    echo "$dir"
+  fi
+}
+
+function prompt_git_branch() {
+  local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+  if [ -n "$branch" ]; then
+    local icon_git_branch=$'\Ue0a0 '
+    echo "$icon_git_branch$branch"
+  else
+    local icon_untracked=$'\Uf115 '
+    echo "${icon_untracked} untracked"
+  fi
+}
 
 () {
   local icon_cat=$'\Uf011b '
@@ -394,50 +406,47 @@ zstyle ':vcs_info:*' actionformats '%b|%a'
   local icon_folder=$'\Uf450 '
   local icon_network=$'\Ufbf1 '
   local icon_vim=$'\Ue62b '
+  local icon_clock=$'\Uf017 '
+  local left_sep=$'\Ue0b0 '
 
+  local primary_bg="#7AA2F7"
+  local primary_fg="#000000"
+  local secondary_bg="#3B4261"
+  local secondary_fg="#7AA2F7"
   if [ -n "${NVIM}" ]; then
-    local prompt_face="${icon_vim}"
-  else
-    case ${UID} in
-      0)
-        local prompt_face="${icon_key}"
-        ;;
-      *)
-        local prompt_face="${icon_cat}"
-        ;;
-    esac
+    primary_bg="#73DACA"
+    secondary_fg="#73DACA"
+  elif [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+    primary_bg="#FF9E64"
+    secondary_bg="#FF9E64"
   fi
 
-  PROMPT="%{[31m%}${icon_folder}%~ ${prompt_face}%{[m%}"
-  PROMPT2="%{[31m%}| %{[m%}"
-  SPROMPT="%{[31m%}%r is correct? [n,y,a,e]:%{[m%} "
-  [ -n "${REMOTEHOST}${SSH_CONNECTION}" ] &&
-    PROMPT="%{[31m%}${icon_network}${HOST%%.*} ${PROMPT}"
-}
+  local prompt_face
+  if [ -n "${NVIM}" ]; then
+    prompt_face="${icon_vim}"
+  elif [ "${UID}" -eq 0 ]; then
+    prompt_face="${icon_key}"
+  else
+    prompt_face="${icon_cat}"
+  fi
 
-PREEXEC_START_TIME=`date +%s`
+  local left_segment=""
+  if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+    left_segment+="%K{$primary_bg}%F{$primary_fg} ${icon_network}${HOST%%.*} %f%k"
+  else
+    left_segment+="%K{$primary_bg}%F{$primary_fg} %B${prompt_face}%b%f%k"
+  fi
+  left_segment+="%K{$secondary_bg}%F{$primary_bg}${left_sep}%f%k"
+  left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt_pwd)'" %f%k"
+  left_segment+="%F{$secondary_bg}${left_sep}%f"
 
-function precmd {
-  psvar=()
-  LANG=en_US.UTF-8 vcs_info
-  [[ -n "$vcs_info_msg_0_" ]] && psvar[1]="$vcs_info_msg_0_"
+  local right_segment=""
+  right_segment+="%F{$secondary_fg} "'$(prompt_git_branch)'" %f"
 
-  local icon_clock=$'\Uf017 '
-  local icon_git_branch=$'\Uf418 '
-  local end_time=`date +%s`
-  local run_time=$((end_time - PREEXEC_START_TIME))
-  PREEXEC_START_TIME=$end_time
-
-    if [ "$(whoami)" = 'shiwano' ]; then
-      RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|)"
-    else
-      local icon_user=$'\Uf2c0 '
-      RPROMPT="%{[35m%}${icon_clock}${run_time}s%{[m%} %1(v|%{[34m%}${icon_git_branch}%1v%{[m%}|) %{[36m%}${icon_user}%n%{[m%}"
-    fi
-}
-
-function preexec {
-  PREEXEC_START_TIME=`date +%s`
+  PROMPT="${left_segment}"
+  RPROMPT="${right_segment}"
+  PROMPT2="%F{$secondary_fg} > %f "
+  SPROMPT="%F{$secondary_fg}%r is correct? [n,y,a,e]: %f "
 }
 
 # History ----------------------------------------------------------------------

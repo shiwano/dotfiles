@@ -1,3 +1,0 @@
-[submodule "dot.config/base16-shell"]
-	path = dot.config/base16-shell
-	url = https://github.com/chriskempson/base16-shell.git
