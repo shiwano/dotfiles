@@ -1,0 +1,10 @@
+#!/bin/bash
+
+main() {
+  set -euo pipefail
+
+  cd "$(pwd)"
+  reflex -d none -r '^test/.*\.dart$' -- sh -c "echo \"\033[0;33m{} changed\033[0m\" && flutter test {} $(echo ${@:-})"
+}
+
+main "${@}"
