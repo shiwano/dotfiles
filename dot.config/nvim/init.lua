@@ -14,6 +14,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+math.randomseed(os.time())
 vim.env.LANG = "en_US.UTF-8"
 vim.g.mapleader = ","
 vim.g.maplocalleader = "\\"
@@ -507,13 +508,6 @@ local pluginSpec = {
   { "RRethy/nvim-treesitter-endwise", event = { "BufReadPre", "BufNewFile" } },
   { "buoto/gotests-vim", ft = { "go" } },
   {
-    "kburdett/vim-nuuid",
-    event = "InsertEnter",
-    init = function()
-      vim.g.nuuid_no_mappings = 1
-    end,
-  },
-  {
     "LeafCage/yankround.vim",
     init = function()
       vim.keymap.set("n", "p", "<Plug>(yankround-p)")
@@ -531,7 +525,6 @@ local pluginSpec = {
   { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "machakann/vim-sandwich", event = { "BufReadPre", "BufNewFile" } },
-  { "danro/rename.vim", event = { "BufReadPre", "BufNewFile" } },
   { "arthurxavierx/vim-caser", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
@@ -1056,28 +1049,6 @@ vim.api.nvim_create_user_command("Normalize", function()
   vim.opt.fileencoding = "utf-8"
 end, {})
 
--- Insert a random number
-vim.api.nvim_create_user_command("RandomNumber", function()
-  local input_digit = vim.fn.input("Number of digits (default=10):")
-  local digit = tonumber(input_digit) or 10
-
-  if digit < 1 then
-    vim.api.nvim_err_writeln("Invalid number")
-    return
-  end
-
-  local max_num = tonumber("9" .. string.rep("0", digit - 1)) or 0
-  local rand_num = math.random(0, max_num)
-  local insert_text = tostring(rand_num)
-
-  local line = vim.api.nvim_get_current_line()
-  local col_idx = vim.fn.col(".") - 1
-
-  local new_line = line:sub(1, col_idx) .. insert_text .. line:sub(col_idx + 1)
-  vim.api.nvim_set_current_line(new_line)
-  vim.api.nvim_win_set_cursor(0, { vim.fn.line("."), col_idx + #insert_text })
-end, {})
-
 -- Format JSON (using jq)
 vim.api.nvim_create_user_command("JSONFormat", function()
   vim.cmd("%!jq .")
@@ -1097,6 +1068,55 @@ vim.api.nvim_create_user_command("SaveMemo", function()
     vim.api.nvim_err_writeln("Failed to save memo: " .. err)
   end
 end, {})
+
+-------------------------------------------------------------------------------
+-- Rename
+-------------------------------------------------------------------------------
+local function sibling_files(arg_lead)
+  local dir = vim.fn.expand("%:h") .. "/"
+  local pattern = arg_lead .. "*"
+  local files = vim.fn.globpath(dir, pattern, false, true)
+  local results = {}
+  for _, path in ipairs(files) do
+    table.insert(results, vim.fn.fnamemodify(path, ":t"))
+  end
+  return results
+end
+
+local function rename(opts)
+  local new_name = vim.trim(opts.args or "")
+  if new_name == "" then
+    vim.api.nvim_err_writeln("New name empty")
+    return
+  end
+
+  local bang = opts.bang and "!" or ""
+  local oldfile = vim.fn.expand("%:p")
+  local curdir = vim.fn.expand("%:h") .. "/"
+  local newfile = curdir .. new_name
+
+  local ok, err = pcall(function()
+    vim.cmd("saveas" .. bang .. " " .. vim.fn.fnameescape(newfile))
+  end)
+  if not ok then
+    if err and not err:match("E329") then
+      vim.api.nvim_err_writeln("Failed to excute saveas: " .. err)
+      return
+    end
+  end
+
+  local current_file = vim.fn.expand("%:p")
+  if current_file ~= oldfile and vim.fn.filewritable(current_file) == 1 then
+    vim.cmd("bwipe! " .. vim.fn.fnameescape(oldfile))
+    local remove_ok, remove_err = pcall(os.remove, oldfile)
+    if not remove_ok then
+      vim.api.nvim_err_writeln("Failed to remove the old file: " .. tostring(remove_err))
+    end
+  end
+end
+
+vim.api.nvim_create_user_command("Rename", rename, { nargs = "*", bang = true, complete = sibling_files })
+vim.cmd('cabbrev rename <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "Rename" : "rename"<CR>')
 
 -------------------------------------------------------------------------------
 -- Splash
@@ -1213,3 +1233,26 @@ vim.api.nvim_create_autocmd("StdinReadPre", {
     vim.api.nvim_clear_autocmds({ group = "splash", event = "VimEnter" })
   end,
 })
+
+-------------------------------------------------------------------------------
+-- Abbreviations for insert mode
+-------------------------------------------------------------------------------
+function _G._new_uuid()
+  local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+  return string
+    .gsub(template, "[xy]", function(c)
+      local v = (c == "x") and math.random(0, 15) or math.random(8, 11)
+      return string.format("%x", v)
+    end)
+    :upper()
+end
+
+function _G._new_random()
+  local digit = 10
+  local max_num = tonumber("9" .. string.rep("0", digit - 1)) or 0
+  local rand_num = math.random(0, max_num)
+  return tostring(rand_num)
+end
+
+vim.cmd("inoreabbrev <expr> nuuid v:lua._new_uuid()")
+vim.cmd("inoreabbrev <expr> nrand v:lua._new_random()")
