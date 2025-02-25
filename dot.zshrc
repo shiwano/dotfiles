@@ -418,7 +418,7 @@ function prompt_git_branch() {
     secondary_fg="#73DACA"
   elif [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
     primary_bg="#FF9E64"
-    secondary_bg="#FF9E64"
+    secondary_fg="#FF9E64"
   fi
 
   local prompt_face
