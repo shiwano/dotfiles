@@ -11,8 +11,9 @@ cursor-style = block
 cursor-style-blink = false
 shell-integration-features = no-cursor
 quit-after-last-window-closed = true
-window-padding-x = 3
-window-padding-y = 3
+window-padding-x = 0
+window-padding-y = 0
+window-padding-color = extend
 keybind = cmd+n=unbind
 keybind = cmd+w=unbind
 keybind = cmd+shift+w=unbind
