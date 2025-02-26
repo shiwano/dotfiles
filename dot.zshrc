@@ -76,6 +76,27 @@ if command -v fzf 2>&1 >/dev/null; then
     --marker='X' \
     --history-size=5000 \
     --tiebreak=index \
+    --highlight-line \
+    --info=inline-right \
+    --ansi \
+    --layout=reverse \
+    --border=none \
+    --color=bg+:#283457 \
+    --color=bg:#191a22 \
+    --color=border:#27a1b9 \
+    --color=fg:#c0caf5 \
+    --color=gutter:#16161e \
+    --color=header:#ff9e64 \
+    --color=hl+:#2ac3de \
+    --color=hl:#2ac3de \
+    --color=info:#545c7e \
+    --color=marker:#ff007c \
+    --color=pointer:#ff007c \
+    --color=prompt:#2ac3de \
+    --color=query:#c0caf5:regular \
+    --color=scrollbar:#27a1b9 \
+    --color=separator:#ff9e64 \
+    --color=spinner:#ff007c \
     --bind=tab:down \
     --bind=shift-tab:up \
     --bind=ctrl-a:select-all \
@@ -376,7 +397,7 @@ fi
 setopt prompt_subst
 ZLE_RPROMPT_INDENT=0
 
-function prompt_pwd() {
+function prompt-pwd() {
   local dir="$(print -P '%~')"
   local icon_repo=$'\Uea62 '
 
@@ -389,7 +410,7 @@ function prompt_pwd() {
   fi
 }
 
-function prompt_git_branch() {
+function prompt-git-branch() {
   local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
   if [ -n "$branch" ]; then
     local icon_git_branch=$'\Ue0a0 '
@@ -437,11 +458,11 @@ function prompt_git_branch() {
     left_segment+="%K{$primary_bg}%F{$primary_fg} %B${prompt_face}%b%f%k"
   fi
   left_segment+="%K{$secondary_bg}%F{$primary_bg}${left_sep}%f%k"
-  left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt_pwd)'" %f%k"
+  left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt-pwd)'" %f%k"
   left_segment+="%F{$secondary_bg}${left_sep}%f"
 
   local right_segment=""
-  right_segment+="%F{$secondary_fg} "'$(prompt_git_branch)'" %f"
+  right_segment+="%F{$secondary_fg} "'$(prompt-git-branch)'" %f"
 
   PROMPT="${left_segment}"
   RPROMPT="${right_segment}"
@@ -537,9 +558,6 @@ zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # cd をしたときにlsを実行する
 function chpwd() { ls }
-
-# ディレクトリ名だけで､ディレクトリの移動をする｡
-setopt auto_cd
 
 # C-s, C-qを無効にする。
 setopt no_flow_control
