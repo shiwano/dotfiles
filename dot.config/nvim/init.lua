@@ -74,6 +74,20 @@ local pluginSpec = {
         ["ctrl-v"] = "vsplit",
       }
 
+      local function fzf_status_line()
+        vim.api.nvim_set_hl(0, "fzf1", { fg = "#7aa2f7", bg = "#3b4261" })
+        vim.api.nvim_set_hl(0, "fzf2", { fg = "#7aa2f7", bg = "#3b4261" })
+        vim.api.nvim_set_hl(0, "fzf3", { fg = "#7aa2f7", bg = "#3b4261" })
+        vim.opt_local.statusline = "%#fzf1# > %#fzf2#fz%#fzf3#f"
+      end
+
+      vim.api.nvim_create_augroup("fzf_status_line", { clear = true })
+      vim.api.nvim_create_autocmd("User", {
+        group = "fzf_status_line",
+        pattern = "FzfStatusLine",
+        callback = fzf_status_line,
+      })
+
       local function escape_pattern(text)
         return text:gsub("([^%w])", "%%%1")
       end
@@ -438,7 +452,12 @@ local pluginSpec = {
   {
     "neovim/nvim-lspconfig",
     config = function()
+      local lsp_status = require("lsp-status")
+      lsp_status.register_progress()
+
       local on_attach = function(client, bufnr)
+        lsp_status.on_attach(client)
+
         vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true })
         vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true })
         vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true })
@@ -463,6 +482,7 @@ local pluginSpec = {
 
       local caps = vim.lsp.protocol.make_client_capabilities()
       caps = require("cmp_nvim_lsp").default_capabilities(caps)
+      caps = vim.tbl_extend("keep", caps, lsp_status.capabilities)
 
       local cfg = require("lspconfig")
 
@@ -718,7 +738,17 @@ local pluginSpec = {
     end,
   },
   { "nvim-tree/nvim-web-devicons", lazy = true },
-  { "nvim-lua/lsp-status.nvim", lazy = true },
+  {
+    "nvim-lua/lsp-status.nvim",
+    lazy = true,
+    config = function()
+      require("lsp-status").config({
+        status_symbol = "",
+        current_function = false,
+        diagnostics = false,
+      })
+    end,
+  },
   {
     "nvim-lualine/lualine.nvim",
     config = function()
@@ -760,10 +790,7 @@ local pluginSpec = {
             "require'lsp-status'.status()",
             { "encoding", show_bomb = true },
             "fileformat",
-            {
-              "filetype",
-              icon_only = false,
-            },
+            { "filetype", icon_only = false },
           },
           lualine_y = { "branch", "selectioncount", "%2v", "%l/%L(%P)" },
           lualine_z = {},
