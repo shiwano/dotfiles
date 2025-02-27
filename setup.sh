@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -euo pipefail
+
 function topic {
   echo -en "\033[1;34m"
   echo "$*"
@@ -7,8 +9,6 @@ function topic {
 }
 
 main() {
-  set -euo pipefail
-
   local local_bin_dir=$HOME/bin
   local local_dotconfig_dir=$HOME/.config
   local dotfiles_dir=$HOME/dotfiles

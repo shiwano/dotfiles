@@ -1,8 +1,8 @@
 #!/bin/bash
 
-main() {
-  set -euo pipefail
+set -euo pipefail
 
+main() {
   cd "$(pwd)"
   reflex -d none -r '\.go$' -- sh -c "echo \"\033[0;33m{} changed\033[0m\" && go test \`dirname ./{}\` $(echo ${@:-})"
 }
