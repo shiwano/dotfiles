@@ -237,6 +237,7 @@ local pluginSpec = {
           return #match > 0 and match or nil
         end
       end
+
       require("other-nvim").setup({
         rememberBuffers = false,
         mappings = {
@@ -276,6 +277,7 @@ local pluginSpec = {
           { pattern = "(.+)%.hpp$", target = "%1.cpp" },
         },
       })
+
       vim.api.nvim_create_user_command("A", function()
         require("other-nvim").open()
       end, { nargs = "*" })
@@ -498,25 +500,31 @@ local pluginSpec = {
     end,
   },
   {
-    "github/copilot.vim",
-    init = function()
-      vim.g.copilot_no_maps = true
-      vim.g.copilot_filetypes = {
-        gitcommit = true,
-        markdown = true,
-      }
-
-      vim.keymap.set("i", "<C-l>", function()
-        if vim.b._copilot and vim.b._copilot.suggestions and not vim.tbl_isempty(vim.b._copilot.suggestions) then
-          return vim.fn["copilot#Accept"]("\\<CR>")
-        else
-          return vim.fn["copilot#Suggest"]()
-        end
-      end, { expr = true, silent = true, replace_keycodes = false })
-
-      vim.keymap.set("i", "<C-j>", "copilot#Next()", { expr = true, silent = true })
-      vim.keymap.set("i", "<C-k>", "copilot#Previous()", { expr = true, silent = true })
-      vim.keymap.set("i", "<C-h>", "copilot#Dismiss()", { expr = true, silent = true })
+    "zbirenbaum/copilot.lua",
+    cmd = "Copilot",
+    event = "InsertEnter",
+    config = function()
+      require("copilot").setup({
+        panel = { enabled = false },
+        suggestion = {
+          enabled = true,
+          auto_trigger = true,
+          hide_during_completion = true,
+          debounce = 100,
+          keymap = {
+            accept = "<C-l>",
+            next = "<C-j>",
+            prev = "<C-k>",
+            dismiss = "<C-h>",
+          },
+        },
+        filetypes = {
+          yaml = true,
+          markdown = true,
+          gitcommit = true,
+        },
+        copilot_node_command = "node",
+      })
     end,
   },
 
