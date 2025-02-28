@@ -692,30 +692,14 @@ local pluginSpec = {
     end,
   },
   {
-    "iamcco/markdown-preview.nvim",
-    ft = { "markdown" },
-    build = "cd app && yarn install",
-  },
-  {
-    "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
-    opts = {
-      code = {
-        enabled = true,
-        sign = false,
-        language_name = true,
-        style = "full",
-        border = "thick",
-      },
-      link = { enabled = true },
-      pipe_table = { enabled = true },
-      heading = { enabled = false },
-      paragraph = { enabled = false },
-      anti_conceal = { enabled = false },
-      bullet = { enabled = false },
-      inline_highlight = { enabled = false },
-      checkbox = { enabled = false },
-    },
+    "toppair/peek.nvim",
+    event = { "VeryLazy" },
+    build = "deno task --quiet build:fast",
+    config = function()
+      require("peek").setup()
+      vim.api.nvim_create_user_command("PeekOpen", require("peek").open, {})
+      vim.api.nvim_create_user_command("PeekClose", require("peek").close, {})
+    end,
   },
 
   -----------------------------------------------------------------------------
