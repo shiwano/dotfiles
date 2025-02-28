@@ -53,8 +53,7 @@ local pluginSpec = {
     "brenoprata10/nvim-highlight-colors",
     event = { "BufReadPre", "BufNewFile" },
     opts = {
-      enable_named_colors = false,
-      enable_tailwind = false,
+      enable_tailwind = true,
     },
   },
 
@@ -226,6 +225,7 @@ local pluginSpec = {
   },
   {
     "rgroli/other.nvim",
+    cmd = "A",
     event = { "BufReadPre", "BufNewFile" },
     init = function()
       local function p(pattern, ignorePattern)
@@ -1289,5 +1289,30 @@ function _G._new_random()
   return tostring(rand_num)
 end
 
+function _G._new_password()
+  local length = 16
+  local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()"
+  local password = {}
+  for _ = 1, length do
+    local rand = math.random(1, #chars)
+    table.insert(password, chars:sub(rand, rand))
+  end
+  return table.concat(password)
+end
+
+function _G._new_hex_color()
+  return string.format("#%06X", math.random(0, 0xFFFFFF))
+end
+
+function _G._new_random_date()
+  local year = math.random(2000, 2030)
+  local month = math.random(1, 12)
+  local day = math.random(1, 28)
+  return string.format("%04d-%02d-%02d", year, month, day)
+end
+
 vim.cmd("inoreabbrev <expr> nuuid v:lua._new_uuid()")
 vim.cmd("inoreabbrev <expr> nrand v:lua._new_random()")
+vim.cmd("inoreabbrev <expr> npass v:lua._new_password()")
+vim.cmd("inoreabbrev <expr> ncolor v:lua._new_hex_color()")
+vim.cmd("inoreabbrev <expr> ndate v:lua._new_random_date()")
