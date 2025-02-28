@@ -150,7 +150,10 @@ local pluginSpec = {
       end
 
       local function search_files_with_text()
-        local text = vim.fn.input("Search: ")
+        local ok, text = pcall(vim.fn.input, "Search: ")
+        if not ok then
+          return
+        end
         if #text > 0 then
           local escaped_text = vim.fn.escape(text, "\\.*$+?^[]\\(\\)\\{\\}\\|")
           vim.cmd("Rg " .. escaped_text)
@@ -227,7 +230,7 @@ local pluginSpec = {
     "rgroli/other.nvim",
     cmd = "A",
     event = { "BufReadPre", "BufNewFile" },
-    init = function()
+    config = function()
       local function p(pattern, ignorePattern)
         return function(file)
           if file:match(ignorePattern) then
@@ -655,7 +658,7 @@ local pluginSpec = {
       max_width = nil,
       max_height = nil,
       max_width_window_percentage = nil,
-      max_height_window_percentage = 50,
+      max_height_window_percentage = 90,
       window_overlap_clear_enabled = false,
       window_overlap_clear_ft_ignore = { "cmp_menu", "cmp_docs", "" },
       editor_only_render_when_focused = true,
@@ -666,6 +669,7 @@ local pluginSpec = {
   {
     "3rd/diagram.nvim",
     ft = { "markdown", "vimwiki", "neorg", "typst" },
+    cmd = "DiagramCacheClear",
     config = function()
       require("diagram").setup({
         integrations = {
@@ -673,12 +677,18 @@ local pluginSpec = {
           require("diagram.integrations.neorg"),
         },
         renderer_options = {
-          mermaid = { theme = "forest" },
+          mermaid = { theme = "default", background = "'#545c7e'", width = 1200 },
           plantuml = { charset = "utf-8" },
           d2 = { theme_id = 1 },
           gnuplot = { theme = "dark", size = "800,600" },
         },
       })
+
+      vim.api.nvim_create_user_command("DiagramCacheClear", function()
+        local target = vim.fn.resolve(vim.fn.stdpath("cache") .. "/diagram-cache")
+        vim.fn.delete(target, "rf")
+        vim.fn.mkdir(target, "p")
+      end, {})
     end,
   },
   {
