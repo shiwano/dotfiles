@@ -2,8 +2,6 @@ hs.loadSpoon("EmmyLua")
 hs.loadSpoon("ReloadConfiguration")
 spoon.ReloadConfiguration:start()
 
-require("hs.ipc")
-
 hs.window.animationDuration = 0
 
 local layoutSteps = {
@@ -12,6 +10,14 @@ local layoutSteps = {
   { ratio = 70 / 100, right = hs.layout.right70, left = hs.layout.left70, next_index = 1 },
 }
 local edgeThreshold = 50
+
+local function expectFocusedWindow(callback)
+  return function()
+    if hs.window.focusedWindow() then
+      callback()
+    end
+  end
+end
 
 local function focusWindowByApplication(hint)
   local app = hs.application.find(hint)
@@ -107,10 +113,19 @@ local function maximizeWindowSize()
   applyLayoutToWindow(hs.window.focusedWindow(), hs.layout.maximized)
 end
 
-local function expectFocusedWindow(callback)
-  return function()
-    if hs.window.focusedWindow() then
-      callback()
+local function onMarkdownPreviewLaunch(win)
+  local screen = win:screen()
+  hs.layout.apply({
+    { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
+    { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
+  })
+  focusWindowByApplication("Ghostty")
+end
+
+local function applicationWatcher(appName, eventType, app)
+  if eventType == hs.application.watcher.launched then
+    if appName == "deno" and app:allWindows()[1]:title() == "Peek preview" then
+      onMarkdownPreviewLaunch(app:allWindows()[1])
     end
   end
 end
@@ -121,19 +136,5 @@ hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Right", expectFocusedWindow(moveWindow
 hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Left", expectFocusedWindow(moveWindowToLeftScreenAndStepLeft))
 hs.hotkey.bind({ "cmd", "alt" }, "f", expectFocusedWindow(maximizeWindowSize))
 
-G = {}
-
-function G.onMarkdownPreviewLaunch()
-  os.execute("sleep " .. tonumber(1))
-  local win = hs.window.focusedWindow()
-  if not win then
-    return
-  end
-
-  local screen = win:screen()
-  hs.layout.apply({
-    { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
-    { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
-  })
-  focusWindowByApplication("Ghostty")
-end
+local appWatcher = hs.application.watcher.new(applicationWatcher)
+appWatcher:start()

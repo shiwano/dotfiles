@@ -699,10 +699,7 @@ local pluginSpec = {
     build = "deno task --quiet build:fast",
     config = function()
       require("peek").setup()
-      vim.api.nvim_create_user_command("MarkdownPreview", function()
-        require("peek").open()
-        vim.fn.system("hs -c 'G.onMarkdownPreviewLaunch()'")
-      end, {})
+      vim.api.nvim_create_user_command("MarkdownPreview", require("peek").open, {})
       vim.api.nvim_create_user_command("MarkdownPreviewClose", require("peek").close, {})
     end,
   },
