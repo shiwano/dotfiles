@@ -389,15 +389,7 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Code completion
   -----------------------------------------------------------------------------
-  {
-    "folke/lazydev.nvim",
-    ft = "lua",
-    opts = {
-      library = {
-        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
-      },
-    },
-  },
+  { "folke/lazydev.nvim", ft = "lua", opts = {} },
   { "hrsh7th/cmp-nvim-lsp", lazy = true },
   { "hrsh7th/cmp-path", lazy = true },
   { "hrsh7th/cmp-buffer", lazy = true },
@@ -405,6 +397,7 @@ local pluginSpec = {
     "hrsh7th/nvim-cmp",
     config = function()
       local cmp = require("cmp")
+      local types = require("cmp.types")
 
       local has_words_before = function()
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
@@ -445,7 +438,16 @@ local pluginSpec = {
           ["<C-b>"] = cmp.mapping.scroll_docs(-4),
         }),
         sources = cmp.config.sources({
-          { name = "nvim_lsp" },
+          {
+            name = "nvim_lsp",
+            entry_filter = function(entry, _)
+              local kind = types.lsp.CompletionItemKind[entry:get_kind()]
+              if kind == "Text" then
+                return false
+              end
+              return true
+            end,
+          },
           { name = "path" },
           { name = "buffer" },
           { name = "lazydev", group_index = 0 },
