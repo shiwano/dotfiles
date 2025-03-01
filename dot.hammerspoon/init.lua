@@ -1,4 +1,6 @@
 hs.loadSpoon("EmmyLua")
+hs.loadSpoon("ReloadConfiguration")
+spoon.ReloadConfiguration:start()
 
 require("hs.ipc")
 
@@ -99,16 +101,6 @@ local function stepLeft()
   win:setFrame(wFrame)
 end
 
-local function maximizeWindowSize()
-  local win = hs.window.focusedWindow()
-  if not win then
-    return
-  end
-  local screen = win:screen()
-  local sFrame = screen:frame()
-  win:setFrame(sFrame)
-end
-
 local function moveWindowToRightScreenAndStepRight()
   local win = hs.window.focusedWindow()
   if not win then
@@ -133,6 +125,16 @@ local function moveWindowToLeftScreenAndStepLeft()
     win:moveToScreen(prevScreen)
   end
   stepLeft()
+end
+
+local function maximizeWindowSize()
+  local win = hs.window.focusedWindow()
+  if not win then
+    return
+  end
+  local screen = win:screen()
+  local sFrame = screen:frame()
+  win:setFrame(sFrame)
 end
 
 hs.hotkey.bind({ "cmd", "alt" }, "Right", stepRight)
