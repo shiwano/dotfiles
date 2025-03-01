@@ -11,4 +11,5 @@ return {
   { name = "homebrew", path = "~/dotfiles/tools/Brewfile" },
   { name = "asdf", path = "~/.tool-versions" },
   { name = "ghostty", path = "~/.config/ghostty/config" },
+  { name = "hammerspoon", path = "~/.hammerspoon/init.lua" },
 }
