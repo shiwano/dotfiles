@@ -1,0 +1,8 @@
+{
+  "workspace.library": [
+    "~/.hammerspoon/Spoons/EmmyLua.spoon/annotations"
+  ],
+  "diagnostics.globals": [
+    "hs"
+  ]
+}

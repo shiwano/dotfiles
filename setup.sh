@@ -9,8 +9,6 @@ function topic {
 }
 
 main() {
-  local local_bin_dir=$HOME/bin
-  local local_dotconfig_dir=$HOME/.config
   local dotfiles_dir=$HOME/dotfiles
 
   topic 'Clone the repository'
@@ -23,6 +21,7 @@ main() {
 
   topic 'Setup bin directory'
 
+  local local_bin_dir=$HOME/bin
   mkdir -p $local_bin_dir
 
   for bin in $(find $dotfiles_dir/bin -type f -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'); do
@@ -32,11 +31,23 @@ main() {
 
   topic 'Setup .config directory'
 
+  local local_dotconfig_dir=$HOME/.config
   mkdir -p $local_dotconfig_dir
 
   for src in $(find $dotfiles_dir/dot.config -maxdepth 1 -mindepth 1 | grep -v '.DS_Store'); do
     echo 'Linking' $src '->' $local_dotconfig_dir
     ln -sf $src $local_dotconfig_dir
+  done
+
+  topic 'Setup dotdirs'
+
+  for dotdir in $(find $dotfiles_dir -maxdepth 1 -mindepth 1 -type d -name 'dot.*' | grep -v 'example'); do
+    if [ $(basename $dotdir) = 'dot.config' ]; then
+      continue
+    fi
+    local dest="$HOME/$(basename $dotdir | sed -e 's/^dot\./\./')"
+    echo 'Linking' $dotdir '->' $dest
+    ln -sfn $dotdir $dest
   done
 
   topic 'Setup dotfiles'
