@@ -6,31 +6,46 @@ require("hs.ipc")
 
 hs.window.animationDuration = 0
 
-local widthRatios = { 1 / 3, 1 / 2, 2 / 3 }
-local ratioTolerance = 0.01
+local layoutSteps = {
+  { ratio = 30 / 100, right = hs.layout.right30, left = hs.layout.left30, next_index = 2 },
+  { ratio = 50 / 100, right = hs.layout.right50, left = hs.layout.left50, next_index = 3 },
+  { ratio = 70 / 100, right = hs.layout.right70, left = hs.layout.left70, next_index = 1 },
+}
 local edgeThreshold = 50
 
-local function findNearestRatio(ratio, ratioList)
-  local nearest = ratioList[1]
-  local nearestDiff = math.abs(ratio - nearest)
-  for i = 2, #ratioList do
-    local diff = math.abs(ratio - ratioList[i])
+local function focusWindowByApplication(hint)
+  local app = hs.application.find(hint)
+  if app then
+    local window = app:allWindows()[1]
+    if window then
+      window:focus()
+    end
+  end
+end
+
+local function applyLayoutToWindow(window, layout)
+  if not window then
+    return
+  end
+  local app = window:application()
+  local screen = window:screen()
+  hs.layout.apply({
+    { app, window, screen, layout, nil, nil },
+  })
+end
+
+local function findNearestLayoutStep(winFrame, screenFrame)
+  local ratio = winFrame.w / screenFrame.w
+  local nearest = layoutSteps[1]
+  local nearestDiff = math.abs(ratio - nearest.ratio)
+  for i = 2, #layoutSteps do
+    local diff = math.abs(ratio - layoutSteps[i].ratio)
     if diff < nearestDiff then
       nearestDiff = diff
-      nearest = ratioList[i]
+      nearest = layoutSteps[i]
     end
   end
   return nearest
-end
-
-local function getNextRatio(current, ratioList)
-  for i, v in ipairs(ratioList) do
-    if math.abs(current - v) <= ratioTolerance then
-      local nextIndex = (i % #ratioList) + 1
-      return ratioList[nextIndex]
-    end
-  end
-  return ratioList[1]
 end
 
 local function isNearRightEdge(winFrame, screenFrame)
@@ -43,102 +58,82 @@ local function isNearLeftEdge(winFrame, screenFrame)
   return math.abs(winFrame.x - screenFrame.x) < edgeThreshold
 end
 
-local function stepRight()
+local function applyRightLayoutStep()
   local win = hs.window.focusedWindow()
-  if not win then
-    return
-  end
-
-  local screen = win:screen()
-  local sFrame = screen:frame()
+  local sFrame = win:screen():frame()
   local wFrame = win:frame()
-
-  local currentRatio = wFrame.w / sFrame.w
 
   if isNearRightEdge(wFrame, sFrame) then
-    local nearest = findNearestRatio(currentRatio, widthRatios)
-    local nextR = getNextRatio(nearest, widthRatios)
-    wFrame.w = sFrame.w * nextR
-    wFrame.x = sFrame.x + sFrame.w - wFrame.w
+    local nearest = findNearestLayoutStep(wFrame, sFrame)
+    applyLayoutToWindow(win, layoutSteps[nearest.next_index].right)
   else
-    local firstR = widthRatios[1]
-    wFrame.w = sFrame.w * firstR
-    wFrame.x = sFrame.x + sFrame.w - wFrame.w
+    applyLayoutToWindow(win, hs.layout.right30)
   end
-
-  wFrame.y = sFrame.y
-  wFrame.h = sFrame.h
-
-  win:setFrame(wFrame)
 end
 
-local function stepLeft()
+local function applyLeftLayoutStep()
   local win = hs.window.focusedWindow()
-  if not win then
-    return
-  end
-
-  local screen = win:screen()
-  local sFrame = screen:frame()
+  local sFrame = win:screen():frame()
   local wFrame = win:frame()
 
-  local currentRatio = wFrame.w / sFrame.w
-
   if isNearLeftEdge(wFrame, sFrame) then
-    local nearest = findNearestRatio(currentRatio, widthRatios)
-    local nextR = getNextRatio(nearest, widthRatios)
-    wFrame.w = sFrame.w * nextR
-    wFrame.x = sFrame.x
+    local nearest = findNearestLayoutStep(wFrame, sFrame)
+    applyLayoutToWindow(win, layoutSteps[nearest.next_index].left)
   else
-    local firstR = widthRatios[1]
-    wFrame.w = sFrame.w * firstR
-    wFrame.x = sFrame.x
+    applyLayoutToWindow(win, hs.layout.left30)
   end
-
-  wFrame.y = sFrame.y
-  wFrame.h = sFrame.h
-
-  win:setFrame(wFrame)
 end
 
 local function moveWindowToRightScreenAndStepRight()
   local win = hs.window.focusedWindow()
-  if not win then
-    return
-  end
   local screen = win:screen()
   local nextScreen = screen:toEast()
   if nextScreen then
     win:moveToScreen(nextScreen)
   end
-  stepRight()
+  applyRightLayoutStep()
 end
 
 local function moveWindowToLeftScreenAndStepLeft()
   local win = hs.window.focusedWindow()
-  if not win then
-    return
+  local westScreen = win:screen():toWest()
+  if westScreen then
+    win:moveToScreen(westScreen)
   end
-  local screen = win:screen()
-  local prevScreen = screen:toWest()
-  if prevScreen then
-    win:moveToScreen(prevScreen)
-  end
-  stepLeft()
+  applyLeftLayoutStep()
 end
 
 local function maximizeWindowSize()
+  applyLayoutToWindow(hs.window.focusedWindow(), hs.layout.maximized)
+end
+
+local function expectFocusedWindow(callback)
+  return function()
+    if hs.window.focusedWindow() then
+      callback()
+    end
+  end
+end
+
+hs.hotkey.bind({ "cmd", "alt" }, "Right", expectFocusedWindow(applyRightLayoutStep))
+hs.hotkey.bind({ "cmd", "alt" }, "Left", expectFocusedWindow(applyLeftLayoutStep))
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Right", expectFocusedWindow(moveWindowToRightScreenAndStepRight))
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Left", expectFocusedWindow(moveWindowToLeftScreenAndStepLeft))
+hs.hotkey.bind({ "cmd", "alt" }, "f", expectFocusedWindow(maximizeWindowSize))
+
+G = {}
+
+function G.onMarkdownPreviewLaunch()
+  os.execute("sleep " .. tonumber(1))
   local win = hs.window.focusedWindow()
   if not win then
     return
   end
-  local screen = win:screen()
-  local sFrame = screen:frame()
-  win:setFrame(sFrame)
-end
 
-hs.hotkey.bind({ "cmd", "alt" }, "Right", stepRight)
-hs.hotkey.bind({ "cmd", "alt" }, "Left", stepLeft)
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Right", moveWindowToRightScreenAndStepRight)
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Left", moveWindowToLeftScreenAndStepLeft)
-hs.hotkey.bind({ "cmd", "alt" }, "f", maximizeWindowSize)
+  local screen = win:screen()
+  hs.layout.apply({
+    { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
+    { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
+  })
+  focusWindowByApplication("Ghostty")
+end
