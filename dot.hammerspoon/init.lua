@@ -19,7 +19,7 @@ local function expectFocusedWindow(callback)
   end
 end
 
-local function focusWindowByApplication(hint)
+local function focusAnyWindowOfApplication(hint)
   local app = hs.application.find(hint)
   if app then
     local window = app:allWindows()[1]
@@ -27,6 +27,17 @@ local function focusWindowByApplication(hint)
       window:focus()
     end
   end
+end
+
+local function findWindowByApplicationAndTitle(app, title)
+  if app then
+    for _, window in ipairs(app:allWindows()) do
+      if window:title() == title then
+        return window
+      end
+    end
+  end
+  return nil
 end
 
 local function applyLayoutToWindow(window, layout)
@@ -90,23 +101,21 @@ local function applyLeftLayoutStep()
   end
 end
 
-local function moveWindowToRightScreenAndStepRight()
+local function moveWindowToRightScreen()
   local win = hs.window.focusedWindow()
   local screen = win:screen()
   local nextScreen = screen:toEast()
   if nextScreen then
     win:moveToScreen(nextScreen)
   end
-  applyRightLayoutStep()
 end
 
-local function moveWindowToLeftScreenAndStepLeft()
+local function moveWindowToLeftScreen()
   local win = hs.window.focusedWindow()
   local westScreen = win:screen():toWest()
   if westScreen then
     win:moveToScreen(westScreen)
   end
-  applyLeftLayoutStep()
 end
 
 local function maximizeWindowSize()
@@ -119,22 +128,25 @@ local function onMarkdownPreviewLaunch(win)
     { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
     { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
   })
-  focusWindowByApplication("Ghostty")
+  focusAnyWindowOfApplication("Ghostty")
 end
 
 local function applicationWatcher(appName, eventType, app)
   if eventType == hs.application.watcher.launched then
-    if appName == "deno" and app:allWindows()[1]:title() == "Peek preview" then
-      onMarkdownPreviewLaunch(app:allWindows()[1])
+    if appName == "deno" then
+      local win = findWindowByApplicationAndTitle(app, "Peek preview")
+      if win then
+        onMarkdownPreviewLaunch(win)
+      end
     end
   end
 end
 
 hs.hotkey.bind({ "cmd", "alt" }, "Right", expectFocusedWindow(applyRightLayoutStep))
 hs.hotkey.bind({ "cmd", "alt" }, "Left", expectFocusedWindow(applyLeftLayoutStep))
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Right", expectFocusedWindow(moveWindowToRightScreenAndStepRight))
-hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Left", expectFocusedWindow(moveWindowToLeftScreenAndStepLeft))
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Right", expectFocusedWindow(moveWindowToRightScreen))
+hs.hotkey.bind({ "cmd", "alt", "ctrl" }, "Left", expectFocusedWindow(moveWindowToLeftScreen))
 hs.hotkey.bind({ "cmd", "alt" }, "f", expectFocusedWindow(maximizeWindowSize))
 
-local appWatcher = hs.application.watcher.new(applicationWatcher)
-appWatcher:start()
+AppWatcher = hs.application.watcher.new(applicationWatcher)
+AppWatcher:start()
