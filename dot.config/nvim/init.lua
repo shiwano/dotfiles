@@ -389,7 +389,15 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Code completion
   -----------------------------------------------------------------------------
-  { "folke/lazydev.nvim", ft = "lua", opts = {} },
+  {
+    "folke/lazydev.nvim",
+    ft = "lua",
+    opts = {
+      library = {
+        { path = "${3rd}/luv/library", words = { "vim%.uv" } },
+      },
+    },
+  },
   { "hrsh7th/cmp-nvim-lsp", lazy = true },
   { "hrsh7th/cmp-path", lazy = true },
   { "hrsh7th/cmp-buffer", lazy = true },
@@ -687,7 +695,7 @@ local pluginSpec = {
       })
 
       vim.api.nvim_create_user_command("DiagramCacheClear", function()
-        local target = vim.fn.resolve(vim.fn.stdpath("cache") .. "/diagram-cache")
+        local target = require("diagram").get_cache_dir()
         vim.fn.delete(target, "rf")
         vim.fn.mkdir(target, "p")
       end, {})
