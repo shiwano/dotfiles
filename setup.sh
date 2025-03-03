@@ -16,7 +16,7 @@ main() {
   if [ -d $dotfiles_dir ]; then
     echo 'dotfiles repository already exists'
   else
-    git clone --recursive git@github.com:shiwano/dotfiles.git $dotfiles_dir
+    git clone git@github.com:shiwano/dotfiles.git $dotfiles_dir
   fi
 
   topic 'Setup bin directory'
