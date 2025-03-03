@@ -738,17 +738,6 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Misc
   -----------------------------------------------------------------------------
-  {
-    "ruanyl/vim-gh-line",
-    event = { "BufReadPre", "BufNewFile" },
-    init = function()
-      vim.g.gh_line_map_default = 0
-      vim.g.gh_line_blame_map_default = 0
-      vim.g.gh_line_map = "og"
-      vim.g.gh_line_blame_map = "ob"
-      vim.g.gh_use_canonical = 0
-    end,
-  },
   { "nvim-tree/nvim-web-devicons", lazy = true },
   {
     "nvim-lua/lsp-status.nvim",
@@ -1272,6 +1261,60 @@ vim.api.nvim_create_autocmd("StdinReadPre", {
     vim.api.nvim_clear_autocmds({ group = "splash", event = "VimEnter" })
   end,
 })
+
+-------------------------------------------------------------------------------
+-- Open GitHub line URL
+-------------------------------------------------------------------------------
+local function open_github_line_url()
+  local remotes = vim.fn.systemlist("git remote")
+  if #remotes == 0 then
+    print("no remotes")
+    return
+  end
+
+  local remote = remotes[1]
+  local remote_url = vim.fn.systemlist("git config --get remote." .. remote .. ".url")[1]
+  if not remote_url:find("github") then
+    print("not GitHub repository")
+    return
+  end
+
+  local base_url = remote_url
+  base_url = base_url:gsub("^ssh://", "")
+  base_url = base_url:gsub("^([^@]+)@([^:/]+)[:/](.+)$", "https://%2/%3")
+  base_url = base_url:gsub("%.git$", "")
+
+  local commit_id = vim.fn.systemlist("git rev-parse --abbrev-ref HEAD")[1]
+
+  local remote_branches = vim.fn.systemlist("git branch -r")
+  local branch_exists = false
+  for _, branch in ipairs(remote_branches) do
+    branch = branch:gsub("^%s+", ""):gsub("%s+$", "")
+    if branch == remote .. "/" .. commit_id then
+      branch_exists = true
+      break
+    end
+  end
+
+  if not branch_exists then
+    local upstream_branch = vim.fn.systemlist("git rev-parse --abbrev-ref @{u}")[1]
+    if not upstream_branch or upstream_branch == "" then
+      print("upstream branch not found")
+      return
+    end
+    commit_id = upstream_branch:gsub("^origin/", "")
+  end
+
+  local full_path = vim.fn.expand("%:p")
+  local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  local relative_path = full_path:sub(#git_root + 1)
+  local line_num = vim.fn.line(".")
+
+  local url = base_url .. "/blob/" .. commit_id .. relative_path .. "#" .. "L" .. line_num
+  vim.fn.system("open " .. url)
+end
+
+vim.keymap.set("n", "og", open_github_line_url, { silent = true })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode

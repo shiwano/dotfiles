@@ -35,7 +35,6 @@
   "ts-comments.nvim": { "branch": "main", "commit": "1bd9d0ba1d8b336c3db50692ffd0955fe1bb9f0c" },
   "vim-caser": { "branch": "master", "commit": "6bc9f41d170711c58e0157d882a5fe8c30f34bf6" },
   "vim-delve": { "branch": "master", "commit": "41d6ad294fb6dd5090f5f938318fc4ed73b6e1ea" },
-  "vim-gh-line": { "branch": "master", "commit": "731751fdfa4f64a061dbc7088cb7b2f12e0828ad" },
   "vim-molder": { "branch": "master", "commit": "b517d0346cf7e8d884f2706836e73169311ed805" },
   "vim-qfreplace": { "branch": "master", "commit": "707a895f9f86eeed106f64da0bd9fa07b3cd9cee" },
   "vim-sandwich": { "branch": "master", "commit": "74cf93d58ccc567d8e2310a69860f1b93af19403" },
