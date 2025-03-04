@@ -814,7 +814,7 @@ local pluginSpec = {
       theme.replace.c = { bg = theme.normal.c.bg, fg = theme.replace.a.bg }
       theme.terminal.c = { bg = theme.normal.c.bg, fg = theme.terminal.a.bg }
 
-      local function working_directory()
+      local function current_working_directory()
         local cwd = vim.fn.getcwd()
         if cwd == vim.fn.expand("$HOME") then
           return "~"
@@ -828,11 +828,11 @@ local pluginSpec = {
 
       local function encoding()
         ---@diagnostic disable-next-line: undefined-field
-        local result = vim.opt.fileencoding:get()
+        local result = vim.opt.fileencoding:get():upper()
         if vim.opt.bomb:get() then
-          result = result .. " [BOM]"
+          return result .. " [BOM]"
         end
-        return result:upper()
+        return result
       end
 
       require("lualine").setup({
@@ -851,7 +851,7 @@ local pluginSpec = {
         },
         sections = {
           lualine_a = { "mode" },
-          lualine_b = { working_directory },
+          lualine_b = { current_working_directory },
           lualine_c = {
             {
               "filename",
@@ -874,7 +874,7 @@ local pluginSpec = {
             "fileformat",
             { "filetype", icon_only = false },
           },
-          lualine_y = { "branch", "selectioncount", "%2v", "%l/%L(%P)" },
+          lualine_y = { "branch", "selectioncount", "%1v", "%l/%L(%P)" },
           lualine_z = {},
         },
         inactive_sections = {
