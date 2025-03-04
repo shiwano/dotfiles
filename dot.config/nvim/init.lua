@@ -979,7 +979,8 @@ vim.opt.fileencodings:append("euc-jp")
 -------------------------------------------------------------------------------
 vim.cmd("filetype plugin indent on")
 
-local filetype_mappings = {
+vim.api.nvim_create_augroup("filetype_detection", { clear = true })
+for pattern, filetype in pairs({
   ["dot.zshrc"] = "zsh",
   ["dot.tmux.*"] = "tmux",
   ["dot.gitconfig"] = "gitconfig",
@@ -990,9 +991,7 @@ local filetype_mappings = {
   ["Appfile"] = "ruby",
   [".envrc*"] = "sh",
   ["*.jb"] = "ruby",
-}
-vim.api.nvim_create_augroup("filetype_detection", { clear = true })
-for pattern, filetype in pairs(filetype_mappings) do
+}) do
   vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
     group = "filetype_detection",
     pattern = pattern,
