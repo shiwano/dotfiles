@@ -6,7 +6,6 @@ return {
   { name = "git", path = "~/.gitconfig" },
   { name = "gitignore", path = "~/.gitignore" },
   { name = "tmux", path = "~/.tmux.conf" },
-  { name = "tmuxdarwin", path = "~/.tmux.darwin.conf" },
   { name = "stylua", path = "~/dotfiles/.stylua.toml" },
   { name = "homebrew", path = "~/dotfiles/tools/Brewfile" },
   { name = "asdf", path = "~/.tool-versions" },
