@@ -26,7 +26,45 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Colorscheme
   -----------------------------------------------------------------------------
-  { "folke/tokyonight.nvim", lazy = false, priority = 1000, opts = {} },
+  {
+    "folke/tokyonight.nvim",
+    lazy = false,
+    priority = 1000,
+    config = function()
+      vim.cmd([[colorscheme tokyonight-night]])
+
+      local colors = require("tokyonight.colors").setup()
+
+      vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
+      vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
+        group = "highlight_idegraphic_space",
+        pattern = "*",
+        command = [[call matchadd('IdeographicSpace', '[\u00A0\u2000-\u200B\u3000]')]],
+      })
+      vim.api.nvim_create_autocmd("VimEnter", {
+        group = "highlight_idegraphic_space",
+        pattern = "*",
+        command = [[highlight default IdeographicSpace ctermbg=Gray guibg=]] .. colors.dark3,
+      })
+
+      vim.api.nvim_create_augroup("highlight_msg_area", {})
+      vim.api.nvim_create_autocmd("CmdlineEnter", {
+        group = "highlight_msg_area",
+        pattern = "*",
+        callback = function()
+          vim.cmd([[highlight MsgArea ctermfg=Yellow guifg=]] .. colors.yellow)
+          vim.cmd([[redraw]])
+        end,
+      })
+      vim.api.nvim_create_autocmd("CmdlineLeave", {
+        group = "highlight_msg_area",
+        pattern = "*",
+        callback = function()
+          vim.cmd([[highlight MsgArea ctermfg=Gray guifg=]] .. colors.dark3)
+        end,
+      })
+    end,
+  },
 
   -----------------------------------------------------------------------------
   -- Highlighting
@@ -64,6 +102,8 @@ local pluginSpec = {
   {
     "junegunn/fzf.vim",
     init = function()
+      local colors = require("tokyonight.colors").setup()
+
       vim.g.fzf_layout = { up = "~40%" }
 
       vim.g.fzf_action = {
@@ -73,18 +113,16 @@ local pluginSpec = {
         ["ctrl-v"] = "vsplit",
       }
 
-      local function fzf_status_line()
-        vim.api.nvim_set_hl(0, "fzf1", { fg = "#7aa2f7", bg = "#3b4261" })
-        vim.api.nvim_set_hl(0, "fzf2", { fg = "#7aa2f7", bg = "#3b4261" })
-        vim.api.nvim_set_hl(0, "fzf3", { fg = "#7aa2f7", bg = "#3b4261" })
-        vim.opt_local.statusline = "%#fzf1# > %#fzf2#fz%#fzf3#f"
-      end
-
       vim.api.nvim_create_augroup("fzf_status_line", { clear = true })
       vim.api.nvim_create_autocmd("User", {
         group = "fzf_status_line",
         pattern = "FzfStatusLine",
-        callback = fzf_status_line,
+        callback = function()
+          vim.api.nvim_set_hl(0, "fzf1", { fg = colors.blue, bg = colors.fg_gutter })
+          vim.api.nvim_set_hl(0, "fzf2", { fg = colors.blue, bg = colors.fg_gutter })
+          vim.api.nvim_set_hl(0, "fzf3", { fg = colors.blue, bg = colors.fg_gutter })
+          vim.opt_local.statusline = "%#fzf1# > %#fzf2#fz%#fzf3#f"
+        end,
       })
 
       local function escape_pattern(text)
@@ -692,13 +730,15 @@ local pluginSpec = {
     ft = { "markdown", "vimwiki", "neorg", "typst" },
     cmd = "DiagramCacheClear",
     config = function()
+      local colors = require("tokyonight.colors").setup()
+
       require("diagram").setup({
         integrations = {
           require("diagram.integrations.markdown"),
           require("diagram.integrations.neorg"),
         },
         renderer_options = {
-          mermaid = { theme = "default", background = "'#545c7e'", width = 1200 },
+          mermaid = { theme = "default", background = "'" .. colors.dark3 .. "'", width = 1200 },
           plantuml = { charset = "utf-8" },
           d2 = { theme_id = 1 },
           gnuplot = { theme = "dark", size = "800,600" },
@@ -755,7 +795,7 @@ local pluginSpec = {
     lazy = true,
     config = function()
       require("lsp-status").config({
-        status_symbol = "",
+        status_symbol = "\u{e20f}",
         current_function = false,
         diagnostics = false,
       })
@@ -764,12 +804,41 @@ local pluginSpec = {
   {
     "nvim-lualine/lualine.nvim",
     config = function()
+      local theme = require("lualine.themes.tokyonight-night")
+      local git_branch = require("lualine.components.branch.git_branch")
+
+      theme.normal.c.fg = theme.normal.a.bg
+      theme.insert.c = { bg = theme.normal.c.bg, fg = theme.insert.a.bg }
+      theme.command.c = { bg = theme.normal.c.bg, fg = theme.command.a.bg }
+      theme.visual.c = { bg = theme.normal.c.bg, fg = theme.visual.a.bg }
+      theme.replace.c = { bg = theme.normal.c.bg, fg = theme.replace.a.bg }
+      theme.terminal.c = { bg = theme.normal.c.bg, fg = theme.terminal.a.bg }
+
+      local function working_directory()
+        local cwd = vim.fn.getcwd()
+        if cwd == vim.fn.expand("$HOME") then
+          return "~"
+        end
+        local dir_name = vim.fn.fnamemodify(cwd, ":t")
+        if git_branch.get_branch() == "" then
+          return dir_name
+        end
+        return "\u{ea62} " .. dir_name
+      end
+
+      local function encoding()
+        ---@diagnostic disable-next-line: undefined-field
+        local result = vim.opt.fileencoding:get()
+        if vim.opt.bomb:get() then
+          result = result .. " [BOM]"
+        end
+        return result:upper()
+      end
+
       require("lualine").setup({
         options = {
           icons_enabled = true,
-          theme = "tokyonight",
-          component_separators = { left = "", right = "" },
-          section_separators = { left = "", right = "" },
+          theme = theme,
           disabled_filetypes = {
             statusline = { "fzf" },
             winbar = { "fzf" },
@@ -782,7 +851,8 @@ local pluginSpec = {
         },
         sections = {
           lualine_a = { "mode" },
-          lualine_b = {
+          lualine_b = { working_directory },
+          lualine_c = {
             {
               "filename",
               file_status = true,
@@ -797,10 +867,10 @@ local pluginSpec = {
               },
             },
           },
-          lualine_c = { "diagnostics" },
           lualine_x = {
+            "diagnostics",
             "require'lsp-status'.status()",
-            { "encoding", show_bomb = true },
+            encoding,
             "fileformat",
             { "filetype", icon_only = false },
           },
@@ -825,7 +895,7 @@ local pluginSpec = {
               },
             },
           },
-          lualine_x = { "location" },
+          lualine_x = { "%l/%L(%P)" },
           lualine_y = {},
           lualine_z = {},
         },
@@ -834,6 +904,7 @@ local pluginSpec = {
   },
 }
 
+---@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
@@ -849,27 +920,6 @@ require("lazy").setup({
       },
     },
   },
-})
-
--------------------------------------------------------------------------------
--- Colorscheme
--------------------------------------------------------------------------------
-vim.opt.termguicolors = true
-vim.o.background = "dark" -- or "light" for light mode
-vim.o.colorcolumn = "81"
-
-vim.cmd([[colorscheme tokyonight-night]])
-
-vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
-vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
-  group = "highlight_idegraphic_space",
-  pattern = { "*" },
-  command = [[call matchadd('IdeographicSpace', '[\u00A0\u2000-\u200B\u3000]')]],
-})
-vim.api.nvim_create_autocmd("VimEnter", {
-  group = "highlight_idegraphic_space",
-  pattern = { "*" },
-  command = [[highlight default IdeographicSpace ctermbg=DarkGreen guibg=DarkGreen]],
 })
 
 -------------------------------------------------------------------------------
@@ -910,6 +960,9 @@ vim.opt.display:append("uhex") -- Show hex value of the unprintable characters.
 vim.opt.breakindent = true -- Wrapped long lines are indented.
 vim.opt.showmode = false -- Hide mode message on the last line.
 vim.opt.signcolumn = "yes" -- Always show the signcolumn.
+vim.opt.colorcolumn = "81" -- Color column at 81 characters
+vim.opt.background = "dark" -- Dark background
+vim.opt.termguicolors = true -- Enable 24-bit RGB color in the terminal
 
 -- Draw the cursor line.
 vim.api.nvim_create_augroup("cch", { clear = true })
@@ -936,6 +989,12 @@ vim.api.nvim_create_autocmd("BufRead", {
     end
   end,
 })
+
+-- Diagnostic signs
+for type, icon in pairs({ Error = "\u{f057}", Warn = "\u{f071}", Hint = "\u{f0335}", Info = "\u{f05a}" }) do
+  local hl = "DiagnosticSign" .. type
+  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
+end
 
 -------------------------------------------------------------------------------
 -- Indent
