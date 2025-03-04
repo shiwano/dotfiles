@@ -1237,7 +1237,7 @@ local function splash()
   vim.opt_local.list = false
   vim.opt_local.number = false
   vim.opt_local.foldenable = false
-  vim.o.colorcolumn = ""
+  vim.opt.colorcolumn = ""
 
   local art = [[
                          ﾒ __-─-,-- _
@@ -1316,7 +1316,7 @@ _＿／ｿ    V   //／'|ヽ:ﾊ) |Ｙ   ‖   /:::＼ !  }‖  !||   /
   vim.opt_local.list = list
   vim.opt_local.number = number
   vim.opt_local.foldenable = foldenable
-  vim.o.colorcolumn = colorcolumn
+  vim.opt.colorcolumn = colorcolumn
 
   vim.api.nvim_feedkeys("\x1B", "n", false) -- <ESC>
   vim.api.nvim_input(ch)
