@@ -548,27 +548,38 @@ local pluginSpec = {
   { "windwp/nvim-ts-autotag", event = { "BufReadPre", "BufNewFile" }, config = true },
   { "RRethy/nvim-treesitter-endwise", event = { "BufReadPre", "BufNewFile" } },
   { "buoto/gotests-vim", ft = { "go" } },
-  {
-    "LeafCage/yankround.vim",
-    init = function()
-      vim.keymap.set("n", "p", "<Plug>(yankround-p)")
-      vim.keymap.set("x", "p", "<Plug>(yankround-p)")
-      vim.keymap.set("n", "P", "<Plug>(yankround-P)")
-      vim.keymap.set("n", "gp", "<Plug>(yankround-gp)")
-      vim.keymap.set("x", "gp", "<Plug>(yankround-gp)")
-      vim.keymap.set("n", "gP", "<Plug>(yankround-gP)")
-      vim.keymap.set("n", "<C-p>", "<Plug>(yankround-prev)")
-      vim.keymap.set("x", "<C-p>", "<Plug>(yankround-prev)")
-      vim.keymap.set("n", "<C-n>", "<Plug>(yankround-next)")
-      vim.keymap.set("x", "<C-n>", "<Plug>(yankround-next)")
-    end,
-  },
   { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "machakann/vim-sandwich", event = { "BufReadPre", "BufNewFile" } },
   { "arthurxavierx/vim-caser", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
+  {
+    "gbprod/yanky.nvim",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      require("yanky").setup({
+        ring = {
+          history_length = 100,
+          storage = "memory",
+        },
+        system_clipboard = {
+          sync_with_ring = true,
+        },
+        highlight = {
+          on_put = false,
+          on_yank = false,
+        },
+      })
+
+      vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
+      vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
+      vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
+      vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
+      vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
+      vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+    end,
+  },
 
   -----------------------------------------------------------------------------
   -- Debugging
@@ -880,10 +891,11 @@ vim.opt.foldenable = false -- No folding.
 vim.opt.modeline = false -- No modeline.
 vim.opt.undofile = true -- Save undo history to a file.
 vim.opt.undodir = os.getenv("HOME") .. "/.config/nvim/undo" -- Undo history directory.
-vim.opt.clipboard:append("unnamed") -- Use system clipboard.
+vim.opt.clipboard:append("unnamedplus") -- Use system clipboard.
 vim.opt.shortmess:append("c") -- Don't pass messages to |ins-completion-menu|.
 vim.opt.updatetime = 300 -- Avaid delays and poor user experienve (default is 4000 ms).
 vim.opt.backupcopy = "yes" -- Make a copy of the file and overwrite the original one.
+vim.opt.shada = "!,'5000,<50,s10,h" -- Save a lot of info in the shada file.
 
 -------------------------------------------------------------------------------
 -- View
@@ -896,7 +908,6 @@ vim.opt.list = true -- Show special characters.
 vim.opt.listchars = "tab:>.,trail:_,extends:>,precedes:<,nbsp:+" -- Specify characters for special characters.
 vim.opt.display:append("uhex") -- Show hex value of the unprintable characters.
 vim.opt.breakindent = true -- Wrapped long lines are indented.
-vim.opt.viminfo = "'5000" -- File history length
 vim.opt.showmode = false -- Hide mode message on the last line.
 vim.opt.signcolumn = "yes" -- Always show the signcolumn.
 
