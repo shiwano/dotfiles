@@ -19,6 +19,9 @@ vim.env.LANG = "en_US.UTF-8"
 vim.g.mapleader = ","
 vim.g.maplocalleader = "\\"
 
+---@type ColorScheme
+local colors = nil
+
 -------------------------------------------------------------------------------
 -- Plugins
 -------------------------------------------------------------------------------
@@ -33,7 +36,7 @@ local pluginSpec = {
     config = function()
       vim.cmd([[colorscheme tokyonight-night]])
 
-      local colors = require("tokyonight.colors").setup()
+      colors = require("tokyonight.colors").setup({ style = "night" })
 
       vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
       vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
@@ -102,8 +105,6 @@ local pluginSpec = {
   {
     "junegunn/fzf.vim",
     init = function()
-      local colors = require("tokyonight.colors").setup()
-
       vim.g.fzf_layout = { up = "~40%" }
 
       vim.g.fzf_action = {
@@ -730,8 +731,6 @@ local pluginSpec = {
     ft = { "markdown", "vimwiki", "neorg", "typst" },
     cmd = "DiagramCacheClear",
     config = function()
-      local colors = require("tokyonight.colors").setup()
-
       require("diagram").setup({
         integrations = {
           require("diagram.integrations.markdown"),
@@ -807,12 +806,13 @@ local pluginSpec = {
       local theme = require("lualine.themes.tokyonight-night")
       local git_branch = require("lualine.components.branch.git_branch")
 
-      theme.normal.c.fg = theme.normal.a.bg
-      theme.insert.c = { bg = theme.normal.c.bg, fg = theme.insert.a.bg }
-      theme.command.c = { bg = theme.normal.c.bg, fg = theme.command.a.bg }
-      theme.visual.c = { bg = theme.normal.c.bg, fg = theme.visual.a.bg }
-      theme.replace.c = { bg = theme.normal.c.bg, fg = theme.replace.a.bg }
-      theme.terminal.c = { bg = theme.normal.c.bg, fg = theme.terminal.a.bg }
+      theme.normal.c = { bg = colors.bg, fg = theme.normal.a.bg }
+      theme.insert.c = { bg = colors.bg, fg = theme.insert.a.bg }
+      theme.command.c = { bg = colors.bg, fg = theme.command.a.bg }
+      theme.visual.c = { bg = colors.bg, fg = theme.visual.a.bg }
+      theme.replace.c = { bg = colors.bg, fg = theme.replace.a.bg }
+      theme.terminal.c = { bg = colors.bg, fg = theme.terminal.a.bg }
+      theme.inactive.c.bg = colors.bg
 
       local function current_working_directory()
         local cwd = vim.fn.getcwd()

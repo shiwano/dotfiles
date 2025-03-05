@@ -1,3 +1,7 @@
+bindkey -e
+
+# Envs -------------------------------------------------------------------------
+
 export TERM=xterm-256color
 export LANG=ja_JP.UTF-8
 export XDG_CONFIG_HOME=$HOME/.config
@@ -5,17 +9,13 @@ export LS_COLORS='di=01;36'
 
 export GOPATH=$HOME/code
 
-bindkey -e
-bindkey '^]'   vi-find-next-char
-bindkey '^[^]' vi-find-prev-char
-
 if command -v brew 2>&1 >/dev/null; then
   export BREW_PREFIX=$(brew --prefix)
 else
-  export BREW_PREFIX='/usr/local'
+  export BREW_PREFIX='/nonexistent'
 fi
 
-# Completions and Site Functions -----------------------------------------------
+# Completions ------------------------------------------------------------------
 
 zstyle ':completion:*:*:make:*' tag-order 'targets'
 
@@ -27,35 +27,26 @@ if [ -d $BREW_PREFIX/share/zsh-completions ]; then
   FPATH=$BREW_PREFIX/share/zsh-completions:$FPATH
 fi
 
-if [ -d $BREW_PREFIX/share/zsh/site-functions ]; then
-  FPATH=$BREW_PREFIX/share/zsh/site-functions:$FPATH
-fi
-
 autoload -Uz compinit
 compinit
 
-# Envs -------------------------------------------------------------------------
+if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
+  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+fi
+
+# PATH -------------------------------------------------------------------------
 
 export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
 export MANPATH=$BREW_PREFIX/share/man:$BREW_PREFIX/man:/usr/share/man
 
-if [ -d $BREW_PREFIX/Cellar/coreutils ]; then
+if [ -d $BREW_PREFIX/opt/coreutils ]; then
   export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
   export MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d $BREW_PREFIX/Cellar/gnu-sed ]; then
+if [ -d $BREW_PREFIX/opt/gnu-sed ]; then
   export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
   export MANPATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnuman:$MANPATH"
-fi
-
-if [ -d $BREW_PREFIX/Cellar/openssl ]; then
-  export PATH="$BREW_PREFIX/opt/openssl/bin:$PATH"
-fi
-
-if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
-  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
-  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
 if [ -d ${HOME}/.local ] ; then
@@ -110,18 +101,6 @@ if command -v fzf 2>&1 >/dev/null; then
     --bind=ctrl-d:half-page-down"
   export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path \
     -g '!**/.git'"
-fi
-
-# asdf -------------------------------------------------------------------------
-
-if [ -e $BREW_PREFIX/opt/asdf/libexec/asdf.sh ]; then
-  . $BREW_PREFIX/opt/asdf/libexec/asdf.sh
-fi
-
-# Nix --------------------------------------------------------------------------
-
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-  . $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
 
 # Android Studio and Android SDK -----------------------------------------------
@@ -416,8 +395,7 @@ function prompt-git-branch() {
     local icon_git_branch=$'\Ue0a0 '
     echo "$icon_git_branch$branch"
   else
-    local icon_untracked=$'\Uf115 '
-    echo "${icon_untracked} untracked"
+    echo ''
   fi
 }
 
@@ -576,13 +554,20 @@ zle -N _do_nothing
 bindkey "^D" _do_nothing
 setopt IGNORE_EOF
 
-# .zshrc.local -----------------------------------------------------------------
-
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
-typeset -U path PATH # Remove duplicated PATHs.
-
-# direnv -----------------------------------------------------------------------
+# Includes ---------------------------------------------------------------------
 
 if command -v direnv 2>&1 >/dev/null; then
   eval "$(direnv hook zsh)"
 fi
+
+if [ -e $BREW_PREFIX/opt/asdf/libexec/asdf.sh ]; then
+  . $BREW_PREFIX/opt/asdf/libexec/asdf.sh
+fi
+
+if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
+  . $HOME/.nix-profile/etc/profile.d/nix.sh;
+fi
+
+[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+
+typeset -U path PATH # Remove duplicated PATHs.
