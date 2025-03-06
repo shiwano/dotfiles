@@ -3,19 +3,19 @@
 set -eu
 cd "$(dirname $0)"
 
-asdf plugin-add jq https://github.com/AZMCode/asdf-jq.git || true
-asdf plugin-add kubectl || true
-asdf plugin-add kustomize || true
-asdf plugin-add kubesec || true
-asdf plugin-add helm || true
-asdf plugin-add helmfile || true
-asdf plugin-add yq || true
-asdf plugin-add terraform || true
-asdf plugin-add direnv || true
-asdf plugin-add ruby || true
-asdf plugin-add flutter || true
-asdf plugin-add nodejs || true
-asdf plugin-add deno https://github.com/asdf-community/asdf-deno.git || true
+asdf plugin-add jq https://github.com/AZMCode/asdf-jq.git
+asdf plugin-add kubectl
+asdf plugin-add kustomize
+asdf plugin-add kubesec
+asdf plugin-add helm
+asdf plugin-add helmfile
+asdf plugin-add yq
+asdf plugin-add terraform
+asdf plugin-add direnv
+asdf plugin-add ruby
+asdf plugin-add flutter
+asdf plugin-add nodejs
+asdf plugin-add deno https://github.com/asdf-community/asdf-deno.git
 
 asdf install
 asdf reshim
