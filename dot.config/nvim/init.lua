@@ -670,26 +670,37 @@ local pluginSpec = {
   {
     "stevearc/conform.nvim",
     event = { "BufReadPre", "BufNewFile" },
-    opts = {
-      formatters_by_ft = {
-        go = { "goimports" },
-        gomod = { "goimports" },
-        c = { "clang-format" },
-        cpp = { "clang-format" },
-        objc = { "clang-format" },
-        dart = { "dart_format" },
-        lua = { "stylua" },
-        python = { "isort", "black" },
-        rust = { "rustfmt" },
-        javascript = { "prettier" },
-        typescript = { "prettier" },
-        markdown = { "markdownfmt" },
-      },
-      format_on_save = {
-        timeout_ms = 5000,
-        lsp_format = "fallback",
-      },
-    },
+    config = function()
+      require("conform").setup({
+        formatters_by_ft = {
+          go = { "goimports" },
+          gomod = { "goimports" },
+          c = { "clang-format" },
+          cpp = { "clang-format" },
+          objc = { "clang-format" },
+          dart = { "dart_format" },
+          lua = { "stylua" },
+          python = { "isort", "black" },
+          rust = { "rustfmt" },
+          javascript = { "prettier" },
+          typescript = { "prettier" },
+          markdown = { "markdownfmt" },
+        },
+        format_on_save = function(bufnr)
+          if vim.b[bufnr].disable_autoformat then
+            return
+          end
+          return { timeout_ms = 500, lsp_format = "fallback" }
+        end,
+      })
+
+      vim.api.nvim_create_user_command("FormatDisable", function()
+        vim.b.disable_autoformat = true
+      end, {})
+      vim.api.nvim_create_user_command("FormatEnable", function()
+        vim.b.disable_autoformat = false
+      end, {})
+    end,
   },
 
   -----------------------------------------------------------------------------
@@ -866,15 +877,16 @@ local pluginSpec = {
                 unnamed = "NO NAME",
               },
             },
+            "diagnostics",
           },
           lualine_x = {
-            "diagnostics",
             "require'lsp-status'.status()",
-            encoding,
-            "fileformat",
             { "filetype", icon_only = false },
+            "fileformat",
+            encoding,
+            "branch",
           },
-          lualine_y = { "branch", "selectioncount", "%1v", "%l/%L(%P)" },
+          lualine_y = { "selectioncount", "%1v", "%l/%L(%P)" },
           lualine_z = {},
         },
         inactive_sections = {
@@ -1172,28 +1184,29 @@ end, {})
 local function sibling_files(arg_lead)
   local dir = vim.fn.expand("%:h") .. "/"
   local pattern = arg_lead .. "*"
-  local files = vim.fn.globpath(dir, pattern, false, true)
-  local results = {}
-  for _, path in ipairs(files) do
-    table.insert(results, vim.fn.fnamemodify(path, ":t"))
+  local paths = vim.fn.globpath(dir, pattern, false, true)
+  local files = {}
+  for _, path in ipairs(paths) do
+    if vim.fn.isdirectory(path) == 0 then
+      table.insert(files, vim.fn.fnamemodify(path, ":t"))
+    end
   end
-  return results
+  return files
 end
 
-local function rename(opts)
-  local new_name = vim.trim(opts.args or "")
+local function rename(name)
+  local new_name = vim.trim(name)
   if new_name == "" then
     vim.api.nvim_err_writeln("New name empty")
     return
   end
 
-  local bang = opts.bang and "!" or ""
   local oldfile = vim.fn.expand("%:p")
   local curdir = vim.fn.expand("%:h") .. "/"
   local newfile = curdir .. new_name
 
   local ok, err = pcall(function()
-    vim.cmd("saveas" .. bang .. " " .. vim.fn.fnameescape(newfile))
+    vim.cmd("saveas" .. " " .. vim.fn.fnameescape(newfile))
   end)
   if not ok then
     if err and not err:match("E329") then
@@ -1212,7 +1225,10 @@ local function rename(opts)
   end
 end
 
-vim.api.nvim_create_user_command("Rename", rename, { nargs = "*", bang = true, complete = sibling_files })
+vim.api.nvim_create_user_command("Rename", function(opts)
+  rename(opts.args or "")
+end, { nargs = "*", complete = sibling_files })
+
 vim.cmd('cabbrev rename <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "Rename" : "rename"<CR>')
 
 -------------------------------------------------------------------------------
