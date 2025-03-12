@@ -7,4 +7,4 @@ main() {
   reflex -d none -r '\.go$' -- sh -c "echo \"\033[0;33m{} changed\033[0m\" && go test \`dirname ./{}\` $(echo ${@:-})"
 }
 
-main "${@}"
+main "$@"
