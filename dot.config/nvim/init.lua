@@ -75,19 +75,14 @@ local pluginSpec = {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    config = function()
-      require("nvim-treesitter.configs").setup({
-        modules = {},
-        sync_install = false,
-        ensure_installed = "all",
-        auto_install = false,
-        ignore_install = {},
-        parser_install_dir = nil,
-        highlight = { enable = true, disable = {} },
-        indent = { enable = true },
-        endwise = { enable = true },
-      })
-    end,
+    opts = {
+      ensure_installed = "all",
+      sync_install = false,
+      auto_install = false,
+      highlight = { enable = true },
+      indent = { enable = true },
+      endwise = { enable = true },
+    },
   },
   { "mechatroner/rainbow_csv", ft = { "csv" } },
   {
@@ -1180,6 +1175,7 @@ end, {})
 
 -------------------------------------------------------------------------------
 -- Rename
+-- original: https://github.com/danro/rename.vim/blob/master/plugin/rename.vim
 -------------------------------------------------------------------------------
 local function sibling_files(arg_lead)
   local dir = vim.fn.expand("%:h") .. "/"
@@ -1233,7 +1229,7 @@ vim.cmd('cabbrev rename <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "Rename"
 
 -------------------------------------------------------------------------------
 -- Splash
--- ref: https://github.com/thinca/vim-splash
+-- original: https://github.com/thinca/vim-splash
 -------------------------------------------------------------------------------
 local function splash()
   if vim.fn.argc() ~= 0 or vim.fn.bufnr("$") ~= 1 then
@@ -1349,6 +1345,7 @@ vim.api.nvim_create_autocmd("StdinReadPre", {
 
 -------------------------------------------------------------------------------
 -- Open GitHub line URL
+-- original: https://github.com/ruanyl/vim-gh-line
 -------------------------------------------------------------------------------
 local function open_github_line_url()
   local remotes = vim.fn.systemlist("git remote")
