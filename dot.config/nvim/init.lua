@@ -1175,7 +1175,7 @@ end, {})
 
 -------------------------------------------------------------------------------
 -- Rename
--- original: https://github.com/danro/rename.vim/blob/master/plugin/rename.vim
+-- original: https://github.com/danro/rename.vim
 -------------------------------------------------------------------------------
 local function sibling_files(arg_lead)
   local dir = vim.fn.expand("%:h") .. "/"
