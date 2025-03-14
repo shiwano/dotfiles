@@ -26,9 +26,10 @@ usage() {
   cat << EOF >&2
 Usage: fzf-preview <mode> <target>
 
-Example: fzf-preview file /path/to/file
-         fzf-preview diff /path/to/file
-         fzf-preview grepped /path/to/file
+Example:
+  fzf-preview file /path/to/file
+  fzf-preview diff /path/to/file
+  fzf-preview grepped /path/to/file
 EOF
 }
 
