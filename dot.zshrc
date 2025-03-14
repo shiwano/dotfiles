@@ -137,7 +137,7 @@ fi
 
 # Functions --------------------------------------------------------------------
 
-function compress {
+compress() {
   if [ -f $1 ] ; then
     tar -zcvf $1.tar.gz $1
   elif [ -d $1 ] ; then
@@ -147,7 +147,7 @@ function compress {
   fi
 }
 
-function extract {
+extract() {
   if [ -f $1 ] ; then
     case $1 in
       *.tar.bz2)   tar xvjf $1    ;;
@@ -171,7 +171,7 @@ function extract {
   fi
 }
 
-function static-httpd {
+static-httpd() {
   if command -v python 2>&1 >/dev/null; then
     if python -V 2>&1 | grep -qm1 'Python 3\.'; then
       python -m http.server ${1-5000}
@@ -183,7 +183,7 @@ function static-httpd {
   fi
 }
 
-function move-to-git-repository {
+move-to-git-repository() {
   local items="$(echo 'dotfiles'; ghq list)"
   [ -z "$items" ] && return
   local s="$(echo -e $items | fzf --preview '' --prompt 'MoveTo> ')"
@@ -191,7 +191,7 @@ function move-to-git-repository {
   [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
 
-function edit-git-grepped-file {
+edit-git-grepped-file() {
   local search=$1
   [ -z "$search" ] && return
   local files="$(git grep -n --color=always "$search")"
@@ -208,7 +208,7 @@ function edit-git-grepped-file {
   fi
 }
 
-function edit-git-file {
+edit-git-file() {
   local dir=${1-.}
   local files="$(git ls-files $dir)"
   [ -z "$files" ] && return
@@ -218,7 +218,7 @@ function edit-git-file {
   vi $s
 }
 
-function edit-git-changed-file {
+edit-git-changed-file() {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
   if [ -z "$files" ]; then
     edit-git-file
@@ -230,7 +230,7 @@ function edit-git-changed-file {
   vi $s
 }
 
-function copy-file-path-to-clipboard {
+copy-file-path-to-clipboard() {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
   [ -z "$files" ] && return
@@ -240,7 +240,7 @@ function copy-file-path-to-clipboard {
   echo "Copied to clipboard: $s"
 }
 
-function copy-changed-file-path-to-clipboard {
+copy-changed-file-path-to-clipboard() {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
   [ -z "$files" ] && return
   local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
@@ -249,7 +249,7 @@ function copy-changed-file-path-to-clipboard {
   echo "Copied to clipboard: $s"
 }
 
-function copy-image-path-to-clipboard {
+copy-image-path-to-clipboard() {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
   [ -z "$files" ] && return
@@ -259,7 +259,7 @@ function copy-image-path-to-clipboard {
   echo "Copied to clipboard: $s"
 }
 
-function git-switch-branch() {
+git-switch-branch() {
   local branches=$(git mru | tac)
   [ -z "$branches" ] && return
   local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
@@ -267,7 +267,7 @@ function git-switch-branch() {
   git switch $s
 }
 
-function git-add-files() {
+git-add-files() {
   local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
   [ -z "$files" ] && return
   local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
@@ -276,7 +276,7 @@ function git-add-files() {
   git status
 }
 
-function git-restore-files() {
+git-restore-files() {
   local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
   [ -z "$files" ] && return
   local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
@@ -285,7 +285,7 @@ function git-restore-files() {
   git status
 }
 
-function git-unstage-files() {
+git-unstage-files() {
   local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
   [ -z "$files" ] && return
   local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
@@ -294,7 +294,7 @@ function git-unstage-files() {
   git status
 }
 
-function git-stash-files() {
+git-stash-files() {
   local files="$(git status -s -u --no-renames)"
   [ -z "$files" ] && return
   local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'StashFiles> ' | cut -c4-)"
@@ -317,21 +317,21 @@ function git-stash-files() {
   git status
 }
 
-function select-history() {
+select-history() {
   BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt 'History> ' --preview="")
   CURSOR=$#BUFFER
 }
 
-function remove-last-command() {
+remove-last-command() {
   local last_command=$(fc -ln -1)
   fc -p $last_command
 }
 
-function local-ip-address() {
+local-ip-address() {
   ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
-function run-n-times() {
+run-n-times() {
   if [ "$#" -ne 2 ]; then
     echo "Usage: run-n-times <times> <command>"
     return 1
@@ -424,7 +424,7 @@ fi
 setopt prompt_subst
 ZLE_RPROMPT_INDENT=0
 
-function prompt-pwd() {
+prompt-pwd() {
   local dir="$(print -P '%~')"
   local icon_repo=$'\Uea62 '
 
@@ -437,7 +437,7 @@ function prompt-pwd() {
   fi
 }
 
-function prompt-git-branch() {
+prompt-git-branch() {
   local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
   if [ -n "$branch" ]; then
     local icon_git_branch=$'\Ue0a0 '
@@ -583,7 +583,7 @@ WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # cd をしたときにlsを実行する
-function chpwd() { ls }
+chpwd() { ls }
 
 # ディレクトリ名だけで､ディレクトリの移動をする｡
 setopt auto_cd
@@ -597,7 +597,7 @@ ulimit -n 200000
 ulimit -u 2000
 
 # Disable C-d to exit shell
-function _do_nothing() {}
+_do_nothing() {}
 zle -N _do_nothing
 bindkey "^D" _do_nothing
 setopt IGNORE_EOF

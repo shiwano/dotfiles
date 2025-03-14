@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-function topic {
+topic() {
   echo -en "\033[1;34m"
   echo "$*"
   echo -en "\033[0m"

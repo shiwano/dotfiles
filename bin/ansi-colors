@@ -2,13 +2,13 @@
 
 set -euo pipefail
 
-function topic {
+topic() {
   echo -en "\033[1;34m"
   echo "$*"
   echo -en "\033[0m"
 }
 
-function main {
+main() {
   topic "Base foreground colors"
 
   fg_codes=(30 31 32 33 34 35 36 37 90 91 92 93 94 95 96 97)
