@@ -191,7 +191,7 @@ move-to-git-repository() {
   [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
 
-edit-git-grepped-file() {
+edit-git-grepped-files() {
   local search=$1
   [ -z "$search" ] && return
   local files="$(git grep -n --color=always "$search")"
@@ -350,7 +350,7 @@ alias t='git-stash-files'
 alias g='move-to-git-repository'
 alias v='edit-git-changed-file'
 alias vv='edit-git-file'
-alias gg='edit-git-grepped-file'
+alias gg='edit-git-grepped-files'
 alias files='copy-file-path-to-clipboard'
 alias files-changed='copy-changed-file-path-to-clipboard'
 alias images='copy-image-path-to-clipboard'
