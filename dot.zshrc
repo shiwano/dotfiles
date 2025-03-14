@@ -118,7 +118,7 @@ if [ -d "$HOME/Library/Android/sdk" ]; then
   export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
 fi
 
-# Vim --------------------------------------------------------------------------
+# Neovim -----------------------------------------------------------------------
 
 if command -v nvim 2>&1 >/dev/null; then
   if [ -n "${NVIM}" ]; then
