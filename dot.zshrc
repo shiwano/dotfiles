@@ -99,8 +99,7 @@ if command -v fzf 2>&1 >/dev/null; then
     --bind=down:preview-page-down \
     --bind=ctrl-u:half-page-up \
     --bind=ctrl-d:half-page-down"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path \
-    -g '!**/.git'"
+  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path -g '!**/.git'"
 fi
 
 # Android Studio and Android SDK -----------------------------------------------
@@ -356,7 +355,6 @@ alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
-alias tmux='tmux-single-session'
 alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
@@ -380,6 +378,10 @@ alias zmv='noglob zmv -W'
 alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
+
+if command -v tmux 2>&1 >/dev/null; then
+  alias tmux-single-session='tmux new-session -A -s main'
+fi
 
 if command -v go 2>&1 >/dev/null; then
   alias go-build-all='go test -run=^$ ./... 1>/dev/null'
