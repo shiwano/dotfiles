@@ -127,12 +127,12 @@ if command -v nvim 2>&1 >/dev/null; then
     alias nvim='echo "already open nvim"'
   else
     alias vi='nvim'
+    alias vim='nvim'
   fi
   alias vimdiff='nvim -d'
   export EDITOR='nvim'
 else
-  alias vi='vim'
-  export EDITOR='vim'
+  export EDITOR='vi'
 fi
 
 # Functions --------------------------------------------------------------------
