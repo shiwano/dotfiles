@@ -184,9 +184,10 @@ function static-httpd {
   fi
 }
 
-function move-to-ghq-directory {
+function move-to-git-repository {
   local items="$(echo 'dotfiles'; ghq list)"
-  local s="$(echo -e $items | fzf --preview '' --prompt 'GitRepos> ')"
+  [ -z "$items" ] && return
+  local s="$(echo -e $items | fzf --preview '' --prompt 'MoveTo> ')"
   [ -z "$s" ] && return
   [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
@@ -195,16 +196,24 @@ function edit-git-grepped-file {
   local search=$1
   [ -z "$search" ] && return
   local files="$(git grep -n --color=always "$search")"
-  local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'GitFiles> ')"
+  [ -z "$files" ] && return
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'Edit> ')"
   [ -z "$s" ] && return
-  local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
-  vi -c "cexpr '$escaped_s' | copen"
+  if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
+    local file=$(echo "$s" | awk -F ':' '{print $1}' | head -n 1)
+    print -s "vi $file" && fc -AI
+    vi $file
+  else
+    local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
+    vi -c "cexpr '$escaped_s' | copen"
+  fi
 }
 
 function edit-git-file {
   local dir=${1-.}
   local files="$(git ls-files $dir)"
-  local s="$(echo -e $files | fzf --prompt 'GitFiles> ')"
+  [ -z "$files" ] && return
+  local s="$(echo -e $files | fzf --prompt 'Edit> ')"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -216,7 +225,7 @@ function edit-git-changed-file {
     edit-git-file
     return
   fi
-  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'GitFiles> ' | cut -c4-)"
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'Edit> ' | cut -c4-)"
   [ -z "$s" ] && return
   print -s "vi $s" && fc -AI
   vi $s
@@ -225,7 +234,8 @@ function edit-git-changed-file {
 function copy-file-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf --prompt 'Files> ')"
+  [ -z "$files" ] && return
+  local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -233,7 +243,8 @@ function copy-file-path-to-clipboard {
 
 function copy-changed-file-path-to-clipboard {
   local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4-)"
+  [ -z "$files" ] && return
+  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
@@ -242,35 +253,69 @@ function copy-changed-file-path-to-clipboard {
 function copy-image-path-to-clipboard {
   local dir=${1-}
   local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
-  local s="$(echo -e $files | fzf --prompt 'Images> ')"
+  [ -z "$files" ] && return
+  local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
   [ -z "$s" ] && return
   printf "%s" "$s" | pbcopy
   echo "Copied to clipboard: $s"
 }
 
-function switch-git-branch() {
+function git-switch-branch() {
   local branches=$(git mru | tac)
-  local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitBranches> ' | cut -d' ' -f1)"
+  [ -z "$branches" ] && return
+  local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
   [ -z "$s" ] && return
   git switch $s
 }
 
-function add-git-files() {
-  local files="$(git status -s -u --no-renames | grep -v -E "^M ")"
+function git-add-files() {
+  local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
   [ -z "$files" ] && return
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git add && git status
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
+  [ -z "$s" ] && return
+  echo -e $s | tr '\n' ' ' | xargs -n1 git add
+  git status
 }
 
-function restore-git-files() {
-  local files="$(git status -s -u --no-renames | grep -v -E "^[MA] ")"
+function git-restore-files() {
+  local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
   [ -z "$files" ] && return
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git restore && git status
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
+  [ -z "$s" ] && return
+  echo -e $s | tr '\n' ' ' | xargs -n1 git restore
+  git status
 }
 
-function unstage-git-files() {
-  local files="$(git status -s -u --no-renames | grep -E "^[MA] ")"
+function git-unstage-files() {
+  local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
   [ -z "$files" ] && return
-  echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitFiles> ' | cut -c4- | tr '\n' ' ' | xargs -n1 git reset HEAD && git status
+  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
+  [ -z "$s" ] && return
+  echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
+  git status
+}
+
+function git-stash-files() {
+  local files="$(git status -s -u --no-renames)"
+  [ -z "$files" ] && return
+  local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'StashFiles> ' | cut -c4-)"
+  [ -z "$s" ] && return
+
+  local new_files=()
+  local existing_files=()
+  while IFS= read -r file; do
+    if git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
+      existing_files+=("$file")
+    else
+      new_files+=("$file")
+    fi
+  done <<< "$s"
+
+  if [ ${#new_files[@]} -ne 0 ]; then
+    git add "${new_files[@]}"
+  fi
+  git stash push -- "${existing_files[@]}" "${new_files[@]}"
+  git status
 }
 
 function select-history() {
@@ -316,12 +361,13 @@ alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authoriz
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 
-alias a='add-git-files'
-alias b='switch-git-branch'
+alias a='git-add-files'
+alias b='git-switch-branch'
 alias s='git status'
-alias u='unstage-git-files'
-alias r='restore-git-files' # hide 'r' which is zsh's built-in command
-alias g='move-to-ghq-directory'
+alias u='git-unstage-files'
+alias r='git-restore-files' # hide 'r' which is zsh's built-in command
+alias t='git-stash-files'
+alias g='move-to-git-repository'
 alias v='edit-git-changed-file'
 alias vv='edit-git-file'
 alias gg='edit-git-grepped-file'
