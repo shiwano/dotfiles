@@ -392,7 +392,7 @@ if ! command -v pbcopy 2>&1 >/dev/null; then
   if command -v xsel 2>&1 >/dev/null; then
     alias pbcopy='xsel --clipboard --input'
     alias pbpaste='xsel --clipboard --output'
-  elif command -v xsel 2>&1 >/dev/null; then
+  elif command -v xclip 2>&1 >/dev/null; then
     alias pbcopy='xclip -selection clipboard'
     alias pbpaste='xclip -selection clipboard -o'
   else
