@@ -331,24 +331,6 @@ local-ip-address() {
   ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
-run-n-times() {
-  if [ "$#" -ne 2 ]; then
-    echo "Usage: run-n-times <times> <command>"
-    return 1
-  fi
-  local times="$1"
-  local command="$2"
-  if ! echo "$times" | grep -E '^[0-9]+$' > /dev/null; then
-    echo "Invalid times. Only numeric values are allowed." "$times"
-    return 1
-  fi
-  for i in $(seq 1 $times); do
-    eval $command || { echo "FAILED"; break; }
-  done
-  echo -e "\e[90mTo run the same command again, use:"
-  echo -e "for i in \$(seq 1 $times); do $command || { echo \"FAILED\"; break; }; done\e[0m"
-}
-
 # Aliases ----------------------------------------------------------------------
 
 alias ls='ls --color=auto'
