@@ -2,7 +2,12 @@ bindkey -e
 
 # Envs -------------------------------------------------------------------------
 
-export TERM=xterm-256color
+if [ -n "$TMUX" ]; then
+  export TERM=tmux-256color
+else
+  export TERM=xterm-256color
+fi
+
 export LANG=ja_JP.UTF-8
 export XDG_CONFIG_HOME=$HOME/.config
 export LS_COLORS='di=01;36'
