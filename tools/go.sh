@@ -14,3 +14,4 @@ go install github.com/cespare/reflex@latest
 go install github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt@latest
 go install github.com/rhysd/actionlint/cmd/actionlint@latest
 go install oss.terrastruct.com/d2@latest
+go install mvdan.cc/sh/v3/cmd/shfmt@latest

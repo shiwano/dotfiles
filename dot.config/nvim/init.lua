@@ -680,6 +680,7 @@ local pluginSpec = {
           javascript = { "prettier" },
           typescript = { "prettier" },
           markdown = { "markdownfmt" },
+          sh = { "shfmt" },
         },
         format_on_save = function(bufnr)
           if vim.b[bufnr].disable_autoformat then
