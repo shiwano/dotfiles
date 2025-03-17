@@ -54,6 +54,11 @@ if [ -d $BREW_PREFIX/opt/gnu-sed ]; then
 	export MANPATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
+if [ -d $BREW_PREFIX/opt/gawk ]; then
+	export PATH="$BREW_PREFIX/opt/gawk/libexec/gnubin:$PATH"
+	export MANPATH="$BREW_PREFIX/opt/gawk/libexec/gnuman:$MANPATH"
+fi
+
 if [ -d ${HOME}/.local ] ; then
 	export PATH="$HOME/.local/bin:$PATH"
 fi
