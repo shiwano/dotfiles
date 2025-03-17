@@ -3,7 +3,7 @@
 set -euo pipefail
 
 usage() {
-  cat << EOF >&2
+	cat <<EOF >&2
 Usage: Usage: do-times <times> <command>
 
 Example:
@@ -12,30 +12,33 @@ EOF
 }
 
 main() {
-  if [ "$#" -lt 2 ]; then
-    usage
-    return 1
-  fi
+	if [ "$#" -lt 2 ]; then
+		usage
+		return 1
+	fi
 
-  local times="$1"
-  shift
+	local times="$1"
+	shift
 
-  if ! [[ "$times" =~ ^[0-9]+$ ]]; then
-    usage
-    return 1
-  fi
+	if ! [[ "$times" =~ ^[0-9]+$ ]]; then
+		usage
+		return 1
+	fi
 
-  for i in $(seq 1 "$times"); do
-    "$@" || { printf "\033[31mFAILED\033[0m\n"; break; }
-  done
+	for i in $(seq 1 "$times"); do
+		"$@" || {
+			printf "\033[31mFAILED\033[0m\n"
+			break
+		}
+	done
 
-  printf "\033[35mTo run the same command again, use:\n  for i in \$(seq 1 %d); do " "$times"
+	printf "\033[35mTo run the same command again, use:\n  for i in \$(seq 1 %d); do " "$times"
 
-  for arg in "$@"; do
-    printf "%q " "$arg"
-  done
+	for arg in "$@"; do
+		printf "%q " "$arg"
+	done
 
-  printf "|| { echo \"FAILED\"; break; }; done\033[0m\n" >&2
+	printf "|| { echo \"FAILED\"; break; }; done\033[0m\n" >&2
 }
 
 main "$@"

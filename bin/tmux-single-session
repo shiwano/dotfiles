@@ -3,26 +3,26 @@
 set -euo pipefail
 
 main() {
-  if ! command -v tmux 2>&1 >/dev/null; then
-    echo 'tmux command not found' 2>&1
-    exit 1
-  fi
+	if ! command -v tmux 2>&1 >/dev/null; then
+		echo 'tmux command not found' 2>&1
+		exit 1
+	fi
 
-  if [ "$#" -eq 0 ] || [ "$1" = "new" ] || [ "$1" = "new-session" ]; then
-    if [ -n "${TMUX-}" ]; then
-      echo "tmux session has been already attached" 2>&1
-      exit 1
-    fi
+	if [ "$#" -eq 0 ] || [ "$1" = "new" ] || [ "$1" = "new-session" ]; then
+		if [ -n "${TMUX-}" ]; then
+			echo "tmux session has been already attached" 2>&1
+			exit 1
+		fi
 
-    # attach to an existing tmux session, or create one if none exist
-    if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
-      tmux attach
-    else
-      tmux attach || tmux new-session
-    fi
-  else
-    tmux "$@"
-  fi
+		# attach to an existing tmux session, or create one if none exist
+		if tmux has-session >/dev/null 2>&1 && tmux list-sessions | grep -qE '.*]$'; then
+			tmux attach
+		else
+			tmux attach || tmux new-session
+		fi
+	else
+		tmux "$@"
+	fi
 }
 
 main "$@"

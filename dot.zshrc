@@ -3,9 +3,9 @@ bindkey -e
 # Envs -------------------------------------------------------------------------
 
 if [ -n "$TMUX" ]; then
-  export TERM=tmux-256color
+	export TERM=tmux-256color
 else
-  export TERM=xterm-256color
+	export TERM=xterm-256color
 fi
 
 export LANG=ja_JP.UTF-8
@@ -15,9 +15,9 @@ export LS_COLORS='di=01;36'
 export GOPATH=$HOME/code
 
 if command -v brew 2>&1 >/dev/null; then
-  export BREW_PREFIX=$(brew --prefix)
+	export BREW_PREFIX=$(brew --prefix)
 else
-  export BREW_PREFIX='/nonexistent'
+	export BREW_PREFIX='/nonexistent'
 fi
 
 # Completions ------------------------------------------------------------------
@@ -29,14 +29,14 @@ zstyle ':completion:*:*:make:*' tag-order 'targets'
 #  chmod go-w '/opt/homebrew/share'
 #  chmod -R go-w '/opt/homebrew/share/zsh'
 if [ -d $BREW_PREFIX/share/zsh-completions ]; then
-  FPATH=$BREW_PREFIX/share/zsh-completions:$FPATH
+	FPATH=$BREW_PREFIX/share/zsh-completions:$FPATH
 fi
 
 autoload -Uz compinit
 compinit
 
 if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
-  source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+	source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
 # PATH -------------------------------------------------------------------------
@@ -45,295 +45,295 @@ export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
 export MANPATH=$BREW_PREFIX/share/man:$BREW_PREFIX/man:/usr/share/man
 
 if [ -d $BREW_PREFIX/opt/coreutils ]; then
-  export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
-  export MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
+	export PATH="$BREW_PREFIX/opt/coreutils/libexec/gnubin:$PATH"
+	export MANPATH="$BREW_PREFIX/opt/coreutils/libexec/gnuman:$MANPATH"
 fi
 
 if [ -d $BREW_PREFIX/opt/gnu-sed ]; then
-  export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
-  export MANPATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnuman:$MANPATH"
+	export PATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnubin:$PATH"
+	export MANPATH="$BREW_PREFIX/opt/gnu-sed/libexec/gnuman:$MANPATH"
 fi
 
 if [ -d ${HOME}/.local ] ; then
-  export PATH="$HOME/.local/bin:$PATH"
+	export PATH="$HOME/.local/bin:$PATH"
 fi
 
 if [ -d ${HOME}/.pub-cache ] ; then
-  export PATH="$HOME/.pub-cache/bin:$PATH"
+	export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
 # fzf --------------------------------------------------------------------------
 
 if command -v fzf 2>&1 >/dev/null; then
-  export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
-    --preview='fzf-preview file {}' \
-    --layout=reverse \
-    --info hidden \
-    --marker='X' \
-    --history-size=5000 \
-    --tiebreak=index \
-    --highlight-line \
-    --info=inline-right \
-    --ansi \
-    --layout=reverse \
-    --border=none \
-    --color=bg+:#283457 \
-    --color=bg:#191a22 \
-    --color=border:#27a1b9 \
-    --color=fg:#c0caf5 \
-    --color=gutter:#16161e \
-    --color=header:#ff9e64 \
-    --color=hl+:#2ac3de \
-    --color=hl:#2ac3de \
-    --color=info:#545c7e \
-    --color=marker:#ff007c \
-    --color=pointer:#ff007c \
-    --color=prompt:#2ac3de \
-    --color=query:#c0caf5:regular \
-    --color=scrollbar:#27a1b9 \
-    --color=separator:#ff9e64 \
-    --color=spinner:#ff007c \
-    --bind=tab:down \
-    --bind=shift-tab:up \
-    --bind=ctrl-a:select-all \
-    --bind=ctrl-l:toggle \
-    --bind=ctrl-h:toggle \
-    --bind=ctrl-w:backward-kill-word \
-    --bind=ctrl-u:word-rubout \
-    --bind=up:preview-page-up \
-    --bind=down:preview-page-down \
-    --bind=ctrl-u:half-page-up \
-    --bind=ctrl-d:half-page-down"
-  export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path -g '!**/.git'"
+	export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
+		--preview='fzf-preview file {}' \
+		--layout=reverse \
+		--info hidden \
+		--marker='X' \
+		--history-size=5000 \
+		--tiebreak=index \
+		--highlight-line \
+		--info=inline-right \
+		--ansi \
+		--layout=reverse \
+		--border=none \
+		--color=bg+:#283457 \
+		--color=bg:#191a22 \
+		--color=border:#27a1b9 \
+		--color=fg:#c0caf5 \
+		--color=gutter:#16161e \
+		--color=header:#ff9e64 \
+		--color=hl+:#2ac3de \
+		--color=hl:#2ac3de \
+		--color=info:#545c7e \
+		--color=marker:#ff007c \
+		--color=pointer:#ff007c \
+		--color=prompt:#2ac3de \
+		--color=query:#c0caf5:regular \
+		--color=scrollbar:#27a1b9 \
+		--color=separator:#ff9e64 \
+		--color=spinner:#ff007c \
+		--bind=tab:down \
+		--bind=shift-tab:up \
+		--bind=ctrl-a:select-all \
+		--bind=ctrl-l:toggle \
+		--bind=ctrl-h:toggle \
+		--bind=ctrl-w:backward-kill-word \
+		--bind=ctrl-u:word-rubout \
+		--bind=up:preview-page-up \
+		--bind=down:preview-page-down \
+		--bind=ctrl-u:half-page-up \
+		--bind=ctrl-d:half-page-down"
+	export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path -g '!**/.git'"
 fi
 
 # Android Studio and Android SDK -----------------------------------------------
 
 if [ -d '/Applications/Android Studio.app/Contents/jre/Contents/Home' ]; then
-  export JAVA_HOME='/Applications/Android Studio.app/Contents/jre/Contents/Home'
-  export PATH=$JAVA_HOME/bin:$PATH
+	export JAVA_HOME='/Applications/Android Studio.app/Contents/jre/Contents/Home'
+	export PATH=$JAVA_HOME/bin:$PATH
 else
-  if [ -d $BREW_PREFIX/opt/openjdk ]; then
-    export JAVA_HOME="$BREW_PREFIX/opt/openjdk"
-    export PATH=$JAVA_HOME/bin:$PATH
-  fi
+	if [ -d $BREW_PREFIX/opt/openjdk ]; then
+		export JAVA_HOME="$BREW_PREFIX/opt/openjdk"
+		export PATH=$JAVA_HOME/bin:$PATH
+	fi
 fi
 
 if [ -d "$HOME/Library/Android/sdk" ]; then
-  export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
+	export ANDROID_SDK_ROOT="$HOME/Library/Android/sdk"
 fi
 
 # Neovim -----------------------------------------------------------------------
 
 if command -v nvim 2>&1 >/dev/null; then
-  if [ -n "${NVIM}" ]; then
-    alias vi='echo "already open nvim"'
-    alias vim='echo "already open nvim"'
-    alias nvim='echo "already open nvim"'
-  else
-    alias vi='nvim'
-    alias vim='nvim'
-  fi
-  alias vimdiff='nvim -d'
-  export EDITOR='nvim'
+	if [ -n "${NVIM}" ]; then
+		alias vi='echo "already open nvim"'
+		alias vim='echo "already open nvim"'
+		alias nvim='echo "already open nvim"'
+	else
+		alias vi='nvim'
+		alias vim='nvim'
+	fi
+	alias vimdiff='nvim -d'
+	export EDITOR='nvim'
 else
-  export EDITOR='vi'
+	export EDITOR='vi'
 fi
 
 # Functions --------------------------------------------------------------------
 
 compress() {
-  if [ -f $1 ] ; then
-    tar -zcvf $1.tar.gz $1
-  elif [ -d $1 ] ; then
-    tar -zcvf $1.tar.gz $1
-  else
-    echo "'$1' is not a valid file or directory!"
-  fi
+	if [ -f $1 ] ; then
+		tar -zcvf $1.tar.gz $1
+	elif [ -d $1 ] ; then
+		tar -zcvf $1.tar.gz $1
+	else
+		echo "'$1' is not a valid file or directory!"
+	fi
 }
 
 extract() {
-  if [ -f $1 ] ; then
-    case $1 in
-      *.tar.bz2)   tar xvjf $1    ;;
-      *.tar.gz)    tar xvzf $1    ;;
-      *.tar.xz)    tar xvJf $1    ;;
-      *.bz2)       bunzip2 $1     ;;
-      *.rar)       unrar x $1     ;;
-      *.gz)        gunzip $1      ;;
-      *.tar)       tar xvf $1     ;;
-      *.tbz2)      tar xvjf $1    ;;
-      *.tgz)       tar xvzf $1    ;;
-      *.zip)       unzip $1       ;;
-      *.Z)         uncompress $1  ;;
-      *.7z)        7z x $1        ;;
-      *.lzma)      lzma -dv $1    ;;
-      *.xz)        xz -dv $1      ;;
-      *)           echo "don't know how to extract '$1'..." ;;
-    esac
-  else
-    echo "'$1' is not a valid file!"
-  fi
+	if [ -f $1 ] ; then
+		case $1 in
+			*.tar.bz2)   tar xvjf $1    ;;
+			*.tar.gz)    tar xvzf $1    ;;
+			*.tar.xz)    tar xvJf $1    ;;
+			*.bz2)       bunzip2 $1     ;;
+			*.rar)       unrar x $1     ;;
+			*.gz)        gunzip $1      ;;
+			*.tar)       tar xvf $1     ;;
+			*.tbz2)      tar xvjf $1    ;;
+			*.tgz)       tar xvzf $1    ;;
+			*.zip)       unzip $1       ;;
+			*.Z)         uncompress $1  ;;
+			*.7z)        7z x $1        ;;
+			*.lzma)      lzma -dv $1    ;;
+			*.xz)        xz -dv $1      ;;
+			*)           echo "don't know how to extract '$1'..." ;;
+		esac
+	else
+		echo "'$1' is not a valid file!"
+	fi
 }
 
 static-httpd() {
-  if command -v python 2>&1 >/dev/null; then
-    if python -V 2>&1 | grep -qm1 'Python 3\.'; then
-      python -m http.server ${1-5000}
-    else
-      python -m SimpleHTTPServer ${1-5000}
-    fi
-  elif command -v python3 2>&1 >/dev/null; then
-    python3 -m http.server ${1-5000}
-  fi
+	if command -v python 2>&1 >/dev/null; then
+		if python -V 2>&1 | grep -qm1 'Python 3\.'; then
+			python -m http.server ${1-5000}
+		else
+			python -m SimpleHTTPServer ${1-5000}
+		fi
+	elif command -v python3 2>&1 >/dev/null; then
+		python3 -m http.server ${1-5000}
+	fi
 }
 
 move-to-git-repository() {
-  local items="$(echo 'dotfiles'; ghq list)"
-  [ -z "$items" ] && return
-  local s="$(echo -e $items | fzf --preview '' --prompt 'MoveTo> ')"
-  [ -z "$s" ] && return
-  [ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
+	local items="$(echo 'dotfiles'; ghq list)"
+	[ -z "$items" ] && return
+	local s="$(echo -e $items | fzf --preview '' --prompt 'MoveTo> ')"
+	[ -z "$s" ] && return
+	[ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
 }
 
 edit-git-grepped-files() {
-  local search=$1
-  [ -z "$search" ] && return
-  local files="$(git grep -n --color=always "$search")"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'Edit> ')"
-  [ -z "$s" ] && return
-  if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-    local file=$(echo "$s" | awk -F ':' '{print $1}' | head -n 1)
-    print -s "vi $file" && fc -AI
-    vi $file
-  else
-    local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
-    vi -c "cexpr '$escaped_s' | copen"
-  fi
+	local search=$1
+	[ -z "$search" ] && return
+	local files="$(git grep -n --color=always "$search")"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'Edit> ')"
+	[ -z "$s" ] && return
+	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
+		local file=$(echo "$s" | awk -F ':' '{print $1}' | head -n 1)
+		print -s "vi $file" && fc -AI
+		vi $file
+	else
+		local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
+		vi -c "cexpr '$escaped_s' | copen"
+	fi
 }
 
 edit-git-file() {
-  local dir=${1-.}
-  local files="$(git ls-files $dir)"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf --prompt 'Edit> ')"
-  [ -z "$s" ] && return
-  print -s "vi $s" && fc -AI
-  vi $s
+	local dir=${1-.}
+	local files="$(git ls-files $dir)"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf --prompt 'Edit> ')"
+	[ -z "$s" ] && return
+	print -s "vi $s" && fc -AI
+	vi $s
 }
 
 edit-git-changed-file() {
-  local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  if [ -z "$files" ]; then
-    edit-git-file
-    return
-  fi
-  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'  --prompt 'Edit> ' | cut -c4-)"
-  [ -z "$s" ] && return
-  print -s "vi $s" && fc -AI
-  vi $s
+	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	if [ -z "$files" ]; then
+		edit-git-file
+		return
+	fi
+	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'	--prompt 'Edit> ' | cut -c4-)"
+	[ -z "$s" ] && return
+	print -s "vi $s" && fc -AI
+	vi $s
 }
 
 copy-file-path-to-clipboard() {
-  local dir=${1-}
-  local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
-  [ -z "$s" ] && return
-  printf "%s" "$s" | pbcopy
-  echo "Copied to clipboard: $s"
+	local dir=${1-}
+	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
+	[ -z "$s" ] && return
+	printf "%s" "$s" | pbcopy
+	echo "Copied to clipboard: $s"
 }
 
 copy-changed-file-path-to-clipboard() {
-  local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
-  [ -z "$s" ] && return
-  printf "%s" "$s" | pbcopy
-  echo "Copied to clipboard: $s"
+	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
+	[ -z "$s" ] && return
+	printf "%s" "$s" | pbcopy
+	echo "Copied to clipboard: $s"
 }
 
 copy-image-path-to-clipboard() {
-  local dir=${1-}
-  local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
-  [ -z "$s" ] && return
-  printf "%s" "$s" | pbcopy
-  echo "Copied to clipboard: $s"
+	local dir=${1-}
+	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
+	[ -z "$s" ] && return
+	printf "%s" "$s" | pbcopy
+	echo "Copied to clipboard: $s"
 }
 
 git-switch-branch() {
-  local branches=$(git mru | tac)
-  [ -z "$branches" ] && return
-  local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
-  [ -z "$s" ] && return
-  git switch $s
+	local branches=$(git mru | tac)
+	[ -z "$branches" ] && return
+	local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
+	[ -z "$s" ] && return
+	git switch $s
 }
 
 git-add-files() {
-  local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
-  [ -z "$s" ] && return
-  echo -e $s | tr '\n' ' ' | xargs -n1 git add
-  git status
+	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
+	[ -z "$s" ] && return
+	echo -e $s | tr '\n' ' ' | xargs -n1 git add
+	git status
 }
 
 git-restore-files() {
-  local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
-  [ -z "$s" ] && return
-  echo -e $s | tr '\n' ' ' | xargs -n1 git restore
-  git status
+	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
+	[ -z "$s" ] && return
+	echo -e $s | tr '\n' ' ' | xargs -n1 git restore
+	git status
 }
 
 git-unstage-files() {
-  local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
-  [ -z "$files" ] && return
-  local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
-  [ -z "$s" ] && return
-  echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
-  git status
+	local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
+	[ -z "$s" ] && return
+	echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
+	git status
 }
 
 git-stash-files() {
-  local files="$(git status -s -u --no-renames)"
-  [ -z "$files" ] && return
-  local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'StashFiles> ' | cut -c4-)"
-  [ -z "$s" ] && return
+	local files="$(git status -s -u --no-renames)"
+	[ -z "$files" ] && return
+	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'StashFiles> ' | cut -c4-)"
+	[ -z "$s" ] && return
 
-  local new_files=()
-  local existing_files=()
-  while IFS= read -r file; do
-    if git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
-      existing_files+=("$file")
-    else
-      new_files+=("$file")
-    fi
-  done <<< "$s"
+	local new_files=()
+	local existing_files=()
+	while IFS= read -r file; do
+		if git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
+			existing_files+=("$file")
+		else
+			new_files+=("$file")
+		fi
+	done <<< "$s"
 
-  if [ ${#new_files[@]} -ne 0 ]; then
-    git add "${new_files[@]}"
-  fi
-  git stash push -- "${existing_files[@]}" "${new_files[@]}"
-  git status
+	if [ ${#new_files[@]} -ne 0 ]; then
+		git add "${new_files[@]}"
+	fi
+	git stash push -- "${existing_files[@]}" "${new_files[@]}"
+	git status
 }
 
 select-history() {
-  BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt 'History> ' --preview="")
-  CURSOR=$#BUFFER
+	BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt 'History> ' --preview="")
+	CURSOR=$#BUFFER
 }
 
 remove-last-command() {
-  local last_command=$(fc -ln -1)
-  fc -p $last_command
+	local last_command=$(fc -ln -1)
+	fc -p $last_command
 }
 
 local-ip-address() {
-  ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
+	ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
 # Aliases ----------------------------------------------------------------------
@@ -367,43 +367,43 @@ alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
 if command -v tmux 2>&1 >/dev/null; then
-  alias tmux-single-session='tmux new-session -A -s main'
+	alias tmux-single-session='tmux new-session -A -s main'
 fi
 
 if command -v go 2>&1 >/dev/null; then
-  alias go-build-all='go test -run=^$ ./... 1>/dev/null'
+	alias go-build-all='go test -run=^$ ./... 1>/dev/null'
 fi
 
 if command -v docker 2>&1 >/dev/null; then
-  alias docker-rm-all='docker rm $(docker ps -a -q)'
-  alias docker-rmi-all='docker rmi $(docker images -q)'
-  alias docker-rm-volumes-all='docker volume rm $(docker volume ls -qf dangling=true)'
-  alias docker-run-sh='docker run -it --entrypoint sh'
+	alias docker-rm-all='docker rm $(docker ps -a -q)'
+	alias docker-rmi-all='docker rmi $(docker images -q)'
+	alias docker-rm-volumes-all='docker volume rm $(docker volume ls -qf dangling=true)'
+	alias docker-run-sh='docker run -it --entrypoint sh'
 fi
 
 if command -v bazelisk 2>&1 >/dev/null; then
-  alias bazel='bazelisk'
+	alias bazel='bazelisk'
 fi
 
 if command -v ibazel 2>&1 >/dev/null; then
-  alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
+	alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
 fi
 
 if command -v bat 2>&1 >/dev/null; then
-  alias cat='bat'
+	alias cat='bat'
 fi
 
 if ! command -v pbcopy 2>&1 >/dev/null; then
-  if command -v xsel 2>&1 >/dev/null; then
-    alias pbcopy='xsel --clipboard --input'
-    alias pbpaste='xsel --clipboard --output'
-  elif command -v xclip 2>&1 >/dev/null; then
-    alias pbcopy='xclip -selection clipboard'
-    alias pbpaste='xclip -selection clipboard -o'
-  else
-    alias pbcopy='echo "pbcopy: command not found" >&2'
-    alias pbpaste='echo "pbpaste: command not found" >&2'
-  fi
+	if command -v xsel 2>&1 >/dev/null; then
+		alias pbcopy='xsel --clipboard --input'
+		alias pbpaste='xsel --clipboard --output'
+	elif command -v xclip 2>&1 >/dev/null; then
+		alias pbcopy='xclip -selection clipboard'
+		alias pbpaste='xclip -selection clipboard -o'
+	else
+		alias pbcopy='echo "pbcopy: command not found" >&2'
+		alias pbpaste='echo "pbpaste: command not found" >&2'
+	fi
 fi
 
 # Prompt -----------------------------------------------------------------------
@@ -412,75 +412,75 @@ setopt prompt_subst
 ZLE_RPROMPT_INDENT=0
 
 prompt-pwd() {
-  local dir="$(print -P '%~')"
-  local icon_repo=$'\Uea62 '
+	local dir="$(print -P '%~')"
+	local icon_repo=$'\Uea62 '
 
-  if [[ $dir =~ '^~\/code\/src\/[^/]+\/[^/]+\/(.*)$' ]]; then
-    echo "$icon_repo${match[1]}"
-  elif [[ $dir =~ '^~\/dotfiles\/?(.*)$' ]]; then
-    echo "$icon_repo${dir#*/}"
-  else
-    echo "$dir"
-  fi
+	if [[ $dir =~ '^~\/code\/src\/[^/]+\/[^/]+\/(.*)$' ]]; then
+		echo "$icon_repo${match[1]}"
+	elif [[ $dir =~ '^~\/dotfiles\/?(.*)$' ]]; then
+		echo "$icon_repo${dir#*/}"
+	else
+		echo "$dir"
+	fi
 }
 
 prompt-git-branch() {
-  local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-  if [ -n "$branch" ]; then
-    local icon_git_branch=$'\Ue0a0 '
-    echo "$icon_git_branch$branch"
-  else
-    echo ''
-  fi
+	local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+	if [ -n "$branch" ]; then
+		local icon_git_branch=$'\Ue0a0 '
+		echo "$icon_git_branch$branch"
+	else
+		echo ''
+	fi
 }
 
 () {
-  local icon_cat=$'\Uf011b '
-  local icon_key=$'\Uf805 '
-  local icon_folder=$'\Uf450 '
-  local icon_network=$'\Ufbf1 '
-  local icon_vim=$'\Ue62b '
-  local icon_clock=$'\Uf017 '
-  local left_sep=$'\Ue0b0 '
+	local icon_cat=$'\Uf011b '
+	local icon_key=$'\Uf805 '
+	local icon_folder=$'\Uf450 '
+	local icon_network=$'\Ufbf1 '
+	local icon_vim=$'\Ue62b '
+	local icon_clock=$'\Uf017 '
+	local left_sep=$'\Ue0b0 '
 
-  local primary_bg="#7AA2F7"
-  local primary_fg="#000000"
-  local secondary_bg="#3B4261"
-  local secondary_fg="#7AA2F7"
-  if [ -n "${NVIM}" ]; then
-    primary_bg="#73DACA"
-    secondary_fg="#73DACA"
-  elif [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
-    primary_bg="#FF9E64"
-    secondary_fg="#FF9E64"
-  fi
+	local primary_bg="#7AA2F7"
+	local primary_fg="#000000"
+	local secondary_bg="#3B4261"
+	local secondary_fg="#7AA2F7"
+	if [ -n "${NVIM}" ]; then
+		primary_bg="#73DACA"
+		secondary_fg="#73DACA"
+	elif [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+		primary_bg="#FF9E64"
+		secondary_fg="#FF9E64"
+	fi
 
-  local prompt_face
-  if [ -n "${NVIM}" ]; then
-    prompt_face="${icon_vim}"
-  elif [ "${UID}" -eq 0 ]; then
-    prompt_face="${icon_key}"
-  else
-    prompt_face="${icon_cat}"
-  fi
+	local prompt_face
+	if [ -n "${NVIM}" ]; then
+		prompt_face="${icon_vim}"
+	elif [ "${UID}" -eq 0 ]; then
+		prompt_face="${icon_key}"
+	else
+		prompt_face="${icon_cat}"
+	fi
 
-  local left_segment=""
-  if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
-    left_segment+="%K{$primary_bg}%F{$primary_fg} ${icon_network}${HOST%%.*} %f%k"
-  else
-    left_segment+="%K{$primary_bg}%F{$primary_fg} %B${prompt_face}%b%f%k"
-  fi
-  left_segment+="%K{$secondary_bg}%F{$primary_bg}${left_sep}%f%k"
-  left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt-pwd)'" %f%k"
-  left_segment+="%F{$secondary_bg}${left_sep}%f"
+	local left_segment=""
+	if [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
+		left_segment+="%K{$primary_bg}%F{$primary_fg} ${icon_network}${HOST%%.*} %f%k"
+	else
+		left_segment+="%K{$primary_bg}%F{$primary_fg} %B${prompt_face}%b%f%k"
+	fi
+	left_segment+="%K{$secondary_bg}%F{$primary_bg}${left_sep}%f%k"
+	left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt-pwd)'" %f%k"
+	left_segment+="%F{$secondary_bg}${left_sep}%f"
 
-  local right_segment=""
-  right_segment+="%F{$secondary_fg} "'$(prompt-git-branch)'" %f"
+	local right_segment=""
+	right_segment+="%F{$secondary_fg} "'$(prompt-git-branch)'" %f"
 
-  PROMPT="${left_segment}"
-  RPROMPT="${right_segment}"
-  PROMPT2="%F{$secondary_fg} > %f "
-  SPROMPT="%F{$secondary_fg}%r is correct? [n,y,a,e]: %f "
+	PROMPT="${left_segment}"
+	RPROMPT="${right_segment}"
+	PROMPT2="%F{$secondary_fg} > %f "
+	SPROMPT="%F{$secondary_fg}%r is correct? [n,y,a,e]: %f "
 }
 
 # History ----------------------------------------------------------------------
@@ -592,15 +592,15 @@ setopt IGNORE_EOF
 # Includes ---------------------------------------------------------------------
 
 if command -v direnv 2>&1 >/dev/null; then
-  eval "$(direnv hook zsh)"
+	eval "$(direnv hook zsh)"
 fi
 
 if [ -e $BREW_PREFIX/opt/asdf/libexec/asdf.sh ]; then
-  . $BREW_PREFIX/opt/asdf/libexec/asdf.sh
+	. $BREW_PREFIX/opt/asdf/libexec/asdf.sh
 fi
 
 if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-  . $HOME/.nix-profile/etc/profile.d/nix.sh;
+	. $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
 
 [ -f ~/.zshrc.local ] && source ~/.zshrc.local
