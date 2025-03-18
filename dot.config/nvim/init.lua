@@ -75,14 +75,18 @@ local pluginSpec = {
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    opts = {
-      ensure_installed = "all",
-      sync_install = false,
-      auto_install = false,
-      highlight = { enable = true },
-      indent = { enable = true },
-      endwise = { enable = true },
-    },
+    config = function()
+      require("nvim-treesitter.configs").setup({
+        modules = {},
+        ensure_installed = "all",
+        ignore_install = {},
+        sync_install = false,
+        auto_install = false,
+        highlight = { enable = true },
+        indent = { enable = true },
+        endwise = { enable = true },
+      })
+    end,
   },
   { "mechatroner/rainbow_csv", ft = { "csv" } },
   {
@@ -184,14 +188,13 @@ local pluginSpec = {
       end
 
       local function search_files_with_text()
-        local ok, text = pcall(vim.fn.input, "Search: ")
-        if not ok then
-          return
-        end
-        if #text > 0 then
+        vim.ui.input({ prompt = "Search: " }, function(text)
+          if text == nil then
+            return
+          end
           local escaped_text = vim.fn.escape(text, "\\.*$+?^[]\\(\\)\\{\\}\\|")
           vim.cmd("Rg " .. escaped_text)
-        end
+        end)
       end
 
       local function find_bookmark()
@@ -322,18 +325,33 @@ local pluginSpec = {
   },
   {
     "sindrets/diffview.nvim",
+    event = { "BufReadPre", "BufNewFile" },
     config = function()
       local actions = require("diffview.actions")
 
-      vim.keymap.set("n", "<Leader>us", ":DiffviewOpen<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>uc", ":DiffviewFileHistory<CR>", { silent = true })
+      local function select_diff_view()
+        local options = {
+          { name = "History of the current file", cmd = "DiffviewFileHistory " .. vim.fn.expand("%") },
+          { name = "History of all files", cmd = "DiffviewFileHistory" },
+          { name = "Current diff", cmd = "DiffviewOpen" },
+        }
 
-      vim.keymap.set("n", "<Leader>ud", function()
-        vim.cmd("DiffviewFileHistory " .. vim.fn.expand("%"))
-      end, { silent = true })
+        vim.ui.select(options, {
+          prompt = "Select One of:",
+          format_item = function(item)
+            return item.name
+          end,
+        }, function(choice)
+          if choice then
+            vim.cmd(choice.cmd)
+          end
+        end)
+      end
 
       local function close()
-        vim.cmd("tabclose")
+        if vim.fn.tabpagenr("$") > 1 then
+          vim.cmd("tabclose")
+        end
       end
 
       local bufnr = nil
@@ -347,6 +365,8 @@ local pluginSpec = {
         vim.keymap.set("n", "<C-c>", close, { silent = true, buffer = true })
         vim.cmd("wincmd =")
       end
+
+      vim.keymap.set("n", "<Leader>ud", select_diff_view, { silent = true })
 
       require("diffview").setup({
         keymaps = {
@@ -377,7 +397,6 @@ local pluginSpec = {
           },
           file_panel = {
             { "n", "<c-c>", close, { desc = "Close the panel" } },
-            { "n", "<cr>", goto_file_and_close, { desc = "Open the diff for the selected entry" } },
             { "n", "j", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
             { "n", "<down>", actions.select_next_entry, { desc = "Bring the cursor to the next file entry" } },
             { "n", "k", actions.select_prev_entry, { desc = "Bring the cursor to the previous file entry" } },
@@ -760,12 +779,20 @@ local pluginSpec = {
   },
   {
     "toppair/peek.nvim",
-    event = { "VeryLazy" },
+    ft = { "markdown" },
     build = "deno task --quiet build:fast",
     config = function()
       require("peek").setup()
-      vim.api.nvim_create_user_command("MarkdownPreview", require("peek").open, {})
-      vim.api.nvim_create_user_command("MarkdownPreviewClose", require("peek").close, {})
+
+      vim.api.nvim_create_augroup("markdown_preview", { clear = true })
+      vim.api.nvim_create_autocmd("FileType", {
+        group = "markdown_preview",
+        pattern = "markdown",
+        callback = function()
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", require("peek").open, {})
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", require("peek").close, {})
+        end,
+      })
     end,
   },
 
@@ -909,6 +936,16 @@ local pluginSpec = {
         },
       })
     end,
+  },
+  {
+    "folke/snacks.nvim",
+    priority = 1000,
+    lazy = false,
+    opts = {
+      input = { enabled = true },
+      picker = { ui_select = true },
+      notifier = { enabled = true },
+    },
   },
 }
 
