@@ -39,10 +39,15 @@ local pluginSpec = {
       colors = require("tokyonight.colors").setup({ style = "night" })
 
       vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
-      vim.api.nvim_create_autocmd({ "VimEnter", "WinEnter" }, {
+      vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
         group = "highlight_idegraphic_space",
         pattern = "*",
-        command = [[call matchadd('IdeographicSpace', '[\u00A0\u2000-\u200B\u3000]')]],
+        callback = function()
+          if vim.bo.buftype == "nofile" then
+            return
+          end
+          vim.cmd([[call matchadd('IdeographicSpace', '[\u00A0\u2000-\u200B\u3000]')]])
+        end,
       })
       vim.api.nvim_create_autocmd("VimEnter", {
         group = "highlight_idegraphic_space",
@@ -100,151 +105,172 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- File explorer
   -----------------------------------------------------------------------------
-  { "junegunn/fzf" },
   {
-    "junegunn/fzf.vim",
-    init = function()
-      vim.g.fzf_layout = { up = "~40%" }
+    "ibhagwan/fzf-lua",
+    config = function()
+      local fzf = require("fzf-lua")
+      local utils = require("fzf-lua.utils")
+      local devicons = require("nvim-web-devicons")
 
-      vim.g.fzf_action = {
-        ["ctrl-q"] = "topleft copen",
-        ["ctrl-t"] = "tab split",
-        ["ctrl-x"] = "split",
-        ["ctrl-v"] = "vsplit",
-      }
-
-      vim.api.nvim_create_augroup("fzf_status_line", { clear = true })
-      vim.api.nvim_create_autocmd("User", {
-        group = "fzf_status_line",
-        pattern = "FzfStatusLine",
-        callback = function()
-          vim.api.nvim_set_hl(0, "fzf1", { fg = colors.blue, bg = colors.fg_gutter })
-          vim.api.nvim_set_hl(0, "fzf2", { fg = colors.blue, bg = colors.fg_gutter })
-          vim.api.nvim_set_hl(0, "fzf3", { fg = colors.blue, bg = colors.fg_gutter })
-          vim.opt_local.statusline = "%#fzf1# > %#fzf2#fz%#fzf3#f"
-        end,
+      fzf.setup({
+        keymap = {
+          fzf = {
+            ["tab"] = "down",
+            ["shift-tab"] = "up",
+            ["ctrl-a"] = "select-all",
+            ["ctrl-l"] = "toggle",
+            ["ctrl-h"] = "toggle",
+            ["ctrl-w"] = "backward-kill-word",
+            ["up"] = "preview-page-up",
+            ["down"] = "preview-page-down",
+            ["ctrl-u"] = "half-page-up",
+            ["ctrl-d"] = "half-page-down",
+          },
+        },
+        winopts = {
+          split = "aboveleft new",
+          height = 0.4,
+          width = 1.0,
+          row = 1,
+          border = "none",
+          preview = {
+            border = "noborder",
+            wrap = "nowrap",
+            hidden = "nohidden",
+            vertical = "up:50%",
+            horizontal = "right:50%",
+            layout = "flex",
+            flip_columns = 120,
+            title = true,
+          },
+        },
+        files = {
+          cmd = os.getenv("FZF_DEFAULT_COMMAND"),
+          cwd_prompt = false,
+        },
+        grep = {
+          rg_opts = "--sort=path --column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+        },
       })
 
-      local function escape_pattern(text)
-        return text:gsub("([^%w])", "%%%1")
-      end
+      local function get_files_options()
+        local cwd = vim.fn.getcwd()
+        local filename = vim.api.nvim_buf_get_name(0)
+        local abs_dir = vim.fn.fnamemodify(filename, ":p:h")
 
-      local function get_buffer_dir()
-        local git_root_output = vim.fn.systemlist("git rev-parse --show-toplevel")
-        local git_root = (git_root_output and git_root_output[1]) or nil
-        local root = vim.fn.expand("%:p:h")
-        return (git_root and root:gsub(escape_pattern(git_root) .. "/?", "", 1)) or root
-      end
-
-      local function find_file_from_buffer_dir(custom_source)
-        local opts = {
-          options = { "--prompt=Files> ", "--scheme=path" },
-          sink = function(selected)
-            if selected and #selected > 0 then
-              vim.cmd("edit " .. vim.fn.expand(selected))
-            end
-          end,
-        }
-
-        if custom_source then
-          opts.source = custom_source
-        end
-
-        local buffer_dir = get_buffer_dir()
-        if buffer_dir:match("^/") then
-          opts.dir = buffer_dir
+        if abs_dir == cwd then
+          local prompt = vim.fn.fnamemodify(cwd, ":t") .. "/"
+          return { prompt = prompt, cwd = cwd, query = " " }
+        elseif vim.startswith(abs_dir, cwd .. "/") then
+          local dir = vim.fn.fnamemodify(abs_dir, ":.")
+          local prompt = vim.fn.fnamemodify(cwd, ":t") .. "/"
+          return { prompt = prompt, cwd = cwd, query = dir .. "/ " }
         else
-          opts.dir = vim.fn.getcwd()
-          if #buffer_dir > 0 then
-            table.insert(opts.options, "--query=" .. buffer_dir .. "/ ")
-          end
+          local prompt = vim.fn.fnamemodify(abs_dir, ":t") .. "/"
+          return { prompt = "[OUTSIDE] " .. prompt, cwd = abs_dir }
         end
-
-        vim.fn["fzf#run"](vim.fn["fzf#wrap"](vim.call("fzf#vim#with_preview", opts)))
       end
 
-      local function find_file_from_buffer_dir_default()
-        find_file_from_buffer_dir(nil)
+      local function find_files()
+        local opts = get_files_options()
+        fzf.files(opts)
       end
 
-      local function find_file_from_buffer_dir_noignore()
-        local noignore_source = table.concat({
-          "rg --files --hidden --follow --no-ignore --sort path",
-          "-g '!**/.DS_Store'",
-          "-g '!**/node_modules'",
-          "-g '!**/__pycache__'",
-          "-g '!**/.pub-cache'",
-          "-g '!**/code/pkg/mod'",
-          "-g '!**/code/pkg/sumdb'",
-          "-g '!**/.asdf'",
-          "-g '!**/.bundle'",
-          "-g '!**/.android'",
-          "-g '!**/.cocoapods'",
-          "-g '!**/.gradle'",
-          "-g '!**/.zsh_sessions'",
-          "-g '!**/.git'",
-        }, " ")
-        find_file_from_buffer_dir(noignore_source)
+      local function find_files_noignore()
+        local opts = get_files_options()
+        opts.no_ignore = true
+        opts.hidden = true
+        opts.follow = true
+        fzf.files(opts)
       end
 
       local function search_files_with_text()
         vim.ui.input({ prompt = "Search: " }, function(text)
-          if text == nil then
-            return
+          if text and #text > 0 then
+            fzf.grep({ search = text })
           end
-          local escaped_text = vim.fn.escape(text, "\\.*$+?^[]\\(\\)\\{\\}\\|")
-          vim.cmd("Rg " .. escaped_text)
         end)
+      end
+
+      local function get_colored_icon_by_filename(filename)
+        local filetype = vim.filetype.match({ filename = filename })
+        local icon = devicons.get_icon_by_filetype(filetype, { default = true })
+        local _, rgb = devicons.get_icon_color_by_filetype(filetype, { default = true })
+        return utils.ansi_from_rgb(rgb, icon .. " ")
       end
 
       local function find_bookmark()
         local bookmarks = require("bookmarks")
-        local source, pathByName = {}, {}
+        local entries = {}
         for _, b in pairs(bookmarks) do
-          table.insert(source, b.name .. ": " .. b.path)
-          pathByName[b.name] = b.path
+          table.insert(entries, { name = b.name, path = b.path })
         end
-        vim.fn["fzf#run"](vim.fn["fzf#wrap"]({
-          source = source,
-          options = {
-            "--prompt=Bookmarks> ",
-            "--preview=fzf-preview file $(echo {} | cut -d: -f2 | sed 's|^ ~|'$HOME'|')",
+
+        local function find_entry(name)
+          for _, entry in ipairs(entries) do
+            if entry.name == name then
+              return entry
+            end
+          end
+          return nil
+        end
+
+        local items = vim.tbl_map(function(entry)
+          local icon = get_colored_icon_by_filename(entry.path)
+          return entry.name .. ": " .. (icon or "") .. entry.path
+        end, entries)
+
+        fzf.fzf_exec(items, {
+          actions = {
+            ["default"] = function(item)
+              local name = item[1]:match("^(.-):"):gsub("%s+$", "")
+              local entry = find_entry(name)
+              if entry then
+                vim.cmd("edit " .. vim.fn.expand(entry.path))
+              end
+            end,
           },
-          sink = function(selected)
-            local path = pathByName[selected:match("^(.-):")]
-            if path then
-              vim.cmd("edit " .. vim.fn.expand(path))
+          preview = function(item, fzf_lines, _)
+            local name = item[1]:match("^(.-):"):gsub("%s+$", "")
+            local entry = find_entry(name)
+            if entry then
+              local all_lines = vim.fn.systemlist("fzf-preview file " .. entry.path)
+              local sliced = {}
+              for i = 1, math.min(fzf_lines, #all_lines) do
+                table.insert(sliced, all_lines[i])
+              end
+              return sliced
             end
           end,
-        }))
+        })
       end
 
       local function search_files_with_selected_text()
         vim.cmd('silent normal! "zy')
         local text = vim.fn.getreg("z")
-        if #text > 0 then
-          local escaped_text = vim.fn.escape(text, "\\.*$+?^[]\\(\\)\\{\\}\\|")
-          vim.cmd("Rg " .. escaped_text)
+        if text and #text > 0 then
+          fzf.grep({ search = text })
         end
       end
 
-      local function search_memo_with(text)
-        local source = "rg --sortr path --column --line-number --no-heading --color=always --smart-case " .. " -- " .. vim.fn.shellescape(text) .. " ~/Dropbox/Memo"
-        vim.call("fzf#vim#grep", source, 1, vim.call("fzf#vim#with_preview"))
+      local function search_memo_with_text()
+        vim.ui.input({ prompt = "SearchMemo: " }, function(text)
+          if text and #text > 0 then
+            fzf.grep({ search = text, cwd = "~/Dropbox/Memo" })
+          end
+        end)
       end
 
-      vim.keymap.set("n", "<Leader>uf", find_file_from_buffer_dir_default, { silent = true })
-      vim.keymap.set("n", "<Leader>uu", ":GFiles " .. vim.fn.getcwd() .. "<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>ub", ":Buffers<CR>", { silent = true })
-      vim.keymap.set("n", "<Leader>ua", find_file_from_buffer_dir_noignore, { silent = true })
-      vim.keymap.set("n", "<Leader>um", ":History<CR>", { silent = true })
+      vim.keymap.set("n", "<Leader>uf", find_files, { silent = true })
+      vim.keymap.set("n", "<Leader>uu", fzf.git_files, { silent = true })
+      vim.keymap.set("n", "<Leader>ub", fzf.buffers, { silent = true })
+      vim.keymap.set("n", "<Leader>ud", find_files_noignore, { silent = true })
+      vim.keymap.set("n", "<Leader>um", fzf.oldfiles, { silent = true })
       vim.keymap.set("n", "<Leader>ug", search_files_with_text, { silent = true })
       vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true })
       vim.keymap.set("v", "/g", search_files_with_selected_text, { silent = true })
 
-      vim.api.nvim_create_user_command("SearchMemo", function(opts)
-        search_memo_with(opts.args)
-      end, { nargs = "*" })
+      vim.api.nvim_create_user_command("SearchMemo", search_memo_with_text, {})
     end,
   },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
@@ -320,7 +346,7 @@ local pluginSpec = {
 
       vim.api.nvim_create_user_command("A", function()
         require("other-nvim").open()
-      end, { nargs = "*" })
+      end, {})
     end,
   },
   {
@@ -366,7 +392,7 @@ local pluginSpec = {
         vim.cmd("wincmd =")
       end
 
-      vim.keymap.set("n", "<Leader>ud", select_diff_view, { silent = true })
+      vim.keymap.set("n", "<Leader>d", select_diff_view, { silent = true })
 
       require("diffview").setup({
         keymaps = {

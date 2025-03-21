@@ -73,7 +73,6 @@ if command -v fzf 2>&1 >/dev/null; then
 	export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
 		--preview='fzf-preview file {}' \
 		--layout=reverse \
-		--info hidden \
 		--marker='X' \
 		--history-size=5000 \
 		--tiebreak=index \
@@ -104,12 +103,38 @@ if command -v fzf 2>&1 >/dev/null; then
 		--bind=ctrl-l:toggle \
 		--bind=ctrl-h:toggle \
 		--bind=ctrl-w:backward-kill-word \
-		--bind=ctrl-u:word-rubout \
 		--bind=up:preview-page-up \
 		--bind=down:preview-page-down \
 		--bind=ctrl-u:half-page-up \
 		--bind=ctrl-d:half-page-down"
-	export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort path -g '!**/.git'"
+	export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort=path \
+		-g '!**/.DS_Store' \
+		-g '!**/node_modules' \
+		-g '!**/code/pkg/mod' \
+		-g '!**/code/pkg/sumdb' \
+		-g '!**/__pycache__' \
+		-g '!**/.pub-cache' \
+		-g '!**/.asdf' \
+		-g '!**/.bundle' \
+		-g '!**/.android' \
+		-g '!**/.cocoapods' \
+		-g '!**/.gradle' \
+		-g '!**/.zsh_sessions' \
+		-g '!**/.claude' \
+		-g '!**/.dropbox' \
+		-g '!**/.ssh' \
+		-g '!**/.atlas' \
+		-g '!**/.cache' \
+		-g '!**/.dart*' \
+		-g '!**/.local' \
+		-g '!**/.docker' \
+		-g '!**/.npm' \
+		-g '!**/.m2/repository' \
+		-g '!**/.config/**/logs' \
+		-g '!**/.config/**/undo' \
+		-g '!**/swiftpm/cache' \
+		-g '!**/.Trash' \
+		-g '!**/.git'"
 fi
 
 # Android Studio and Android SDK -----------------------------------------------
