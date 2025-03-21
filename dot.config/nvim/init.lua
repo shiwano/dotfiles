@@ -1239,7 +1239,7 @@ end, {})
 
 -------------------------------------------------------------------------------
 -- Rename
--- original: https://github.com/danro/rename.vim
+-- original: https://github.com/danro/rename.vim (Vim License)
 -------------------------------------------------------------------------------
 local function sibling_files(arg_lead)
   local dir = vim.fn.expand("%:h") .. "/"
@@ -1293,7 +1293,7 @@ vim.cmd('cabbrev rename <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "Rename"
 
 -------------------------------------------------------------------------------
 -- Splash
--- original: https://github.com/thinca/vim-splash
+-- original: https://github.com/thinca/vim-splash (zlib License)
 -------------------------------------------------------------------------------
 local function splash()
   if vim.fn.argc() ~= 0 or vim.fn.bufnr("$") ~= 1 then
@@ -1409,7 +1409,7 @@ vim.api.nvim_create_autocmd("StdinReadPre", {
 
 -------------------------------------------------------------------------------
 -- Open GitHub line URL
--- original: https://github.com/ruanyl/vim-gh-line
+-- original: https://github.com/ruanyl/vim-gh-line (MIT License)
 -------------------------------------------------------------------------------
 local function open_github_line_url()
   local remotes = vim.fn.systemlist("git remote")
