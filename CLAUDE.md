@@ -1,6 +1,6 @@
 # CLAUDE.md - Repository Documentation
 
-## Build/Lint/Test Commands
+## Check/Format Commands
 
 - **Checkhealth Neovim**: `nvim --headless -c 'checkhealth nvim' +q`
 - **Check .zshrc syntax** `zsh -n dot.zshrc`
@@ -25,4 +25,4 @@
 - **Terminal**: Uses zsh with custom prompt
 - **Editor**: Neovim with many plugins (see dot.config/nvim)
 - **Package Manager**: Uses asdf for version management
-- **Git**: Custom git aliases and functions in dot.gitconfig and dot.zshrc
+- **Git**: Custom git aliases in dot.gitconfig
