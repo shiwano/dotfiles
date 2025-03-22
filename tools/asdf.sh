@@ -16,6 +16,7 @@ asdf plugin-add ruby
 asdf plugin-add flutter
 asdf plugin-add nodejs
 asdf plugin-add deno https://github.com/asdf-community/asdf-deno.git
+asdf plugin-add rust
 
 asdf install
 asdf reshim

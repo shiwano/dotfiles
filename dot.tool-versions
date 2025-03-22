@@ -10,3 +10,4 @@ direnv 2.28.0
 flutter 3.22.0-stable
 nodejs 20.11.0
 deno 2.2.2
+rust 1.85.1
