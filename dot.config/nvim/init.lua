@@ -23,6 +23,27 @@ vim.g.maplocalleader = "\\"
 local colors = nil
 
 -------------------------------------------------------------------------------
+-- Utilities
+-------------------------------------------------------------------------------
+
+local function current_working_directory()
+  local dir = vim.fn.getcwd() or ""
+  local home = vim.fn.expand("$HOME") or ""
+  local rel_dir = dir:gsub("^" .. home, "~")
+  local icon_repo = "\u{ea62} "
+
+  local code_match = rel_dir:match("^~?/code/src/[^/]+/[^/]+/(.*)$")
+  if code_match then
+    return icon_repo .. code_match
+  end
+  local dotfiles_match = rel_dir:match("^~?/(dotfiles/?.*)$")
+  if dotfiles_match then
+    return icon_repo .. dotfiles_match
+  end
+  return rel_dir
+end
+
+-------------------------------------------------------------------------------
 -- Plugins
 -------------------------------------------------------------------------------
 local pluginSpec = {
@@ -36,6 +57,7 @@ local pluginSpec = {
     config = function()
       vim.cmd([[colorscheme tokyonight-night]])
 
+      ---@diagnostic disable-next-line: missing-fields
       colors = require("tokyonight.colors").setup({ style = "night" })
 
       vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
@@ -159,11 +181,11 @@ local pluginSpec = {
         local abs_dir = vim.fn.fnamemodify(filename, ":p:h")
 
         if abs_dir == cwd then
-          local prompt = vim.fn.fnamemodify(cwd, ":t") .. "/"
+          local prompt = current_working_directory() .. "/"
           return { prompt = prompt, cwd = cwd, query = " " }
         elseif vim.startswith(abs_dir, cwd .. "/") then
           local dir = vim.fn.fnamemodify(abs_dir, ":.")
-          local prompt = vim.fn.fnamemodify(cwd, ":t") .. "/"
+          local prompt = current_working_directory() .. "/"
           return { prompt = prompt, cwd = cwd, query = dir .. "/ " }
         else
           local prompt = vim.fn.fnamemodify(abs_dir, ":t") .. "/"
@@ -192,7 +214,7 @@ local pluginSpec = {
         end)
       end
 
-      local function get_colored_icon_by_filename(filename)
+      local function get_icon_by_filename(filename)
         local filetype = vim.filetype.match({ filename = filename })
         local icon = devicons.get_icon_by_filetype(filetype, { default = true })
         local _, rgb = devicons.get_icon_color_by_filetype(filetype, { default = true })
@@ -216,7 +238,7 @@ local pluginSpec = {
         end
 
         local items = vim.tbl_map(function(entry)
-          local icon = get_colored_icon_by_filename(entry.path)
+          local icon = get_icon_by_filename(entry.path)
           return entry.name .. ": " .. (icon or "") .. entry.path
         end, entries)
 
@@ -266,6 +288,7 @@ local pluginSpec = {
       vim.keymap.set("n", "<Leader>ub", fzf.buffers, { silent = true })
       vim.keymap.set("n", "<Leader>ud", find_files_noignore, { silent = true })
       vim.keymap.set("n", "<Leader>um", fzf.oldfiles, { silent = true })
+      vim.keymap.set("n", "<Leader>ue", fzf.diagnostics_workspace, { silent = true })
       vim.keymap.set("n", "<Leader>ug", search_files_with_text, { silent = true })
       vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true })
       vim.keymap.set("v", "/g", search_files_with_selected_text, { silent = true })
@@ -351,18 +374,19 @@ local pluginSpec = {
   },
   {
     "sindrets/diffview.nvim",
+    cmd = { "DiffviewOpen", "DiffviewFileHistory" },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local actions = require("diffview.actions")
 
       local function select_diff_view()
-        local options = {
+        local items = {
           { name = "History of the current file", cmd = "DiffviewFileHistory " .. vim.fn.expand("%") },
           { name = "History of all files", cmd = "DiffviewFileHistory" },
           { name = "Current diff", cmd = "DiffviewOpen" },
         }
 
-        vim.ui.select(options, {
+        vim.ui.select(items, {
           prompt = "Select One of:",
           format_item = function(item)
             return item.name
@@ -395,6 +419,13 @@ local pluginSpec = {
       vim.keymap.set("n", "<Leader>d", select_diff_view, { silent = true })
 
       require("diffview").setup({
+        view = {
+          merge_tool = {
+            layout = "diff3_mixed",
+            disable_diagnostics = true,
+            winbar_info = true,
+          },
+        },
         keymaps = {
           disable_defaults = true,
           view = {
@@ -589,6 +620,17 @@ local pluginSpec = {
       cfg.lua_ls.setup({ on_attach = on_attach, capabilities = caps })
       cfg.ts_ls.setup({ on_attach = on_attach, capabilities = caps })
       cfg.dartls.setup({ on_attach = on_attach, capabilities = caps })
+
+      vim.api.nvim_create_augroup("lsp-diff-diagnostics-off", {})
+      vim.api.nvim_create_autocmd("BufEnter", {
+        group = "lsp-diff-diagnostics-off",
+        pattern = "*",
+        callback = function()
+          if vim.opt.diff:get() then
+            vim.diagnostic.enable(false)
+          end
+        end,
+      })
     end,
   },
   {
@@ -630,9 +672,39 @@ local pluginSpec = {
   { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "machakann/vim-sandwich", event = { "BufReadPre", "BufNewFile" } },
-  { "arthurxavierx/vim-caser", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
+  {
+    "arthurxavierx/vim-caser",
+    event = { "BufReadPre", "BufNewFile" },
+    init = function()
+      vim.g.caser_no_mappings = true
+
+      local function select_case()
+        local items = {
+          { name = "PascalCase", funcName = "MixedCase" },
+          { name = "camelCase", funcName = "CamelCase" },
+          { name = "snake_case", funcName = "SnakeCase" },
+          { name = "MACRO_CASE", funcName = "UpperCase" },
+          { name = "kebab-case", funcName = "KebabCase" },
+          { name = "Train-Case", funcName = "TitleKebabCase" },
+          { name = "dot.case", funcName = "DotCase" },
+        }
+        vim.ui.select(items, {
+          prompt = "Select case style:",
+          format_item = function(item)
+            return item.name
+          end,
+        }, function(choice)
+          if choice then
+            vim.fn["caser#DoAction"](choice.funcName, vim.fn.visualmode())
+          end
+        end)
+      end
+
+      vim.keymap.set("v", "oc", select_case, { silent = true })
+    end,
+  },
   {
     "gbprod/yanky.nvim",
     event = { "BufReadPre", "BufNewFile" },
@@ -709,6 +781,7 @@ local pluginSpec = {
   },
   {
     "stevearc/conform.nvim",
+    cmd = { "FormatDisable", "FormatEnable" },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("conform").setup({
@@ -864,7 +937,6 @@ local pluginSpec = {
     "nvim-lualine/lualine.nvim",
     config = function()
       local theme = require("lualine.themes.tokyonight-night")
-      local git_branch = require("lualine.components.branch.git_branch")
 
       theme.normal.c = { bg = colors.bg, fg = theme.normal.a.bg }
       theme.insert.c = { bg = colors.bg, fg = theme.insert.a.bg }
@@ -872,19 +944,9 @@ local pluginSpec = {
       theme.visual.c = { bg = colors.bg, fg = theme.visual.a.bg }
       theme.replace.c = { bg = colors.bg, fg = theme.replace.a.bg }
       theme.terminal.c = { bg = colors.bg, fg = theme.terminal.a.bg }
+      theme.inactive.a.fg = theme.inactive.c.fg
+      theme.inactive.b.gui = nil
       theme.inactive.c.bg = colors.bg
-
-      local function current_working_directory()
-        local cwd = vim.fn.getcwd()
-        if cwd == vim.fn.expand("$HOME") then
-          return "~"
-        end
-        local dir_name = vim.fn.fnamemodify(cwd, ":t")
-        if git_branch.get_branch() == "" then
-          return dir_name
-        end
-        return "\u{ea62} " .. dir_name
-      end
 
       local function encoding()
         ---@diagnostic disable-next-line: undefined-field
@@ -894,6 +956,20 @@ local pluginSpec = {
         end
         return result
       end
+
+      local filename = {
+        "filename",
+        file_status = true,
+        newfile_status = true,
+        path = 1, -- Relative path
+        shorting_target = 40,
+        symbols = {
+          modified = "[modified]",
+          readonly = "[readonly]",
+          newfile = "[new]",
+          unnamed = "NO NAME",
+        },
+      }
 
       require("lualine").setup({
         options = {
@@ -912,22 +988,7 @@ local pluginSpec = {
         sections = {
           lualine_a = { "mode" },
           lualine_b = { current_working_directory },
-          lualine_c = {
-            {
-              "filename",
-              file_status = true,
-              newfile_status = true,
-              path = 1, -- Relative path
-              shorting_target = 40,
-              symbols = {
-                modified = "[modified]",
-                readonly = "[readonly]",
-                newfile = "[new]",
-                unnamed = "NO NAME",
-              },
-            },
-            "diagnostics",
-          },
+          lualine_c = { filename, "diagnostics" },
           lualine_x = {
             "require'lsp-status'.status()",
             { "filetype", icon_only = false },
@@ -939,24 +1000,10 @@ local pluginSpec = {
           lualine_z = {},
         },
         inactive_sections = {
-          lualine_a = {},
-          lualine_b = {},
-          lualine_c = {
-            {
-              "filename",
-              file_status = true,
-              newfile_status = true,
-              path = 1, -- Relative path
-              shorting_target = 40,
-              symbols = {
-                modified = "[modified]",
-                readonly = "[readonly]",
-                unnamed = "NO NAME",
-                newfile = "NEW",
-              },
-            },
-          },
-          lualine_x = { "%l/%L(%P)" },
+          lualine_a = { "mode" },
+          lualine_b = { current_working_directory },
+          lualine_c = { filename },
+          lualine_x = { "%1v", "%l/%L(%P)" },
           lualine_y = {},
           lualine_z = {},
         },

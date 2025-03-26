@@ -28,7 +28,6 @@
   diff-branch = !git diff $(git main-branch) $(git current-branch)
   diff-main = !git diff $(git main-branch) $(git current-branch)
   diff-csv = diff --color --word-diff-regex="[^[:blank:],]"
-  mt = mergetool
   merge-keep-current = merge -X ours
   merge-keep-target = merge -X theirs
   checkout-current = checkout --ours
@@ -69,15 +68,14 @@
   rename = "!sh -c 'git branch -m `git current-branch` $0'"
   mru = for-each-ref --format='%(refname:short) (%(committerdate:relative))' --sort=committerdate refs/heads/
   go-version = "!sh -c 'TZ=UTC git --no-pager show --quiet --abbrev=12 --date=\"format-local:%Y%m%d%H%M%S\" --format=\"v0.0.0-%cd-%h\"'"
+[diff]
+  colorMoved = default
 [merge]
   tool = nvimdiff
   conflictstyle = zdiff3
-[diff]
-  colorMoved = default
-[difftool "nvimdiff"]
-  cmd = "nvim -R -d -c \"wincmd l\" -d \"$LOCAL\" \"$REMOTE\""
 [mergetool "nvimdiff"]
-  cmd = "nvim -d -c \"4wincmd w | wincmd J\" \"$LOCAL\" \"$BASE\" \"$REMOTE\"  \"$MERGED\""
+  cmd = "zsh -c \"nvim -d -c 'wincmd J' -c 'vimgrep /<<<<<<<\\|=======\\|>>>>>>>/g %' -c 'copen' -c 'wincmd k' -c 'resize +10' \"$MERGED\" \"$LOCAL\" \"$REMOTE\"\""
+  trustExitCode = false
 [http]
   postBuffer = 524288000
 [push]

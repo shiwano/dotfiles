@@ -227,71 +227,91 @@ move-to-git-repository() {
 }
 
 edit-git-grepped-files() {
+	local prompt="$(prompt-pwd)/"
 	local search=$1
 	[ -z "$search" ] && return
 	local files="$(git grep -n --color=always "$search")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt 'Edit> ')"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt $prompt)"
 	[ -z "$s" ] && return
+
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-		local file=$(echo "$s" | awk -F ':' '{print $1}' | head -n 1)
+		local file=$(echo "$s" | awk -F ':' '{print $1}')
+		local line=$(echo "$s" | awk -F ':' '{print $2}')
 		print -s "vi $file" && fc -AI
-		vi $file
+		vi +"$line" "$file"
 	else
 		local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
 		vi -c "cexpr '$escaped_s' | copen"
 	fi
 }
 
-edit-git-file() {
+edit-git-files() {
+	local prompt="$(prompt-pwd)/"
 	local dir=${1-.}
 	local files="$(git ls-files $dir)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --prompt 'Edit> ')"
+	local s="$(echo -e $files | fzf -m --prompt $prompt)"
 	[ -z "$s" ] && return
-	print -s "vi $s" && fc -AI
-	vi $s
+
+	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
+		print -s "vi $s" && fc -AI
+		vi $s
+	else
+		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
+		vi -c "cexpr '$escaped' | copen"
+	fi
 }
 
-edit-git-changed-file() {
+edit-git-changed-files() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	if [ -z "$files" ]; then
-		edit-git-file
+		edit-git-files
 		return
 	fi
-	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)'	--prompt 'Edit> ' | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)'	--prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
-	print -s "vi $s" && fc -AI
-	vi $s
+
+	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
+		print -s "vi $s" && fc -AI
+		vi $s
+	else
+		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
+		vi -c "cexpr '$escaped' | copen"
+	fi
 }
 
-copy-file-path-to-clipboard() {
+copy-file-paths-to-clipboard() {
+	local prompt="$(prompt-pwd)/"
 	local dir=${1-}
 	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
+	local s="$(echo -e $files | fzf -m --prompt $prompt)"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
-	echo "Copied to clipboard: $s"
+	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
 }
 
-copy-changed-file-path-to-clipboard() {
+copy-changed-file-paths-to-clipboard() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
-	echo "Copied to clipboard: $s"
+	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
 }
 
-copy-image-path-to-clipboard() {
+copy-image-paths-to-clipboard() {
+	local prompt="$(prompt-pwd)/"
 	local dir=${1-}
 	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --prompt 'CopyPath> ')"
+	local s="$(echo -e $files | fzf -m --prompt $prompt)"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
-	echo "Copied to clipboard: $s"
+	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
 }
 
 git-switch-branch() {
@@ -303,36 +323,51 @@ git-switch-branch() {
 }
 
 git-add-files() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git add
 	git status
 }
 
 git-restore-files() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git restore
 	git status
 }
 
 git-unstage-files() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
 	git status
 }
 
+git-mergetool-file() {
+	local prompt="$(prompt-pwd)/"
+	local files="$(git status -s -u --no-renames | grep -E "^(UU|AA|DD) ")"
+	[ -z "$files" ] && return
+	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	[ -z "$s" ] && return
+	print -s "git mergetool $s" && fc -AI
+	git mergetool $s
+	git status
+}
+
 git-stash-files() {
+	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames)"
 	[ -z "$files" ] && return
-	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'StashFiles> ' | cut -c4-)"
+	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
 
 	local new_files=()
@@ -383,12 +418,13 @@ alias u='git-unstage-files'
 alias r='git-restore-files' # hide 'r' which is zsh's built-in command
 alias t='git-stash-files'
 alias g='move-to-git-repository'
-alias v='edit-git-changed-file'
-alias vv='edit-git-file'
+alias v='edit-git-changed-files'
+alias vv='edit-git-files'
 alias gg='edit-git-grepped-files'
-alias files='copy-file-path-to-clipboard'
-alias files-changed='copy-changed-file-path-to-clipboard'
-alias images='copy-image-path-to-clipboard'
+alias mt='git-mergetool-file'
+alias files='copy-file-paths-to-clipboard'
+alias files-changed='copy-changed-file-paths-to-clipboard'
+alias images='copy-image-paths-to-clipboard'
 
 autoload zmv
 alias zmv='noglob zmv -W'
@@ -443,12 +479,13 @@ ZLE_RPROMPT_INDENT=0
 
 prompt-pwd() {
 	local dir="$(print -P '%~')"
+	dir="${dir%/}" # Remove trailing slash
 	local icon_repo=$'\Uea62 '
 
 	if [[ $dir =~ '^~\/code\/src\/[^/]+\/[^/]+\/(.*)$' ]]; then
 		echo "$icon_repo${match[1]}"
-	elif [[ $dir =~ '^~\/dotfiles\/?(.*)$' ]]; then
-		echo "$icon_repo${dir#*/}"
+	elif [[ $dir =~ '^~\/(dotfiles\/?.*)$' ]]; then
+		echo "$icon_repo${match[1]}"
 	else
 		echo "$dir"
 	fi

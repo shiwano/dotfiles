@@ -4,5 +4,10 @@
   ],
   "diagnostics.globals": [
     "hs"
-  ]
+  ],
+  "workspace": {
+    "ignoreDir": [
+      "/Spoons/",
+    ]
+  },
 }
