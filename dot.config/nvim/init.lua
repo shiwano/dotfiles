@@ -19,12 +19,12 @@ vim.env.LANG = "en_US.UTF-8"
 vim.g.mapleader = ","
 vim.g.maplocalleader = "\\"
 
----@type ColorScheme
-local colors = nil
-
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
+
+---@type ColorScheme
+local colors = nil
 
 local function current_working_directory()
   local dir = vim.fn.getcwd() or ""
@@ -621,9 +621,9 @@ local pluginSpec = {
       cfg.ts_ls.setup({ on_attach = on_attach, capabilities = caps })
       cfg.dartls.setup({ on_attach = on_attach, capabilities = caps })
 
-      vim.api.nvim_create_augroup("lsp-diff-diagnostics-off", {})
+      vim.api.nvim_create_augroup("lsp_diff_diagnostics_off", {})
       vim.api.nvim_create_autocmd("BufEnter", {
-        group = "lsp-diff-diagnostics-off",
+        group = "lsp_diff_diagnostics_off",
         pattern = "*",
         callback = function()
           if vim.opt.diff:get() then
