@@ -18,7 +18,7 @@ main() {
 	for i in "${!fg_codes[@]}"; do
 		code="${fg_codes[$i]}"
 		name="${fg_names[$i]}"
-		printf "ESC[%sm → \033[%sm %3s (%-13s) \033[0m\n" "$code" "$code" "$code" "$name"
+		printf "\\\\033[%sm → \033[%sm %3s (%-13s) \033[0m\n" "$code" "$code" "$code" "$name"
 	done
 
 	topic "Base background colors"
@@ -30,19 +30,28 @@ main() {
 	for i in "${!bg_codes[@]}"; do
 		code="${bg_codes[$i]}"
 		name="${bg_names[$i]}"
-		printf "ESC[%sm → \033[%sm %3s (%-13s) \033[0m\n" "$code" "$code" "$code" "$name"
+		printf "\\\\033[%sm → \033[%sm %3s (%-13s) \033[0m\n" "$code" "$code" "$code" "$name"
 	done
 
 	topic "Reset"
-	printf "ESC[0m → \033[0m RESET \033[0m\n"
+	printf "\\\\033[0m → \033[0m RESET \033[0m\n"
 
 	topic "Extended foreground colors (256 colors)"
 	for code in {0..255}; do
-		printf "ESC[38;5;%sm \033[38;5;%sm%3s\033[0m " "$code" "$code" "$code"
+		printf "\\\\033[38;5;%sm \033[38;5;%sm%3s\033[0m " "$code" "$code" "$code"
 		if (((code + 1) % 8 == 0)); then
 			echo ""
 		fi
 	done
+
+	topic "NOTE"
+
+	echo -e "\
+- The \033[35m1;\033[0m attribute in \033[35m\\\\033[1;XXm\033[0m is often described as bold, but in some terminals, it is interpreted as bright color.\n\
+- \033[35m\\\\033[38;5;XXXm\033[0m sets the foreground color, and \033[35m\\\\033[48;5;XXXm\033[0m sets the background color using 256-color mode.\n\
+- \033[35m\\\\033[38;2;R;G;Bm\033[0m supports 24-bit true color (RGB) in compatible terminals like GNOME Terminal, iTerm2, and Windows Terminal.\n\
+- \033[35m\\\\033[0m\033[0m resets all text attributes.\n\
+- \033[35m\\\\033[22m\033[0m removes bold formatting, \033[35m\\\\033[39m\033[0m resets the foreground color, and \033[35m\\\\033[49m\033[0m resets the background color."
 }
 
 main "$@"
