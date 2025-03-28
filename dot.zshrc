@@ -401,6 +401,25 @@ local-ip-address() {
 	ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
+ssh-add-key() {
+  local key_path="$HOME/.ssh/id_rsa"
+  if [ ! -f "$key_path" ]; then
+    echo "ssh key not found: $key_path"
+    return 1
+  fi
+
+  if ssh-add -l 2>/dev/null | grep -q "$key_path"; then
+    echo "ssh key already added: $key_path"
+    return
+  fi
+
+  if [[ "$(uname)" == "Darwin" ]]; then
+    ssh-add --apple-use-keychain "$key_path"
+  else
+    ssh-add "$key_path"
+  fi
+}
+
 # Aliases ----------------------------------------------------------------------
 
 alias ls='ls --color=auto'
