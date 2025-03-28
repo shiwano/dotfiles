@@ -23,9 +23,6 @@ vim.g.maplocalleader = "\\"
 -- Utilities
 -------------------------------------------------------------------------------
 
----@type ColorScheme
-local colors = nil
-
 local function current_working_directory()
   local dir = vim.fn.getcwd() or ""
   local home = vim.fn.expand("$HOME") or ""
@@ -43,6 +40,10 @@ local function current_working_directory()
   return rel_dir
 end
 
+local function get_colors()
+  return require("tokyonight.colors").setup({ style = "night" })
+end
+
 -------------------------------------------------------------------------------
 -- Plugins
 -------------------------------------------------------------------------------
@@ -57,8 +58,7 @@ local pluginSpec = {
     config = function()
       vim.cmd([[colorscheme tokyonight-night]])
 
-      ---@diagnostic disable-next-line: missing-fields
-      colors = require("tokyonight.colors").setup({ style = "night" })
+      local colors = get_colors()
 
       vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
       vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
@@ -856,6 +856,8 @@ local pluginSpec = {
     ft = { "markdown", "vimwiki", "neorg", "typst" },
     cmd = "DiagramCacheClear",
     config = function()
+      local colors = get_colors()
+
       require("diagram").setup({
         integrations = {
           require("diagram.integrations.markdown"),
@@ -937,6 +939,7 @@ local pluginSpec = {
     "nvim-lualine/lualine.nvim",
     config = function()
       local theme = require("lualine.themes.tokyonight-night")
+      local colors = get_colors()
 
       theme.normal.c = { bg = colors.bg, fg = theme.normal.a.bg }
       theme.insert.c = { bg = colors.bg, fg = theme.insert.a.bg }
