@@ -58,6 +58,7 @@ brew 'gnuplot'
 brew 'stylua'
 brew 'lua-language-server'
 brew 'fastfetch'
+brew 'pinact'
 
 cask 'alfred'
 cask 'google-chrome'
