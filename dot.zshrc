@@ -334,7 +334,7 @@ git-add-files() {
 
 git-restore-files() {
 	local prompt="$(prompt-pwd)/"
-	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] " | grep -v -E "^\?\? ")"
+	local files="$(git status -s -u --no-renames | grep -v -E "^(M|A|D|UU|AA|DD|DU|UD) " | grep -v -E "^\?\? ")"
 	[ -z "$files" ] && return
 	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
@@ -344,7 +344,7 @@ git-restore-files() {
 
 git-unstage-files() {
 	local prompt="$(prompt-pwd)/"
-	local files="$(git status -s -u --no-renames | grep -E "^[MAD] ")"
+	local files="$(git status -s -u --no-renames | grep -E "^(M|A|D|UU|AA|DD|DU|UD) ")"
 	[ -z "$files" ] && return
 	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
 	[ -z "$s" ] && return
