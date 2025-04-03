@@ -59,6 +59,7 @@ brew 'stylua'
 brew 'lua-language-server'
 brew 'fastfetch'
 brew 'pinact'
+brew 'shellcheck'
 
 cask 'alfred'
 cask 'google-chrome'
