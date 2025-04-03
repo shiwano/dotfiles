@@ -209,7 +209,7 @@ local pluginSpec = {
       local function search_files_with_text()
         vim.ui.input({ prompt = "Search: " }, function(text)
           if text and #text > 0 then
-            fzf.grep({ search = text })
+            fzf.grep({ search = text, hidden = true })
           end
         end)
       end
@@ -271,7 +271,7 @@ local pluginSpec = {
         vim.cmd('silent normal! "zy')
         local text = vim.fn.getreg("z")
         if text and #text > 0 then
-          fzf.grep({ search = text })
+          fzf.grep({ search = text, hidden = true })
         end
       end
 
