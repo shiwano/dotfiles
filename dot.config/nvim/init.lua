@@ -941,15 +941,15 @@ local pluginSpec = {
       local theme = require("lualine.themes.tokyonight-night")
       local colors = get_colors()
 
-      theme.normal.c = { bg = colors.bg, fg = theme.normal.a.bg }
-      theme.insert.c = { bg = colors.bg, fg = theme.insert.a.bg }
-      theme.command.c = { bg = colors.bg, fg = theme.command.a.bg }
-      theme.visual.c = { bg = colors.bg, fg = theme.visual.a.bg }
-      theme.replace.c = { bg = colors.bg, fg = theme.replace.a.bg }
-      theme.terminal.c = { bg = colors.bg, fg = theme.terminal.a.bg }
-      theme.inactive.a.fg = theme.inactive.c.fg
-      theme.inactive.b.gui = nil
-      theme.inactive.c.bg = colors.bg
+      theme.normal.c = { bg = colors.bg_dark, fg = theme.normal.a.bg }
+      theme.insert.c = { bg = colors.bg_dark, fg = theme.insert.a.bg }
+      theme.command.c = { bg = colors.bg_dark, fg = theme.command.a.bg }
+      theme.visual.c = { bg = colors.bg_dark, fg = theme.visual.a.bg }
+      theme.replace.c = { bg = colors.bg_dark, fg = theme.replace.a.bg }
+      theme.terminal.c = { bg = colors.bg_dark, fg = theme.terminal.a.bg }
+      theme.inactive.a = { bg = colors.bg_dark, fg = colors.fg_gutter }
+      theme.inactive.b = { bg = colors.bg_dark, fg = colors.fg_gutter }
+      theme.inactive.c = { bg = colors.bg_dark, fg = colors.fg_gutter }
 
       local function encoding()
         ---@diagnostic disable-next-line: undefined-field
