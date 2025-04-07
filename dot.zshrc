@@ -394,7 +394,7 @@ select-history() {
 
 remove-last-command() {
 	local last_command=$(fc -ln -1)
-	fc -p $last_command
+	fc -p "$last_command"
 }
 
 local-ip-address() {
@@ -407,17 +407,11 @@ ssh-add-key() {
     echo "ssh key not found: $key_path"
     return 1
   fi
-
   if ssh-add -l 2>/dev/null | grep -q "$key_path"; then
     echo "ssh key already added: $key_path"
     return
   fi
-
-  if [[ "$(uname)" == "Darwin" ]]; then
-    ssh-add --apple-use-keychain "$key_path"
-  else
-    ssh-add "$key_path"
-  fi
+	ssh-add "$key_path"
 }
 
 # Aliases ----------------------------------------------------------------------
