@@ -804,7 +804,7 @@ local pluginSpec = {
           if vim.b[bufnr].disable_autoformat then
             return
           end
-          return { timeout_ms = 500, lsp_format = "fallback" }
+          return { timeout_ms = 5000, lsp_format = "fallback" }
         end,
       })
 
@@ -1023,6 +1023,7 @@ local pluginSpec = {
       notifier = { enabled = true },
     },
   },
+  { "LunarVim/bigfile.nvim" },
 }
 
 ---@diagnostic disable-next-line: missing-fields
