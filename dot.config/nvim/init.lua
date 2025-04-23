@@ -1156,6 +1156,14 @@ vim.opt.fileencodings:append("euc-jisx0213")
 vim.opt.fileencodings:append("euc-jp")
 
 -------------------------------------------------------------------------------
+-- Provider settings
+-------------------------------------------------------------------------------
+
+vim.g.loaded_perl_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_python3_provider = 0
+
+-------------------------------------------------------------------------------
 -- Filetype detection
 -------------------------------------------------------------------------------
 vim.cmd("filetype plugin indent on")
