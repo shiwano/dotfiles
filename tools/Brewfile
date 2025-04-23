@@ -60,6 +60,7 @@ brew 'lua-language-server'
 brew 'fastfetch'
 brew 'pinact'
 brew 'shellcheck'
+brew 'gs'
 
 cask 'alfred'
 cask 'google-chrome'

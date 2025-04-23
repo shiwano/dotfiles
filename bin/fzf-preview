@@ -8,12 +8,15 @@ preview_file() {
 
 	if [ -d "$target" ]; then
 		ls -la "$target"
-	elif file --mime-type "$target" | grep -qF image/; then
-		kitty icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place="${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0" "$target"
-	elif file --dereference --mime "$target" | grep -qF binary; then
-		file --dereference --mime -- "$target"
 	else
-		if [ -n "$line" ]; then
+		local mime_type
+		mime_type="$(file --mime-type -b "$target")"
+
+		if [[ "$mime_type" == application/pdf || "$mime_type" == image/* ]]; then
+			kitty icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place="${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0" "$target"
+		elif file --dereference --mime "$target" | grep -qF binary; then
+			file --dereference --mime -- "$target"
+		elif [ -n "$line" ]; then
 			local start_line=$(((line - 10) < 0 ? 0 : (line - 10)))
 			bat --style=numbers --color=always --pager=never --line-range "$start_line:+500" --highlight-line "$line" "$target"
 		else
