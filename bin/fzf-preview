@@ -9,7 +9,7 @@ preview_file() {
 	if [ -d "$target" ]; then
 		ls -la "$target"
 	elif file --mime-type "$target" | grep -qF image/; then
-		kitty icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place=${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0 "$target"
+		kitty icat --clear --transfer-mode=memory --unicode-placeholder --stdin=no --place="${FZF_PREVIEW_COLUMNS:-0}x${FZF_PREVIEW_LINES:-0}@0x0" "$target"
 	elif file --dereference --mime "$target" | grep -qF binary; then
 		file --dereference --mime -- "$target"
 	else
@@ -53,8 +53,9 @@ main() {
 			preview_file "$target"
 		fi
 	elif [ "$mode" = "grepped" ]; then
-		local file="$(echo "$target" | cut -d: -f1)"
-		local line="$(echo "$target" | cut -d: -f2)"
+		local file line
+		file="$(echo "$target" | cut -d: -f1)"
+		line="$(echo "$target" | cut -d: -f2)"
 		preview_file "$file" "$line"
 	else
 		usage

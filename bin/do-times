@@ -25,7 +25,7 @@ main() {
 		return 1
 	fi
 
-	for i in $(seq 1 "$times"); do
+	for _ in $(seq 1 "$times"); do
 		"$@" || {
 			printf "\033[31mFAILED\033[0m\n"
 			break
