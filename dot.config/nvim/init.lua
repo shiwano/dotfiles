@@ -516,7 +516,7 @@ local pluginSpec = {
       local cmp = require("cmp")
       local types = require("cmp.types")
 
-      local has_words_before = function()
+      local function has_words_before()
         local line, col = unpack(vim.api.nvim_win_get_cursor(0))
         if col == 0 then
           return false
@@ -576,7 +576,7 @@ local pluginSpec = {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local rename = function()
+      local function rename()
         local current = vim.fn.expand("<cword>")
         vim.ui.input({ prompt = "New name: ", default = current }, function(text)
           if text and #text > 0 then
@@ -585,7 +585,11 @@ local pluginSpec = {
         end)
       end
 
-      local on_attach = function(_, bufnr)
+      local function format()
+        vim.lsp.buf.format({ async = true })
+      end
+
+      local function on_attach(_, bufnr)
         vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true })
         vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true })
         vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true })
@@ -594,9 +598,7 @@ local pluginSpec = {
         vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true })
         vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true })
 
-        vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
-          vim.lsp.buf.format({ async = true })
-        end, {})
+        vim.api.nvim_buf_create_user_command(bufnr, "Format", format, {})
       end
 
       local caps = vim.lsp.protocol.make_client_capabilities()
