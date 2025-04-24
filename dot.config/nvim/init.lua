@@ -22,7 +22,6 @@ vim.g.maplocalleader = "\\"
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
-
 local function current_working_directory()
   local dir = vim.fn.getcwd() or ""
   local home = vim.fn.expand("$HOME") or ""
@@ -577,49 +576,66 @@ local pluginSpec = {
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local lsp_status = require("lsp-status")
-      lsp_status.register_progress()
+      local rename = function()
+        local current = vim.fn.expand("<cword>")
+        vim.ui.input({ prompt = "New name: ", default = current }, function(text)
+          if text and #text > 0 then
+            vim.lsp.buf.rename(text)
+          end
+        end)
+      end
 
-      local on_attach = function(client, bufnr)
-        lsp_status.on_attach(client)
-
+      local on_attach = function(_, bufnr)
         vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true })
         vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true })
         vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true })
         vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true })
-        vim.keymap.set("n", "on", vim.lsp.buf.rename, { silent = true, buffer = true })
-        vim.keymap.set({ "n", "v" }, "os", vim.lsp.buf.code_action, { silent = true, buffer = true })
+        vim.keymap.set("n", "on", rename, { silent = true, buffer = true })
+        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true })
         vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true })
 
         vim.api.nvim_buf_create_user_command(bufnr, "Format", function()
           vim.lsp.buf.format({ async = true })
         end, {})
-
-        if client.name == "ts_ls" then
-          vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
-            vim.lsp.buf.execute_command({
-              command = "_typescript.organizeImports",
-              arguments = { vim.api.nvim_buf_get_name(0) },
-            })
-          end, {})
-        end
       end
 
       local caps = vim.lsp.protocol.make_client_capabilities()
       caps = require("cmp_nvim_lsp").default_capabilities(caps)
-      caps = vim.tbl_extend("keep", caps, lsp_status.capabilities)
 
-      local cfg = require("lspconfig")
-
-      cfg.gopls.setup({
-        cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
+      vim.lsp.config("*", {
         on_attach = on_attach,
         capabilities = caps,
       })
 
-      cfg.lua_ls.setup({ on_attach = on_attach, capabilities = caps })
-      cfg.ts_ls.setup({ on_attach = on_attach, capabilities = caps })
-      cfg.dartls.setup({ on_attach = on_attach, capabilities = caps })
+      local ls = {
+        go = "gopls",
+        typescript = "ts_ls",
+        dart = "dartls",
+        lua = "lua_ls",
+      }
+
+      vim.lsp.config(ls.go, {
+        cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
+      })
+
+      vim.lsp.config(ls.typescript, {
+        on_attach = function(client, bufnr)
+          on_attach(client, bufnr)
+
+          vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
+            client.exec_cmd({
+              command = "_typescript.organizeImports",
+              arguments = { vim.api.nvim_buf_get_name(0) },
+            }, { bufnr = bufnr })
+          end, {})
+        end,
+      })
+
+      local ls_names = {}
+      for _, v in pairs(ls) do
+        table.insert(ls_names, v)
+      end
+      vim.lsp.enable(ls_names)
 
       vim.api.nvim_create_augroup("lsp_diff_diagnostics_off", {})
       vim.api.nvim_create_autocmd("BufEnter", {
@@ -671,7 +687,6 @@ local pluginSpec = {
   { "buoto/gotests-vim", ft = { "go" } },
   { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
-  { "machakann/vim-sandwich", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
   {
@@ -925,17 +940,6 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   { "nvim-tree/nvim-web-devicons", lazy = true },
   {
-    "nvim-lua/lsp-status.nvim",
-    lazy = true,
-    config = function()
-      require("lsp-status").config({
-        status_symbol = "\u{e20f}",
-        current_function = false,
-        diagnostics = false,
-      })
-    end,
-  },
-  {
     "nvim-lualine/lualine.nvim",
     config = function()
       local theme = require("lualine.themes.tokyonight-night")
@@ -993,7 +997,7 @@ local pluginSpec = {
           lualine_b = { current_working_directory },
           lualine_c = { filename, "diagnostics" },
           lualine_x = {
-            "require'lsp-status'.status()",
+            { "lsp_status", icon = "\u{e20f}" },
             { "filetype", icon_only = false },
             "fileformat",
             encoding,
@@ -1018,15 +1022,35 @@ local pluginSpec = {
     priority = 1000,
     lazy = false,
     opts = {
+      bigfile = {
+        enabled = true,
+        notify = true,
+        size = 5 * 1024 * 1024, -- 5MB
+        line_length = 1000,
+        setup = function(ctx)
+          if vim.fn.exists(":NoMatchParen") ~= 0 then
+            vim.cmd("NoMatchParen")
+          end
+
+          vim.bo[ctx.buf].syntax = ""
+          vim.bo[ctx.buf].filetype = ""
+          vim.bo[ctx.buf].swapfile = false
+          vim.bo[ctx.buf].undofile = false
+
+          vim.wo.wrap = false
+          vim.wo.number = false
+          vim.wo.relativenumber = false
+          vim.wo.cursorline = false
+          vim.wo.cursorcolumn = false
+        end,
+      },
       input = { enabled = true },
-      picker = { ui_select = true },
+      picker = { enabled = true, ui_select = true },
       notifier = { enabled = true },
     },
   },
-  { "LunarVim/bigfile.nvim" },
 }
 
----@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
@@ -1112,7 +1136,6 @@ vim.api.nvim_create_autocmd("BufRead", {
   end,
 })
 
--- Diagnostic signs
 for type, icon in pairs({ Error = "\u{f057}", Warn = "\u{f071}", Hint = "\u{f0335}", Info = "\u{f05a}" }) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
@@ -1292,7 +1315,7 @@ vim.api.nvim_create_user_command("SaveMemo", function()
   end)
 
   if not success then
-    vim.api.nvim_err_writeln("Failed to save memo: " .. err)
+    vim.notify("Failed to save memo: " .. err, vim.log.levels.ERROR)
   end
 end, {})
 
@@ -1316,7 +1339,7 @@ end
 local function rename(name)
   local new_name = vim.trim(name)
   if new_name == "" then
-    vim.api.nvim_err_writeln("New name empty")
+    vim.notify("New name empty", vim.log.levels.WARN)
     return
   end
 
@@ -1329,7 +1352,7 @@ local function rename(name)
   end)
   if not ok then
     if err and not err:match("E329") then
-      vim.api.nvim_err_writeln("Failed to excute saveas: " .. err)
+      vim.notify("Failed to excute saveas: " .. err, vim.log.levels.ERROR)
       return
     end
   end
@@ -1339,7 +1362,7 @@ local function rename(name)
     vim.cmd("bwipe! " .. vim.fn.fnameescape(oldfile))
     local remove_ok, remove_err = pcall(os.remove, oldfile)
     if not remove_ok then
-      vim.api.nvim_err_writeln("Failed to remove the old file: " .. tostring(remove_err))
+      vim.notify("Failed to remove the old file: " .. tostring(remove_err), vim.log.levels.ERROR)
     end
   end
 end
@@ -1443,7 +1466,7 @@ _＿／ｿ    V   //／'|ヽ:ﾊ) |Ｙ   ‖   /:::＼ !  }‖  !||   /
   vim.cmd("redraw")
 
   local raw = vim.fn.getchar()
-  local ch = type(raw) == "number" and vim.fn.nr2char(raw) or raw
+  local ch = type(raw) == "number" and vim.fn.nr2char(raw) or tostring(raw)
 
   local new_bufnr = vim.api.nvim_get_current_buf()
   vim.cmd("silent! " .. (orig_bufnr == new_bufnr and "enew" or orig_bufnr .. " buffer"))
@@ -1520,6 +1543,102 @@ local function open_github_line_url()
 end
 
 vim.keymap.set("n", "og", open_github_line_url, { silent = true })
+
+-------------------------------------------------------------------------------
+-- Surrounding
+-------------------------------------------------------------------------------
+local function select_surround()
+  local surround_pairs = {
+    ['"'] = '"',
+    ["'"] = "'",
+    ["`"] = "`",
+    ["("] = ")",
+    ["["] = "]",
+    ["{"] = "}",
+    ["<"] = ">",
+  }
+
+  local items = {
+    { name = 'Double quotes: "  "', bun = '"' },
+    { name = "Single quotes: '  '", bun = "'" },
+    { name = "Parentheses: (  )", bun = "(" },
+    { name = "Brackets: [  ]", bun = "[" },
+    { name = "Braces: {  }", bun = "{" },
+    { name = "Angle brackets: <  >", bun = "<" },
+    { name = "Backticks: `  `", bun = "`" },
+    { name = "Asterisks: *  *", bun = "*" },
+    { name = "Double Asterisks: **  **", bun = "**" },
+    { name = "Tildes: ~  ~", bun = "~" },
+    { name = "Code block: ```\\n  \\n```", bun = "codeblock" },
+    { name = "Custom surround...", bun = "custom" },
+    { name = "Remove surrounding", bun = "remove" },
+  }
+
+  vim.ui.select(items, {
+    prompt = "Select surrounding action:",
+    format_item = function(item)
+      return item.name
+    end,
+  }, function(choice)
+    if not choice then
+      return
+    end
+
+    local buf = 0
+    local s = vim.fn.getpos("'<")
+    local e = vim.fn.getpos("'>")
+    local sr, sc = s[2] - 1, s[3] - 1 -- 0-based
+    local er, ec = e[2] - 1, e[3]
+
+    if choice.bun == "remove" then
+      local max_len = math.min(5, sc)
+      local to_remove = 0
+
+      for len = max_len, 1, -1 do
+        local ok1, pre = pcall(vim.api.nvim_buf_get_text, buf, sr, sc - len, sr, sc, {})
+        local ok2, post = pcall(vim.api.nvim_buf_get_text, buf, er, ec, er, ec + len, {})
+        if ok1 and ok2 then
+          local a, b = pre[1], post[1]
+          if len == 1 then
+            if (surround_pairs[a] == b) or (a == b) then
+              to_remove = 1
+              break
+            end
+          else
+            if a == b then
+              to_remove = len
+              break
+            end
+          end
+        end
+      end
+
+      if to_remove > 0 then
+        vim.api.nvim_buf_set_text(buf, er, ec, er, ec + to_remove, {})
+        vim.api.nvim_buf_set_text(buf, sr, sc - to_remove, sr, sc, {})
+      else
+        vim.notify("No surrounding characters found to remove", vim.log.levels.WARN)
+      end
+    elseif choice.bun == "codeblock" then
+      vim.api.nvim_buf_set_lines(buf, sr, sr, false, { "```" })
+      vim.api.nvim_buf_set_lines(buf, er + 2, er + 2, false, { "```" })
+    elseif choice.bun == "custom" then
+      vim.ui.input({ prompt = "Surround characters: " }, function(text)
+        if text and #text > 0 then
+          vim.api.nvim_buf_set_text(buf, er, ec, er, ec, { text })
+          vim.api.nvim_buf_set_text(buf, sr, sc, sr, sc, { text })
+        end
+      end)
+    else
+      local open = choice.bun
+      local close = surround_pairs[open] or open
+      vim.api.nvim_buf_set_text(buf, er, ec, er, ec, { close })
+      vim.api.nvim_buf_set_text(buf, sr, sc, sr, sc, { open })
+    end
+  end)
+end
+
+vim.keymap.set("v", "os", select_surround, { silent = true })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
