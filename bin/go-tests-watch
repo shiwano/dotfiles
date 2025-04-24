@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
 main() {
-	cd "$(pwd)"
-	reflex -d none -r '\.go$' -- sh -c "echo \"\033[0;33m{} changed\033[0m\" && go test \`dirname ./{}\` $(echo ${@:-})"
+	# shellcheck disable=SC2016
+	reflex -d none -r '\.go$' -- bash -c 'printf "\033[0;33m%s changed\033[0m\n" "$1"; go test "./$(dirname "$1")" "${@:2}"' _ {} "$@"
 }
 
 main "$@"

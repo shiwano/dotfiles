@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
 main() {
-	cd "$(pwd)"
-	reflex -d none -r '^test/.*\.dart$' -- sh -c "echo \"\033[0;33m{} changed\033[0m\" && flutter test {} $(echo ${@:-})"
+	# shellcheck disable=SC2016
+	reflex -d none -r '^test/.*\.dart$' -- bash -c 'printf "\033[0;33m%s changed\033[0m\n" "$1"; flutter test "$1" "${@:2}"' _ {} "$@"
 }
 
 main "$@"
