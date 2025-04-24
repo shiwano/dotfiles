@@ -6,7 +6,7 @@ preview_file() {
 	local target_line="$1"
 	local target line
 
-	if [[ "$target_line" =~ ^([^:]+):([0-9]+).+ ]]; then
+	if [[ "$target_line" =~ ^([^:]+):([0-9]+) ]]; then
 		target="${BASH_REMATCH[1]}"
 		line="${BASH_REMATCH[2]}"
 	else

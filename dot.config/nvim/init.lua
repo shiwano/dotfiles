@@ -224,7 +224,11 @@ local pluginSpec = {
         -- BOOKMARK: bookmarks
         local entries = {
           { name = "rc", path = "~/.config/nvim/init.lua" },
-          { name = "rc_tag", path = "~/.config/nvim/init.lua", tag = "bookmarks" },
+          { name = "tag", path = "~/.config/nvim/init.lua", tag = "bookmarks" },
+          { name = "formatters", path = "~/.config/nvim/init.lua", tag = "formatters" },
+          { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
+          { name = "alternative_files", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
+          { name = "filetype_detections", path = "~/.config/nvim/init.lua", tag = "filetype_detections" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
           { name = "git", path = "~/.gitconfig" },
@@ -363,44 +367,47 @@ local pluginSpec = {
         end
       end
 
+      -- BOOKMARK: alternative_files
+      local mappings = {
+        "rails",
+        "rust",
+        -- Go
+        { pattern = p("(.+)%.go$", "_test%.go$"), target = "%1_test.go" },
+        { pattern = "(.+)_test%.go$", target = "%1.go" },
+        -- TypeScript
+        { pattern = p("(.+)%.ts$", "%.test%.ts$"), target = "%1.test.ts" },
+        { pattern = "(.+)%.test%.ts$", target = "%1.ts" },
+        { pattern = p("(.+)%.tsx$", "%.test%.tsx$"), target = "%1.test.tsx" },
+        { pattern = "(.+)%.test%.tsx$", target = "%1.tsx" },
+        -- JavaScript
+        { pattern = p("(.+)%.js$", "%.test%.js$"), target = "%1.test.js" },
+        { pattern = "(.+)%.test%.js$", target = "%1.js" },
+        { pattern = p("(.+)%.jsx$", "%.test%.jsx$"), target = "%1.test.jsx" },
+        { pattern = "(.+)%.test%.jsx$", target = "%1.jsx" },
+        -- Flutter
+        {
+          pattern = p("lib/(.+)%.dart$", "%.g%.dart$"),
+          target = {
+            { context = "test", target = "test/%1_test.dart" },
+            { context = "generated", target = "lib/%1.g.dart" },
+          },
+        },
+        { pattern = "test/(.+)_test%.dart$", target = "lib/%1.dart" },
+        { pattern = "lib/(.+)%.g%.dart$", target = "lib/%1.dart" },
+        -- Python
+        { pattern = p("(.+)/([^/]+)%.py$", "/test_[^/]+%.py$"), target = "%1/test_%2.py" },
+        { pattern = "(.+)/test_(.+)%.py$", target = "%1/%2.py" },
+        -- C
+        { pattern = "(.+)%.c$", target = "%1.h" },
+        { pattern = "(.+)%.h$", target = "%1.c" },
+        -- C++
+        { pattern = "(.+)%.cpp$", target = "%1.hpp" },
+        { pattern = "(.+)%.hpp$", target = "%1.cpp" },
+      }
+
       require("other-nvim").setup({
         rememberBuffers = false,
-        mappings = {
-          "rails",
-          "rust",
-          -- Go
-          { pattern = p("(.+)%.go$", "_test%.go$"), target = "%1_test.go" },
-          { pattern = "(.+)_test%.go$", target = "%1.go" },
-          -- TypeScript
-          { pattern = p("(.+)%.ts$", "%.test%.ts$"), target = "%1.test.ts" },
-          { pattern = "(.+)%.test%.ts$", target = "%1.ts" },
-          { pattern = p("(.+)%.tsx$", "%.test%.tsx$"), target = "%1.test.tsx" },
-          { pattern = "(.+)%.test%.tsx$", target = "%1.tsx" },
-          -- JavaScript
-          { pattern = p("(.+)%.js$", "%.test%.js$"), target = "%1.test.js" },
-          { pattern = "(.+)%.test%.js$", target = "%1.js" },
-          { pattern = p("(.+)%.jsx$", "%.test%.jsx$"), target = "%1.test.jsx" },
-          { pattern = "(.+)%.test%.jsx$", target = "%1.jsx" },
-          -- Flutter
-          {
-            pattern = p("lib/(.+)%.dart$", "%.g%.dart$"),
-            target = {
-              { context = "test", target = "test/%1_test.dart" },
-              { context = "generated", target = "lib/%1.g.dart" },
-            },
-          },
-          { pattern = "test/(.+)_test%.dart$", target = "lib/%1.dart" },
-          { pattern = "lib/(.+)%.g%.dart$", target = "lib/%1.dart" },
-          -- Python
-          { pattern = p("(.+)/([^/]+)%.py$", "/test_[^/]+%.py$"), target = "%1/test_%2.py" },
-          { pattern = "(.+)/test_(.+)%.py$", target = "%1/%2.py" },
-          -- C
-          { pattern = "(.+)%.c$", target = "%1.h" },
-          { pattern = "(.+)%.h$", target = "%1.c" },
-          -- C++
-          { pattern = "(.+)%.cpp$", target = "%1.hpp" },
-          { pattern = "(.+)%.hpp$", target = "%1.cpp" },
-        },
+        mappings = mappings,
       })
 
       vim.api.nvim_create_user_command("A", function()
@@ -815,6 +822,7 @@ local pluginSpec = {
     "w0rp/ale",
     event = { "BufReadPre", "BufNewFile" },
     init = function()
+      -- BOOKMARK: linters
       vim.g.ale_linters = {
         go = { "gobuild", "golangci-lint" },
       }
@@ -839,6 +847,7 @@ local pluginSpec = {
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       require("conform").setup({
+        -- BOOKMARK: formatters
         formatters_by_ft = {
           go = { "goimports" },
           gomod = { "goimports" },
@@ -1230,6 +1239,7 @@ vim.g.loaded_python3_provider = 0
 -------------------------------------------------------------------------------
 vim.cmd("filetype plugin indent on")
 
+-- BOOKMARK: filetype_detections
 vim.api.nvim_create_augroup("filetype_detection", { clear = true })
 for pattern, filetype in pairs({
   ["dot.zshrc"] = "zsh",
