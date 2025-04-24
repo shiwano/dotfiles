@@ -1678,9 +1678,15 @@ function _G._new_hex_color()
 end
 
 function _G._new_random_date()
-  local year = math.random(2000, 2030)
+  local current_year = tonumber(os.date("%Y")) or 2001
+  local year = math.random(current_year - 5, current_year)
   local month = math.random(1, 12)
-  local day = math.random(1, 28)
+  local max_day = tonumber(os.date("%d", os.time({
+    year = month == 12 and year + 1 or year,
+    month = month == 12 and 1 or month + 1,
+    day = 1,
+  }) - 86400)) or 28
+  local day = math.random(1, max_day)
   return string.format("%04d-%02d-%02d", year, month, day)
 end
 
