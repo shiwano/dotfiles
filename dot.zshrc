@@ -232,7 +232,7 @@ edit-git-grepped-files() {
 	[ -z "$search" ] && return
 	local files="$(git grep -n --color=always "$search")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview grepped {}' --prompt $prompt)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview file {}' --prompt $prompt)"
 	[ -z "$s" ] && return
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then

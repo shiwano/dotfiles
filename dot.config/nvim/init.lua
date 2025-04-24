@@ -221,11 +221,21 @@ local pluginSpec = {
       end
 
       local function find_bookmark()
-        local bookmarks = require("bookmarks")
-        local entries = {}
-        for _, b in pairs(bookmarks) do
-          table.insert(entries, { name = b.name, path = b.path })
-        end
+        -- BOOKMARK: bookmarks
+        local entries = {
+          { name = "rc", path = "~/.config/nvim/init.lua" },
+          { name = "rc_tag", path = "~/.config/nvim/init.lua", tag = "bookmarks" },
+          { name = "zsh", path = "~/.zshrc" },
+          { name = "zshlocal", path = "~/.zshrc.local" },
+          { name = "git", path = "~/.gitconfig" },
+          { name = "gitignore", path = "~/.gitignore" },
+          { name = "tmux", path = "~/.config/tmux/tmux.conf" },
+          { name = "stylua", path = "~/dotfiles/.stylua.toml" },
+          { name = "homebrew", path = "~/dotfiles/tools/Brewfile" },
+          { name = "asdf", path = "~/.tool-versions" },
+          { name = "ghostty", path = "~/.config/ghostty/config" },
+          { name = "hammerspoon", path = "~/.hammerspoon/init.lua" },
+        }
 
         local function find_entry(name)
           for _, entry in ipairs(entries) do
@@ -236,9 +246,32 @@ local pluginSpec = {
           return nil
         end
 
+        local function preview_entry(entry)
+          local line_number = nil
+          if entry.tag and entry.tag ~= "" then
+            local tag = "BOOKMARK: " .. entry.tag
+            local result = vim.fn.systemlist("rg --no-heading --line-number --fixed-strings '" .. tag .. "' " .. entry.path .. " | head -n 1")
+            if result and result[1] then
+              local line = result[1]:match("^(%d+):")
+              if line then
+                line_number = tonumber(line)
+              end
+            end
+          end
+          if line_number then
+            return vim.fn.systemlist("fzf-preview file " .. entry.path .. ":" .. line_number)
+          else
+            return vim.fn.systemlist("fzf-preview file " .. entry.path)
+          end
+        end
+
         local items = vim.tbl_map(function(entry)
           local icon = get_icon_by_filename(entry.path)
-          return entry.name .. ": " .. (icon or "") .. entry.path
+          if entry.tag and entry.tag ~= "" then
+            return entry.name .. ": " .. (icon or "") .. entry.path .. ": " .. (entry.tag or "")
+          else
+            return entry.name .. ": " .. (icon or "") .. entry.path
+          end
         end, entries)
 
         fzf.fzf_exec(items, {
@@ -248,6 +281,10 @@ local pluginSpec = {
               local entry = find_entry(name)
               if entry then
                 vim.cmd("edit " .. vim.fn.expand(entry.path))
+                if entry.tag and entry.tag ~= "" then
+                  local tag = "BOOKMARK: " .. entry.tag
+                  vim.fn.search(tag, "w") -- "w": wrap around
+                end
               end
             end,
           },
@@ -255,7 +292,7 @@ local pluginSpec = {
             local name = item[1]:match("^(.-):"):gsub("%s+$", "")
             local entry = find_entry(name)
             if entry then
-              local all_lines = vim.fn.systemlist("fzf-preview file " .. entry.path)
+              local all_lines = preview_entry(entry)
               local sliced = {}
               for i = 1, math.min(fzf_lines, #all_lines) do
                 table.insert(sliced, all_lines[i])
