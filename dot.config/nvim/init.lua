@@ -1099,6 +1099,7 @@ local pluginSpec = {
   },
 }
 
+---@diagnostic disable-next-line: undefined-field
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
@@ -1140,6 +1141,7 @@ vim.opt.shortmess:append("c") -- Don't pass messages to |ins-completion-menu|.
 vim.opt.updatetime = 300 -- Avaid delays and poor user experienve (default is 4000 ms).
 vim.opt.backupcopy = "yes" -- Make a copy of the file and overwrite the original one.
 vim.opt.shada = "!,'5000,<50,s10,h" -- Save a lot of info in the shada file.
+vim.opt.guicursor = "n-v-c:block" -- Block fixed and no blink.
 
 -------------------------------------------------------------------------------
 -- View
