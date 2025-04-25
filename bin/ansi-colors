@@ -3,9 +3,7 @@
 set -euo pipefail
 
 topic() {
-	echo -en "\033[1;34m"
-	echo "$*"
-	echo -en "\033[0m"
+	printf "\033[1;34m%s\033[0m\n" "$*"
 }
 
 main() {
@@ -46,12 +44,12 @@ main() {
 
 	topic "NOTE"
 
-	echo -e "\
+	printf "%b" "\
 - The \033[35m1;\033[0m attribute in \033[35m\\\\033[1;XXm\033[0m is often described as bold, but in some terminals, it is interpreted as bright color.\n\
 - \033[35m\\\\033[38;5;XXXm\033[0m sets the foreground color, and \033[35m\\\\033[48;5;XXXm\033[0m sets the background color using 256-color mode.\n\
 - \033[35m\\\\033[38;2;R;G;Bm\033[0m supports 24-bit true color (RGB) in compatible terminals like GNOME Terminal, iTerm2, and Windows Terminal.\n\
 - \033[35m\\\\033[0m\033[0m resets all text attributes.\n\
-- \033[35m\\\\033[22m\033[0m removes bold formatting, \033[35m\\\\033[39m\033[0m resets the foreground color, and \033[35m\\\\033[49m\033[0m resets the background color."
+- \033[35m\\\\033[22m\033[0m removes bold formatting, \033[35m\\\\033[39m\033[0m resets the foreground color, and \033[35m\\\\033[49m\033[0m resets the background color.\n"
 }
 
 main "$@"
