@@ -14,7 +14,7 @@ export LS_COLORS='di=01;36'
 
 export GOPATH=$HOME/code
 
-if command -v brew 2>&1 >/dev/null; then
+if command -v brew >/dev/null 2>&1; then
 	export BREW_PREFIX=$(brew --prefix)
 else
 	export BREW_PREFIX='/nonexistent'
@@ -69,7 +69,7 @@ fi
 
 # fzf --------------------------------------------------------------------------
 
-if command -v fzf 2>&1 >/dev/null; then
+if command -v fzf >/dev/null 2>&1; then
 	export FZF_DEFAULT_OPTS="--exact --ansi --cycle --filepath-word --exit-0 \
 		--preview='fzf-preview file {}' \
 		--layout=reverse \
@@ -155,7 +155,7 @@ fi
 
 # Neovim -----------------------------------------------------------------------
 
-if command -v nvim 2>&1 >/dev/null; then
+if command -v nvim >/dev/null 2>&1; then
 	if [ -n "${NVIM}" ]; then
 		alias vi='echo "already open nvim"'
 		alias vim='echo "already open nvim"'
@@ -207,13 +207,13 @@ extract() {
 }
 
 static-httpd() {
-	if command -v python 2>&1 >/dev/null; then
+	if command -v python >/dev/null 2>&1; then
 		if python -V 2>&1 | grep -qm1 'Python 3\.'; then
 			python -m http.server ${1-5000}
 		else
 			python -m SimpleHTTPServer ${1-5000}
 		fi
-	elif command -v python3 2>&1 >/dev/null; then
+	elif command -v python3 >/dev/null 2>&1; then
 		python3 -m http.server ${1-5000}
 	fi
 }
@@ -445,38 +445,38 @@ alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
-if command -v tmux 2>&1 >/dev/null; then
+if command -v tmux >/dev/null 2>&1; then
 	alias tmux-single-session='tmux new-session -A -s main'
 fi
 
-if command -v go 2>&1 >/dev/null; then
+if command -v go >/dev/null 2>&1; then
 	alias go-build-all='go test -run=^$ ./... 1>/dev/null'
 fi
 
-if command -v docker 2>&1 >/dev/null; then
+if command -v docker >/dev/null 2>&1; then
 	alias docker-rm-all='docker rm $(docker ps -a -q)'
 	alias docker-rmi-all='docker rmi $(docker images -q)'
 	alias docker-rm-volumes-all='docker volume rm $(docker volume ls -qf dangling=true)'
 	alias docker-run-sh='docker run -it --entrypoint sh'
 fi
 
-if command -v bazelisk 2>&1 >/dev/null; then
+if command -v bazelisk >/dev/null 2>&1; then
 	alias bazel='bazelisk'
 fi
 
-if command -v ibazel 2>&1 >/dev/null; then
+if command -v ibazel >/dev/null 2>&1; then
 	alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
 fi
 
-if command -v bat 2>&1 >/dev/null; then
+if command -v bat >/dev/null 2>&1; then
 	alias cat='bat'
 fi
 
-if ! command -v pbcopy 2>&1 >/dev/null; then
-	if command -v xsel 2>&1 >/dev/null; then
+if ! command -v pbcopy >/dev/null 2>&1; then
+	if command -v xsel >/dev/null 2>&1; then
 		alias pbcopy='xsel --clipboard --input'
 		alias pbpaste='xsel --clipboard --output'
-	elif command -v xclip 2>&1 >/dev/null; then
+	elif command -v xclip >/dev/null 2>&1; then
 		alias pbcopy='xclip -selection clipboard'
 		alias pbpaste='xclip -selection clipboard -o'
 	else
@@ -671,7 +671,7 @@ setopt IGNORE_EOF
 
 # Includes ---------------------------------------------------------------------
 
-if command -v direnv 2>&1 >/dev/null; then
+if command -v direnv >/dev/null 2>&1; then
 	eval "$(direnv hook zsh)"
 fi
 
@@ -683,6 +683,8 @@ if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
 	. $HOME/.nix-profile/etc/profile.d/nix.sh;
 fi
 
-[ -f ~/.zshrc.local ] && source ~/.zshrc.local
+if [ -f ~/.zshrc.local ]; then
+	. ~/.zshrc.local
+fi
 
 typeset -U path PATH # Remove duplicated PATHs.
