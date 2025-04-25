@@ -723,6 +723,32 @@ local pluginSpec = {
       })
     end,
   },
+  {
+    "CopilotC-Nvim/CopilotChat.nvim",
+    dependencies = {
+      { "zbirenbaum/copilot.lua" },
+      { "nvim-lua/plenary.nvim" },
+    },
+    build = "make tiktoken",
+    config = function()
+      local prompts = require("CopilotChat.config.prompts")
+
+      local system_prompt_keys = { "COPILOT_BASE", "COPILOT_INSTRUCTIONS", "COPILOT_EXPLAIN", "COPILOT_REVIEW" }
+      for _, key in ipairs(system_prompt_keys) do
+        local v = prompts[key]
+        if v and type(v.system_prompt) == "string" then
+          v.system_prompt = v.system_prompt .. "\n説明はすべて日本語でお願いします。"
+        end
+      end
+
+      require("CopilotChat").setup({
+        show_help = true,
+        prompts = prompts,
+      })
+
+      vim.keymap.set({ "n", "v" }, "<C-g>", ":CopilotChatPrompts<CR>", { silent = true })
+    end,
+  },
 
   -----------------------------------------------------------------------------
   -- Coding utilities
@@ -829,7 +855,7 @@ local pluginSpec = {
       vim.g.ale_go_golangci_lint_options = ""
       vim.g.ale_go_golangci_lint_package = 1
 
-      vim.keymap.set("n", "ol", ":ALEDetail<CR>", { silent = true })
+      vim.keymap.set("n", "<Leader>uw", ":ALEDetail<CR>", { silent = true })
 
       vim.api.nvim_create_augroup("ale", { clear = true })
       vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
@@ -987,6 +1013,7 @@ local pluginSpec = {
   -- Misc
   -----------------------------------------------------------------------------
   { "nvim-tree/nvim-web-devicons", lazy = true },
+  { "nvim-lua/plenary.nvim", lazy = true },
   {
     "nvim-lualine/lualine.nvim",
     config = function()
