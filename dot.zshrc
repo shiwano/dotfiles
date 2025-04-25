@@ -446,7 +446,9 @@ alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
 
 if command -v tmux >/dev/null 2>&1; then
-	alias tmux-single-session='tmux new-session -A -s main'
+	if [ -z "$TMUX" ]; then
+		alias tmux='tmux new-session -A -s main'
+	fi
 fi
 
 if command -v go >/dev/null 2>&1; then
