@@ -40,6 +40,7 @@ local function current_working_directory()
 end
 
 local function get_colors()
+  ---@diagnostic disable-next-line: missing-fields
   return require("tokyonight.colors").setup({ style = "night" })
 end
 
@@ -228,7 +229,7 @@ local pluginSpec = {
           { name = "formatters", path = "~/.config/nvim/init.lua", tag = "formatters" },
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
           { name = "alternative_files", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
-          { name = "filetype_detections", path = "~/.config/nvim/init.lua", tag = "filetype_detections" },
+          { name = "filetypes", path = "~/.config/nvim/init.lua", tag = "filetypes" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
           { name = "git", path = "~/.gitconfig" },
@@ -845,24 +846,21 @@ local pluginSpec = {
   -- Linting and code formatting
   -----------------------------------------------------------------------------
   {
-    "w0rp/ale",
+    "mfussenegger/nvim-lint",
     event = { "BufReadPre", "BufNewFile" },
-    init = function()
+    config = function()
       -- BOOKMARK: linters
-      vim.g.ale_linters = {
-        go = { "gobuild", "golangci-lint" },
+      require("lint").linters_by_ft = {
+        go = { "golangcilint" },
+        ["yaml.ghaction"] = { "actionlint" },
       }
-      vim.g.ale_go_golangci_lint_options = ""
-      vim.g.ale_go_golangci_lint_package = 1
 
-      vim.keymap.set("n", "<Leader>uw", ":ALEDetail<CR>", { silent = true })
-
-      vim.api.nvim_create_augroup("ale", { clear = true })
-      vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-        group = "ale",
-        pattern = "*/.github/*/*.y{,a}ml",
+      vim.api.nvim_create_augroup("nvim_lint", { clear = true })
+      vim.api.nvim_create_autocmd("BufWritePost", {
+        group = "nvim_lint",
+        pattern = "*",
         callback = function()
-          vim.b.ale_linters = { yaml = { "actionlint" } }
+          require("lint").try_lint()
         end,
       })
     end,
@@ -1267,26 +1265,25 @@ vim.g.loaded_python3_provider = 0
 -------------------------------------------------------------------------------
 vim.cmd("filetype plugin indent on")
 
--- BOOKMARK: filetype_detections
-vim.api.nvim_create_augroup("filetype_detection", { clear = true })
-for pattern, filetype in pairs({
-  ["dot.zshrc"] = "zsh",
-  ["dot.tmux.*"] = "tmux",
-  ["dot.gitconfig"] = "gitconfig",
-  ["*.prefab"] = "yaml",
-  ["*.shader"] = "hlsl",
-  ["Guardfile"] = "ruby",
-  ["Fastfile"] = "ruby",
-  ["Appfile"] = "ruby",
-  [".envrc*"] = "sh",
-  ["*.jb"] = "ruby",
-}) do
-  vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    group = "filetype_detection",
-    pattern = pattern,
-    command = "set filetype=" .. filetype,
-  })
-end
+-- BOOKMARK: filetypes
+vim.filetype.add({
+  extension = {
+    prefab = "yaml",
+    shader = "hlsl",
+    jb = "ruby",
+  },
+  filename = {
+    ["dot.zshrc"] = "zsh",
+    ["Guardfile"] = "ruby",
+    ["Fastfile"] = "ruby",
+    ["Appfile"] = "ruby",
+  },
+  pattern = {
+    [".*/%.envrc.*"] = "sh",
+    [".*/%.github/workflows/.*%.yaml"] = "yaml.ghaction",
+    [".*/%.github/workflows/.*%.yml"] = "yaml.ghaction",
+  },
+})
 
 -------------------------------------------------------------------------------
 -- Key mappings
