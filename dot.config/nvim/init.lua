@@ -853,6 +853,8 @@ local pluginSpec = {
       require("lint").linters_by_ft = {
         go = { "golangcilint" },
         ["yaml.ghaction"] = { "actionlint" },
+        sh = { "shellcheck" },
+        bash = { "shellcheck" },
       }
 
       vim.api.nvim_create_augroup("nvim_lint", { clear = true })
@@ -1211,6 +1213,12 @@ vim.api.nvim_create_autocmd("BufRead", {
   end,
 })
 
+-------------------------------------------------------------------------------
+-- Diagnostics
+-------------------------------------------------------------------------------
+vim.diagnostic.config({ virtual_text = true }) -- Display virtual text inline with the code
+
+-- Define diagnostic signs with custom icons
 for type, icon in pairs({ Error = "\u{f057}", Warn = "\u{f071}", Hint = "\u{f0335}", Info = "\u{f05a}" }) do
   local hl = "DiagnosticSign" .. type
   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
