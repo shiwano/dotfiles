@@ -745,6 +745,23 @@ local pluginSpec = {
       require("CopilotChat").setup({
         show_help = true,
         prompts = prompts,
+        ---@diagnostic disable: missing-fields
+        mappings = {
+          complete = { insert = "<C-l>", normal = nil },
+          close = { insert = "<C-c>", normal = "<C-c>" },
+          reset = { insert = "<C-r>", normal = "<C-r>" },
+          submit_prompt = { insert = nil, normal = "<CR>" },
+          toggle_sticky = { insert = nil, normal = "ot" },
+          accept_diff = { insert = "<C-y>", normal = "<C-y>" },
+          jump_to_diff = { insert = nil, normal = "od" },
+          quickfix_diffs = { insert = nil, normal = "of" },
+          yank_diff = { insert = nil, normal = "oy" },
+          show_diff = { insert = nil, normal = "os" },
+          show_info = { insert = nil, normal = "oi" },
+          show_context = { insert = nil, normal = "ok" },
+          show_help = { insert = nil, normal = "?" },
+        },
+        ---@diagnostic enable: missing-fields
       })
 
       vim.keymap.set({ "n", "v" }, "<C-g>", ":CopilotChatPrompts<CR>", { silent = true })
@@ -858,7 +875,7 @@ local pluginSpec = {
       }
 
       vim.api.nvim_create_augroup("nvim_lint", { clear = true })
-      vim.api.nvim_create_autocmd("BufWritePost", {
+      vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
         group = "nvim_lint",
         pattern = "*",
         callback = function()
@@ -1072,7 +1089,7 @@ local pluginSpec = {
           lualine_b = { current_working_directory },
           lualine_c = { filename, "diagnostics" },
           lualine_x = {
-            { "lsp_status", icon = "\u{e20f}" },
+            { "lsp_status", icon = "\u{e20f} " },
             { "filetype", icon_only = false },
             "fileformat",
             encoding,
@@ -1216,13 +1233,17 @@ vim.api.nvim_create_autocmd("BufRead", {
 -------------------------------------------------------------------------------
 -- Diagnostics
 -------------------------------------------------------------------------------
-vim.diagnostic.config({ virtual_text = true }) -- Display virtual text inline with the code
-
--- Define diagnostic signs with custom icons
-for type, icon in pairs({ Error = "\u{f057}", Warn = "\u{f071}", Hint = "\u{f0335}", Info = "\u{f05a}" }) do
-  local hl = "DiagnosticSign" .. type
-  vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-end
+vim.diagnostic.config({
+  virtual_text = true, -- Display virtual text inline with the code
+  signs = {
+    text = {
+      [vim.diagnostic.severity.ERROR] = "\u{f057} ",
+      [vim.diagnostic.severity.WARN] = "\u{f071} ",
+      [vim.diagnostic.severity.HINT] = "\u{f0335} ",
+      [vim.diagnostic.severity.INFO] = "\u{f05a} ",
+    },
+  },
+})
 
 -------------------------------------------------------------------------------
 -- Indent
