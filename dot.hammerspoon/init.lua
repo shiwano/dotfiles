@@ -19,27 +19,6 @@ local function expectFocusedWindow(callback)
   end
 end
 
-local function focusAnyWindowOfApplication(hint)
-  local app = hs.application.find(hint)
-  if app then
-    local window = app:allWindows()[1]
-    if window then
-      window:focus()
-    end
-  end
-end
-
-local function findWindowByApplicationAndTitle(app, title)
-  if app then
-    for _, window in ipairs(app:allWindows()) do
-      if window:title() == title then
-        return window
-      end
-    end
-  end
-  return nil
-end
-
 local function applyLayoutToWindow(window, layout)
   if not window then
     return
@@ -122,23 +101,59 @@ local function maximizeWindowSize()
   applyLayoutToWindow(hs.window.focusedWindow(), hs.layout.maximized)
 end
 
-local function onMarkdownPreviewLaunch(win)
-  local screen = win:screen()
-  hs.layout.apply({
-    { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
-    { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
-  })
-  focusAnyWindowOfApplication("Ghostty")
+local function raiseMainWindowByAppName(appName, maybeWinTitle)
+  local app = hs.application.find(appName)
+  if app then
+    local win = app:mainWindow()
+    if win then
+      if maybeWinTitle then
+        if win:title() == maybeWinTitle then
+          win:raise()
+        end
+      else
+        win:raise()
+      end
+    end
+  end
+end
+
+local function focusMainWindowByAppName(appName, maybeWinTitle)
+  local app = hs.application.find(appName)
+  if app then
+    local win = app:mainWindow()
+    if win then
+      if maybeWinTitle then
+        if win:title() == maybeWinTitle then
+          win:focus()
+        end
+      else
+        win:focus()
+      end
+    end
+  end
 end
 
 local function applicationWatcher(appName, eventType, app)
   if eventType == hs.application.watcher.launched then
     if appName == "deno" then
-      local win = findWindowByApplicationAndTitle(app, "Peek preview")
-      if win then
-        onMarkdownPreviewLaunch(win)
+      local win = app and app:mainWindow()
+      if win and win:title() == "Peek preview" then
+        local screen = win:screen()
+        hs.layout.apply({
+          { "deno", "Peek preview", screen, hs.layout.right30, nil, nil },
+          { "Ghostty", nil, screen, hs.layout.left70, nil, nil },
+        })
+        focusMainWindowByAppName("Ghostty")
       end
     end
+  end
+end
+
+local function windowFocusedWatcher(win, appName)
+  if appName == "Ghostty" then
+    raiseMainWindowByAppName("deno", "Peek preview")
+  elseif appName == "deno" and win:title() == "Peek preview" then
+    raiseMainWindowByAppName("Ghostty")
   end
 end
 
@@ -150,3 +165,6 @@ hs.hotkey.bind({ "cmd", "alt" }, "f", expectFocusedWindow(maximizeWindowSize))
 
 AppWatcher = hs.application.watcher.new(applicationWatcher)
 AppWatcher:start()
+
+WindowFocusedWatcher = hs.window.filter.new(false):setDefaultFilter()
+WindowFocusedWatcher:subscribe(hs.window.filter.windowFocused, windowFocusedWatcher)
