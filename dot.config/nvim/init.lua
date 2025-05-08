@@ -22,10 +22,13 @@ vim.g.maplocalleader = "\\"
 -------------------------------------------------------------------------------
 -- Utilities
 -------------------------------------------------------------------------------
+local paths = {
+  home = vim.fn.expand("$HOME"),
+}
+
 local function current_working_directory()
   local dir = vim.fn.getcwd() or ""
-  local home = vim.fn.expand("$HOME") or ""
-  local rel_dir = dir:gsub("^" .. home, "~")
+  local rel_dir = dir:gsub("^" .. paths.home, "~")
   local icon_repo = "\u{ea62} "
 
   local code_match = rel_dir:match("^~?/code/src/[^/]+/[^/]+/(.*)$")
@@ -40,7 +43,6 @@ local function current_working_directory()
 end
 
 local function get_colors()
-  ---@diagnostic disable-next-line: missing-fields
   return require("tokyonight.colors").setup({ style = "night" })
 end
 
@@ -557,6 +559,29 @@ local pluginSpec = {
         end,
       })
 
+      vim.lsp.config(ls.lua, {
+        settings = {
+          Lua = {
+            runtime = {
+              version = "LuaJIT",
+              pathStrict = true,
+              path = {
+                "?.lua",
+                "?/init.lua",
+              },
+            },
+            workspace = {
+              library = vim.list_extend(vim.api.nvim_get_runtime_file("lua", true), {
+                "${3rd}/luv/library",
+                "${3rd}/busted/library",
+                "${3rd}/luassert/library",
+              }),
+              checkThirdParty = "Disable",
+            },
+          },
+        },
+      })
+
       local ls_names = {}
       for _, v in pairs(ls) do
         table.insert(ls_names, v)
@@ -801,6 +826,7 @@ local pluginSpec = {
           typescript = { "prettier" },
           markdown = { "markdownfmt" },
           sh = { "shfmt" },
+          json = { "jq" },
         },
         format_on_save = function(bufnr)
           if vim.b[bufnr].disable_autoformat then
@@ -1242,11 +1268,6 @@ vim.api.nvim_create_user_command("Normalize", function()
   vim.opt.fileencoding = "utf-8"
 end, {})
 
--- Format JSON (using jq)
-vim.api.nvim_create_user_command("JSONFormat", function()
-  vim.cmd("%!jq .")
-end, {})
-
 -- Save memo
 vim.api.nvim_create_user_command("SaveMemo", function()
   local today = os.date("%Y%m%d")
@@ -1269,9 +1290,9 @@ end, {})
 local function sibling_files(arg_lead)
   local dir = vim.fn.expand("%:h") .. "/"
   local pattern = arg_lead .. "*"
-  local paths = vim.fn.globpath(dir, pattern, false, true)
+  local all_paths = vim.fn.globpath(dir, pattern, false, true)
   local files = {}
-  for _, path in ipairs(paths) do
+  for _, path in ipairs(all_paths) do
     if vim.fn.isdirectory(path) == 0 then
       table.insert(files, vim.fn.fnamemodify(path, ":t"))
     end
@@ -1439,14 +1460,14 @@ vim.api.nvim_create_autocmd("StdinReadPre", {
 local function open_github_line_url()
   local remotes = vim.fn.systemlist("git remote")
   if #remotes == 0 then
-    print("no remotes")
+    vim.notify("No remotes", vim.log.levels.WARN)
     return
   end
 
   local remote = remotes[1]
   local remote_url = vim.fn.systemlist("git config --get remote." .. remote .. ".url")[1]
   if not remote_url:find("github") then
-    print("not GitHub repository")
+    vim.notify("Not GitHub repository", vim.log.levels.WARN)
     return
   end
 
@@ -1470,7 +1491,7 @@ local function open_github_line_url()
   if not branch_exists then
     local upstream_branch = vim.fn.systemlist("git rev-parse --abbrev-ref @{u}")[1]
     if not upstream_branch or upstream_branch == "" then
-      print("upstream branch not found")
+      vim.notify("Upstream branch not found", vim.log.levels.WARN)
       return
     end
     commit_id = upstream_branch:gsub("^origin/", "")
@@ -1492,9 +1513,6 @@ vim.keymap.set("n", "og", open_github_line_url, { silent = true })
 -------------------------------------------------------------------------------
 local function select_surround()
   local surround_pairs = {
-    ['"'] = '"',
-    ["'"] = "'",
-    ["`"] = "`",
     ["("] = ")",
     ["["] = "]",
     ["{"] = "}",

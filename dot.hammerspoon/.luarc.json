@@ -1,9 +1,6 @@
 {
   "workspace.library": [
-    "~/.hammerspoon/Spoons/EmmyLua.spoon/annotations"
-  ],
-  "diagnostics.globals": [
-    "hs"
+    "Spoons/EmmyLua.spoon/annotations"
   ],
   "workspace": {
     "ignoreDir": [
