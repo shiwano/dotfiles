@@ -92,7 +92,7 @@ local pluginSpec = {
         group = "highlight_msg_area",
         pattern = "*",
         callback = function()
-          vim.cmd([[highlight MsgArea ctermfg=Gray guifg=]] .. colors.dark3)
+          vim.cmd([[highlight MsgArea ctermfg=Gray guifg=]] .. colors.fg_gutter)
         end,
       })
     end,
