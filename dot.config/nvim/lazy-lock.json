@@ -7,6 +7,7 @@
   "cmp-path": { "branch": "main", "commit": "c6635aae33a50d6010bf1aa756ac2398a2d54c32" },
   "conform.nvim": { "branch": "master", "commit": "372fc521f8421b7830ea6db4d6ea3bae1c77548c" },
   "copilot.lua": { "branch": "master", "commit": "a5c390f8d8e85b501b22dcb2f30e0cbbd69d5ff0" },
+  "cronex.nvim": { "branch": "main", "commit": "fde3c0fffd81254a1cf96cc98ab06c87ad2cb9fa" },
   "dart-vim-flutter-layout": { "branch": "master", "commit": "9105781d713f03ede4fae4857bab2be585eb6aaf" },
   "diffview.nvim": { "branch": "main", "commit": "4516612fe98ff56ae0415a259ff6361a89419b0a" },
   "fzf-lua": { "branch": "main", "commit": "b11467c3fbfe48e4a815e4909f5c4e5b413ce6d0" },

@@ -797,6 +797,7 @@ local pluginSpec = {
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
+  { "fabridamicelli/cronex.nvim", event = { "BufReadPre", "BufNewFile" } },
   {
     "arthurxavierx/vim-caser",
     event = { "BufReadPre", "BufNewFile" },
@@ -1136,7 +1137,7 @@ local pluginSpec = {
   },
 }
 
----@diagnostic disable-next-line: undefined-field
+---@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
