@@ -226,9 +226,10 @@ local pluginSpec = {
         local entries = {
           { name = "rc", path = "~/.config/nvim/init.lua" },
           { name = "tag", path = "~/.config/nvim/init.lua", tag = "bookmarks" },
+          { name = "lsp", path = "~/.config/nvim/init.lua", tag = "language_servers" },
           { name = "formatters", path = "~/.config/nvim/init.lua", tag = "formatters" },
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
-          { name = "alternative_files", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
+          { name = "projections", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
           { name = "filetypes", path = "~/.config/nvim/init.lua", tag = "filetypes" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
@@ -649,6 +650,7 @@ local pluginSpec = {
       local caps = vim.lsp.protocol.make_client_capabilities()
       caps = require("cmp_nvim_lsp").default_capabilities(caps)
 
+      -- BOOKMARK: language_servers
       vim.lsp.config("*", {
         on_attach = on_attach,
         capabilities = caps,
@@ -724,6 +726,10 @@ local pluginSpec = {
       })
     end,
   },
+
+  -----------------------------------------------------------------------------
+  -- AI assistant
+  -----------------------------------------------------------------------------
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
@@ -763,8 +769,20 @@ local pluginSpec = {
         },
         ---@diagnostic enable: missing-fields
       })
-
-      vim.keymap.set({ "n", "v" }, "<C-g>", ":CopilotChatPrompts<CR>", { silent = true })
+    end,
+  },
+  {
+    "greggh/claude-code.nvim",
+    cmd = { "ClaudeCode", "ClaudeCodeContinue", "ClaudeCodeResume", "ClaudeCodeVerbose" },
+    dependencies = {
+      "nvim-lua/plenary.nvim",
+    },
+    config = function()
+      require("claude-code").setup({
+        window = {
+          position = "vertical",
+        },
+      })
     end,
   },
 
@@ -958,38 +976,13 @@ local pluginSpec = {
     },
   },
   {
-    "3rd/diagram.nvim",
-    ft = { "markdown", "vimwiki", "neorg", "typst" },
-    cmd = "DiagramCacheClear",
-    config = function()
-      local colors = get_colors()
-
-      require("diagram").setup({
-        integrations = {
-          require("diagram.integrations.markdown"),
-          require("diagram.integrations.neorg"),
-        },
-        renderer_options = {
-          mermaid = { theme = "default", background = "'" .. colors.dark3 .. "'", width = 1200 },
-          plantuml = { charset = "utf-8" },
-          d2 = { theme_id = 1 },
-          gnuplot = { theme = "dark", size = "800,600" },
-        },
-      })
-
-      vim.api.nvim_create_user_command("DiagramCacheClear", function()
-        local target = require("diagram").get_cache_dir()
-        vim.fn.delete(target, "rf")
-        vim.fn.mkdir(target, "p")
-      end, {})
-    end,
-  },
-  {
     "toppair/peek.nvim",
     ft = { "markdown" },
     build = "deno task --quiet build:fast",
     config = function()
-      require("peek").setup()
+      require("peek").setup({
+        theme = "light",
+      })
 
       vim.api.nvim_create_augroup("markdown_preview", { clear = true })
       vim.api.nvim_create_autocmd("FileType", {
