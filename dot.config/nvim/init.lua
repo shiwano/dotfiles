@@ -63,7 +63,7 @@ local pluginSpec = {
       local colors = get_colors()
 
       vim.api.nvim_create_augroup("highlight_idegraphic_space", {})
-      vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile" }, {
+      vim.api.nvim_create_autocmd({ "BufReadPre", "BufNewFile", "BufWritePost" }, {
         group = "highlight_idegraphic_space",
         pattern = "*",
         callback = function()
@@ -76,7 +76,7 @@ local pluginSpec = {
       vim.api.nvim_create_autocmd("VimEnter", {
         group = "highlight_idegraphic_space",
         pattern = "*",
-        command = [[highlight default IdeographicSpace ctermbg=Gray guibg=]] .. colors.dark3,
+        command = [[highlight default IdeographicSpace ctermbg=Gray guibg=]] .. colors.fg_gutter,
       })
 
       vim.api.nvim_create_augroup("highlight_msg_area", {})
