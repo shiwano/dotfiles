@@ -254,7 +254,7 @@ local pluginSpec = {
           { name = "formatters", path = "~/.config/nvim/init.lua", tag = "formatters" },
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
           { name = "projections", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
-          { name = "filetypes", path = "~/.config/nvim/init.lua", tag = "filetypes" },
+          { name = "ft", path = "~/.config/nvim/init.lua", tag = "filetypes" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
           { name = "git", path = "~/.gitconfig" },
@@ -1159,7 +1159,7 @@ vim.opt.magic = true -- Enable regular expressions.
 vim.opt.foldenable = false -- No folding.
 vim.opt.modeline = false -- No modeline.
 vim.opt.undofile = true -- Save undo history to a file.
-vim.opt.undodir = os.getenv("HOME") .. "/.config/nvim/undo" -- Undo history directory.
+vim.opt.undodir = paths.home .. "/.config/nvim/undo" -- Undo history directory.
 vim.opt.clipboard:append("unnamedplus") -- Use system clipboard.
 vim.opt.shortmess:append("c") -- Don't pass messages to |ins-completion-menu|.
 vim.opt.updatetime = 300 -- Avaid delays and poor user experienve (default is 4000 ms).
@@ -1383,12 +1383,10 @@ end, { desc = "# Change the line ending to LF and the encoding to UTF-8" })
 vim.api.nvim_create_user_command("SaveMemo", function()
   local today = os.date("%Y%m%d")
   local rnd = tostring(math.random(100000, 999999))
-  local filename = os.getenv("HOME") .. "/Dropbox/Memo/" .. today .. "-" .. rnd .. ".md"
-
+  local filename = string.format("%s/Dropbox/Memo/%s-%s.md", paths.home, today, rnd)
   local success, err = pcall(function()
     vim.cmd("write " .. vim.fn.fnameescape(filename))
   end)
-
   if not success then
     vim.notify("Failed to save memo: " .. err, vim.log.levels.ERROR)
   end
