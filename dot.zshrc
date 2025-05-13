@@ -22,7 +22,14 @@ fi
 
 # Completions ------------------------------------------------------------------
 
+# Limit completion suggestions for make to only target names
 zstyle ':completion:*:*:make:*' tag-order 'targets'
+
+# Define command lookup paths for sudo completion
+zstyle ':completion:*:sudo:*' command-path $BREW_PREFIX/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
+# Set color for file list completion like ls
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # If you receive "zsh compinit: insecure directories" warnings when attempting
 # to load these completions, you may need to run these commands:
@@ -606,9 +613,6 @@ setopt hist_ignore_all_dups
 # 補完するかの質問は画面を超える時にのみに行う｡
 LISTMAX=0
 
-# sudo でも補完の対象
-zstyle ':completion:*:sudo:*' command-path $BREW_PREFIX/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
-
 # cdのタイミングで自動的にpushd
 setopt auto_pushd
 
@@ -647,9 +651,6 @@ setopt print_eight_bit
 
 # Ctrl+wで､直前の/までを削除する｡
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
-
-# ファイルリスト補完でもlsと同様に色をつける｡
-zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
 
 # cd をしたときにlsを実行する
 chpwd() { ls }
