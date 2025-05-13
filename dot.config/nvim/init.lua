@@ -139,18 +139,7 @@ local pluginSpec = {
 
       fzf.setup({
         keymap = {
-          fzf = {
-            ["tab"] = "down",
-            ["shift-tab"] = "up",
-            ["ctrl-a"] = "select-all",
-            ["ctrl-l"] = "toggle",
-            ["ctrl-h"] = "toggle",
-            ["ctrl-w"] = "backward-kill-word",
-            ["up"] = "preview-page-up",
-            ["down"] = "preview-page-down",
-            ["ctrl-u"] = "half-page-up",
-            ["ctrl-d"] = "half-page-down",
-          },
+          fzf = { false },
         },
         winopts = {
           split = "aboveleft new",
