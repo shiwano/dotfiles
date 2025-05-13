@@ -135,6 +135,7 @@ local pluginSpec = {
       local fzf = require("fzf-lua")
       local utils = require("fzf-lua.utils")
       local devicons = require("nvim-web-devicons")
+      local colors = get_colors()
 
       fzf.setup({
         keymap = {
@@ -208,7 +209,7 @@ local pluginSpec = {
         fzf.files(opts)
       end
 
-      local function search_files_with_text()
+      local function search_files()
         vim.ui.input({ prompt = "Search: " }, function(text)
           if text and #text > 0 then
             fzf.grep({ search = text, hidden = true })
@@ -224,6 +225,8 @@ local pluginSpec = {
       end
 
       local function find_bookmark()
+        local tag_prefix = "BOOKMARK: "
+
         -- BOOKMARK: bookmarks
         local entries = {
           { name = "rc", path = "~/.config/nvim/init.lua" },
@@ -257,7 +260,7 @@ local pluginSpec = {
         local function preview_entry(entry)
           local line_number = nil
           if entry.tag and entry.tag ~= "" then
-            local tag = "BOOKMARK: " .. entry.tag
+            local tag = tag_prefix .. entry.tag
             local result = vim.fn.systemlist("rg --no-heading --line-number --fixed-strings '" .. tag .. "' " .. entry.path .. " | head -n 1")
             if result and result[1] then
               local line = result[1]:match("^(%d+):")
@@ -276,42 +279,37 @@ local pluginSpec = {
         local items = vim.tbl_map(function(entry)
           local icon = get_icon_by_filename(entry.path)
           if entry.tag and entry.tag ~= "" then
-            return entry.name .. ": " .. (icon or "") .. entry.path .. ": " .. (entry.tag or "")
+            return string.format("%s: %s%s: %s", utils.ansi_from_rgb(colors.cyan, entry.name), (icon or ""), entry.path, utils.ansi_from_rgb(colors.dark5, (entry.tag or "")))
           else
-            return entry.name .. ": " .. (icon or "") .. entry.path
+            return string.format("%s: %s%s", utils.ansi_from_rgb(colors.cyan, entry.name), (icon or ""), entry.path)
           end
         end, entries)
 
         fzf.fzf_exec(items, {
           actions = {
-            ["default"] = function(item)
-              local name = item[1]:match("^(.-):"):gsub("%s+$", "")
+            ["default"] = function(selected_items)
+              local name = selected_items[1]:match("^(.-):"):gsub("%s+$", "")
               local entry = find_entry(name)
               if entry then
                 vim.cmd("edit " .. vim.fn.expand(entry.path))
                 if entry.tag and entry.tag ~= "" then
-                  local tag = "BOOKMARK: " .. entry.tag
+                  local tag = tag_prefix .. entry.tag
                   vim.fn.search(tag, "w") -- "w": wrap around
                 end
               end
             end,
           },
-          preview = function(item, fzf_lines, _)
-            local name = item[1]:match("^(.-):"):gsub("%s+$", "")
+          preview = function(selected_items, _, _)
+            local name = selected_items[1]:match("^(.-):"):gsub("%s+$", "")
             local entry = find_entry(name)
             if entry then
-              local all_lines = preview_entry(entry)
-              local sliced = {}
-              for i = 1, math.min(fzf_lines, #all_lines) do
-                table.insert(sliced, all_lines[i])
-              end
-              return sliced
+              return preview_entry(entry)
             end
           end,
         })
       end
 
-      local function search_files_with_selected_text()
+      local function search_selection_in_files()
         vim.cmd('silent normal! "zy')
         local text = vim.fn.getreg("z")
         if text and #text > 0 then
@@ -327,17 +325,127 @@ local pluginSpec = {
         end)
       end
 
-      vim.keymap.set("n", "<Leader>uf", find_files, { silent = true })
-      vim.keymap.set("n", "<Leader>uu", fzf.git_files, { silent = true })
-      vim.keymap.set("n", "<Leader>ub", fzf.buffers, { silent = true })
-      vim.keymap.set("n", "<Leader>ud", find_files_noignore, { silent = true })
-      vim.keymap.set("n", "<Leader>um", fzf.oldfiles, { silent = true })
-      vim.keymap.set("n", "<Leader>ue", fzf.diagnostics_workspace, { silent = true })
-      vim.keymap.set("n", "<Leader>ug", search_files_with_text, { silent = true })
-      vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true })
-      vim.keymap.set("v", "/g", search_files_with_selected_text, { silent = true })
+      local function list_commands_and_keymaps()
+        local init_path = vim.fn.stdpath("config") .. "/init.lua"
+        local desc_prefix = "# "
 
-      vim.api.nvim_create_user_command("SearchMemo", search_memo_with_text, {})
+        local map_by_lhs = {}
+        local function collect_map(mode, map, scope)
+          if map.desc and map.desc:find(desc_prefix) ~= nil then
+            map_by_lhs[map.lhs] = map_by_lhs[map.lhs]
+              or {
+                lhs = map.lhs,
+                desc = map.desc,
+                modes = {},
+                scopes = {},
+              }
+            table.insert(map_by_lhs[map.lhs].modes, mode)
+            map_by_lhs[map.lhs].scopes[scope] = true
+          end
+        end
+        for _, mode in ipairs({ "n", "v", "x", "i", "c", "t" }) do
+          for _, m in ipairs(vim.api.nvim_get_keymap(mode)) do
+            collect_map(mode, m, "g")
+          end
+          for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, mode)) do
+            collect_map(mode, m, "b")
+          end
+        end
+
+        local sorted_maps = {}
+        for _, m in pairs(map_by_lhs) do
+          table.insert(sorted_maps, m)
+        end
+        table.sort(sorted_maps, function(a, b)
+          return a.lhs < b.lhs
+        end)
+
+        local sorted_commands = {}
+        for _, c in pairs(vim.api.nvim_get_commands({})) do
+          if c.definition and c.definition:find(desc_prefix) ~= nil then
+            table.insert(sorted_commands, { name = c.name, desc = c.definition })
+          end
+        end
+        table.sort(sorted_commands, function(a, b)
+          return a.name < b.name
+        end)
+
+        local entries = {}
+        for _, m in ipairs(sorted_maps) do
+          local kind = utils.ansi_from_rgb(colors.cyan, "MAP")
+          local name = m.lhs:gsub(" ", "<Space>")
+          local scopes = table.concat(vim.tbl_keys(m.scopes), ",")
+          local modes = "(" .. table.concat(m.modes, ",") .. ")"
+          local additional = utils.ansi_from_rgb(colors.dark5, string.format("%s%-9s", scopes, modes))
+          local desc = utils.ansi_from_rgb(colors.dark5, m.desc)
+          local item = string.format("%s %s %-10s %s", kind, additional, name, desc)
+          table.insert(entries, { item = item, desc = m.desc })
+        end
+        for _, c in pairs(sorted_commands) do
+          local kind = utils.ansi_from_rgb(colors.orange, "CMD")
+          local desc = utils.ansi_from_rgb(colors.dark5, c.desc)
+          local item = string.format("%s %-15s %s", kind, c.name, desc)
+          table.insert(entries, { item = item, desc = c.desc })
+        end
+
+        local items = vim.tbl_map(function(entry)
+          return entry.item
+        end, entries)
+
+        local function preview_entry(entry)
+          local result = vim.fn.systemlist("rg --no-heading --line-number --fixed-strings '" .. entry.desc:gsub("'", "'\\''") .. "' " .. init_path .. " | head -n 1")
+          if result and result[1] then
+            local line = result[1]:match("^(%d+):")
+            if line then
+              local line_number = tonumber(line)
+              return vim.fn.systemlist("fzf-preview file " .. init_path .. ":" .. line_number)
+            end
+          end
+          return nil
+        end
+
+        local function find_entry(desc)
+          for _, entry in ipairs(entries) do
+            if entry.desc == desc then
+              return entry
+            end
+          end
+          return nil
+        end
+
+        fzf.fzf_exec(items, {
+          actions = {
+            ["default"] = function(selected_items)
+              local desc = selected_items[1]:match("(#%s.-)%s*$") or ""
+              local entry = find_entry(desc)
+              if entry then
+                vim.cmd("edit " .. init_path)
+                vim.fn.search(entry.desc, "w") -- "w": wrap around
+              end
+            end,
+          },
+          preview = function(selected_items, _, _)
+            local desc = selected_items[1]:match("(#%s.-)%s*$") or ""
+            local entry = find_entry(desc)
+            if entry then
+              return preview_entry(entry)
+            end
+          end,
+        })
+      end
+
+      vim.keymap.set("n", "<Leader>uf", find_files, { silent = true, desc = "# Find files from the current file's directory" })
+      vim.keymap.set("n", "<Leader>uu", fzf.git_files, { silent = true, desc = "# Find files" })
+      vim.keymap.set("n", "<Leader>ub", fzf.buffers, { silent = true, desc = "# Find buffers" })
+      vim.keymap.set("n", "<Leader>ud", find_files_noignore, { silent = true, desc = "# Find files (no ignore)" })
+      vim.keymap.set("n", "<Leader>um", fzf.oldfiles, { silent = true, desc = "# Find recent files" })
+      vim.keymap.set("n", "<Leader>ue", fzf.diagnostics_workspace, { silent = true, desc = "# Show diagnostics" })
+      vim.keymap.set("n", "<Leader>ug", search_files, { silent = true, desc = "# Search files" })
+      vim.keymap.set("n", "<Leader>ut", find_bookmark, { silent = true, desc = "# Find bookmark" })
+      vim.keymap.set("n", "<Leader>uh", list_commands_and_keymaps, { silent = true, desc = "# List commands and keymaps" })
+      vim.keymap.set("v", "/g", search_selection_in_files, { silent = true, desc = "# Search selection in files" })
+
+      vim.api.nvim_create_user_command("SearchMemo", search_memo_with_text, { desc = "# Search memos" })
     end,
   },
   { "kevinhwang91/nvim-bqf", ft = "qf" },
@@ -351,7 +459,7 @@ local pluginSpec = {
         callback = function()
           vim.keymap.set("n", "<BS>", function()
             vim.call("molder#up")
-          end, { silent = true, buffer = true })
+          end, { silent = true, buffer = true, desc = "# Move up" })
         end,
       })
     end,
@@ -416,7 +524,7 @@ local pluginSpec = {
 
       vim.api.nvim_create_user_command("A", function()
         require("other-nvim").open()
-      end, {})
+      end, { desc = "# Open alternative file" })
     end,
   },
 
@@ -515,15 +623,15 @@ local pluginSpec = {
       end
 
       local function on_attach(_, bufnr)
-        vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true })
-        vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true })
-        vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true })
-        vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true })
-        vim.keymap.set("n", "on", rename, { silent = true, buffer = true })
-        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true })
-        vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true })
+        vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true, desc = "# Go to definition" })
+        vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true, desc = "# Go to type definition" })
+        vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true, desc = "# Find implementations" })
+        vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true, desc = "# Find references" })
+        vim.keymap.set("n", "on", rename, { silent = true, buffer = true, desc = "# Rename symbol" })
+        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true, desc = "# Code action" })
+        vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true, desc = "# Hover description" })
 
-        vim.api.nvim_buf_create_user_command(bufnr, "Format", format, {})
+        vim.api.nvim_buf_create_user_command(bufnr, "Format", format, { desc = "# Format" })
       end
 
       local caps = vim.lsp.protocol.make_client_capabilities()
@@ -555,7 +663,7 @@ local pluginSpec = {
               command = "_typescript.organizeImports",
               arguments = { vim.api.nvim_buf_get_name(0) },
             }, { bufnr = bufnr })
-          end, {})
+          end, { desc = "# Organize imports" })
         end,
       })
 
@@ -600,6 +708,10 @@ local pluginSpec = {
       })
     end,
   },
+
+  -----------------------------------------------------------------------------
+  -- AI assistant
+  -----------------------------------------------------------------------------
   {
     "zbirenbaum/copilot.lua",
     cmd = "Copilot",
@@ -628,10 +740,6 @@ local pluginSpec = {
       })
     end,
   },
-
-  -----------------------------------------------------------------------------
-  -- AI assistant
-  -----------------------------------------------------------------------------
   {
     "CopilotC-Nvim/CopilotChat.nvim",
     dependencies = {
@@ -728,7 +836,7 @@ local pluginSpec = {
         end)
       end
 
-      vim.keymap.set("v", "oc", select_case, { silent = true })
+      vim.keymap.set("v", "oc", select_case, { silent = true, desc = "# Change word casing" })
     end,
   },
   {
@@ -749,12 +857,10 @@ local pluginSpec = {
         },
       })
 
-      vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)")
-      vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)")
-      vim.keymap.set({ "n", "x" }, "gp", "<Plug>(YankyGPutAfter)")
-      vim.keymap.set({ "n", "x" }, "gP", "<Plug>(YankyGPutBefore)")
-      vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
-      vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+      vim.keymap.set({ "n", "x" }, "p", "<Plug>(YankyPutAfter)", { desc = "# Paste after" })
+      vim.keymap.set({ "n", "x" }, "P", "<Plug>(YankyPutBefore)", { desc = "# Paste before" })
+      vim.keymap.set("n", "<C-p>", "<Plug>(YankyPreviousEntry)", { desc = "# Previous entry" })
+      vim.keymap.set("n", "<C-n>", "<Plug>(YankyNextEntry)", { desc = "# Next entry" })
     end,
   },
 
@@ -770,11 +876,11 @@ local pluginSpec = {
         group = "delve",
         pattern = "go",
         callback = function()
-          vim.keymap.set("n", "odd", ":DlvDebug<CR>", { silent = true, buffer = true })
-          vim.keymap.set("n", "odt", ":DlvTest<CR>", { silent = true, buffer = true })
-          vim.keymap.set("n", "odc", ":DlvClearAll<CR>", { silent = true, buffer = true })
-          vim.keymap.set("n", "odb", ":DlvToggleBreakpoint<CR>", { silent = true, buffer = true })
-          vim.keymap.set("n", "odr", ":DlvToggleTracepoint<CR>", { silent = true, buffer = true })
+          vim.keymap.set("n", "odd", ":DlvDebug<CR>", { silent = true, buffer = true, desc = "# Run debug" })
+          vim.keymap.set("n", "odt", ":DlvTest<CR>", { silent = true, buffer = true, desc = "# Run test" })
+          vim.keymap.set("n", "odc", ":DlvClearAll<CR>", { silent = true, buffer = true, desc = "# Clear all breakpoints" })
+          vim.keymap.set("n", "odb", ":DlvToggleBreakpoint<CR>", { silent = true, buffer = true, desc = "# Toggle breakpoint" })
+          vim.keymap.set("n", "odr", ":DlvToggleTracepoint<CR>", { silent = true, buffer = true, desc = "# Toggle tracepoint" })
         end,
       })
     end,
@@ -838,10 +944,10 @@ local pluginSpec = {
 
       vim.api.nvim_create_user_command("FormatDisable", function()
         vim.b.disable_autoformat = true
-      end, {})
+      end, { desc = "# Disable autoformat" })
       vim.api.nvim_create_user_command("FormatEnable", function()
         vim.b.disable_autoformat = false
-      end, {})
+      end, { desc = "# Enable autoformat" })
     end,
   },
 
@@ -853,7 +959,9 @@ local pluginSpec = {
     ft = { "markdown" },
     build = "deno task --quiet build:fast",
     config = function()
-      require("peek").setup({
+      local peek = require("peek")
+
+      peek.setup({
         theme = "light",
       })
 
@@ -862,8 +970,8 @@ local pluginSpec = {
         group = "markdown_preview",
         pattern = "markdown",
         callback = function()
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", require("peek").open, {})
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", require("peek").close, {})
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", peek.open, { desc = "# Open preview" })
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", peek.close, { desc = "# Close preview" })
         end,
       })
     end,
@@ -1193,8 +1301,8 @@ vim.keymap.set("n", "N", "Nzz")
 vim.keymap.set("n", "G", "Gzz")
 
 -- Macro recording
-vim.keymap.set("n", "aa", "@a")
-vim.keymap.set("n", "qa", "qa<Esc>")
+vim.keymap.set("n", "aa", "@a", { desc = "# Execute macro" })
+vim.keymap.set("n", "qa", "qa<Esc>", { desc = "# Start or stop recording macro" })
 vim.keymap.set("n", "qq", "<Esc>") -- Disable recording with qq
 
 -- File or URL open
@@ -1205,7 +1313,7 @@ vim.keymap.set("n", "gf", function()
   else
     vim.cmd("normal! gF")
   end
-end)
+end, { desc = "# Open file or URL" })
 
 -- Window navigation
 vim.keymap.set("n", "<C-j>", "<C-w>j")
@@ -1225,19 +1333,16 @@ vim.keymap.set({ "n", "v" }, ";", ":")
 vim.keymap.set({ "n", "v" }, ":", "q:")
 
 -- Search the selected text
-vim.keymap.set("v", "//", 'y/<C-R>=escape(@", "\\/.*$^~[]")<CR><CR>', { silent = true })
-
--- Count the number of occurrences of the selected string
-vim.keymap.set("v", "/n", 'y:%s/<C-R>=escape(@", "\\/.*$^~[]")<CR>/&/gn<CR>', { silent = true })
+vim.keymap.set("v", "//", 'y/<C-R>=escape(@", "\\/.*$^~[]")<CR><CR>', { silent = true, desc = "# Search selection" })
 
 -- Replace the selected string
-vim.keymap.set("v", "/r", '"xy:%s/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/gc<Left><Left><Left>')
+vim.keymap.set("v", "/r", '"xy:%s/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/<C-R>=escape(@x, "\\/.*$^~[]")<CR>/gc<Left><Left><Left>', { desc = "# Replace selection" })
 
 -- Comment toggle
-vim.keymap.set("v", "<Leader>cs", "gc", { remap = true })
-vim.keymap.set("n", "<Leader>cs", "gcc", { remap = true })
-vim.keymap.set("v", "<Leader>c<Space>", "gc", { remap = true })
-vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true })
+vim.keymap.set("v", "<Leader>cs", "gc", { remap = true, desc = "# Comment out" })
+vim.keymap.set("n", "<Leader>cs", "gcc", { remap = true, desc = "# Comment out" })
+vim.keymap.set("v", "<Leader>c<Space>", "gc", { remap = true, desc = "# Comment in" })
+vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment in" })
 
 -------------------------------------------------------------------------------
 -- Custom commands
@@ -1245,28 +1350,28 @@ vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true })
 -- Move to the directory where the current file is located
 vim.api.nvim_create_user_command("Cd", function()
   vim.cmd("cd %:h")
-end, {})
+end, { desc = "# Change directory to the current file's directory" })
 
 -- Open a file with the specified encoding
 vim.api.nvim_create_user_command("Enc", function(opts)
   vim.cmd("edit ++enc=" .. opts.args)
-end, { nargs = 1 })
+end, { nargs = 1, desc = "# Open a file with the specified encoding" })
 
 -- Remove trailing spaces
 vim.api.nvim_create_user_command("Rstrip", function()
   vim.cmd("silent! %s/\\s\\+$//e")
-end, {})
+end, { desc = "# Remove trailing spaces" })
 
 -- Show the diff of the current buffer and the specified file
 vim.api.nvim_create_user_command("Diff", function(opts)
   vim.cmd("vertical diffsplit " .. opts.args)
-end, { nargs = 1, complete = "file" })
+end, { nargs = 1, complete = "file", desc = "# Show the diff of the current buffer and the specified file" })
 
 -- Change the line ending to LF and the encoding to UTF-8
 vim.api.nvim_create_user_command("Normalize", function()
   vim.opt.fileformat = "unix"
   vim.opt.fileencoding = "utf-8"
-end, {})
+end, { desc = "# Change the line ending to LF and the encoding to UTF-8" })
 
 -- Save memo
 vim.api.nvim_create_user_command("SaveMemo", function()
@@ -1281,7 +1386,7 @@ vim.api.nvim_create_user_command("SaveMemo", function()
   if not success then
     vim.notify("Failed to save memo: " .. err, vim.log.levels.ERROR)
   end
-end, {})
+end, { desc = "# Save memo" })
 
 -------------------------------------------------------------------------------
 -- Rename
@@ -1333,7 +1438,7 @@ end
 
 vim.api.nvim_create_user_command("Rename", function(opts)
   rename(opts.args or "")
-end, { nargs = "*", complete = sibling_files })
+end, { nargs = "*", complete = sibling_files, desc = "# Rename the current file" })
 
 vim.cmd('cabbrev rename <c-r>=getcmdpos() == 1 && getcmdtype() == ":" ? "Rename" : "rename"<CR>')
 
@@ -1506,7 +1611,7 @@ local function open_github_line_url()
   vim.fn.system("open " .. url)
 end
 
-vim.keymap.set("n", "og", open_github_line_url, { silent = true })
+vim.keymap.set("n", "og", open_github_line_url, { silent = true, desc = "# Open GitHub line URL" })
 
 -------------------------------------------------------------------------------
 -- Surrounding
@@ -1599,7 +1704,7 @@ local function select_surround()
   end)
 end
 
-vim.keymap.set("v", "os", select_surround, { silent = true })
+vim.keymap.set("v", "os", select_surround, { silent = true, desc = "# Change surrounding characters" })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
