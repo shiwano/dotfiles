@@ -344,10 +344,10 @@ local pluginSpec = {
         end
         for _, mode in ipairs({ "n", "v", "x", "i", "c", "t" }) do
           for _, m in ipairs(vim.api.nvim_get_keymap(mode)) do
-            collect_map(mode, m, "g")
+            collect_map(mode, m, "global")
           end
           for _, m in ipairs(vim.api.nvim_buf_get_keymap(0, mode)) do
-            collect_map(mode, m, "b")
+            collect_map(mode, m, "buffer")
           end
         end
 
@@ -360,16 +360,16 @@ local pluginSpec = {
         end)
 
         local sorted_commands = {}
-        local function collect_command(cmd)
+        local function collect_command(cmd, scope)
           if cmd.definition and cmd.definition:find(desc_prefix) ~= nil then
-            table.insert(sorted_commands, { name = cmd.name, desc = cmd.definition })
+            table.insert(sorted_commands, { name = cmd.name, desc = cmd.definition, scope = scope })
           end
         end
         for _, cmd in pairs(vim.api.nvim_get_commands({})) do
-          collect_command(cmd)
+          collect_command(cmd, "global")
         end
         for _, cmd in pairs(vim.api.nvim_buf_get_commands(0, {})) do
-          collect_command(cmd)
+          collect_command(cmd, "buffer")
         end
         table.sort(sorted_commands, function(a, b)
           return a.name < b.name
@@ -380,16 +380,17 @@ local pluginSpec = {
           local kind = utils.ansi_from_rgb(colors.blue, "MAP")
           local scopes = table.concat(vim.tbl_keys(m.scopes), ",")
           local modes = "(" .. table.concat(m.modes, ",") .. ")"
-          local additional = utils.ansi_from_rgb(colors.comment, string.format("%s%-9s", scopes, modes))
+          local scopes_modes = utils.ansi_from_rgb(colors.comment, string.format("%s%-9s", scopes, modes))
           local name = m.lhs:gsub(" ", "<Space>")
           local desc = utils.ansi_from_rgb(colors.dark5, m.desc)
-          local item = string.format("%s %-9s %s %s", kind, name, additional, desc)
+          local item = string.format("%s %-9s %s %s", kind, name, scopes_modes, desc)
           table.insert(entries, { item = item, desc = m.desc })
         end
         for _, c in pairs(sorted_commands) do
           local kind = utils.ansi_from_rgb(colors.orange, "CMD")
           local desc = utils.ansi_from_rgb(colors.dark5, c.desc)
-          local item = string.format("%s %-20s %s", kind, c.name, desc)
+          local scope = utils.ansi_from_rgb(colors.comment, c.scope)
+          local item = string.format("%s %-16s %s   %s", kind, c.name, scope, desc)
           table.insert(entries, { item = item, desc = c.desc })
         end
 
