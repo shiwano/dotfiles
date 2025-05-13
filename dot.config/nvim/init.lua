@@ -224,6 +224,25 @@ local pluginSpec = {
         return utils.ansi_from_rgb(rgb, icon .. " ")
       end
 
+      local function preview_file_with_query(path, query)
+        local line_number = nil
+        if query and query ~= "" then
+          local escaped_query = query:gsub("'", "'\\''")
+          local result = vim.fn.systemlist(string.format("rg --no-heading --line-number --fixed-strings '%s' %s | head -n 1", escaped_query, path))
+          if result and result[1] then
+            local line = result[1]:match("^(%d+):")
+            if line then
+              line_number = tonumber(line)
+            end
+          end
+        end
+        if line_number then
+          return vim.fn.systemlist(string.format("fzf-preview file %s:%d", path, line_number))
+        else
+          return vim.fn.systemlist(string.format("fzf-preview file %s", path))
+        end
+      end
+
       local function find_bookmark()
         local tag_prefix = "BOOKMARK: "
 
@@ -258,21 +277,10 @@ local pluginSpec = {
         end
 
         local function preview_entry(entry)
-          local line_number = nil
-          if entry.tag and entry.tag ~= "" then
-            local tag = tag_prefix .. entry.tag
-            local result = vim.fn.systemlist("rg --no-heading --line-number --fixed-strings '" .. tag .. "' " .. entry.path .. " | head -n 1")
-            if result and result[1] then
-              local line = result[1]:match("^(%d+):")
-              if line then
-                line_number = tonumber(line)
-              end
-            end
-          end
-          if line_number then
-            return vim.fn.systemlist("fzf-preview file " .. entry.path .. ":" .. line_number)
+          if entry.tag then
+            return preview_file_with_query(entry.path, tag_prefix .. entry.tag)
           else
-            return vim.fn.systemlist("fzf-preview file " .. entry.path)
+            return preview_file_with_query(entry.path, nil)
           end
         end
 
@@ -361,10 +369,16 @@ local pluginSpec = {
         end)
 
         local sorted_commands = {}
-        for _, c in pairs(vim.api.nvim_get_commands({})) do
-          if c.definition and c.definition:find(desc_prefix) ~= nil then
-            table.insert(sorted_commands, { name = c.name, desc = c.definition })
+        local function collect_command(cmd)
+          if cmd.definition and cmd.definition:find(desc_prefix) ~= nil then
+            table.insert(sorted_commands, { name = cmd.name, desc = cmd.definition })
           end
+        end
+        for _, cmd in pairs(vim.api.nvim_get_commands({})) do
+          collect_command(cmd)
+        end
+        for _, cmd in pairs(vim.api.nvim_buf_get_commands(0, {})) do
+          collect_command(cmd)
         end
         table.sort(sorted_commands, function(a, b)
           return a.name < b.name
@@ -373,10 +387,10 @@ local pluginSpec = {
         local entries = {}
         for _, m in ipairs(sorted_maps) do
           local kind = utils.ansi_from_rgb(colors.cyan, "MAP")
-          local name = m.lhs:gsub(" ", "<Space>")
           local scopes = table.concat(vim.tbl_keys(m.scopes), ",")
           local modes = "(" .. table.concat(m.modes, ",") .. ")"
           local additional = utils.ansi_from_rgb(colors.dark5, string.format("%s%-9s", scopes, modes))
+          local name = m.lhs:gsub(" ", "<Space>")
           local desc = utils.ansi_from_rgb(colors.dark5, m.desc)
           local item = string.format("%s %s %-10s %s", kind, additional, name, desc)
           table.insert(entries, { item = item, desc = m.desc })
@@ -393,15 +407,7 @@ local pluginSpec = {
         end, entries)
 
         local function preview_entry(entry)
-          local result = vim.fn.systemlist("rg --no-heading --line-number --fixed-strings '" .. entry.desc:gsub("'", "'\\''") .. "' " .. init_path .. " | head -n 1")
-          if result and result[1] then
-            local line = result[1]:match("^(%d+):")
-            if line then
-              local line_number = tonumber(line)
-              return vim.fn.systemlist("fzf-preview file " .. init_path .. ":" .. line_number)
-            end
-          end
-          return nil
+          return preview_file_with_query(init_path, entry.desc)
         end
 
         local function find_entry(desc)
@@ -623,15 +629,15 @@ local pluginSpec = {
       end
 
       local function on_attach(_, bufnr)
-        vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true, desc = "# Go to definition" })
-        vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true, desc = "# Go to type definition" })
-        vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true, desc = "# Find implementations" })
-        vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true, desc = "# Find references" })
-        vim.keymap.set("n", "on", rename, { silent = true, buffer = true, desc = "# Rename symbol" })
-        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true, desc = "# Code action" })
-        vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true, desc = "# Hover description" })
+        vim.keymap.set("n", "od", vim.lsp.buf.definition, { silent = true, buffer = true, desc = "# Jump to the definition (LSP)" })
+        vim.keymap.set("n", "ot", vim.lsp.buf.type_definition, { silent = true, buffer = true, desc = "# Jump to the type definition (LSP)" })
+        vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true, desc = "# List implementations (LSP)" })
+        vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true, desc = "# List references (LSP)" })
+        vim.keymap.set("n", "on", rename, { silent = true, buffer = true, desc = "# Rename symbol (LSP)" })
+        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true, desc = "# Execute code action (LSP)" })
+        vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true, desc = "# Display information (LSP)" })
 
-        vim.api.nvim_buf_create_user_command(bufnr, "Format", format, { desc = "# Format" })
+        vim.api.nvim_buf_create_user_command(bufnr, "LSPFormat", format, { desc = "# Format (LSP)" })
       end
 
       local caps = vim.lsp.protocol.make_client_capabilities()
@@ -658,12 +664,12 @@ local pluginSpec = {
         on_attach = function(client, bufnr)
           on_attach(client, bufnr)
 
-          vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
+          vim.api.nvim_buf_create_user_command(bufnr, "LSPOrganizeImports", function()
             client.exec_cmd({
               command = "_typescript.organizeImports",
               arguments = { vim.api.nvim_buf_get_name(0) },
             }, { bufnr = bufnr })
-          end, { desc = "# Organize imports" })
+          end, { desc = "# Organize imports (LSP)" })
         end,
       })
 
@@ -814,7 +820,7 @@ local pluginSpec = {
     init = function()
       vim.g.caser_no_mappings = true
 
-      local function select_case()
+      local function change_case()
         local items = {
           { name = "PascalCase", funcName = "MixedCase" },
           { name = "camelCase", funcName = "CamelCase" },
@@ -836,7 +842,7 @@ local pluginSpec = {
         end)
       end
 
-      vim.keymap.set("v", "oc", select_case, { silent = true, desc = "# Change word casing" })
+      vim.keymap.set("v", "oc", change_case, { silent = true, desc = "# Change case" })
     end,
   },
   {
@@ -970,8 +976,8 @@ local pluginSpec = {
         group = "markdown_preview",
         pattern = "markdown",
         callback = function()
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", peek.open, { desc = "# Open preview" })
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", peek.close, { desc = "# Close preview" })
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", peek.open, { desc = "# Open markdown preview" })
+          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", peek.close, { desc = "# Close markdown preview" })
         end,
       })
     end,
@@ -1616,7 +1622,7 @@ vim.keymap.set("n", "og", open_github_line_url, { silent = true, desc = "# Open 
 -------------------------------------------------------------------------------
 -- Surrounding
 -------------------------------------------------------------------------------
-local function select_surround()
+local function change_surrounding()
   local surround_pairs = {
     ["("] = ")",
     ["["] = "]",
@@ -1704,7 +1710,7 @@ local function select_surround()
   end)
 end
 
-vim.keymap.set("v", "os", select_surround, { silent = true, desc = "# Change surrounding characters" })
+vim.keymap.set("v", "os", change_surrounding, { silent = true, desc = "# Change surrounding characters" })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
