@@ -689,4 +689,8 @@ if [ -f ~/.zshrc.local ]; then
 	. ~/.zshrc.local
 fi
 
+if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
+	. "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
+fi
+
 typeset -U path PATH # Remove duplicated PATHs.
