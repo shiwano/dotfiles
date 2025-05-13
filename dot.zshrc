@@ -671,26 +671,26 @@ zle -N _do_nothing
 bindkey "^D" _do_nothing
 setopt IGNORE_EOF
 
-# Includes ---------------------------------------------------------------------
+# Integrations -----------------------------------------------------------------
 
 if command -v direnv >/dev/null 2>&1; then
 	eval "$(direnv hook zsh)"
 fi
 
-if [ -e $BREW_PREFIX/opt/asdf/libexec/asdf.sh ]; then
-	. $BREW_PREFIX/opt/asdf/libexec/asdf.sh
+if [ -e "${BREW_PREFIX}/opt/asdf/libexec/asdf.sh" ]; then
+	. "${BREW_PREFIX}/opt/asdf/libexec/asdf.sh"
 fi
 
-if [ -e $HOME/.nix-profile/etc/profile.d/nix.sh ]; then
-	. $HOME/.nix-profile/etc/profile.d/nix.sh;
-fi
-
-if [ -f ~/.zshrc.local ]; then
-	. ~/.zshrc.local
+if [ -e "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then
+	. "${HOME}/.nix-profile/etc/profile.d/nix.sh"
 fi
 
 if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
 	. "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
+fi
+
+if [ -f ~/.zshrc.local ]; then
+	. ~/.zshrc.local
 fi
 
 typeset -U path PATH # Remove duplicated PATHs.
