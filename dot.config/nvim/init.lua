@@ -381,13 +381,13 @@ local pluginSpec = {
           local additional = utils.ansi_from_rgb(colors.dark5, string.format("%s%-9s", scopes, modes))
           local name = m.lhs:gsub(" ", "<Space>")
           local desc = utils.ansi_from_rgb(colors.dark5, m.desc)
-          local item = string.format("%s %s %-10s %s", kind, additional, name, desc)
+          local item = string.format("%s %-9s %s %s", kind, name, additional, desc)
           table.insert(entries, { item = item, desc = m.desc })
         end
         for _, c in pairs(sorted_commands) do
           local kind = utils.ansi_from_rgb(colors.orange, "CMD")
           local desc = utils.ansi_from_rgb(colors.dark5, c.desc)
-          local item = string.format("%s %-15s %s", kind, c.name, desc)
+          local item = string.format("%s %-20s %s", kind, c.name, desc)
           table.insert(entries, { item = item, desc = c.desc })
         end
 
@@ -798,11 +798,42 @@ local pluginSpec = {
   { "windwp/nvim-ts-autotag", event = { "BufReadPre", "BufNewFile" }, config = true },
   { "RRethy/nvim-treesitter-endwise", event = { "BufReadPre", "BufNewFile" } },
   { "buoto/gotests-vim", ft = { "go" } },
-  { "vim-scripts/Align", event = { "BufReadPre", "BufNewFile" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
   { "fabridamicelli/cronex.nvim", event = { "BufReadPre", "BufNewFile" } },
+  {
+    "Vonr/align.nvim",
+    branch = "v2",
+    cmd = { "Align" },
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local function align_selection(opts)
+        if opts.range == 0 then
+          vim.notify("Select a range in visual mode or use :<line1>,<line2>Align", vim.log.levels.WARN)
+          return
+        end
+        vim.ui.input({ prompt = "Align text: " }, function(text)
+          if text and #text > 0 then
+            require("align").align(text, {
+              preview = false,
+              regex = false,
+              marks = {
+                sr = opts.line1,
+                sc = 0,
+                er = opts.line2,
+                ec = math.max(unpack(vim.tbl_map(function(line)
+                  return #line
+                end, vim.api.nvim_buf_get_lines(0, opts.line1 - 1, opts.line2, false)))),
+              },
+            })
+          end
+        end)
+      end
+
+      vim.api.nvim_create_user_command("Align", align_selection, { range = true, desc = "# Align selection" })
+    end,
+  },
   {
     "arthurxavierx/vim-caser",
     event = { "BufReadPre", "BufNewFile" },
