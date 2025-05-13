@@ -274,18 +274,20 @@ local pluginSpec = {
         end
 
         local items = vim.tbl_map(function(entry)
-          local icon = get_icon_by_filename(entry.path)
+          local icon = get_icon_by_filename(entry.path) or ""
+          local path = utils.ansi_from_rgb(colors.blue, entry.path)
           if entry.tag and entry.tag ~= "" then
-            return string.format("%s: %s%s: %s", utils.ansi_from_rgb(colors.cyan, entry.name), (icon or ""), entry.path, utils.ansi_from_rgb(colors.dark5, (entry.tag or "")))
+            local tag = utils.ansi_from_rgb(colors.dark5, "(" .. entry.tag .. ")")
+            return string.format("%s%s: %s %s", icon, entry.name, path, tag)
           else
-            return string.format("%s: %s%s", utils.ansi_from_rgb(colors.cyan, entry.name), (icon or ""), entry.path)
+            return string.format("%s%s: %s", icon, entry.name, path)
           end
         end, entries)
 
         fzf.fzf_exec(items, {
           actions = {
             ["default"] = function(selected_items)
-              local name = selected_items[1]:match("^(.-):"):gsub("%s+$", "")
+              local name = selected_items[1]:match("^[^%w]*(%w+):")
               local entry = find_entry(name)
               if entry then
                 vim.cmd("edit " .. vim.fn.expand(entry.path))
@@ -297,7 +299,7 @@ local pluginSpec = {
             end,
           },
           preview = function(selected_items, _, _)
-            local name = selected_items[1]:match("^(.-):"):gsub("%s+$", "")
+            local name = selected_items[1]:match("^[^%w]*(%w+):")
             local entry = find_entry(name)
             if entry then
               return preview_entry(entry)
@@ -375,10 +377,10 @@ local pluginSpec = {
 
         local entries = {}
         for _, m in ipairs(sorted_maps) do
-          local kind = utils.ansi_from_rgb(colors.cyan, "MAP")
+          local kind = utils.ansi_from_rgb(colors.blue, "MAP")
           local scopes = table.concat(vim.tbl_keys(m.scopes), ",")
           local modes = "(" .. table.concat(m.modes, ",") .. ")"
-          local additional = utils.ansi_from_rgb(colors.dark5, string.format("%s%-9s", scopes, modes))
+          local additional = utils.ansi_from_rgb(colors.comment, string.format("%s%-9s", scopes, modes))
           local name = m.lhs:gsub(" ", "<Space>")
           local desc = utils.ansi_from_rgb(colors.dark5, m.desc)
           local item = string.format("%s %-9s %s %s", kind, name, additional, desc)
@@ -411,7 +413,7 @@ local pluginSpec = {
         fzf.fzf_exec(items, {
           actions = {
             ["default"] = function(selected_items)
-              local desc = selected_items[1]:match("(#%s.-)%s*$") or ""
+              local desc = selected_items[1]:match("(#%s.-)%s*$")
               local entry = find_entry(desc)
               if entry then
                 vim.cmd("edit " .. init_path)
@@ -420,7 +422,7 @@ local pluginSpec = {
             end,
           },
           preview = function(selected_items, _, _)
-            local desc = selected_items[1]:match("(#%s.-)%s*$") or ""
+            local desc = selected_items[1]:match("(#%s.-)%s*$")
             local entry = find_entry(desc)
             if entry then
               return preview_entry(entry)
