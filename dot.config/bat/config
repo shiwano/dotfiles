@@ -1,1 +1,3 @@
 --theme="tokyonight_night"
+
+--map-syntax="*.zshrc.local:Bourne Again Shell (bash)"

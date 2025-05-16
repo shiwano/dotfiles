@@ -254,6 +254,7 @@ local pluginSpec = {
           { name = "asdf", path = "~/.tool-versions" },
           { name = "ghostty", path = "~/.config/ghostty/config" },
           { name = "hammerspoon", path = "~/.hammerspoon/init.lua" },
+          { name = "bat", path = "~/.config/bat/config" },
         }
 
         local function find_entry(name)
@@ -1303,6 +1304,7 @@ vim.filetype.add({
     prefab = "yaml",
     shader = "hlsl",
     jb = "ruby",
+    ["sublime-syntax"] = "yaml",
   },
   filename = {
     ["dot.zshrc"] = "zsh",
