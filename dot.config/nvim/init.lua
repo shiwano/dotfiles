@@ -627,7 +627,7 @@ local pluginSpec = {
         vim.keymap.set("n", "oi", vim.lsp.buf.implementation, { silent = true, buffer = true, desc = "# List implementations (LSP)" })
         vim.keymap.set("n", "of", vim.lsp.buf.references, { silent = true, buffer = true, desc = "# List references (LSP)" })
         vim.keymap.set("n", "on", rename, { silent = true, buffer = true, desc = "# Rename symbol (LSP)" })
-        vim.keymap.set({ "n", "v" }, "oa", vim.lsp.buf.code_action, { silent = true, buffer = true, desc = "# Execute code action (LSP)" })
+        vim.keymap.set({ "n", "v" }, "os", vim.lsp.buf.code_action, { silent = true, buffer = true, desc = "# Execute code action (LSP)" })
         vim.keymap.set("n", "ok", vim.lsp.buf.hover, { silent = true, buffer = true, desc = "# Display information (LSP)" })
 
         vim.api.nvim_buf_create_user_command(bufnr, "LSPFormat", format, { desc = "# Format (LSP)" })
@@ -1733,7 +1733,7 @@ local function change_surrounding()
   end)
 end
 
-vim.keymap.set("v", "os", change_surrounding, { silent = true, desc = "# Change surrounding characters" })
+vim.keymap.set("v", "ox", change_surrounding, { silent = true, desc = "# Change surrounding characters" })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
