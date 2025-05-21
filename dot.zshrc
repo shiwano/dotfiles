@@ -177,6 +177,34 @@ else
 	export EDITOR='vi'
 fi
 
+# ssh-key ----------------------------------------------------------------------
+
+ssh-add-key() {
+  local key_path="$HOME/.ssh/id_rsa"
+  if [ ! -f "$key_path" ]; then
+    return 0
+  fi
+
+  if ! pgrep -u "$USER" ssh-agent >/dev/null; then
+    echo "ssh-agent not running. Start ssh-agent? [y/n]"
+    read -r ans
+    if [[ "$ans" =~ ^[Yy]$ ]]; then
+      eval "$(ssh-agent -s)" >/dev/null
+    else
+      return 0
+    fi
+  fi
+
+  if ssh-add -l 2>/dev/null | grep -q "$key_path"; then
+    return 0
+  fi
+
+	ssh-add "$key_path"
+}
+
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd ssh-add-key
+
 # Functions --------------------------------------------------------------------
 
 move-to-git-repository() {
@@ -188,12 +216,11 @@ move-to-git-repository() {
 }
 
 edit-git-grepped-files() {
-	local prompt="$(prompt-pwd)/"
 	local search=$1
 	[ -z "$search" ] && return
 	local files="$(git grep -n --color=always "$search")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview file {}' --prompt $prompt)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview file {}' --prompt 'Edit> ')"
 	[ -z "$s" ] && return
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
@@ -208,11 +235,10 @@ edit-git-grepped-files() {
 }
 
 edit-git-files() {
-	local prompt="$(prompt-pwd)/"
 	local dir=${1-.}
 	local files="$(git ls-files $dir)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt $prompt)"
+	local s="$(echo -e $files | fzf -m --prompt 'Edit> ')"
 	[ -z "$s" ] && return
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
@@ -225,13 +251,12 @@ edit-git-files() {
 }
 
 edit-git-changed-files() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	if [ -z "$files" ]; then
 		edit-git-files
 		return
 	fi
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)'	--prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'Edit> ' | cut -c4-)"
 	[ -z "$s" ] && return
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
@@ -244,32 +269,29 @@ edit-git-changed-files() {
 }
 
 copy-file-paths-to-clipboard() {
-	local prompt="$(prompt-pwd)/"
 	local dir=${1-}
 	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt $prompt)"
+	local s="$(echo -e $files | fzf -m --prompt 'CopyPath> ')"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
 	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
 }
 
 copy-changed-file-paths-to-clipboard() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
 	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
 }
 
 copy-image-paths-to-clipboard() {
-	local prompt="$(prompt-pwd)/"
 	local dir=${1-}
 	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt $prompt)"
+	local s="$(echo -e $files | fzf -m --prompt 'CopyPath> ')"
 	[ -z "$s" ] && return
 	printf "%s" "$s" | pbcopy
 	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
@@ -284,40 +306,36 @@ git-switch-branch() {
 }
 
 git-add-files() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git add
 	git status
 }
 
 git-restore-files() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -v -E "^(M|A|D|UU|AA|DD|DU|UD) " | grep -v -E "^\?\? ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git restore
 	git status
 }
 
 git-unstage-files() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -E "^(M|A|D|UU|AA|DD|DU|UD) ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
 	[ -z "$s" ] && return
 	echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
 	git status
 }
 
 git-mergetool-file() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames | grep -E "^(UU|AA|DD) ")"
 	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitMergetool> ' | cut -c4-)"
 	[ -z "$s" ] && return
 	print -s "git mergetool $s" && fc -AI
 	git mergetool $s
@@ -325,10 +343,9 @@ git-mergetool-file() {
 }
 
 git-stash-files() {
-	local prompt="$(prompt-pwd)/"
 	local files="$(git status -s -u --no-renames)"
 	[ -z "$files" ] && return
-	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt $prompt | cut -c4-)"
+	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitStash> ' | cut -c4-)"
 	[ -z "$s" ] && return
 
 	local new_files=()
@@ -360,19 +377,6 @@ remove-last-command() {
 
 local-ip-address() {
 	ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
-}
-
-ssh-add-key() {
-  local key_path="$HOME/.ssh/id_rsa"
-  if [ ! -f "$key_path" ]; then
-    echo "ssh key not found: $key_path"
-    return 1
-  fi
-  if ssh-add -l 2>/dev/null | grep -q "$key_path"; then
-    echo "ssh key already added: $key_path"
-    return
-  fi
-	ssh-add "$key_path"
 }
 
 # Aliases ----------------------------------------------------------------------
