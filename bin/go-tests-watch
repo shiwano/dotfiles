@@ -2,7 +2,33 @@
 
 set -euo pipefail
 
+usage() {
+	cat <<EOF >&2
+Usage: go-tests-watch [additional go test args...]
+
+Watches *.go files and runs \`go test ./<dir>\` for the changed file's package.
+
+Examples:
+  go-tests-watch
+  go-tests-watch -v -race
+	go-tests-watch -run TestFoobar
+
+Note:
+  Requires reflex: https://github.com/cespare/reflex
+EOF
+}
+
 main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		exit 0
+	fi
+
+	if ! command -v reflex >/dev/null 2>&1; then
+		echo "reflex is not installed" >&2
+		exit 1
+	fi
+
 	# shellcheck disable=SC2016
 	reflex -d none -r '\.go$' -- bash -c 'printf "\033[0;33m%s changed\033[0m\n" "$1"; go test "./$(dirname "$1")" "${@:2}"' _ {} "$@"
 }
