@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: static-http [port]
+
+Start a simple static HTTP server in the current directory.
+
+Options:
+  port  Port to bind to (default: 5000)
+
+Examples:
+  static-http
+  static-http 8080
+
+Note:
+  Requires Python (version 2.7+ or 3.x).
+EOF
+}
+
+main() {
+	if [[ "${1-}" == "--help" || "${1-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	local port="${1:-5000}"
+
+	if command -v python >/dev/null 2>&1; then
+		if python -V 2>&1 | grep -q 'Python 3\.'; then
+			exec python -m http.server "$port"
+		else
+			exec python -m SimpleHTTPServer "$port"
+		fi
+	elif command -v python3 >/dev/null 2>&1; then
+		exec python3 -m http.server "$port"
+	else
+		echo "Python is not installed!" >&2
+		return 1
+	fi
+}
+
+main "$@"

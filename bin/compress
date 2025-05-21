@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: compress <file-or-directory>
+
+Compress a file or directory into a .tar.gz archive.
+
+Examples:
+  compress myfile.txt
+  compress mydir
+EOF
+}
+
+main() {
+	if [ "$#" -ne 1 ] || [[ "$1" == "--help" || "$1" == "-h" ]]; then
+		usage
+		return 1
+	fi
+
+	local target="$1"
+
+	if [ -f "$target" ]; then
+		tar -zcvf "${target}.tar.gz" "$target"
+	elif [ -d "$target" ]; then
+		tar -zcvf "${target}.tar.gz" "$target"
+	else
+		echo "'$target' is not a valid file or directory!" >&2
+		return 1
+	fi
+}
+
+main "$@"

@@ -1,0 +1,57 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: extract <archive-file>
+
+Extracts various types of archive files.
+
+Supported formats:
+  .tar.bz2  .tar.gz  .tar.xz  .bz2  .rar  .gz
+  .tar      .tbz2    .tgz     .zip  .Z    .7z
+  .lzma     .xz
+
+Examples:
+  extract archive.tar.gz
+  extract data.zip
+EOF
+}
+
+main() {
+	if [ "$#" -ne 1 ] || [[ "$1" == "--help" || "$1" == "-h" ]]; then
+		usage
+		return 1
+	fi
+
+	local file="$1"
+
+	if [ ! -f "$file" ]; then
+		echo "'$file' is not a file" >&2
+		return 1
+	fi
+
+	case "$file" in
+	*.tar.bz2) tar xvjf "$file" ;;
+	*.tar.gz) tar xvzf "$file" ;;
+	*.tar.xz) tar xvJf "$file" ;;
+	*.bz2) bunzip2 "$file" ;;
+	*.rar) unrar x "$file" ;;
+	*.gz) gunzip "$file" ;;
+	*.tar) tar xvf "$file" ;;
+	*.tbz2) tar xvjf "$file" ;;
+	*.tgz) tar xvzf "$file" ;;
+	*.zip) unzip "$file" ;;
+	*.Z) uncompress "$file" ;;
+	*.7z) 7z x "$file" ;;
+	*.lzma) lzma -dv "$file" ;;
+	*.xz) xz -dv "$file" ;;
+	*)
+		echo "Don't know how to extract '$file'..." >&2
+		return 1
+		;;
+	esac
+}
+
+main "$@"

@@ -179,52 +179,6 @@ fi
 
 # Functions --------------------------------------------------------------------
 
-compress() {
-	if [ -f $1 ] ; then
-		tar -zcvf $1.tar.gz $1
-	elif [ -d $1 ] ; then
-		tar -zcvf $1.tar.gz $1
-	else
-		echo "'$1' is not a valid file or directory!"
-	fi
-}
-
-extract() {
-	if [ -f $1 ] ; then
-		case $1 in
-			*.tar.bz2)   tar xvjf $1    ;;
-			*.tar.gz)    tar xvzf $1    ;;
-			*.tar.xz)    tar xvJf $1    ;;
-			*.bz2)       bunzip2 $1     ;;
-			*.rar)       unrar x $1     ;;
-			*.gz)        gunzip $1      ;;
-			*.tar)       tar xvf $1     ;;
-			*.tbz2)      tar xvjf $1    ;;
-			*.tgz)       tar xvzf $1    ;;
-			*.zip)       unzip $1       ;;
-			*.Z)         uncompress $1  ;;
-			*.7z)        7z x $1        ;;
-			*.lzma)      lzma -dv $1    ;;
-			*.xz)        xz -dv $1      ;;
-			*)           echo "don't know how to extract '$1'..." ;;
-		esac
-	else
-		echo "'$1' is not a valid file!"
-	fi
-}
-
-static-httpd() {
-	if command -v python >/dev/null 2>&1; then
-		if python -V 2>&1 | grep -qm1 'Python 3\.'; then
-			python -m http.server ${1-5000}
-		else
-			python -m SimpleHTTPServer ${1-5000}
-		fi
-	elif command -v python3 >/dev/null 2>&1; then
-		python3 -m http.server ${1-5000}
-	fi
-}
-
 move-to-git-repository() {
 	local items="$(echo 'dotfiles'; ghq list)"
 	[ -z "$items" ] && return
