@@ -17,15 +17,15 @@ main() {
 		git clone git@github.com:shiwano/dotfiles.git "${dotfiles_dir}"
 	fi
 
-	topic 'Setup bin directory'
+	topic 'Create bin directory'
 
 	local local_bin_dir=$HOME/bin
-	mkdir -p "${local_bin_dir}"
-
-	find "${dotfiles_dir}/bin" -type f -maxdepth 1 -mindepth 1 | grep -v '.DS_Store' | while IFS= read -r bin; do
-		echo 'Linking' "${bin}" '->' "${local_bin_dir}"
-		ln -sf "${bin}" "${local_bin_dir}"
-	done
+	if [ -d "${local_bin_dir}" ]; then
+		echo 'bin directory already exists'
+	else
+		echo 'Creating bin directory'
+		mkdir -p "${local_bin_dir}"
+	fi
 
 	topic 'Setup .config directory'
 

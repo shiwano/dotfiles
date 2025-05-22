@@ -2,6 +2,19 @@
 
 set -euo pipefail
 
+usage() {
+	cat <<EOF >&2
+Usage: fzf-preview <mode> <target>
+
+Preview a file or Git diff for fzf.
+
+Examples:
+  fzf-preview file /path/to/file
+  fzf-preview file /path/to/file:line
+  fzf-preview diff /path/to/file
+EOF
+}
+
 preview_file() {
 	local target_line="$1"
 	local target line
@@ -33,21 +46,10 @@ preview_file() {
 	fi
 }
 
-usage() {
-	cat <<EOF >&2
-Usage: fzf-preview <mode> <target>
-
-Example:
-  fzf-preview file /path/to/file
-  fzf-preview file /path/to/file:line
-  fzf-preview diff /path/to/file
-EOF
-}
-
 main() {
 	if [ "$#" -ne 2 ]; then
 		usage
-		exit 1
+		return 1
 	fi
 
 	local mode="$1"
@@ -65,7 +67,7 @@ main() {
 		fi
 	else
 		usage
-		exit 1
+		return 1
 	fi
 }
 

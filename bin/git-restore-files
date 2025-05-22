@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: git-restore-files
+
+Interactively select modified but unstaged tracked files to restore using \`git restore\`.
+
+Examples:
+  git-restore-files
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	local files
+	files="$(git status -s -u --no-renames | grep -v -E "^(M|A|D|UU|AA|DD|DU|UD) " | grep -v -E "^\?\? " || true)"
+	[ -z "$files" ] && return 0
+
+	local selected
+	# shellcheck disable=SC2016
+	selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
+	[ -z "$selected" ] && return 0
+
+	echo -e "$selected" | while IFS= read -r file; do
+		git restore "$file"
+	done
+
+	git status
+}
+
+main "$@"

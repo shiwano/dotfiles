@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: copy-image-paths-to-clipboard [dir]
+
+Interactively select image files and copy their paths to the clipboard.
+
+Examples:
+  copy-image-paths-to-clipboard
+  copy-image-paths-to-clipboard assets/images
+EOF
+}
+
+resolve_pbcopy() {
+	if command -v pbcopy >/dev/null 2>&1; then
+		echo "pbcopy"
+	elif command -v xsel >/dev/null 2>&1; then
+		echo "xsel --clipboard --input"
+	elif command -v xclip >/dev/null 2>&1; then
+		echo "xclip -selection clipboard"
+	else
+		echo "echo 'pbcopy: command not found' >&2"
+	fi
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	local selected
+	selected="$(select-images "$@")"
+	[ -z "$selected" ] && return 0
+
+	local pbcopy_cmd
+	pbcopy_cmd="$(resolve_pbcopy)"
+
+	# shellcheck disable=SC2086
+	printf "%s" "$selected" | eval $pbcopy_cmd
+	printf "\e[36mCopied to clipboard:\e[0m\n%s\n" "$selected"
+}
+
+main "$@"

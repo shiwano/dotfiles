@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: extract <archive-file>
+Usage: util-extract <archive-file>
 
 Extracts various types of archive files.
 
@@ -14,8 +14,8 @@ Supported formats:
   .lzma     .xz
 
 Examples:
-  extract archive.tar.gz
-  extract data.zip
+  util-extract archive.tar.gz
+  util-extract data.zip
 EOF
 }
 

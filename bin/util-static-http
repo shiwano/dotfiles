@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: static-http [port]
+Usage: util-static-http [port]
 
 Start a simple static HTTP server in the current directory.
 
@@ -12,8 +12,8 @@ Options:
   port  Port to bind to (default: 5000)
 
 Examples:
-  static-http
-  static-http 8080
+  util-static-http
+  util-static-http 8080
 
 Note:
   Requires Python (version 2.7+ or 3.x).

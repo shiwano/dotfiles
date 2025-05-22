@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: util-local-ip-address
+
+Prints the local (non-loopback) IPv4 addresses of this machine.
+
+Examples:
+  util-local-ip-address
+
+Note:
+  This script filters out 127.0.0.1 and shows only IPv4 addresses.
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	ip addr show |
+		grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' |
+		grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' |
+		grep -v '^127\.'
+}
+
+main "$@"

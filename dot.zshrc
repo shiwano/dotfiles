@@ -48,7 +48,7 @@ fi
 
 # PATH -------------------------------------------------------------------------
 
-export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
+export PATH=$HOME/bin:$HOME/dotfiles/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
 export MANPATH=$BREW_PREFIX/share/man:$BREW_PREFIX/man:/usr/share/man
 
 if [ -d $BREW_PREFIX/opt/coreutils ]; then
@@ -208,161 +208,56 @@ add-zsh-hook precmd ssh-add-key
 # Functions --------------------------------------------------------------------
 
 move-to-git-repository() {
-	local items="$(echo 'dotfiles'; ghq list)"
-	[ -z "$items" ] && return
-	local s="$(echo -e $items | fzf --preview '' --prompt 'MoveTo> ')"
-	[ -z "$s" ] && return
-	[ "$s" = "dotfiles" ] && cd ~/dotfiles || cd $(ghq root)/$s
+	FZF_PROMPT='MoveTo> ' select-git-repository | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
 
 edit-git-grepped-files() {
-	local search=$1
-	[ -z "$search" ] && return
-	local files="$(git grep -n --color=always "$search")"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview file {}' --prompt 'Edit> ')"
-	[ -z "$s" ] && return
+	local s
+	s=$(FZF_PROMPT='Edit> ' select-git-grep-results $1)
+	[ -z "$s" ] && return 0
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-		local file=$(echo "$s" | awk -F ':' '{print $1}')
-		local line=$(echo "$s" | awk -F ':' '{print $2}')
+		local file, line
+		file=$(echo "$s" | awk -F ':' '{print $1}')
+		line=$(echo "$s" | awk -F ':' '{print $2}')
 		print -s "vi $file" && fc -AI
 		nvim +"$line" "$file"
 	else
-		local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
-		nvim -c "cexpr '$escaped_s' | copen"
+		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')' | copen"
 	fi
 }
 
 edit-git-files() {
-	local dir=${1-.}
-	local files="$(git ls-files $dir)"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt 'Edit> ')"
-	[ -z "$s" ] && return
+	local s
+	s=$(FZF_PROMPT='Edit> ' select-git-files $1)
+	[ -z "$s" ] && return 0
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
 		print -s "vi $s" && fc -AI
-		nvim $s
+		nvim "$s"
 	else
-		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
-		nvim -c "cexpr '$escaped' | copen"
+		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')' | copen"
 	fi
 }
 
 edit-git-changed-files() {
-	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	local files
+	files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	if [ -z "$files" ]; then
 		edit-git-files
-		return
+		return 0
 	fi
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'Edit> ' | cut -c4-)"
-	[ -z "$s" ] && return
+
+	local s
+	s=$(FZF_PROMPT='Edit> ' select-git-changed-files $1)
+	[ -z "$s" ] && return 0
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
 		print -s "vi $s" && fc -AI
-		nvim $s
+		nvim "$s"
 	else
-		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
-		nvim -c "cexpr '$escaped' | copen"
+		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')' | copen"
 	fi
-}
-
-copy-file-paths-to-clipboard() {
-	local dir=${1-}
-	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' $dir 2>/dev/null)"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt 'CopyPath> ')"
-	[ -z "$s" ] && return
-	printf "%s" "$s" | pbcopy
-	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
-}
-
-copy-changed-file-paths-to-clipboard() {
-	local files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'CopyPath> ' | cut -c4-)"
-	[ -z "$s" ] && return
-	printf "%s" "$s" | pbcopy
-	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
-}
-
-copy-image-paths-to-clipboard() {
-	local dir=${1-}
-	local files="$(rg --files --hidden --follow --sort path -g '!**/.git' -g '*.{png,jpg,jpeg,gif,svg,bmp,tiff,webp}' $dir 2>/dev/null)"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --prompt 'CopyPath> ')"
-	[ -z "$s" ] && return
-	printf "%s" "$s" | pbcopy
-	echo -e "\e[36mCopied to clipboard:\e[0m\n$s"
-}
-
-git-switch-branch() {
-	local branches=$(git mru | tac)
-	[ -z "$branches" ] && return
-	local s="$(echo -e $branches | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
-	[ -z "$s" ] && return
-	git switch $s
-}
-
-git-add-files() {
-	local files="$(git status -s -u --no-renames | grep -v -E "^[MAD] ")"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitAdd> ' | cut -c4-)"
-	[ -z "$s" ] && return
-	echo -e $s | tr '\n' ' ' | xargs -n1 git add
-	git status
-}
-
-git-restore-files() {
-	local files="$(git status -s -u --no-renames | grep -v -E "^(M|A|D|UU|AA|DD|DU|UD) " | grep -v -E "^\?\? ")"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
-	[ -z "$s" ] && return
-	echo -e $s | tr '\n' ' ' | xargs -n1 git restore
-	git status
-}
-
-git-unstage-files() {
-	local files="$(git status -s -u --no-renames | grep -E "^(M|A|D|UU|AA|DD|DU|UD) ")"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitUnstage> ' | cut -c4-)"
-	[ -z "$s" ] && return
-	echo -e $s | tr '\n' ' ' | xargs -n1 git reset HEAD
-	git status
-}
-
-git-mergetool-file() {
-	local files="$(git status -s -u --no-renames | grep -E "^(UU|AA|DD) ")"
-	[ -z "$files" ] && return
-	local s="$(echo -e $files | fzf --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitMergetool> ' | cut -c4-)"
-	[ -z "$s" ] && return
-	print -s "git mergetool $s" && fc -AI
-	git mergetool $s
-	git status
-}
-
-git-stash-files() {
-	local files="$(git status -s -u --no-renames)"
-	[ -z "$files" ] && return
-	local s="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitStash> ' | cut -c4-)"
-	[ -z "$s" ] && return
-
-	local new_files=()
-	local existing_files=()
-	while IFS= read -r file; do
-		if git ls-files --error-unmatch "$file" > /dev/null 2>&1; then
-			existing_files+=("$file")
-		else
-			new_files+=("$file")
-		fi
-	done <<< "$s"
-
-	if [ ${#new_files[@]} -ne 0 ]; then
-		git add "${new_files[@]}"
-	fi
-	git stash push -- "${existing_files[@]}" "${new_files[@]}"
-	git status
 }
 
 select-history() {
@@ -371,12 +266,9 @@ select-history() {
 }
 
 remove-last-command() {
-	local last_command=$(fc -ln -1)
+	local last_command
+	last_command=$(fc -ln -1)
 	fc -p "$last_command"
-}
-
-local-ip-address() {
-	ip addr show | grep -o 'inet [0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+\.[0-9]\+' | grep -v '127.0.0.1'
 }
 
 # Aliases ----------------------------------------------------------------------

@@ -4,10 +4,12 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: Usage: do-times <times> <command>
+Usage: util-do-times <times> <command>
 
-Example:
-  do-times 10 echo 'Hello World!'
+Repeat a command a specified number of times.
+
+Examples:
+  util-do-times 10 echo 'Hello World!'
 EOF
 }
 

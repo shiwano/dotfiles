@@ -4,29 +4,21 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: flutter-tests-watch [additional flutter test args...]
+Usage: watch-flutter-test [additional flutter test args...]
 
 Watches test/*.dart files and runs \`flutter test <file>\` when changed.
 
 Examples:
-  flutter-tests-watch
-  flutter-tests-watch --coverage
-  flutter-tests-watch --timeout 60s
-
-Note:
-  Requires reflex: https://github.com/cespare/reflex
+  watch-flutter-test
+  watch-flutter-test --coverage
+  watch-flutter-test --timeout 60s
 EOF
 }
 
 main() {
 	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 		usage
-		exit 0
-	fi
-
-	if ! command -v reflex >/dev/null 2>&1; then
-		echo "reflex is not installed" >&2
-		exit 1
+		return 0
 	fi
 
 	# shellcheck disable=SC2016

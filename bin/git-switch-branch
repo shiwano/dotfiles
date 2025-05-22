@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: git-switch-branch
+
+Interactively select a recently used branch and switch to it using \`git switch\`.
+
+Examples:
+  git-switch-branch
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	local branches
+	branches="$(git mru | tac || true)"
+	[ -z "$branches" ] && return 0
+
+	local selected
+	# shellcheck disable=SC2016
+	selected="$(echo -e "$branches" | fzf --no-sort --preview '' --prompt 'GitSwitch> ' | cut -d' ' -f1)"
+	[ -z "$selected" ] && return 0
+
+	git switch "$selected"
+	return 0
+}
+
+main "$@"

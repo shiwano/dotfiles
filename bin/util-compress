@@ -4,13 +4,13 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: compress <file-or-directory>
+Usage: util-compress <file-or-directory>
 
-Compress a file or directory into a .tar.gz archive.
+util-compress a file or directory into a .tar.gz archive.
 
 Examples:
-  compress myfile.txt
-  compress mydir
+  util-compress myfile.txt
+  util-compress mydir
 EOF
 }
 
