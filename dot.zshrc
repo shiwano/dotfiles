@@ -227,10 +227,10 @@ edit-git-grepped-files() {
 		local file=$(echo "$s" | awk -F ':' '{print $1}')
 		local line=$(echo "$s" | awk -F ':' '{print $2}')
 		print -s "vi $file" && fc -AI
-		vi +"$line" "$file"
+		nvim +"$line" "$file"
 	else
 		local escaped_s=$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')
-		vi -c "cexpr '$escaped_s' | copen"
+		nvim -c "cexpr '$escaped_s' | copen"
 	fi
 }
 
@@ -243,10 +243,10 @@ edit-git-files() {
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
 		print -s "vi $s" && fc -AI
-		vi $s
+		nvim $s
 	else
 		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
-		vi -c "cexpr '$escaped' | copen"
+		nvim -c "cexpr '$escaped' | copen"
 	fi
 }
 
@@ -261,10 +261,10 @@ edit-git-changed-files() {
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
 		print -s "vi $s" && fc -AI
-		vi $s
+		nvim $s
 	else
 		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
-		vi -c "cexpr '$escaped' | copen"
+		nvim -c "cexpr '$escaped' | copen"
 	fi
 }
 
