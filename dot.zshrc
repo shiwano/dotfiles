@@ -211,7 +211,7 @@ move-to-git-repository() {
 	FZF_PROMPT='MoveTo> ' select-git-repository | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
 
-edit-git-grepped-files() {
+edit-git-grep-results() {
 	local s
 	s=$(FZF_PROMPT='Edit> ' select-git-grep-results $1)
 	[ -z "$s" ] && return 0
@@ -228,35 +228,27 @@ edit-git-grepped-files() {
 }
 
 edit-git-files() {
-	local s
-	s=$(FZF_PROMPT='Edit> ' select-git-files $1)
-	[ -z "$s" ] && return 0
-
-	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-		print -s "vi $s" && fc -AI
-		nvim "$s"
-	else
-		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')' | copen"
-	fi
+	_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-files $1)"
 }
 
 edit-git-changed-files() {
-	local files
-	files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-	if [ -z "$files" ]; then
+	if [ -z "$(git status -s -u --no-renames | grep -v -E '^D ')" ]; then
 		edit-git-files
-		return 0
+	else
+		_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-changed-files $1)"
 	fi
+}
 
-	local s
-	s=$(FZF_PROMPT='Edit> ' select-git-changed-files $1)
+_edit-git-selected-files() {
+	local s="$1"
 	[ -z "$s" ] && return 0
 
 	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
 		print -s "vi $s" && fc -AI
 		nvim "$s"
 	else
-		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')' | copen"
+		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
+		nvim -c "cexpr '$escaped' | copen"
 	fi
 }
 
@@ -290,11 +282,11 @@ alias t='git-stash-files'
 alias g='move-to-git-repository'
 alias v='edit-git-changed-files'
 alias vv='edit-git-files'
-alias gg='edit-git-grepped-files'
+alias gg='edit-git-grep-results'
 alias mt='git-mergetool-file'
-alias files='copy-file-paths-to-clipboard'
-alias files-changed='copy-changed-file-paths-to-clipboard'
-alias images='copy-image-paths-to-clipboard'
+alias cf='copy-file-paths-to-clipboard'
+alias cc='copy-changed-file-paths-to-clipboard'
+alias ci='copy-image-paths-to-clipboard'
 
 autoload zmv
 alias zmv='noglob zmv -W'
