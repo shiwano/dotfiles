@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: edit-files <input-string>
+
+Open one or more files in nvim:
+- If one file path is given: open directly (with line if provided)
+- If multiple lines: open quickfix list via \`cexpr\`
+
+Each line must be in format:
+  <file>
+  <file>:<line>
+  <file>:<line>:<text>[:more-text]
+
+Examples:
+  edit-files README.md
+  edit-files 'src/main.go:10'
+  edit-files 'file1.go:42:TODO\\nfile2.go:77:FIXME'
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	local input_list="${1:-}"
+	[ -z "$input_list" ] && return 0
+
+	local line_count
+	line_count="$(echo "$input_list" | wc -l | tr -d ' ')"
+
+	if [ "$line_count" -eq 1 ]; then
+		local file line
+		file="$(echo "$input_list" | awk -F: '{print $1}')"
+		line="$(echo "$input_list" | awk -F: '{ if (NF >= 2 && $2 ~ /^[0-9]+$/) print $2 }')"
+
+		if [ -n "$line" ]; then
+			nvim +"$line" "$file"
+		else
+			nvim "$file"
+		fi
+	else
+		local cexpr_arg
+		cexpr_arg="$(echo "$input_list" | awk -F: '
+			{
+				file = $1;
+				line = "1";
+				match_text = "";
+
+				if (NF >= 2 && $2 ~ /^[0-9]+$/) {
+					line = $2;
+					if (NF >= 3) {
+						current_match_text = $3;
+						for (i = 4; i <= NF; i++) {
+							current_match_text = current_match_text FS $i;
+						}
+						match_text = current_match_text;
+					}
+				}
+				gsub("\x27", "\x27\x27", file);
+				gsub("\x27", "\x27\x27", match_text);
+
+				if (match_text != "") {
+					printf "%s:%s:1:%s\n", file, line, match_text;
+				} else {
+					printf "%s:%s:1\n", file, line;
+				}
+			}
+		')"
+		nvim -c "cexpr '$cexpr_arg' | copen"
+	fi
+}
+
+main "$@"

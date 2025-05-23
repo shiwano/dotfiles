@@ -228,50 +228,11 @@ edit-git-changed-files() {
 }
 
 _edit-files() {
-	local input_list="$1"
-	[ -z "$input_list" ] && return 0
-
-	if [ "$(echo "$input_list" | wc -l)" -eq 1 ]; then
-		local file line
-		file=$(echo "$input_list" | awk -F: '{print $1}')
-		line=$(echo "$input_list" | awk -F: '{ if (NF >= 2 && $2 ~ /^[0-9]+$/) print $2 }')
-
+	if [ "$(echo "$1" | wc -l)" -eq 1 ]; then
+		file=$(echo "$1" | awk -F: '{print $1}')
 		print -s "vi $file" && fc -AI
-		if [ -n "$line" ]; then
-			nvim +"$line" "$file"
-		else
-			nvim "$file"
-		fi
-	else
-		local cexpr_arg
-		cexpr_arg=$(echo "$input_list" | awk -F ':' '
-			{
-				file = $1;
-				line = "1";
-				match_text = "";
-
-				if (NF >= 2 && $2 ~ /^[0-9]+$/) {
-					line = $2;
-					if (NF >= 3) {
-						current_match_text = $3;
-						for (i = 4; i <= NF; i++) {
-							current_match_text = current_match_text FS $i;
-						}
-						match_text = current_match_text;
-					}
-				}
-				gsub("\x27", "\x27\x27", file);
-				gsub("\x27", "\x27\x27", match_text);
-
-				if (match_text != "") {
-					printf "%s:%s:1:%s\n", file, line, match_text;
-				} else {
-					printf "%s:%s:1\n", file, line;
-				}
-			}
-		')
-		nvim -c "cexpr '$cexpr_arg' | copen"
 	fi
+	edit-files "$1"
 }
 
 select-history() {
