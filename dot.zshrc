@@ -212,22 +212,22 @@ move-to-git-repository() {
 }
 
 edit-git-grep-results() {
-	_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-grep-results $1)"
+	_edit-files "$(FZF_PROMPT='Edit> ' select-git-grep-results $1)"
 }
 
 edit-git-files() {
-	_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-files $1)"
+	_edit-files "$(FZF_PROMPT='Edit> ' select-git-files $1)"
 }
 
 edit-git-changed-files() {
 	if [ -z "$(git status -s -u --no-renames | grep -v -E '^D ')" ]; then
 		edit-git-files
 	else
-		_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-changed-files $1)"
+		_edit-files "$(FZF_PROMPT='Edit> ' select-git-changed-files $1)"
 	fi
 }
 
-_edit-git-selected-files() {
+_edit-files() {
 	local input_list="$1"
 	[ -z "$input_list" ] && return 0
 
