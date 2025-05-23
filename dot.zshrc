@@ -212,19 +212,7 @@ move-to-git-repository() {
 }
 
 edit-git-grep-results() {
-	local s
-	s=$(FZF_PROMPT='Edit> ' select-git-grep-results $1)
-	[ -z "$s" ] && return 0
-
-	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-		local file, line
-		file=$(echo "$s" | awk -F ':' '{print $1}')
-		line=$(echo "$s" | awk -F ':' '{print $2}')
-		print -s "vi $file" && fc -AI
-		nvim +"$line" "$file"
-	else
-		nvim -c "cexpr '$(echo "$s" | awk '{gsub("\x27", "\x27\x27")}1')' | copen"
-	fi
+	_edit-git-selected-files "$(FZF_PROMPT='Edit> ' select-git-grep-results $1)"
 }
 
 edit-git-files() {
@@ -240,15 +228,49 @@ edit-git-changed-files() {
 }
 
 _edit-git-selected-files() {
-	local s="$1"
-	[ -z "$s" ] && return 0
+	local input_list="$1"
+	[ -z "$input_list" ] && return 0
 
-	if [ "$(echo "$s" | wc -l)" -eq 1 ]; then
-		print -s "vi $s" && fc -AI
-		nvim "$s"
+	if [ "$(echo "$input_list" | wc -l)" -eq 1 ]; then
+		local file line
+		file=$(echo "$input_list" | awk -F: '{print $1}')
+		line=$(echo "$input_list" | awk -F: '{ if (NF >= 2 && $2 ~ /^[0-9]+$/) print $2 }')
+
+		print -s "vi $file" && fc -AI
+		if [ -n "$line" ]; then
+			nvim +"$line" "$file"
+		else
+			nvim "$file"
+		fi
 	else
-		local escaped=$(echo "$s" | awk '{gsub("\x27", "\x27\x27"); print $0 ":1:1"}')
-		nvim -c "cexpr '$escaped' | copen"
+		local cexpr_arg
+		cexpr_arg=$(echo "$input_list" | awk -F ':' '
+			{
+				file = $1;
+				line = "1";
+				match_text = "";
+
+				if (NF >= 2 && $2 ~ /^[0-9]+$/) {
+					line = $2;
+					if (NF >= 3) {
+						current_match_text = $3;
+						for (i = 4; i <= NF; i++) {
+							current_match_text = current_match_text FS $i;
+						}
+						match_text = current_match_text;
+					}
+				}
+				gsub("\x27", "\x27\x27", file);
+				gsub("\x27", "\x27\x27", match_text);
+
+				if (match_text != "") {
+					printf "%s:%s:1:%s\n", file, line, match_text;
+				} else {
+					printf "%s:%s:1\n", file, line;
+				}
+			}
+		')
+		nvim -c "cexpr '$cexpr_arg' | copen"
 	fi
 }
 
