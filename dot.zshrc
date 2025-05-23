@@ -43,7 +43,7 @@ autoload -Uz compinit
 compinit
 
 if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
-	source "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+	. "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
 # PATH -------------------------------------------------------------------------
@@ -179,7 +179,7 @@ fi
 
 # ssh-key ----------------------------------------------------------------------
 
-ssh-add-key() {
+_ssh-add-key() {
   local key_path="$HOME/.ssh/id_rsa"
   if [ ! -f "$key_path" ]; then
     return 0
@@ -203,7 +203,7 @@ ssh-add-key() {
 }
 
 autoload -Uz add-zsh-hook
-add-zsh-hook precmd ssh-add-key
+add-zsh-hook precmd _ssh-add-key
 
 # Functions --------------------------------------------------------------------
 
@@ -324,7 +324,7 @@ fi
 setopt prompt_subst
 ZLE_RPROMPT_INDENT=0
 
-prompt-pwd() {
+_prompt-pwd() {
 	local dir="$(print -P '%~')"
 	dir="${dir%/}" # Remove trailing slash
 	local icon_repo=$'\Uea62 '
@@ -338,7 +338,7 @@ prompt-pwd() {
 	fi
 }
 
-prompt-git-branch() {
+_prompt-git-branch() {
 	local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 	if [ -n "$branch" ]; then
 		local icon_git_branch=$'\Ue0a0 '
@@ -385,11 +385,11 @@ prompt-git-branch() {
 		left_segment+="%K{$primary_bg}%F{$primary_fg} %B${prompt_face}%b%f%k"
 	fi
 	left_segment+="%K{$secondary_bg}%F{$primary_bg}${left_sep}%f%k"
-	left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(prompt-pwd)'" %f%k"
+	left_segment+="%K{$secondary_bg}%F{$secondary_fg}% "'$(_prompt-pwd)'" %f%k"
 	left_segment+="%F{$secondary_bg}${left_sep}%f"
 
 	local right_segment=""
-	right_segment+="%F{$secondary_fg} "'$(prompt-git-branch)'" %f"
+	right_segment+="%F{$secondary_fg} "'$(_prompt-git-branch)'" %f"
 
 	PROMPT="${left_segment}"
 	RPROMPT="${right_segment}"

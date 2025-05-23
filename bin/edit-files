@@ -31,6 +31,11 @@ main() {
 	local input_list="${1:-}"
 	[ -z "$input_list" ] && return 0
 
+	if [ -n "${NVIM}" ]; then
+		echo "nvim already opened" >&2
+		return 1
+	fi
+
 	local line_count
 	line_count="$(echo "$input_list" | wc -l | tr -d ' ')"
 
