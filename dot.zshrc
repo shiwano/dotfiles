@@ -163,7 +163,7 @@ fi
 # Neovim -----------------------------------------------------------------------
 
 if command -v nvim >/dev/null 2>&1; then
-	if [ -n "${NVIM}" ]; then
+	if [ -n "${NVIM:-}" ]; then
 		alias vi='echo "already open nvim"'
 		alias vim='echo "already open nvim"'
 		alias nvim='echo "already open nvim"'
@@ -361,7 +361,7 @@ _prompt-git-branch() {
 	local primary_fg="#000000"
 	local secondary_bg="#3B4261"
 	local secondary_fg="#7AA2F7"
-	if [ -n "${NVIM}" ]; then
+	if [ -n "${NVIM:-}" ]; then
 		primary_bg="#73DACA"
 		secondary_fg="#73DACA"
 	elif [ -n "${REMOTEHOST}${SSH_CONNECTION}" ]; then
@@ -370,7 +370,7 @@ _prompt-git-branch() {
 	fi
 
 	local prompt_face
-	if [ -n "${NVIM}" ]; then
+	if [ -n "${NVIM:-}" ]; then
 		prompt_face="${icon_vim}"
 	elif [ "${UID}" -eq 0 ]; then
 		prompt_face="${icon_key}"
