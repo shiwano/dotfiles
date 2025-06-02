@@ -636,12 +636,12 @@ local pluginSpec = {
       local caps = vim.lsp.protocol.make_client_capabilities()
       caps = require("cmp_nvim_lsp").default_capabilities(caps)
 
-      -- BOOKMARK: language_servers
       vim.lsp.config("*", {
         on_attach = on_attach,
         capabilities = caps,
       })
 
+      -- BOOKMARK: language_servers
       local ls = {
         go = "gopls",
         typescript = "ts_ls",
