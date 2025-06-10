@@ -1,5 +1,6 @@
 .DS_Store
 .~lock.*
 flutter_jank_metrics_*.json
+.claude/settings.local.json
 
 _ignored/
