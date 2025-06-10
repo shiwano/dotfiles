@@ -1741,11 +1741,13 @@ vim.keymap.set("v", "ox", change_surrounding, { silent = true, desc = "# Change 
 local function yank_with_context()
   local mode = vim.fn.mode()
   local filename = vim.fn.expand("%:t")
-  local filepath = vim.fn.expand("%:h")
-  if filepath == "." then
+  local filedir = vim.fn.expand("%:h")
+
+  local filepath
+  if filedir == "." then
     filepath = filename
   else
-    filepath = filepath .. "/" .. filename
+    filepath = filedir .. "/" .. filename
   end
 
   if mode == "v" or mode == "V" or mode == "\22" then
@@ -1759,9 +1761,9 @@ local function yank_with_context()
 
     local context_text
     if start_line == end_line then
-      context_text = string.format("# %s:%d\n```\n%s\n```\n", filepath, start_line, yanked_text)
+      context_text = string.format("# %s:%d\n```\n%s```\n", filepath, start_line, yanked_text)
     else
-      context_text = string.format("# %s:%d-%d\n```\n%s\n```\n", filepath, start_line, end_line, yanked_text)
+      context_text = string.format("# %s:%d-%d\n```\n%s```\n", filepath, start_line, end_line, yanked_text)
     end
 
     vim.fn.setreg("+", context_text)
