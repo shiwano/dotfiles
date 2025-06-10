@@ -251,7 +251,7 @@ local pluginSpec = {
           { name = "tmux", path = "~/.config/tmux/tmux.conf" },
           { name = "stylua", path = "~/dotfiles/.stylua.toml" },
           { name = "homebrew", path = "~/dotfiles/tools/Brewfile" },
-          { name = "asdf", path = "~/.tool-versions" },
+          { name = "mise", path = "~/.config/mise/config.toml" },
           { name = "ghostty", path = "~/.config/ghostty/config" },
           { name = "hammerspoon", path = "~/.hammerspoon/init.lua" },
           { name = "bat", path = "~/.config/bat/config" },

@@ -121,7 +121,6 @@ if command -v fzf >/dev/null 2>&1; then
 		-g '!**/code/pkg/sumdb' \
 		-g '!**/__pycache__' \
 		-g '!**/.pub-cache' \
-		-g '!**/.asdf' \
 		-g '!**/.bundle' \
 		-g '!**/.android' \
 		-g '!**/.cocoapods' \
@@ -503,8 +502,8 @@ if command -v direnv >/dev/null 2>&1; then
 	eval "$(direnv hook zsh)"
 fi
 
-if [ -e "${BREW_PREFIX}/opt/asdf/libexec/asdf.sh" ]; then
-	. "${BREW_PREFIX}/opt/asdf/libexec/asdf.sh"
+if command -v mise >/dev/null 2>&1; then
+	eval "$(mise activate zsh)"
 fi
 
 if [ -e "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then
