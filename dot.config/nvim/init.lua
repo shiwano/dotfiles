@@ -1742,6 +1742,11 @@ local function yank_with_context()
   local mode = vim.fn.mode()
   local filename = vim.fn.expand("%:t")
   local filepath = vim.fn.expand("%:h")
+  if filepath == "." then
+    filepath = filename
+  else
+    filepath = filepath .. "/" .. filename
+  end
 
   if mode == "v" or mode == "V" or mode == "\22" then
     local start_pos = vim.fn.getpos("v")
