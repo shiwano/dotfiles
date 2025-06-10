@@ -1736,6 +1736,44 @@ end
 vim.keymap.set("v", "ox", change_surrounding, { silent = true, desc = "# Change surrounding characters" })
 
 -------------------------------------------------------------------------------
+-- Yank with context
+-------------------------------------------------------------------------------
+local function yank_with_context()
+  local mode = vim.fn.mode()
+  local filename = vim.fn.expand("%:t")
+  local filepath = vim.fn.expand("%:h")
+
+  if mode == "v" or mode == "V" or mode == "\22" then
+    local start_pos = vim.fn.getpos("v")
+    local end_pos = vim.fn.getpos(".")
+    local start_line = math.min(start_pos[2], end_pos[2])
+    local end_line = math.max(start_pos[2], end_pos[2])
+
+    vim.cmd('normal! "zy')
+    local yanked_text = vim.fn.getreg("z")
+
+    local context_text
+    if start_line == end_line then
+      context_text = string.format("# %s:%d\n```\n%s\n```", filepath, start_line, yanked_text)
+    else
+      context_text = string.format("# %s:%d-%d\n```\n%s\n```", filepath, start_line, end_line, yanked_text)
+    end
+
+    vim.fn.setreg("+", context_text)
+    vim.notify(string.format("Yanked with context: %s:%d-%d", filename, start_line, end_line))
+  else
+    local line_num = vim.fn.line(".")
+    local line_text = vim.fn.getline(".")
+    local context_text = string.format("# %s:%d\n```\n%s\n```", filepath, line_num, line_text)
+
+    vim.fn.setreg("+", context_text)
+    vim.notify(string.format("Yanked with context: %s:%d", filename, line_num))
+  end
+end
+
+vim.keymap.set({ "n", "v" }, "<Leader>y", yank_with_context, { desc = "# Yank with file path and line number" })
+
+-------------------------------------------------------------------------------
 -- Abbreviations for insert mode
 -------------------------------------------------------------------------------
 function _G._new_uuid()
