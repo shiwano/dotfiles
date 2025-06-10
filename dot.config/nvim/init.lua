@@ -1754,9 +1754,9 @@ local function yank_with_context()
 
     local context_text
     if start_line == end_line then
-      context_text = string.format("# %s:%d\n```\n%s\n```", filepath, start_line, yanked_text)
+      context_text = string.format("# %s:%d\n```\n%s\n```\n", filepath, start_line, yanked_text)
     else
-      context_text = string.format("# %s:%d-%d\n```\n%s\n```", filepath, start_line, end_line, yanked_text)
+      context_text = string.format("# %s:%d-%d\n```\n%s\n```\n", filepath, start_line, end_line, yanked_text)
     end
 
     vim.fn.setreg("+", context_text)
@@ -1764,7 +1764,7 @@ local function yank_with_context()
   else
     local line_num = vim.fn.line(".")
     local line_text = vim.fn.getline(".")
-    local context_text = string.format("# %s:%d\n```\n%s\n```", filepath, line_num, line_text)
+    local context_text = string.format("# %s:%d\n```\n%s\n```\n", filepath, line_num, line_text)
 
     vim.fn.setreg("+", context_text)
     vim.notify(string.format("Yanked with context: %s:%d", filename, line_num))
