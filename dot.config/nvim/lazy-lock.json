@@ -1,5 +1,4 @@
 {
-  "CopilotChat.nvim": { "branch": "main", "commit": "16d897fd43d07e3b54478ccdb2f8a16e4df4f45a" },
   "align.nvim": { "branch": "v2", "commit": "bc5d57df5f4c26f6abee6b6c8529308c2c126d2b" },
   "claude-code.nvim": { "branch": "main", "commit": "ffdf35d8566528cb144d9812eccfecee34502edf" },
   "cmp-buffer": { "branch": "main", "commit": "b74fab3656eea9de20a9b8116afa3cfc4ec09657" },

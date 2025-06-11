@@ -740,49 +740,7 @@ local pluginSpec = {
     end,
   },
   {
-    "CopilotC-Nvim/CopilotChat.nvim",
-    dependencies = {
-      { "zbirenbaum/copilot.lua" },
-      { "nvim-lua/plenary.nvim" },
-    },
-    build = "make tiktoken",
-    config = function()
-      local prompts = require("CopilotChat.config.prompts")
-
-      local system_prompt_keys = { "COPILOT_BASE", "COPILOT_INSTRUCTIONS", "COPILOT_EXPLAIN", "COPILOT_REVIEW" }
-      for _, key in ipairs(system_prompt_keys) do
-        local v = prompts[key]
-        if v and type(v.system_prompt) == "string" then
-          v.system_prompt = v.system_prompt .. "\n説明はすべて日本語でお願いします。"
-        end
-      end
-
-      require("CopilotChat").setup({
-        show_help = true,
-        prompts = prompts,
-        ---@diagnostic disable: missing-fields
-        mappings = {
-          complete = { insert = "<C-l>", normal = nil },
-          close = { insert = "<C-c>", normal = "<C-c>" },
-          reset = { insert = "<C-r>", normal = "<C-r>" },
-          submit_prompt = { insert = nil, normal = "<CR>" },
-          toggle_sticky = { insert = nil, normal = "ot" },
-          accept_diff = { insert = "<C-y>", normal = "<C-y>" },
-          jump_to_diff = { insert = nil, normal = "od" },
-          quickfix_diffs = { insert = nil, normal = "of" },
-          yank_diff = { insert = nil, normal = "oy" },
-          show_diff = { insert = nil, normal = "os" },
-          show_info = { insert = nil, normal = "oi" },
-          show_context = { insert = nil, normal = "ok" },
-          show_help = { insert = nil, normal = "?" },
-        },
-        ---@diagnostic enable: missing-fields
-      })
-    end,
-  },
-  {
     "greggh/claude-code.nvim",
-    cmd = { "ClaudeCode", "ClaudeCodeContinue", "ClaudeCodeResume", "ClaudeCodeVerbose" },
     dependencies = {
       "nvim-lua/plenary.nvim",
     },
@@ -792,6 +750,8 @@ local pluginSpec = {
           position = "vertical",
         },
       })
+
+      vim.keymap.set("n", "<Leader>aa", "<cmd>ClaudeCode<CR>", { desc = "# Toggle Claude Code" })
     end,
   },
 
@@ -1014,6 +974,13 @@ local pluginSpec = {
     "akinsho/toggleterm.nvim",
     config = function()
       vim.keymap.set("t", "<ESC>", "<C-\\><C-n>", { silent = true })
+
+      vim.api.nvim_create_augroup("term_close", { clear = true })
+      vim.api.nvim_create_autocmd("TermClose", {
+        group = "term_close",
+        pattern = "*",
+        command = "bdelete!",
+      })
 
       require("toggleterm").setup({
         size = 100,
@@ -1777,7 +1744,7 @@ local function yank_with_context()
   end
 end
 
-vim.keymap.set({ "n", "v" }, "<Leader>y", yank_with_context, { desc = "# Yank with file path and line number" })
+vim.keymap.set({ "n", "v" }, "<Leader>ay", yank_with_context, { desc = "# Yank with file path and line number" })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
