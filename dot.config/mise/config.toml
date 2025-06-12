@@ -1,20 +1,41 @@
 [tools]
-go = '1.24.4'
-node = '20.11.0'
-deno = '2.2.2'
-rust = '1.85.1'
-kubectl = '1.33.1'
-kustomize = '5.6.0'
-kubesec = '2.14.2'
-helm = '3.18.2'
-helmfile = '1.1.1'
-yq = '4.45.4'
-jq = '1.8'
-terraform = '1.12.1'
-direnv = '2.36.0'
-stripe = '1.27.0'
-"npm:yarn" = "1.22.22"
-"npm:neovim" = "5.3.0"
-"npm:typescript-language-server" = "4.3.4"
-"npm:@mermaid-js/mermaid-cli" = "11.4.2"
-"npm:@anthropic-ai/claude-code" = "1.0.17"
+go = '1.24'
+node = '20.11'
+deno = '2.2'
+rust = '1.85'
+
+kubectl = 'latest'
+kustomize = 'latest'
+kubesec = 'latest'
+helm = 'latest'
+helmfile = 'latest'
+yq = 'latest'
+jq = 'latest'
+terraform = 'latest'
+direnv = 'latest'
+actionlint = 'latest'
+shfmt = 'latest'
+golangci-lint = 'latest'
+taplo = 'latest'
+
+'npm:yarn' = 'latest'
+'npm:neovim' = 'latest'
+'npm:typescript-language-server' = 'latest'
+'npm:@mermaid-js/mermaid-cli' = 'latest'
+'npm:@anthropic-ai/claude-code' = 'latest'
+
+'go:golang.org/x/tools/cmd/goimports' = 'latest'
+'go:golang.org/x/tools/gopls' = 'latest'
+'go:github.com/go-delve/delve/cmd/dlv' = 'latest'
+'go:github.com/aarzilli/gdlv' = 'latest'
+'go:github.com/cweill/gotests/gotests' = 'latest'
+'go:github.com/hashicorp/hcl/v2/cmd/hclfmt' = 'latest'
+'go:github.com/x-motemen/gore/cmd/gore' = 'latest'
+'go:github.com/cespare/reflex' = 'latest'
+'go:github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt' = 'latest'
+'go:oss.terrastruct.com/d2' = 'latest'
+
+[settings]
+experimental = true
+http_timeout = '180s'
+fetch_remote_versions_timeout = '60s'

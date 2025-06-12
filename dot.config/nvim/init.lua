@@ -240,7 +240,7 @@ local pluginSpec = {
           { name = "rc", path = "~/.config/nvim/init.lua" },
           { name = "tag", path = "~/.config/nvim/init.lua", tag = "bookmarks" },
           { name = "lsp", path = "~/.config/nvim/init.lua", tag = "language_servers" },
-          { name = "formatters", path = "~/.config/nvim/init.lua", tag = "formatters" },
+          { name = "fmt", path = "~/.config/nvim/init.lua", tag = "formatters" },
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
           { name = "projections", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
           { name = "ft", path = "~/.config/nvim/init.lua", tag = "filetypes" },
@@ -923,6 +923,7 @@ local pluginSpec = {
           markdown = { "markdownfmt" },
           sh = { "shfmt" },
           json = { "jq" },
+          toml = { "taplo" },
         },
         format_on_save = function(bufnr)
           if vim.b[bufnr].disable_autoformat then
