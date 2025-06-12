@@ -752,6 +752,7 @@ local pluginSpec = {
       })
 
       vim.keymap.set("n", "<Leader>aa", "<cmd>ClaudeCode<CR>", { desc = "# Toggle Claude Code" })
+      vim.keymap.set("n", "<Leader>ac", "<cmd>ClaudeCodeContinue<CR>", { desc = "# Toggle Claude Code" })
     end,
   },
 
@@ -1745,7 +1746,7 @@ local function yank_with_context()
   end
 end
 
-vim.keymap.set({ "n", "v" }, "<Leader>ay", yank_with_context, { desc = "# Yank with file path and line number" })
+vim.keymap.set({ "n", "v" }, "<Leader>y", yank_with_context, { desc = "# Yank with file path and line number" })
 
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
