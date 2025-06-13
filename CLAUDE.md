@@ -15,6 +15,7 @@
 - **Tmux**: `dot.config/tmux/tmux.conf` (prefix Ctrl+t, custom status)
 - **Terminal**: `dot.config/ghostty/config` (font, theme, keybinds)
 - **Window Manager**: `dot.hammerspoon/init.lua` (layout shortcuts)
+- **Version Manager**: `dot.config/mise/config.toml` (languages, tools, packages)
 
 ## Check/Format Commands
 
