@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(make test:*)",
+      "Bash(go test:*)",
+      "Bash(go vet:*)",
+      "Bash(goimports:*)",
+      "Bash(golangci-lint:*)",
+      "Bash(npm test:*)",
+      "Bash(flutter test:*)",
+      "Bash(cargo test:*)",
+      "Bash(pytest:*)",
+      "Bash(git log:*)",
+      "Bash(git show:*)",
+      "Bash(git diff:*)",
+      "Bash(git grep:*)",
+      "Bash(git status:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(docker push:*)",
+      "Bash(npm publish:*)",
+      "Bash(rm -rf:*)"
+    ]
+  },
+  "includeCoAuthoredBy": false,
+  "env": {
+    "AI_ASSISTANT": "1"
+  }
+}
