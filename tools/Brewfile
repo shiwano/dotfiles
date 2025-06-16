@@ -37,7 +37,6 @@ brew 'graphviz'
 brew 'imagemagick'
 brew 'kitty'
 brew 'gnuplot'
-brew 'gs'
 brew 'sl'
 
 cask 'alfred'
