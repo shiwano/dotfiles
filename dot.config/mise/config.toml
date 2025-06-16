@@ -41,7 +41,6 @@ yq = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
 'npm:neovim' = 'latest'
 'npm:typescript-language-server' = 'latest'
-'npm:yarn' = 'latest'
 
 'go:github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt' = 'latest'
 'go:github.com/aarzilli/gdlv' = 'latest'
