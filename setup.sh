@@ -6,6 +6,23 @@ topic() {
 	printf "\033[1;34m%s\033[0m\n" "$*"
 }
 
+ensure_dir() {
+	local dir=$1
+	if [ -d "${dir}" ]; then
+		echo "$(basename "${dir}") already exists"
+	else
+		echo "Creating $(basename "${dir}")"
+		mkdir -p "${dir}"
+	fi
+}
+
+echo_link() {
+	local src=$1
+	local dest=$2
+	local action=${3:-Linking}
+	echo "${action}" "${src/$HOME/~}" '->' "${dest/$HOME/~}"
+}
+
 main() {
 	local dotfiles_dir=$HOME/dotfiles
 
@@ -17,36 +34,22 @@ main() {
 		git clone git@github.com:shiwano/dotfiles.git "${dotfiles_dir}"
 	fi
 
-	topic 'Create bin directory'
+	topic 'Setup bin directory'
 
 	local local_bin_dir=$HOME/bin
-	if [ -d "${local_bin_dir}" ]; then
-		echo 'bin directory already exists'
-	else
-		echo 'Creating bin directory'
-		mkdir -p "${local_bin_dir}"
-	fi
-
-	topic 'Setup .config directory'
-
-	local local_dotconfig_dir=$HOME/.config
-	mkdir -p "${local_dotconfig_dir}"
-
-	find "${dotfiles_dir}/dot.config" -maxdepth 1 -mindepth 1 | grep -v '.DS_Store' | while IFS= read -r src; do
-		echo 'Linking' "${src}" '->' "${local_dotconfig_dir}"
-		ln -sf "${src}" "${local_dotconfig_dir}"
-	done
+	ensure_dir "${local_bin_dir}"
 
 	topic 'Setup dotdirs'
 
 	find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type d -name 'dot.*' | grep -v 'example' | while IFS= read -r dotdir; do
-		if [ "$(basename "${dotdir}")" = 'dot.config' ]; then
-			continue
-		fi
-		local dest
-		dest="$HOME/$(basename "${dotdir}" | sed -e 's/^dot\./\./')"
-		echo 'Linking' "${dotdir}" '->' "${dest}"
-		ln -sfn "${dotdir}" "${dest}"
+		local destdir
+		destdir="$HOME/$(basename "${dotdir}" | sed -e 's/^dot\./\./')"
+		ensure_dir "${destdir}"
+
+		find "${dotdir}" -maxdepth 1 -mindepth 1 | grep -v '.DS_Store' | while IFS= read -r src; do
+			echo_link "${src}" "${destdir}"
+			ln -sf "${src}" "${destdir}"
+		done
 	done
 
 	topic 'Setup dotfiles'
@@ -54,7 +57,7 @@ main() {
 	find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type f -name 'dot.*' | grep -v 'example' | while IFS= read -r dotfile; do
 		local dest
 		dest="$HOME/$(basename "${dotfile}" | sed -e 's/^dot\./\./')"
-		echo 'Linking' "${dotfile}" '->' "${dest}"
+		echo_link "${dotfile}" "${dest}"
 		ln -sfn "${dotfile}" "${dest}"
 	done
 
@@ -62,21 +65,24 @@ main() {
 		local dest
 		dest="$HOME/$(basename "${dotfile}" | sed -e 's/^dot\./\./' | sed -e 's/\.example//')"
 		if [ ! -f "${dest}" ]; then
-			echo 'Copying' "${dotfile}" '->' "${dest}"
+			echo_link "${dotfile}" "${dest}" 'Copying'
 			cp "${dotfile}" "${dest}"
 		else
-			echo 'Already copied' "${dotfile}" '->' "${dest}"
+			echo_link "${dotfile}" "${dest}" 'Already copied'
 		fi
 	done
 
-	topic 'Setup bat'
-
 	if command -v bat >/dev/null 2>&1; then
-		cd "$(bat --config-dir)/themes"
-		bat cache --build
-		cd "$(bat --config-dir)/syntaxes"
-		bat cache --build
-		cd -
+		topic 'Setup bat'
+
+		(
+			cd "$(bat --config-dir)/themes"
+			bat cache --build
+		)
+		(
+			cd "$(bat --config-dir)/syntaxes"
+			bat cache --build
+		)
 	fi
 }
 
