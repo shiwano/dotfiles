@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(make test:*)",
+      "Bash(go build:*)",
       "Bash(go test:*)",
+      "Bash(go list:*)",
       "Bash(go vet:*)",
       "Bash(goimports:*)",
       "Bash(golangci-lint:*)",
@@ -14,6 +16,7 @@
       "Bash(git show:*)",
       "Bash(git diff:*)",
       "Bash(git grep:*)",
+      "Bash(git ls-files:*)",
       "Bash(git status:*)"
     ],
     "deny": [
