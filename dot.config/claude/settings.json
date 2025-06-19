@@ -9,6 +9,7 @@
       "Bash(goimports:*)",
       "Bash(golangci-lint:*)",
       "Bash(npm test:*)",
+      "Bash(flutter analyze:*)",
       "Bash(flutter test:*)",
       "Bash(cargo test:*)",
       "Bash(pytest:*)",
