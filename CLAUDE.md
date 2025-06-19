@@ -3,9 +3,10 @@
 ## Configuration Structure
 
 ### Dotfiles Organization
-- `dot.*` files/directories → `~/.*` (symlinked by setup.sh)
-- `dot.config/` → `~/.config/` (application configurations)
-- `bin/` → `~/bin` (personal scripts and utilities)
+- `dot.*` files → `~/.*` (symlinked by setup.sh)
+- `dot.*` directories → `~/.*` (contents symlinked individually)
+- `dot.*.example` files → `~/.*` (copied if not exists, dot prefix and .example suffix removed)
+- `bin/` directory created at `~/bin` (for personal scripts)
 - `tools/` → Setup scripts for languages and package managers
 
 ### Key Configuration Files
@@ -16,6 +17,7 @@
 - **Terminal**: `dot.config/ghostty/config` (font, theme, keybinds)
 - **Window Manager**: `dot.hammerspoon/init.lua` (layout shortcuts)
 - **Version Manager**: `dot.config/mise/config.toml` (languages, tools, packages)
+- **AI assistant**: `dot.claude/claude/CLAUDE.md` (AI assistant instructions, loaded in all environments)
 
 ## Check/Format Commands
 
