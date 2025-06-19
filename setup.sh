@@ -61,9 +61,11 @@ main() {
 		ln -sfn "${dotfile}" "${dest}"
 	done
 
-	find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type f -name 'dot.*.example' | while IFS= read -r dotfile; do
+	topic 'Setup example files'
+
+	find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type f -name '*.example' | while IFS= read -r dotfile; do
 		local dest
-		dest="$HOME/$(basename "${dotfile}" | sed -e 's/^dot\./\./' | sed -e 's/\.example//')"
+		dest="$HOME/$(basename "${dotfile}" | sed -e 's/^dot\./\./' | sed -e 's/\.example$//')"
 		if [ ! -f "${dest}" ]; then
 			echo_link "${dotfile}" "${dest}" 'Copying'
 			cp "${dotfile}" "${dest}"
