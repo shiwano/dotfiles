@@ -1,4 +1,7 @@
 .DS_Store
 Brewfile.lock.json
 dot.config/nvim/undo
+dot.config/claude/*
+!dot.config/claude/CLAUDE.md
+!dot.config/claude/settings.json
 dot.hammerspoon/Spoons/EmmyLua.spoon/annotations
