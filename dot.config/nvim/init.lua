@@ -1728,9 +1728,9 @@ local function yank_with_context()
 
     local context_text
     if start_line == end_line then
-      context_text = string.format("@%s:%d\n", filepath, start_line)
+      context_text = string.format("@%s#L%d\n", filepath, start_line)
     else
-      context_text = string.format("@%s:%d-%d\n", filepath, start_line, end_line)
+      context_text = string.format("@%s#L%d-L%d\n", filepath, start_line, end_line)
     end
 
     vim.fn.setreg("+", context_text)
