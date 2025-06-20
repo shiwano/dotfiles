@@ -201,7 +201,7 @@ local pluginSpec = {
       local function search_files()
         vim.ui.input({ prompt = "Search: " }, function(text)
           if text and #text > 0 then
-            fzf.grep({ search = text, hidden = true })
+            fzf.grep({ search = text })
           end
         end)
       end
@@ -314,7 +314,7 @@ local pluginSpec = {
         vim.cmd('silent normal! "zy')
         local text = vim.fn.getreg("z")
         if text and #text > 0 then
-          fzf.grep({ search = text, hidden = true })
+          fzf.grep({ search = text })
         end
       end
 
@@ -1726,24 +1726,20 @@ local function yank_with_context()
     local start_line = math.min(start_pos[2], end_pos[2])
     local end_line = math.max(start_pos[2], end_pos[2])
 
-    vim.cmd('normal! "zy')
-    local yanked_text = vim.fn.getreg("z")
-
     local context_text
     if start_line == end_line then
-      context_text = string.format("@%s:%d\n```\n%s```\n", filepath, start_line, yanked_text)
+      context_text = string.format("@%s:%d\n", filepath, start_line)
     else
-      context_text = string.format("@%s:%d-%d\n```\n%s```\n", filepath, start_line, end_line, yanked_text)
+      context_text = string.format("@%s:%d-%d\n", filepath, start_line, end_line)
     end
 
     vim.fn.setreg("+", context_text)
     vim.notify(string.format("Yanked with context: %s:%d-%d", filename, start_line, end_line))
   else
-    local line_num = vim.fn.line(".")
-    local context_text = string.format("@%s:%d\n", filepath, line_num)
+    local context_text = string.format("@%s\n", filepath)
 
     vim.fn.setreg("+", context_text)
-    vim.notify(string.format("Yanked with context: %s:%d", filename, line_num))
+    vim.notify(string.format("Yanked with context: %s", filename))
   end
 end
 
