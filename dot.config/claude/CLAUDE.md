@@ -12,7 +12,7 @@
 ## Code Style Guidelines
 
 - **Indentation**: 2 spaces default (unless specified otherwise)
-- **File Format**: UTF-8 with LF line endings; no trailing spaces
+- **File Format**: UTF-8 with LF line endings; remove all trailing whitespace from lines
 - **Comments**: Explain "why" not "what"; for complex logic, edge cases, TODOs
 - **Git Commits**: Follow existing style; imperative mood; explain "what" and "why"
 
