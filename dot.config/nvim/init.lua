@@ -244,6 +244,7 @@ local pluginSpec = {
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
           { name = "projections", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
           { name = "ft", path = "~/.config/nvim/init.lua", tag = "filetypes" },
+          { name = "ai", path = "~/.config/claude/CLAUDE.md" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
           { name = "git", path = "~/.gitconfig" },
@@ -1470,9 +1471,9 @@ local function splash()
                  ヽ─イ /,::::,::::::::＼  ＞─r
                    ヾ〟//:!:::ﾊ::::::|:!:ヽ ,丿
                      ソ r:ﾘﾔ ハ::::::ﾊ:ﾊ::|rﾍ〟
-                     Ⅲ:|:| V―ﾍ::::/-ﾙﾞ|/ ﾊﾘ＼     Happy
+                     Ⅲ:|:| V―ﾍ::::/-ﾙ |/ ﾊﾘ＼     Happy
                      !|:ﾊ:|,-=〟ヽ／,-=.ｿﾊﾘ H        Vimming♡
-                     !ヽriｿﾞUｿｿﾞ   "ﾊUｿﾉﾞhNﾉｿ
+                     !ヽriｿ Uｿｿ    "ﾊUｿﾉ hNﾉｿ
                      |!ﾊヾヾ｀      ｀´ﾉlﾘ´
                      ﾉ:ﾉﾊ ﾊ      丶     ｸﾊ        ____
       _＿_______(ヽ/(ヾ/ﾊ,:ヽ    冖   ∠||ヽ _-==|リリ!)
