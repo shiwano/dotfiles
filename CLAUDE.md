@@ -5,7 +5,7 @@
 ### Dotfiles Organization
 - `dot.*` files → `~/.*` (symlinked by setup.sh)
 - `dot.*` directories → `~/.*` (contents symlinked individually)
-- `dot.*.example` files → `~/.*` (copied if not exists, dot prefix and .example suffix removed)
+- `*.example` files → `~/*` (copied if not exists, dot prefix and .example suffix removed)
 - `bin/` directory created at `~/bin` (for personal scripts)
 - `tools/` → Setup scripts for languages and package managers
 
