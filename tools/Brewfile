@@ -38,6 +38,7 @@ brew 'imagemagick'
 brew 'kitty'
 brew 'gnuplot'
 brew 'sl'
+brew 'terminal-notifier'
 
 cask 'alfred'
 cask 'google-chrome'

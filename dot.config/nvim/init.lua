@@ -752,8 +752,8 @@ local pluginSpec = {
         },
       })
 
-      vim.keymap.set("n", "<Leader>aa", "<cmd>ClaudeCode<CR>", { desc = "# Toggle Claude Code" })
-      vim.keymap.set("n", "<Leader>ac", "<cmd>ClaudeCodeContinue<CR>", { desc = "# Toggle Claude Code" })
+      vim.keymap.set({ "n", "v" }, "<Leader>aa", "<cmd>ClaudeCode<CR>", { desc = "# Toggle Claude Code" })
+      vim.keymap.set({ "n", "v" }, "<Leader>ac", "<cmd>ClaudeCodeContinue<CR>", { desc = "# Toggle Claude Code" })
     end,
   },
 

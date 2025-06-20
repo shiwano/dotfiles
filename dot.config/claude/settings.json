@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "Bash(terminal-tmux-notifier:*)",
       "Bash(make test:*)",
       "Bash(go build:*)",
       "Bash(go test:*)",

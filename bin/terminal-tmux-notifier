@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF
+Usage: terminal-tmux-notifier <message>
+
+Send a macOS notification that can activate terminal.
+If run from within tmux, clicking the notification will switch to
+the specific tmux session, window, and pane where the command was executed.
+
+Notifications are suppressed when:
+- Ghostty is the frontmost application AND the current tmux window is active
+
+Example:
+  terminal-tmux-notifier "Build completed"
+EOF
+}
+
+should_notify() {
+	local frontmost_app
+	frontmost_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true' 2>/dev/null || echo "")
+
+	if [[ "$frontmost_app" != "ghostty" ]]; then
+		return 0 # Should notify - Ghostty is not active
+	fi
+
+	if [[ -n "${TMUX:-}" ]]; then
+		local is_window_active
+		is_window_active=$(tmux display-message -p '#{window_active}')
+		if [[ "$is_window_active" != "1" ]]; then
+			return 0 # Should notify - window is not active
+		fi
+	fi
+
+	return 1 # Should not notify - Ghostty is active and window is selected
+}
+
+main() {
+	if [[ "$(uname)" != "Darwin" ]]; then
+		usage
+		return 1
+	fi
+
+	if [ "$#" -ne 1 ]; then
+		usage
+		return 1
+	fi
+
+	if ! should_notify; then
+		return 0
+	fi
+
+	local message="$1"
+
+	local args=()
+	args+=(-activate "com.mitchellh.ghostty")
+
+	if [[ -n "${TMUX:-}" ]]; then
+		local tmux_bin
+		tmux_bin=$(which tmux)
+		local session
+		session=$(tmux display-message -p '#{session_name}')
+		local window
+		window=$(tmux display-message -p '#{window_index}')
+		local pane
+		pane=$(tmux display-message -p '#{pane_index}')
+
+		local tmux_command="${tmux_bin} select-window -t \"${session}:${window}\" && ${tmux_bin} select-pane -t \"${session}:${window}.${pane}\""
+		args+=(-execute "$tmux_command")
+	fi
+
+	terminal-notifier -sound default -message "$message" "${args[@]}"
+}
+
+main "$@"
