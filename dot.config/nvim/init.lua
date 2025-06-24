@@ -244,7 +244,8 @@ local pluginSpec = {
           { name = "linters", path = "~/.config/nvim/init.lua", tag = "linters" },
           { name = "projections", path = "~/.config/nvim/init.lua", tag = "alternative_files" },
           { name = "ft", path = "~/.config/nvim/init.lua", tag = "filetypes" },
-          { name = "ai", path = "~/.config/claude/CLAUDE.md" },
+          { name = "ai-instructions", path = "~/.config/claude/CLAUDE.md" },
+          { name = "ai-settings", path = "~/.config/claude/settings.json" },
           { name = "zsh", path = "~/.zshrc" },
           { name = "zshlocal", path = "~/.zshrc.local" },
           { name = "git", path = "~/.gitconfig" },
@@ -268,10 +269,11 @@ local pluginSpec = {
         end
 
         local function preview_entry(entry)
+          local expanded_path = vim.fn.expand(entry.path)
           if entry.tag then
-            return preview_file_with_query(entry.path, tag_prefix .. entry.tag)
+            return preview_file_with_query(expanded_path, tag_prefix .. entry.tag)
           else
-            return preview_file_with_query(entry.path, nil)
+            return preview_file_with_query(expanded_path, nil)
           end
         end
 
@@ -289,7 +291,7 @@ local pluginSpec = {
         fzf.fzf_exec(items, {
           actions = {
             ["default"] = function(selected_items)
-              local name = selected_items[1]:match("^[^%w]*(%w+):")
+              local name = selected_items[1]:match("^[^%w%-]*([%w%-]+):")
               local entry = find_entry(name)
               if entry then
                 vim.cmd("edit " .. vim.fn.expand(entry.path))
@@ -301,7 +303,7 @@ local pluginSpec = {
             end,
           },
           preview = function(selected_items, _, _)
-            local name = selected_items[1]:match("^[^%w]*(%w+):")
+            local name = selected_items[1]:match("^[^%w%-]*([%w%-]+):")
             local entry = find_entry(name)
             if entry then
               return preview_entry(entry)
