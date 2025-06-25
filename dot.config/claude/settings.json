@@ -1,15 +1,25 @@
 {
   "permissions": {
     "allow": [
-      "Bash(terminal-tmux-notifier:*)",
+      "Bash(util-notify:*)",
+      "Bash(mcp__ide__get_diagnostics:*)",
+      "Bash(echo:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(grep:*)",
       "Bash(make test:*)",
       "Bash(go build:*)",
       "Bash(go test:*)",
       "Bash(go list:*)",
       "Bash(go vet:*)",
+      "Bash(go mod graph:*)",
+      "Bash(go mod tidy:*)",
+      "Bash(go mod why:*)",
       "Bash(goimports:*)",
       "Bash(golangci-lint:*)",
-      "Bash(npm test:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npm run test:*)",
       "Bash(flutter analyze:*)",
       "Bash(flutter test:*)",
       "Bash(cargo test:*)",
@@ -22,14 +32,32 @@
       "Bash(git status:*)"
     ],
     "deny": [
+      "Bash(sudo:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Bash(nc:*)",
+      "Bash(dd:*)",
+      "Bash(mkfs:*)",
+      "Bash(chown -R:*)",
+      "Bash(rm -rf:*)",
+      "Bash(mv /* :*)",
+      "Bash(> /dev/sda:*)",
       "Bash(git push:*)",
+      "Bash(git branch -D:*)",
+      "Bash(git branch -d:*)",
       "Bash(docker push:*)",
       "Bash(npm publish:*)",
-      "Bash(rm -rf:*)"
+      "Read(.env*)",
+      "Read(id_rsa)",
+      "Read(id_ed25519)",
+      "Read(**/*token*)",
+      "Read(**/*key*)",
+      "Read(**/secrets/**)"
     ]
   },
   "includeCoAuthoredBy": false,
   "env": {
-    "AI_ASSISTANT": "1"
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1"
   }
 }

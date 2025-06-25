@@ -743,20 +743,25 @@ local pluginSpec = {
     end,
   },
   {
-    "greggh/claude-code.nvim",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
+    "coder/claudecode.nvim",
+    config = true,
+    opts = {
+      terminal = {
+        split_side = "left",
+        split_width_percentage = 0.30,
+        provider = "native",
+      },
     },
-    config = function()
-      require("claude-code").setup({
-        window = {
-          position = "vertical",
-        },
-      })
-
-      vim.keymap.set({ "n", "v" }, "<Leader>aa", "<cmd>ClaudeCode<CR>", { desc = "# Toggle Claude Code" })
-      vim.keymap.set({ "n", "v" }, "<Leader>ac", "<cmd>ClaudeCodeContinue<CR>", { desc = "# Toggle Claude Code" })
-    end,
+    keys = {
+      { "<Leader>aa", "<cmd>ClaudeCode<cr>", mode = "n", desc = "# Toggle Claude" },
+      { "<Leader>aa", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "# Send to Claude" },
+      { "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "# Focus Claude" },
+      { "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "# Resume Claude" },
+      { "<Leader>ac", "<cmd>ClaudeCode --continue<cr>", desc = "# Continue Claude" },
+      { "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "# Add current buffer to Claude" },
+      { "<Leader>ay", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "# Accept diff to Claude" },
+      { "<Leader>an", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "# Deny diff to Claude" },
+    },
   },
 
   -----------------------------------------------------------------------------

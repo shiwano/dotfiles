@@ -18,6 +18,9 @@
 
 ## Notification Guidelines
 
-- **Send notification when**: Only when user confirmation is needed or important tasks are completed
-- **Skip notification for**: Simple responses, quick answers, and routine operations
-- **Command**: Use Bash tool to run `terminal-tmux-notifier "Brief action description"`
+- **Use Bash tool**: `util-notify "Brief action description"`
+- **When to Send Notifications**
+  - **User confirmatio needed**: Before destructive operations, major changes, permission required actions
+  - **Long-running tasks completed**: Build/test results (3+ minutes), installations, deployments
+  - **Explicit user request**: When user asks to be notified
+  - **Other necessary situations**: When you determine notification is important for the user
