@@ -19,8 +19,8 @@
 ## Notification Guidelines
 
 - **Command**: `util-notify "Brief action description"`
-- **When to Send Notifications**
-  - **User confirmation needed**: Before destructive operations, major changes, permission required actions
-  - **Long-running tasks completed**: Any task taking 3+ minutes (builds, tests, installations, deployments, etc.)
-  - **Explicit user request**: When user asks to be notified
-  - **Other necessary situations**: When you determine notification is important for the user
+- **Always notify when**:
+  - About to ask user for permission (command execution, file changes, etc.)
+  - Completing user-requested tasks
+  - Before potentially disruptive operations
+  - After significant work completion
