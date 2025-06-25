@@ -18,9 +18,9 @@
 
 ## Notification Guidelines
 
-- **Use Bash tool**: `util-notify "Brief action description"`
+- **Command**: `util-notify "Brief action description"`
 - **When to Send Notifications**
-  - **User confirmatio needed**: Before destructive operations, major changes, permission required actions
-  - **Long-running tasks completed**: Build/test results (3+ minutes), installations, deployments
+  - **User confirmation needed**: Before destructive operations, major changes, permission required actions
+  - **Long-running tasks completed**: Any task taking 3+ minutes (builds, tests, installations, deployments, etc.)
   - **Explicit user request**: When user asks to be notified
   - **Other necessary situations**: When you determine notification is important for the user
