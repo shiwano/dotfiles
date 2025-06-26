@@ -1,8 +1,8 @@
 {
   "permissions": {
     "allow": [
+      "mcp__ide__getDiagnostics",
       "Bash(util-notify:*)",
-      "Bash(mcp__ide__get_diagnostics:*)",
       "Bash(echo:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
@@ -22,6 +22,7 @@
       "Bash(npm run test:*)",
       "Bash(flutter analyze:*)",
       "Bash(flutter test:*)",
+      "Bash(flutter pub deps:*)",
       "Bash(cargo test:*)",
       "Bash(pytest:*)",
       "Bash(git log:*)",
