@@ -3,21 +3,22 @@
 ## Configuration Structure
 
 ### Dotfiles Organization
+
 - `dot.*` files → `~/.*` (symlinked by setup.sh)
 - `dot.*` directories → `~/.*` (contents symlinked individually)
-- `*.example` files → `~/*` (copied if not exists, dot prefix and .example suffix removed)
-- `bin/` directory created at `~/bin` (for personal scripts)
-- `tools/` → Setup scripts for languages and package managers
+- `*.example` files → `~/*` (copied if not exists, `dot` prefix removed if exists)
 
 ### Key Configuration Files
+
 - **Shell**: `dot.zshrc` (main config), `dot.zshrc.local.example` (local overrides)
+- **Shell Scripts**: `bin/*` (utility scripts available in PATH)
 - **Git**: `dot.gitconfig` (aliases, delta pager, user info)
 - **Neovim**: `dot.config/nvim/init.lua` (lazy.nvim plugin manager)
 - **Tmux**: `dot.config/tmux/tmux.conf` (prefix Ctrl+t, custom status)
 - **Terminal**: `dot.config/ghostty/config` (font, theme, keybinds)
 - **Window Manager**: `dot.hammerspoon/init.lua` (layout shortcuts)
-- **Version Manager**: `dot.config/mise/config.toml` (languages, tools, packages)
-- **AI assistant**: `dot.claude/claude/CLAUDE.md` (AI assistant instructions, loaded in all environments)
+- **Version Manager**: `dot.config/mise/config.toml` (languages, tools, packages), `Brewfile` (Homebrew packages)
+- **AI Assistant**: `dot.claude/claude/CLAUDE.md` (global instructions), `dot.claude/claude/settings.json` (global settings)
 
 ## Check/Format Commands
 
