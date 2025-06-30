@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF
-Usage: terminal-tmux-notifier <message>
+Usage: util-notify <message>
 
 Send a macOS notification that can activate terminal.
 If run from within tmux, clicking the notification will switch to
@@ -14,7 +14,7 @@ Notifications are suppressed when:
 - Ghostty is the frontmost application AND the current tmux window is active
 
 Example:
-  terminal-tmux-notifier "Build completed"
+  util-notify "Build completed"
 EOF
 }
 
