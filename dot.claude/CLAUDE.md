@@ -13,9 +13,9 @@
 
 ## Coding Style
 
-- **File Format**: UTF-8, LF line endings; remove trailing whitespace
-- **Indentation**: 2 spaces default (unless specified otherwise)
-- **Comments**: Explain "why" not "what"; for complex logic, edge cases, TODOs
+- **File Format**: UTF-8, LF line endings; no trailing whitespaces
+- **Indentation**: 2 spaces default unless specified otherwise
+- **Comments**: Explain "why" not "what"; for complex logic, edge cases, TODOs only
 - **Documentation**: Create only when explicitly requested
 - **Diagnostics**: Always check diagnostics after editing using the MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
@@ -25,5 +25,5 @@
 ## Notification
 
 - **Command**: `util-notify "Brief action description"`
-- **Mandatory Notification for All Responses**: Required regardless of task complexity
+- **Notification on All Responses**: Required regardless of task complexity
 - **Timing**: Executed as the final step in the response process; after completing all other operations
