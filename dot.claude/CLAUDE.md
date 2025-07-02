@@ -2,7 +2,7 @@
 
 ## Core Principles
 
-- **Language**: Always conduct conversations in Japanese
+- **Language**: Always conduct conversations in Japanese; include space between English and Japanese
 - **Respect Context**: Honor project conventions (coding styles, naming, architecture)
 - **Minimal Changes**: Edit existing files over creating new ones; do only what's asked
 - **Concise Responses**: Be minimal, clear, and ensure user understanding
@@ -15,15 +15,9 @@
 
 - **File Format**: UTF-8, LF line endings; no trailing whitespaces
 - **Indentation**: 2 spaces default unless specified otherwise
-- **Comments**: Explain "why" not "what"; for complex logic, edge cases, TODOs only
+- **Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases, TODOs
 - **Documentation**: Create only when explicitly requested
-- **Diagnostics**: Always check diagnostics after editing using the MCP tool `mcp__ide__getDiagnostics` if available
+- **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
 - **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
 - **Git Commits**: Follow existing style; imperative mood; explain "what" and "why"
-
-## Notification
-
-- **Command**: `util-notify "Brief action description"`
-- **Notification on All Responses**: Required regardless of task complexity
-- **Timing**: Executed as the final step in the response process; after completing all other operations

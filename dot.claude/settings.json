@@ -2,7 +2,6 @@
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
-      "Bash(util-notify:*)",
       "Bash(echo:*)",
       "Bash(cat:*)",
       "Bash(ls:*)",
@@ -60,5 +59,29 @@
   "env": {
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1"
+  },
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-hook-notification"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-hook-stop"
+          }
+        ]
+      }
+    ]
   }
 }

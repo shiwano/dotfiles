@@ -22,9 +22,7 @@
 
 ## Check/Format Commands
 
-- **Checkhealth Neovim**: `nvim --headless -c 'checkhealth nvim' +q`
-- **Check .zshrc syntax**: `zsh -n dot.zshrc`
-- **Check Shell Script**: `shellcheck ./path/to/file.sh`
+- **Check diagnostics**: Use MCP IDE tool `mcp__ide__getDiagnostics`
 - **Format Shell Script**: `shfmt -w ./path/to/file.sh`
 - **Format Lua**: `stylua ./path/to/file.lua`
 - **Format Markdown**: `markdownfmt -w ./path/to/file.md`

@@ -4,37 +4,43 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF
-Usage: util-notify <message>
+Usage: util-notify [OPTIONS] <message>
 
 Send a macOS notification that can activate terminal.
 If run from within tmux, clicking the notification will switch to
 the specific tmux session, window, and pane where the command was executed.
 
-Notifications are suppressed when:
+Options:
+  -t, --title <title>    Title for the notification
+  -g, --group-id <id>    Group ID for the notification (automatically removes previous notifications with same group ID)
+
+Notification sounds are suppressed when:
 - Ghostty is the frontmost application AND the current tmux window is active
 
 Example:
   util-notify "Build completed"
+  util-notify --title "Build Status" "Build completed"
+  util-notify --group-id "build-status" "Build completed"
 EOF
 }
 
-should_notify() {
+should_sound() {
 	local frontmost_app
 	frontmost_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true' 2>/dev/null || echo "")
 
 	if [[ "$frontmost_app" != "ghostty" ]]; then
-		return 0 # Should notify - Ghostty is not active
+		return 0 # Should sound - Ghostty is not active
 	fi
 
-	if [[ -n "${TMUX:-}" ]]; then
-		local is_window_active
-		is_window_active=$(tmux display-message -p '#{window_active}')
-		if [[ "$is_window_active" != "1" ]]; then
-			return 0 # Should notify - window is not active
+	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
+		local is_pane_active
+		is_pane_active=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_active}')
+		if [[ "$is_pane_active" != "1" ]]; then
+			return 0 # Should sound - pane is not active
 		fi
 	fi
 
-	return 1 # Should not notify - Ghostty is active and window is selected
+	return 1 # Should not sound - Ghostty is active and window is selected
 }
 
 main() {
@@ -43,35 +49,83 @@ main() {
 		return 1
 	fi
 
-	if [ "$#" -ne 1 ]; then
+	local title=""
+	local group_id=""
+	local message=""
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-t | --title)
+			if [[ -z "${2:-}" ]]; then
+				echo "Error: --title requires a value" >&2
+				usage
+				return 1
+			fi
+			title="$2"
+			shift 2
+			;;
+		-g | --group-id)
+			if [[ -z "${2:-}" ]]; then
+				echo "Error: --group-id requires a value" >&2
+				usage
+				return 1
+			fi
+			group_id="$2"
+			shift 2
+			;;
+		-*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		*)
+			if [[ -n "$message" ]]; then
+				echo "Error: Multiple messages specified" >&2
+				usage
+				return 1
+			fi
+			message="$1"
+			shift
+			;;
+		esac
+	done
+
+	if [[ -z "$message" ]]; then
+		echo "Error: Message is required" >&2
 		usage
 		return 1
 	fi
 
-	if ! should_notify; then
-		return 0
-	fi
-
-	local message="$1"
-
 	local args=()
+	args+=(-message "$message")
 	args+=(-activate "com.mitchellh.ghostty")
 
-	if [[ -n "${TMUX:-}" ]]; then
+	if should_sound; then
+		args+=(-sound default)
+	fi
+
+	if [[ -n "$title" ]]; then
+		args+=(-title "$title")
+	fi
+
+	if [[ -n "$group_id" ]]; then
+		args+=(-group "$group_id")
+		args+=(-remove "$group_id")
+	fi
+
+	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
 		local tmux_bin
 		tmux_bin=$(which tmux)
-		local session
-		session=$(tmux display-message -p '#{session_name}')
-		local window
-		window=$(tmux display-message -p '#{window_index}')
-		local pane
-		pane=$(tmux display-message -p '#{pane_index}')
+		local session window pane
+		session=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}')
+		window=$(tmux display-message -p -t "$TMUX_PANE" '#{window_index}')
+		pane=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_index}')
 
-		local tmux_command="${tmux_bin} select-window -t \"${session}:${window}\" && ${tmux_bin} select-pane -t \"${session}:${window}.${pane}\""
+		local tmux_command="${tmux_bin} select-window -t '${session}:${window}' && ${tmux_bin} select-pane -t '${session}:${window}.${pane}'"
 		args+=(-execute "$tmux_command")
 	fi
 
-	terminal-notifier -sound default -message "$message" "${args[@]}"
+	terminal-notifier "${args[@]}"
 }
 
 main "$@"
