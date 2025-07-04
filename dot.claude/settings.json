@@ -12,6 +12,7 @@
       "Bash(go test:*)",
       "Bash(go list:*)",
       "Bash(go vet:*)",
+      "Bash(go doc:*)",
       "Bash(go mod graph:*)",
       "Bash(go mod tidy:*)",
       "Bash(go mod why:*)",
