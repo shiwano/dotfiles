@@ -945,6 +945,7 @@ local pluginSpec = {
       vim.api.nvim_create_user_command("FormatDisable", function()
         vim.b.disable_autoformat = true
       end, { desc = "# Disable autoformat" })
+
       vim.api.nvim_create_user_command("FormatEnable", function()
         vim.b.disable_autoformat = false
       end, { desc = "# Enable autoformat" })
@@ -1099,7 +1100,7 @@ local pluginSpec = {
         enabled = true,
         notify = true,
         size = 5 * 1024 * 1024, -- 5MB
-        line_length = 1000,
+        line_length = 100000,
         setup = function(ctx)
           if vim.fn.exists(":NoMatchParen") ~= 0 then
             vim.cmd("NoMatchParen")
@@ -1380,6 +1381,11 @@ vim.api.nvim_create_user_command("Normalize", function()
   vim.opt.fileformat = "unix"
   vim.opt.fileencoding = "utf-8"
 end, { desc = "# Change the line ending to LF and the encoding to UTF-8" })
+
+-- Format JSON (using jq)
+vim.api.nvim_create_user_command("JSONFormat", function()
+  vim.cmd("%!jq .")
+end, {})
 
 -- Save memo
 vim.api.nvim_create_user_command("SaveMemo", function()
