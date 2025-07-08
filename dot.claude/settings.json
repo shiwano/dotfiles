@@ -33,6 +33,9 @@
       "Bash(git status:*)"
     ],
     "deny": [
+      "Bash(sh:*)",
+      "Bash(bash:*)",
+      "Bash(zsh:*)",
       "Bash(sudo:*)",
       "Bash(curl:*)",
       "Bash(wget:*)",
@@ -43,9 +46,9 @@
       "Bash(rm -rf:*)",
       "Bash(mv /* :*)",
       "Bash(> /dev/sda:*)",
-      "Bash(git push:*)",
       "Bash(git branch -D:*)",
       "Bash(git branch -d:*)",
+      "Bash(git push:*)",
       "Bash(docker push:*)",
       "Bash(npm publish:*)",
       "Read(.env*)",

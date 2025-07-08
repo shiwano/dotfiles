@@ -744,14 +744,34 @@ local pluginSpec = {
   },
   {
     "coder/claudecode.nvim",
-    config = true,
-    opts = {
-      terminal = {
-        split_side = "left",
-        split_width_percentage = 0.30,
-        provider = "native",
-      },
-    },
+    config = function()
+      require("claudecode").setup({
+        terminal = {
+          split_side = "left",
+          split_width_percentage = 0.50,
+          provider = "native",
+        },
+      })
+
+      vim.api.nvim_create_augroup("terminal_claude", { clear = true })
+      vim.api.nvim_create_autocmd("TermOpen", {
+        group = "terminal_claude",
+        pattern = "term://*/claude",
+        callback = function()
+          vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
+          vim.opt_local.scrollback = 1000
+        end,
+      })
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
+        group = "terminal_claude",
+        pattern = "term://*/claude",
+        command = "startinsert",
+      })
+    end,
     keys = {
       { "<Leader>aa", "<cmd>ClaudeCode<cr>", mode = "n", desc = "# Toggle Claude" },
       { "<Leader>aa", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "# Send to Claude" },
@@ -1122,6 +1142,17 @@ local pluginSpec = {
       picker = { enabled = true, ui_select = true },
       notifier = { enabled = true },
     },
+  },
+  {
+    "keaising/im-select.nvim",
+    config = function()
+      require("im_select").setup({
+        default_command = "im-select",
+        default_im_select = "com.apple.keylayout.ABC",
+        set_default_events = { "VimEnter", "WinEnter", "InsertEnter", "InsertLeave" },
+        set_previous_events = {}, -- Disable this feature
+      })
+    end,
   },
 }
 
