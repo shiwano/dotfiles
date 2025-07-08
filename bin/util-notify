@@ -24,23 +24,23 @@ Example:
 EOF
 }
 
-should_sound() {
+is_active() {
 	local frontmost_app
 	frontmost_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true' 2>/dev/null || echo "")
 
 	if [[ "$frontmost_app" != "ghostty" ]]; then
-		return 0 # Should sound - Ghostty is not active
+		return 1 # Not active - Ghostty is not active
 	fi
 
 	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
 		local is_pane_active
 		is_pane_active=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_active}')
 		if [[ "$is_pane_active" != "1" ]]; then
-			return 0 # Should sound - pane is not active
+			return 1 # Not active - pane is not active
 		fi
 	fi
 
-	return 1 # Should not sound - Ghostty is active and window is selected
+	return 0 # Active - Ghostty is active and window is selected
 }
 
 main() {
@@ -96,13 +96,14 @@ main() {
 		return 1
 	fi
 
+	if is_active; then
+		return 0
+	fi
+
 	local args=()
 	args+=(-message "$message")
 	args+=(-activate "com.mitchellh.ghostty")
-
-	if should_sound; then
-		args+=(-sound default)
-	fi
+	args+=(-sound default)
 
 	if [[ -n "$title" ]]; then
 		args+=(-title "$title")
