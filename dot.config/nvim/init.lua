@@ -1792,7 +1792,7 @@ vim.keymap.set({ "n", "v" }, "<Leader>y", yank_with_context, { desc = "# Yank wi
 -------------------------------------------------------------------------------
 -- Abbreviations for insert mode
 -------------------------------------------------------------------------------
-function _G._new_uuid()
+function vim.fn.__dotfiles_new_uuid()
   local template = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
   return string
     .gsub(template, "[xy]", function(c)
@@ -1802,14 +1802,14 @@ function _G._new_uuid()
     :upper()
 end
 
-function _G._new_random()
+function vim.fn.__dotfiles_new_random()
   local digit = 10
   local max_num = tonumber("9" .. string.rep("0", digit - 1)) or 0
   local rand_num = math.random(0, max_num)
   return tostring(rand_num)
 end
 
-function _G._new_password()
+function vim.fn.__dotfiles_new_password()
   local length = 16
   local chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()"
   local password = {}
@@ -1820,11 +1820,11 @@ function _G._new_password()
   return table.concat(password)
 end
 
-function _G._new_hex_color()
+function vim.fn.__dotfiles_new_hex_color()
   return string.format("#%06X", math.random(0, 0xFFFFFF))
 end
 
-function _G._new_random_date()
+function vim.fn.__dotfiles_new_random_date()
   local current_year = tonumber(os.date("%Y")) or 2001
   local year = math.random(current_year - 5, current_year)
   local month = math.random(1, 12)
@@ -1837,8 +1837,8 @@ function _G._new_random_date()
   return string.format("%04d-%02d-%02d", year, month, day)
 end
 
-vim.cmd("inoreabbrev <expr> nuuid v:lua._new_uuid()")
-vim.cmd("inoreabbrev <expr> nrand v:lua._new_random()")
-vim.cmd("inoreabbrev <expr> npass v:lua._new_password()")
-vim.cmd("inoreabbrev <expr> ncolor v:lua._new_hex_color()")
-vim.cmd("inoreabbrev <expr> ndate v:lua._new_random_date()")
+vim.cmd("inoreabbrev <expr> nuuid v:lua.vim.fn.__dotfiles_new_uuid()")
+vim.cmd("inoreabbrev <expr> nrand v:lua.vim.fn.__dotfiles_new_random()")
+vim.cmd("inoreabbrev <expr> npass v:lua.vim.fn.__dotfiles_new_password()")
+vim.cmd("inoreabbrev <expr> ncolor v:lua.vim.fn.__dotfiles_new_hex_color()")
+vim.cmd("inoreabbrev <expr> ndate v:lua.vim.fn.__dotfiles_new_random_date()")
