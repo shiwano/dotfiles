@@ -52,6 +52,7 @@ yq = 'latest'
 'go:golang.org/x/tools/cmd/goimports' = 'latest'
 'go:golang.org/x/tools/gopls' = 'latest'
 'go:oss.terrastruct.com/d2' = 'latest'
+'go:github.com/Warashi/cage' = 'latest'
 
 'aqua:LuaLS/lua-language-server' = 'latest'
 'aqua:git-lfs/git-lfs' = 'latest'

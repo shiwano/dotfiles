@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+
+main() {
+	exec mise exec -- cage \
+		-allow . \
+		-allow /tmp \
+		-allow "$HOME/.claude" \
+		-allow "$HOME/.claude.json" \
+		-allow "$(git rev-parse --git-common-dir 2>/dev/null || echo /tmp)" \
+		claude "$@"
+}
+
+main "$@"
