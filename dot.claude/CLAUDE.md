@@ -14,7 +14,7 @@
 
 - **File Format**: UTF-8, LF line endings
 - **Indentation**: 2 spaces default unless specified otherwise; NO TRAILING SPACES
-- **Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases, TODOs
+- **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases, TODOs
 - **Documentation**: Create only when explicitly requested
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
