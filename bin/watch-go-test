@@ -6,13 +6,72 @@ usage() {
 	cat <<EOF >&2
 Usage: watch-go-test [additional go test args...]
 
-Watches *.go files and runs \`go test ./<dir>\` for the changed file's package.
+Watches *.go files and runs targeted tests based on the changed file:
+- If a test file changes: runs only tests in that file
+- If a source file changes: runs all tests from the corresponding test file
+- Falls back to running all tests in the directory if no test file found
 
 Examples:
   watch-go-test
   watch-go-test -v -race
-	watch-go-test -run TestFoobar
+  watch-go-test -bench .
+
+Behavior:
+  foo.go changed      → runs all tests from foo_test.go
+  foo_test.go changed → runs all tests in foo_test.go
+  bar.go changed      → runs all tests from bar_test.go or all tests in dir
 EOF
+}
+
+extract_test_functions() {
+	local file="$1"
+	rg -o "func (Test[[:alnum:]_]*)\(" "$file" 2>/dev/null | sed 's/func \(.*\)($/\1/' | paste -sd '|' -
+}
+
+run_tests_for_file() {
+	local changed_file="$1"
+	shift
+	local additional_args=("$@")
+
+	local dir
+	dir=$(dirname "$changed_file")
+	local base_name
+	base_name=$(basename "$changed_file" .go)
+
+	if [[ "$changed_file" =~ _test\.go$ ]]; then
+		local test_funcs
+		test_funcs=$(extract_test_functions "$changed_file")
+
+		if [[ -n "$test_funcs" ]]; then
+			echo -e "\033[0;32mRunning tests: $test_funcs\033[0m"
+			go test "./$dir" -run "^($test_funcs)$" "${additional_args[@]}"
+		else
+			echo -e "\033[0;31mNo test functions found in $changed_file\033[0m"
+		fi
+	else
+		local test_file="${dir}/${base_name}_test.go"
+
+		if [[ -f "$test_file" ]]; then
+			local test_funcs
+			test_funcs=$(extract_test_functions "$test_file")
+
+			if [[ -n "$test_funcs" ]]; then
+				echo -e "\033[0;32mRunning tests from $test_file: $test_funcs\033[0m"
+				go test "./$dir" -run "^($test_funcs)$" "${additional_args[@]}"
+			else
+				echo -e "\033[0;33mNo test functions found in $test_file, running all tests in $dir\033[0m"
+				go test "./$dir" "${additional_args[@]}"
+			fi
+		else
+			echo -e "\033[0;33mNo test file found for $changed_file, running all tests in $dir\033[0m"
+			go test "./$dir" "${additional_args[@]}"
+		fi
+	fi
+}
+
+handle_file_change() {
+	printf "\033[0;33m%s changed\033[0m\n" "$1"
+	run_tests_for_file "$@"
 }
 
 main() {
@@ -21,8 +80,10 @@ main() {
 		return 0
 	fi
 
+	export -f extract_test_functions run_tests_for_file handle_file_change
+
 	# shellcheck disable=SC2016
-	reflex -d none -r '\.go$' -- bash -c 'printf "\033[0;33m%s changed\033[0m\n" "$1"; go test "./$(dirname "$1")" "${@:2}"' _ {} "$@"
+	reflex -d none -r '\.go$' -- bash -c 'handle_file_change "$1" "${@:2}"' _ {} "$@"
 }
 
 main "$@"
