@@ -66,12 +66,8 @@ if [ -d $BREW_PREFIX/opt/gawk ]; then
 	export MANPATH="$BREW_PREFIX/opt/gawk/libexec/gnuman:$MANPATH"
 fi
 
-if [ -d ${HOME}/.local ] ; then
+if [ -d ${HOME}/.local/bin ] ; then
 	export PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d ${HOME}/.pub-cache ] ; then
-	export PATH="$HOME/.pub-cache/bin:$PATH"
 fi
 
 # mise -------------------------------------------------------------------------
@@ -160,11 +156,6 @@ fi
 if [ -d '/Applications/Android Studio.app/Contents/jre/Contents/Home' ]; then
 	export JAVA_HOME='/Applications/Android Studio.app/Contents/jre/Contents/Home'
 	export PATH=$JAVA_HOME/bin:$PATH
-else
-	if [ -d $BREW_PREFIX/opt/openjdk ]; then
-		export JAVA_HOME="$BREW_PREFIX/opt/openjdk"
-		export PATH=$JAVA_HOME/bin:$PATH
-	fi
 fi
 
 if [ -d "$HOME/Library/Android/sdk" ]; then
