@@ -34,11 +34,6 @@ main() {
 		git clone git@github.com:shiwano/dotfiles.git "${dotfiles_dir}"
 	fi
 
-	topic 'Setup bin directory'
-
-	local local_bin_dir=$HOME/bin
-	ensure_dir "${local_bin_dir}"
-
 	topic 'Setup dotdirs'
 
 	find "$dotfiles_dir" -maxdepth 1 -mindepth 1 -type d -name 'dot.*' | grep -v 'example' | while IFS= read -r dotdir; do

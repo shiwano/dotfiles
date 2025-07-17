@@ -48,7 +48,7 @@ fi
 
 # PATH -------------------------------------------------------------------------
 
-export PATH=$HOME/bin:$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
+export PATH=$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
 export MANPATH=$BREW_PREFIX/share/man:$BREW_PREFIX/man:/usr/share/man
 
 if [ -d $BREW_PREFIX/opt/coreutils ]; then
