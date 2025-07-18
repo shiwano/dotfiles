@@ -4,12 +4,12 @@ set -euo pipefail
 
 usage() {
 	cat <<EOF >&2
-Usage: select-git-grepped-files <search-term>
+Usage: select-grep-results <search-term>
 
-Interactively select lines from \`git grep\` results.
+Interactively select lines from \`rg\` results.
 
 Examples:
-  select-git-grepped-files foo
+  select-grep-results foo
 EOF
 }
 
@@ -28,7 +28,7 @@ main() {
 	local prompt="${FZF_PROMPT:-Grep> }"
 
 	local results
-	results="$(git grep -n --color=always "$search")"
+	results="$(rg -S -n --color=always --hidden -g '!.git' "$search")"
 	[ -z "$results" ] && return 0
 
 	local selected

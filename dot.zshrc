@@ -214,8 +214,8 @@ move-to-git-repository() {
 	FZF_PROMPT='MoveTo> ' select-git-repository | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
 
-edit-git-grep-results() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-git-grep-results $1)"
+edit-grep-results() {
+	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
 }
 
 edit-git-files() {
@@ -268,7 +268,7 @@ alias t='git-stash-files'
 alias g='move-to-git-repository'
 alias v='edit-git-changed-files'
 alias vv='edit-git-files'
-alias gg='edit-git-grep-results'
+alias gg='edit-grep-results'
 alias mt='git-mergetool-file'
 alias cf='copy-file-paths-to-clipboard'
 alias cc='copy-changed-file-paths-to-clipboard'
