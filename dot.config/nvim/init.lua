@@ -1317,6 +1317,7 @@ vim.filetype.add({
   },
   filename = {
     ["dot.zshrc"] = "zsh",
+    ["dot.gitconfig"] = "gitconfig",
     ["Guardfile"] = "ruby",
     ["Fastfile"] = "ruby",
     ["Appfile"] = "ruby",
