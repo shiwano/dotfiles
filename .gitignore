@@ -1,3 +1,6 @@
 .DS_Store
-dot.config/nvim/undo
 dot.hammerspoon/Spoons/EmmyLua.spoon/annotations
+dot.config/nvim/undo
+dot.config/claude/*
+!dot.config/claude/CLAUDE.md
+!dot.config/claude/settings.json

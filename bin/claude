@@ -6,9 +6,11 @@ main() {
 	exec mise exec -- cage \
 		-allow . \
 		-allow /tmp \
-		-allow "$HOME/.claude" \
-		-allow "$HOME/.claude.json" \
-		-allow "$(git rev-parse --git-common-dir 2>/dev/null || echo /tmp)" \
+		-allow "$HOME/dotfiles/dot.config/claude" \
+		-allow "$HOME/.config/claude" \
+		-allow "$HOME/.local/share/mise/installs" \
+		-allow "$HOME/.npm" \
+		-allow "$(git rev-parse --git-common-dir)" \
 		claude "$@"
 }
 

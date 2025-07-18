@@ -13,6 +13,7 @@ export XDG_CONFIG_HOME=$HOME/.config
 export LS_COLORS='di=01;36'
 
 export GOPATH=$HOME/code
+export CLAUDE_CONFIG_DIR=$HOME/.config/claude
 
 if command -v brew >/dev/null 2>&1; then
 	export BREW_PREFIX=$(brew --prefix)
