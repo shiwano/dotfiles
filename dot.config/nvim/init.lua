@@ -710,6 +710,14 @@ local pluginSpec = {
       })
     end,
   },
+  {
+    "ray-x/lsp_signature.nvim",
+    event = "InsertEnter",
+    opts = {
+      bind = true,
+      hint_prefix = "💡 ",
+    },
+  },
 
   -----------------------------------------------------------------------------
   -- AI assistant
