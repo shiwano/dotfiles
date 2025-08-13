@@ -753,7 +753,9 @@ local pluginSpec = {
   {
     "coder/claudecode.nvim",
     config = function()
+      ---@diagnostic disable-next-line: missing-fields
       require("claudecode").setup({
+        ---@diagnostic disable-next-line: missing-fields
         terminal = {
           split_side = "left",
           split_width_percentage = 0.50,
@@ -1164,7 +1166,6 @@ local pluginSpec = {
   },
 }
 
----@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
