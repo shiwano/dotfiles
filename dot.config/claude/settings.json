@@ -1,4 +1,10 @@
 {
+  "model": "opusplan",
+  "includeCoAuthoredBy": false,
+  "env": {
+    "DISABLE_TELEMETRY": "1",
+    "DISABLE_ERROR_REPORTING": "1"
+  },
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
@@ -60,11 +66,6 @@
       "Read(**/*key*)",
       "Read(**/secrets/**)"
     ]
-  },
-  "includeCoAuthoredBy": false,
-  "env": {
-    "DISABLE_TELEMETRY": "1",
-    "DISABLE_ERROR_REPORTING": "1"
   },
   "hooks": {
     "Notification": [
