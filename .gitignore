@@ -1,6 +1,11 @@
 .DS_Store
 dot.hammerspoon/Spoons/EmmyLua.spoon/annotations
 dot.config/nvim/undo
+
 dot.config/claude/*
 !dot.config/claude/CLAUDE.md
 !dot.config/claude/settings.json
+!dot.config/claude/output-styles
+
+dot.config/claude/output-styles/*
+!dot.config/claude/output-styles/.gitkeep
