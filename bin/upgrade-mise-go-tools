@@ -1,0 +1,210 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# ANSI color codes
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly BOLD='\033[1m'
+readonly RESET='\033[0m'
+
+usage() {
+	cat <<EOF
+Usage: upgrade-mise-go-tools [OPTIONS]
+
+Upgrade all Go tools managed by mise to their latest versions.
+
+Options:
+  -h, --help     Show this help message
+  -n, --notify   Send notification when completed (default: true if in tmux)
+
+This script will:
+1. Extract all Go tools from mise configuration
+2. Upgrade each tool to the latest version
+3. Show progress and results
+EOF
+}
+
+log_info() {
+	echo -e "${BLUE}[INFO]${RESET} $*"
+}
+
+log_success() {
+	echo -e "${GREEN}[SUCCESS]${RESET} $*"
+}
+
+log_warn() {
+	echo -e "${YELLOW}[WARN]${RESET} $*"
+}
+
+log_error() {
+	echo -e "${RED}[ERROR]${RESET} $*"
+}
+
+find_config_file() {
+	local config_file
+
+	# Check local mise config first
+	if [[ -f ".mise.toml" ]]; then
+		config_file=".mise.toml"
+	elif [[ -f "mise.toml" ]]; then
+		config_file="mise.toml"
+	elif [[ -f ".config/mise/config.toml" ]]; then
+		config_file=".config/mise/config.toml"
+	elif [[ -f "$HOME/.config/mise/config.toml" ]]; then
+		config_file="$HOME/.config/mise/config.toml"
+	else
+		log_error "mise configuration file not found"
+		return 1
+	fi
+
+	echo "$config_file"
+}
+
+extract_go_tools() {
+	local config_file="$1"
+	local tools=()
+
+	if [[ ! -f "$config_file" ]]; then
+		log_error "Configuration file not found: $config_file"
+		return 1
+	fi
+
+	# Extract Go tools from the config file
+	while IFS= read -r line; do
+		if [[ "$line" =~ ^[[:space:]]*\'go: ]]; then
+			# Extract tool name between 'go:' and ' = '
+			local tool
+			tool=$(echo "$line" | sed -E "s/^[[:space:]]*'go:([^']+)'.*/\1/")
+			tools+=("$tool")
+		fi
+	done < "$config_file"
+
+	printf '%s\n' "${tools[@]}"
+}
+
+upgrade_tool() {
+	local tool="$1"
+	local tool_name
+	tool_name=$(basename "$tool")
+
+	echo -e "${BOLD}Upgrading $tool_name...${RESET}"
+
+	if mise install "go:$tool@latest" 2>/dev/null; then
+		log_success "✓ $tool_name upgraded successfully"
+		return 0
+	else
+		log_error "✗ Failed to upgrade $tool_name"
+		return 1
+	fi
+}
+
+main() {
+	local notify=false
+	local config_file
+	local total_tools=0
+	local success_count=0
+	local failed_tools=()
+
+	# Enable notification by default if in tmux
+	if [[ -n "${TMUX:-}" ]]; then
+		notify=true
+	fi
+
+	# Parse arguments
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-h | --help)
+			usage
+			return 0
+			;;
+		-n | --notify)
+			notify=true
+			shift
+			;;
+		*)
+			log_error "Unknown option: $1"
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	echo -e "${BOLD}mise Go Tools Upgrader${RESET}"
+	echo "==============================="
+	echo
+
+	# Find configuration file
+	log_info "Finding mise configuration..."
+	if ! config_file=$(find_config_file); then
+		return 1
+	fi
+	log_info "Using configuration: $config_file"
+	echo
+
+	# Extract Go tools
+	log_info "Extracting Go tools from configuration..."
+	local tools
+	if ! tools=$(extract_go_tools "$config_file"); then
+		return 1
+	fi
+
+	if [[ -z "$tools" ]]; then
+		log_warn "No Go tools found in configuration"
+		return 0
+	fi
+
+	# Count tools
+	total_tools=$(echo "$tools" | wc -l)
+	log_info "Found $total_tools Go tools to upgrade"
+	echo
+
+	# Upgrade each tool
+	while IFS= read -r tool; do
+		if upgrade_tool "$tool"; then
+			((success_count++))
+		else
+			failed_tools+=("$(basename "$tool")")
+		fi
+		echo
+	done <<< "$tools"
+
+	# Show summary
+	echo "==============================="
+	echo -e "${BOLD}Upgrade Summary${RESET}"
+	echo "Total tools: $total_tools"
+	echo -e "Successful: ${GREEN}$success_count${RESET}"
+	echo -e "Failed: ${RED}$((total_tools - success_count))${RESET}"
+
+	if [[ ${#failed_tools[@]} -gt 0 ]]; then
+		echo
+		log_warn "Failed tools:"
+		for tool in "${failed_tools[@]}"; do
+			echo "  - $tool"
+		done
+	fi
+
+	# Send notification if requested
+	if [[ "$notify" == true ]] && command -v util-notify >/dev/null 2>&1; then
+		local notification_message
+		if [[ $success_count -eq $total_tools ]]; then
+			notification_message="All $total_tools Go tools upgraded successfully"
+		else
+			notification_message="Go tools upgrade completed: $success_count/$total_tools successful"
+		fi
+		util-notify --title "mise Go Tools" --group-id "mise-go-upgrade" "$notification_message"
+	fi
+
+	# Return appropriate exit code
+	if [[ $success_count -eq $total_tools ]]; then
+		log_success "All Go tools upgraded successfully!"
+		return 0
+	else
+		log_warn "Some tools failed to upgrade. Please check the output above."
+		return 1
+	fi
+}
+
+main "$@"
