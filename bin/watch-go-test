@@ -28,6 +28,17 @@ extract_test_functions() {
 	rg -o "func (Test[[:alnum:]_]*)\(" "$file" 2>/dev/null | sed 's/func \(.*\)($/\1/' | paste -sd '|' -
 }
 
+has_run_option() {
+	local -n args_ref=$1
+	local i
+	for ((i = 0; i < ${#args_ref[@]}; i++)); do
+		if [[ "${args_ref[i]}" == "-run" || "${args_ref[i]}" == --run* ]]; then
+			return 0
+		fi
+	done
+	return 1
+}
+
 run_tests_for_file() {
 	local changed_file="$1"
 	shift
@@ -42,7 +53,10 @@ run_tests_for_file() {
 		local test_funcs
 		test_funcs=$(extract_test_functions "$changed_file")
 
-		if [[ -n "$test_funcs" ]]; then
+		if has_run_option additional_args; then
+			echo -e "\033[0;36mRunning tests with user-specified -run option\033[0m"
+			go test "./$dir" "${additional_args[@]}"
+		elif [[ -n "$test_funcs" ]]; then
 			echo -e "\033[0;32mRunning tests: $test_funcs\033[0m"
 			go test "./$dir" -run "^($test_funcs)$" "${additional_args[@]}"
 		else
@@ -55,7 +69,10 @@ run_tests_for_file() {
 			local test_funcs
 			test_funcs=$(extract_test_functions "$test_file")
 
-			if [[ -n "$test_funcs" ]]; then
+			if has_run_option additional_args; then
+				echo -e "\033[0;36mRunning tests with user-specified -run option\033[0m"
+				go test "./$dir" "${additional_args[@]}"
+			elif [[ -n "$test_funcs" ]]; then
 				echo -e "\033[0;32mRunning tests from $test_file: $test_funcs\033[0m"
 				go test "./$dir" -run "^($test_funcs)$" "${additional_args[@]}"
 			else
