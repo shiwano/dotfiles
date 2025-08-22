@@ -29,10 +29,9 @@ extract_test_functions() {
 }
 
 has_run_option() {
-	local -n args_ref=$1
-	local i
-	for ((i = 0; i < ${#args_ref[@]}; i++)); do
-		if [[ "${args_ref[i]}" == "-run" || "${args_ref[i]}" == --run* ]]; then
+	local arg
+	for arg in "$@"; do
+		if [[ "$arg" == "-run" || "$arg" == --run* ]]; then
 			return 0
 		fi
 	done
@@ -53,7 +52,7 @@ run_tests_for_file() {
 		local test_funcs
 		test_funcs=$(extract_test_functions "$changed_file")
 
-		if has_run_option additional_args; then
+		if has_run_option "${additional_args[@]}"; then
 			echo -e "\033[0;36mRunning tests with user-specified -run option\033[0m"
 			go test "./$dir" "${additional_args[@]}"
 		elif [[ -n "$test_funcs" ]]; then
@@ -69,7 +68,7 @@ run_tests_for_file() {
 			local test_funcs
 			test_funcs=$(extract_test_functions "$test_file")
 
-			if has_run_option additional_args; then
+			if has_run_option "${additional_args[@]}"; then
 				echo -e "\033[0;36mRunning tests with user-specified -run option\033[0m"
 				go test "./$dir" "${additional_args[@]}"
 			elif [[ -n "$test_funcs" ]]; then
