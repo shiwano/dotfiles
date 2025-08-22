@@ -964,6 +964,13 @@ local pluginSpec = {
           json = { "jq" },
           toml = { "taplo" },
         },
+        formatters = {
+          markdownfmt = {
+            inherit = false,
+            command = "markdownfmt",
+            args = { "-soft-wraps" },
+          },
+        },
         format_on_save = function(bufnr)
           if vim.b[bufnr].disable_autoformat then
             return
