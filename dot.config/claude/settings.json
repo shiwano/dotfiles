@@ -6,6 +6,7 @@
     "DISABLE_ERROR_REPORTING": "1"
   },
   "permissions": {
+    "defaultMode": "plan",
     "allow": [
       "mcp__ide__getDiagnostics",
       "Bash(echo :*)",
