@@ -162,6 +162,9 @@ local pluginSpec = {
           cmd = os.getenv("FZF_DEFAULT_COMMAND"),
           cwd_prompt = false,
         },
+        oldfiles = {
+          include_current_session = true,
+        },
         grep = {
           rg_opts = "--sort=path --column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
         },
