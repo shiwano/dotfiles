@@ -1176,6 +1176,7 @@ local pluginSpec = {
   },
 }
 
+---@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
@@ -1407,38 +1408,32 @@ vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment
 -------------------------------------------------------------------------------
 -- Custom commands
 -------------------------------------------------------------------------------
--- Move to the directory where the current file is located
 vim.api.nvim_create_user_command("Cd", function()
   vim.cmd("cd %:h")
 end, { desc = "# Change directory to the current file's directory" })
 
--- Open a file with the specified encoding
 vim.api.nvim_create_user_command("Enc", function(opts)
   vim.cmd("edit ++enc=" .. opts.args)
 end, { nargs = 1, desc = "# Open a file with the specified encoding" })
 
--- Remove trailing spaces
 vim.api.nvim_create_user_command("Rstrip", function()
   vim.cmd("silent! %s/\\s\\+$//e")
 end, { desc = "# Remove trailing spaces" })
 
--- Show the diff of the current buffer and the specified file
 vim.api.nvim_create_user_command("Diff", function(opts)
   vim.cmd("vertical diffsplit " .. opts.args)
 end, { nargs = 1, complete = "file", desc = "# Show the diff of the current buffer and the specified file" })
 
--- Change the line ending to LF and the encoding to UTF-8
 vim.api.nvim_create_user_command("Normalize", function()
   vim.opt.fileformat = "unix"
   vim.opt.fileencoding = "utf-8"
 end, { desc = "# Change the line ending to LF and the encoding to UTF-8" })
 
--- Format JSON (using jq)
-vim.api.nvim_create_user_command("JSONFormat", function()
-  vim.cmd("%!jq .")
-end, {})
+vim.api.nvim_create_user_command("JSONFormat", function(opts)
+  local range = opts.range == 0 and "%" or "'<,'>"
+  vim.cmd(range .. "!jq .")
+end, { range = "%", desc = "# Format JSON using jq (file type json not required)" })
 
--- Save memo
 vim.api.nvim_create_user_command("SaveMemo", function()
   local today = os.date("%Y%m%d")
   local rnd = tostring(math.random(100000, 999999))
