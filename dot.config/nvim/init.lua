@@ -138,25 +138,9 @@ local pluginSpec = {
       local colors = get_colors()
 
       fzf.setup({
+        "fzf-native",
         keymap = {
           fzf = { false },
-        },
-        winopts = {
-          split = "aboveleft new",
-          height = 0.4,
-          width = 1.0,
-          row = 1,
-          border = "none",
-          preview = {
-            border = "noborder",
-            wrap = "nowrap",
-            hidden = "nohidden",
-            vertical = "up:50%",
-            horizontal = "right:50%",
-            layout = "flex",
-            flip_columns = 120,
-            title = true,
-          },
         },
         files = {
           cmd = os.getenv("FZF_DEFAULT_COMMAND"),
@@ -598,6 +582,8 @@ local pluginSpec = {
             entry_filter = function(entry, _)
               local kind = types.lsp.CompletionItemKind[entry:get_kind()]
               if kind == "Text" then
+                return false
+              elseif kind == "Snippet" then
                 return false
               end
               return true
