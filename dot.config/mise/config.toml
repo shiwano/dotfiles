@@ -5,6 +5,8 @@ deno = '2.2'
 rust = '1.85'
 java = '24.0'
 
+uv = 'latest'
+
 cosign = 'latest'
 slsa-verifier = 'latest'
 
@@ -62,3 +64,7 @@ yq = 'latest'
 experimental = true
 http_timeout = '180s'
 fetch_remote_versions_timeout = '60s'
+disable_backends = ["asdf", "vfox"]
+
+[settings.pipx]
+uvx = true
