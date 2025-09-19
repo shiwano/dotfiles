@@ -60,6 +60,8 @@ yq = 'latest'
 'aqua:git-lfs/git-lfs' = 'latest'
 'aqua:suzuki-shunsuke/pinact' = 'latest'
 
+'pipx:isort' = 'latest'
+
 [settings]
 experimental = true
 http_timeout = '180s'
