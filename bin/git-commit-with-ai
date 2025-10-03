@@ -1,0 +1,113 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	cat <<EOF >&2
+Usage: git-commit-with-ai [OPTIONS]
+
+Generate commit messages using AI (Claude) and create commits interactively.
+
+Options:
+  -a, --all    Stage all modified and deleted files (git add -u)
+  -A           Stage all files including new files (git add -A)
+  -h, --help   Show this help message
+
+Examples:
+  git-commit-with-ai
+  git-commit-with-ai -a
+  git-commit-with-ai -A
+EOF
+}
+
+main() {
+	local add_flag=""
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-a | --all)
+			add_flag="-u"
+			shift
+			;;
+		-A)
+			add_flag="-A"
+			shift
+			;;
+		-h | --help)
+			usage
+			return 0
+			;;
+		*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	# Stage files if requested
+	if [[ -n "$add_flag" ]]; then
+		git add "$add_flag"
+	fi
+
+	# Check if there are staged changes
+	if [[ -z "$(git diff --staged)" ]]; then
+		echo "No staged changes" >&2
+		return 1
+	fi
+
+	# Build context for AI
+	local context=""
+	context+="Recent commit messages in this project:\n"
+	context+=$(git log --oneline -10 --pretty=format:'- %s')
+	context+="\n\nCurrent changes:\n"
+	context+=$(git diff --staged --stat)
+	context+="\n\nDetailed changes (limited to 400 lines):\n"
+	context+=$(git diff --staged | head -n 400)
+
+	# Interactive loop for generating and selecting commit message
+	local additional_prompt=""
+	while true; do
+		local prompt="Generate a commit message following the project style. If no clear pattern exists, use conventional commits. Output ONLY the first line of commit message. No markdown formatting, no explanations, no additional context."
+		if [[ -n "$additional_prompt" ]]; then
+			prompt="$prompt $additional_prompt"
+		fi
+
+		# Generate commit message using Claude
+		local commit_message
+		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY the commit message text. No explanations, no markdown, no additional text.")
+
+		echo "Generated: $commit_message"
+		read -r -p "Use this message? [Y/n/e/r=regenerate with prompt] (default: y) " choice
+
+		# Default to 'y' if empty
+		if [[ -z "$choice" ]]; then
+			choice="y"
+		fi
+
+		case "$choice" in
+		y | Y)
+			git commit -m "$commit_message"
+			break
+			;;
+		e | E)
+			git commit -e -m "$commit_message"
+			break
+			;;
+		n | N)
+			echo "Cancelled"
+			break
+			;;
+		r | R)
+			read -r -p "Additional instructions (e.g., \"make it shorter\", \"add more detail\", \"mention the bug fix\"): " additional_prompt
+			continue
+			;;
+		*)
+			echo "Please choose y/n/e/r"
+			continue
+			;;
+		esac
+	done
+}
+
+main "$@"

@@ -20,6 +20,7 @@
   ci = commit
   cim = commit -m
   cia = commit --amend -C HEAD
+  cic = !git-commit-with-ai
   up = pull --rebase
   upup = "!sh -c 'git fetch && git rebase `git current-remote-branch`'"
   di = diff --color
