@@ -1,12 +1,10 @@
 {
-  "model": "opusplan",
-  "includeCoAuthoredBy": false,
   "env": {
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1"
   },
+  "includeCoAuthoredBy": false,
   "permissions": {
-    "defaultMode": "plan",
     "allow": [
       "mcp__ide__getDiagnostics",
       "Bash(echo :*)",
@@ -54,19 +52,23 @@
       "Bash(rm -rf:*)",
       "Bash(mv /* :*)",
       "Bash(> /dev/sda:*)",
+      "Bash(source :*)",
       "Bash(git branch -D :*)",
       "Bash(git branch -d :*)",
       "Bash(git push:*)",
       "Bash(docker push:*)",
       "Bash(npm publish:*)",
       "Bash(brew :*)",
+      "Bash(mise :*)",
+      "Bash(deactivate :*)",
       "Read(.env*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
       "Read(**/*token*)",
       "Read(**/*key*)",
       "Read(**/secrets/**)"
-    ]
+    ],
+    "defaultMode": "plan"
   },
   "hooks": {
     "Notification": [
@@ -93,3 +95,4 @@
     ]
   }
 }
+
