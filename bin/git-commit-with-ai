@@ -70,7 +70,7 @@ main() {
 	while true; do
 		local prompt="Generate a commit message following the project style. If no clear pattern exists, use conventional commits. Output ONLY the first line of commit message. No markdown formatting, no explanations, no additional context."
 		if [[ -n "$additional_prompt" ]]; then
-			prompt="$prompt\n$additional_prompt"
+			prompt="$prompt $additional_prompt"
 		fi
 
 		# Generate commit message using Claude
