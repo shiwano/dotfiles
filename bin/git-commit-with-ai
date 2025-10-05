@@ -57,13 +57,22 @@ main() {
 	fi
 
 	# Build context for AI
-	local context=""
-	context+="Recent commit messages in this project:\n"
-	context+=$(git log --oneline -10 --pretty=format:'- %s')
-	context+="\n\nCurrent changes:\n"
-	context+=$(git diff --staged --stat)
-	context+="\n\nDetailed changes (limited to 400 lines):\n"
-	context+=$(git diff --staged | head -n 400)
+	# Use temporary file to avoid command substitution issues with large diffs
+	local tmpfile
+	tmpfile=$(mktemp)
+	trap 'rm -f -- "$tmpfile"' EXIT
+
+	{
+		echo "Recent commit messages in this project:"
+		git log --oneline -10 --pretty=format:'- %s'
+		echo -e "\n\nCurrent changes:"
+		git diff --staged --stat
+		echo -e "\n\nDetailed changes (limited to 400 lines):"
+		git diff --staged
+	} >"$tmpfile"
+
+	local context
+	context=$(head -n 500 "$tmpfile")
 
 	# Interactive loop for generating and selecting commit message
 	local additional_prompt=""
@@ -75,7 +84,16 @@ main() {
 
 		# Generate commit message using Claude
 		local commit_message
-		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY the commit message text. No explanations, no markdown, no additional text.")
+		if ! commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY the commit message text. No explanations, no markdown, no additional text." 2>&1); then
+			echo "Error: claude command failed" >&2
+			echo "$commit_message" >&2
+			return 1
+		fi
+
+		if [[ -z "$commit_message" ]]; then
+			echo "Error: claude command returned empty message" >&2
+			return 1
+		fi
 
 		echo "Generated: $commit_message"
 		read -r -p "Use this message? [Y/n/e/r=regenerate with prompt] (default: y) " choice
