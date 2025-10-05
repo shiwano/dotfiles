@@ -60,7 +60,7 @@ main() {
 	# Use temporary file to avoid command substitution issues with large diffs
 	local tmpfile
 	tmpfile=$(mktemp)
-	trap 'rm -f -- "$tmpfile"' EXIT
+	trap '[[ -n "${tmpfile:-}" ]] && rm -f -- "$tmpfile"' EXIT
 
 	{
 		echo "Recent commit messages in this project:"
