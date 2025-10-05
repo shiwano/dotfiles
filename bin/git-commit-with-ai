@@ -84,7 +84,7 @@ main() {
 
 		# Generate commit message using Claude
 		local commit_message
-		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY raw text. No code blocks, no backticks, no triple quotes, no markdown syntax, no explanations." 2>&1)
+		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY raw text. No code blocks, no backticks, no triple quotes, no markdown syntax, no explanations." --settings '{}' 2>&1)
 
 		# Remove any markdown code block markers and get first non-empty line
 		commit_message=$(echo "$commit_message" | sed 's/^```.*$//' | sed '/^$/d' | head -1)
