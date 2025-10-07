@@ -3,6 +3,7 @@
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1"
   },
+  "outputStyle": "custom",
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
@@ -95,4 +96,3 @@
     ]
   }
 }
-
