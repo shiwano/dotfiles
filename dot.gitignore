@@ -2,5 +2,6 @@
 .~lock.*
 flutter_jank_metrics_*.json
 .claude/settings.local.json
+.ipynb_checkpoints/
 
 _ignored/
