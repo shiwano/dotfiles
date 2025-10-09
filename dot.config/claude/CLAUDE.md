@@ -2,7 +2,6 @@
 
 ## Core Principles
 
-- **Language**: Always conduct conversations in Japanese; include space between English and Japanese
 - **Respect Context**: Honor project conventions (coding styles, naming, architecture)
 - **Minimal Changes**: Edit existing files over creating new ones; do only what's asked
 - **Confirm Destructive Actions**: Ask before breaking changes (changes to API backward compatibility, modifying database schema, or any change that requires users to migrate data)
