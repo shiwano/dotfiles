@@ -77,14 +77,14 @@ main() {
 	# Interactive loop for generating and selecting commit message
 	local additional_prompt=""
 	while true; do
-		local prompt="Generate a commit message following the project style. If no clear pattern exists, use conventional commits. Output ONLY the first line of commit message. No markdown formatting, no explanations, no additional context."
+		local prompt="Generate a single line commit message following the project style. If no clear pattern exists, use conventional commits. Output ONLY one line - no explanations, no additional context, no line breaks, no markdown formatting."
 		if [[ -n "$additional_prompt" ]]; then
 			prompt="$prompt $additional_prompt"
 		fi
 
 		# Generate commit message using Claude
 		local commit_message
-		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY raw text. No code blocks, no backticks, no triple quotes, no markdown syntax, no explanations." --settings '{}' 2>&1)
+		commit_message=$(echo -e "$context" | claude -p "$prompt" --system-prompt "You are a git commit message generator. Output ONLY raw text on a single line. No code blocks, no backticks, no triple quotes, no markdown syntax, no explanations, no newlines, no multi-line output." --settings '{}' 2>&1)
 
 		# Remove any markdown code block markers and get first non-empty line
 		commit_message=$(echo "$commit_message" | sed 's/^```.*$//' | sed '/^$/d' | head -1)
