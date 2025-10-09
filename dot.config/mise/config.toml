@@ -61,6 +61,7 @@ yq = 'latest'
 'aqua:suzuki-shunsuke/pinact' = 'latest'
 
 'pipx:isort' = 'latest'
+'pipx:jupyterlab' = 'latest'
 
 [settings]
 experimental = true
