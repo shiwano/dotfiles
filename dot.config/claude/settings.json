@@ -37,7 +37,8 @@
       "Bash(git diff:*)",
       "Bash(git grep:*)",
       "Bash(git ls-files:*)",
-      "Bash(git status:*)"
+      "Bash(git status:*)",
+      "Bash(shfmt :*)"
     ],
     "deny": [
       "Bash(sh :*)",
