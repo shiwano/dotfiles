@@ -415,6 +415,16 @@ bindkey "^N" history-beginning-search-forward-end
 zle -N select-history
 bindkey '^r' select-history
 
+_accept-line-with-typo-correction() {
+	if [[ "$BUFFER" =~ ^gti\  ]]; then
+		BUFFER="${BUFFER/gti /git }"
+	fi
+	zle accept-line
+}
+
+zle -N _accept-line-with-typo-correction
+bindkey "^M" _accept-line-with-typo-correction
+
 # Utilities --------------------------------------------------------------------
 
 # シェルのプロセスごとに履歴を共有
