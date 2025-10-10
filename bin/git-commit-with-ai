@@ -87,7 +87,7 @@ main() {
 		local response
 		response=$(echo -e "$context" | claude -p "$prompt" \
 			--system-prompt 'Analyze the changes and generate a commit message following the project style. Include your analysis and the commit message in single line JSON format: {"message": "commit message here"}. The message should be a single line, 3-8 words preferred.' \
-			--settings '{"model":"claude-3-5-haiku-latest"}' 2>&1)
+			--settings "$HOME/.config/claude/settings-command.json" 2>&1)
 
 		# Extract JSON from response (take last JSON object in case there's extra text)
 		local json_part
