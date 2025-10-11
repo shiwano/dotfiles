@@ -628,6 +628,12 @@ local pluginSpec = {
       local caps = vim.lsp.protocol.make_client_capabilities()
       caps = require("cmp_nvim_lsp").default_capabilities(caps)
 
+      caps.workspace = caps.workspace or {}
+      caps.workspace.didChangeWatchedFiles = {
+        dynamicRegistration = true,
+        relativePatternSupport = true,
+      }
+
       vim.lsp.config("*", {
         on_attach = on_attach,
         capabilities = caps,
@@ -752,11 +758,37 @@ local pluginSpec = {
         },
       })
 
+      local auto_reload_timer = nil
+
+      local function enable_auto_reload()
+        if auto_reload_timer then
+          return
+        end
+
+        auto_reload_timer = vim.loop.new_timer()
+        if not auto_reload_timer then
+          return
+        end
+
+        auto_reload_timer:start(500, 500, vim.schedule_wrap(function()
+          vim.cmd("checktime")
+        end))
+      end
+
+      local function disable_auto_reload()
+        if auto_reload_timer then
+          auto_reload_timer:stop()
+          auto_reload_timer:close()
+          auto_reload_timer = nil
+        end
+      end
+
       vim.api.nvim_create_augroup("terminal_claude", { clear = true })
       vim.api.nvim_create_autocmd("TermOpen", {
         group = "terminal_claude",
         pattern = "term://*/claude",
         callback = function()
+          enable_auto_reload()
           vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
@@ -769,6 +801,13 @@ local pluginSpec = {
         group = "terminal_claude",
         pattern = "term://*/claude",
         command = "startinsert",
+      })
+      vim.api.nvim_create_autocmd("TermClose", {
+        group = "terminal_claude",
+        pattern = "term://*/claude",
+        callback = function()
+          disable_auto_reload()
+        end,
       })
     end,
     keys = {
