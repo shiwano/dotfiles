@@ -38,6 +38,8 @@ taplo = 'latest'
 terraform = 'latest'
 tmux = 'latest'
 yq = 'latest'
+protoc = 'latest'
+protoc-gen-go = 'latest'
 
 'npm:@anthropic-ai/claude-code' = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
