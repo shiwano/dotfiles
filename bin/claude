@@ -10,6 +10,7 @@ main() {
 		-allow "$HOME/.config/claude" \
 		-allow "$HOME/.local/share/mise/installs" \
 		-allow "$HOME/.npm" \
+		-allow "$HOME/.pub-cache" \
 		-allow "$HOME/Library/Caches/go-build" \
 		-allow "$GOPATH/pkg/mod/cache" \
 		-allow "$(git rev-parse --git-common-dir)" \
