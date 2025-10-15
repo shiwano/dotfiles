@@ -55,9 +55,9 @@
   log-oneline = log --color --oneline
   lu = log --date=unix
   log-unix = log --date=unix
-  ignore = update-index --assume-unchanged
-  unignore = update-index --no-assume-unchanged
-  ignored = !git ls-files -v | grep "^[a-z]"
+  hide = update-index --skip-worktree
+  unhide = update-index --no-skip-worktree
+  hidden = !git ls-files -v | grep "^S"
   us = reset HEAD
   unstage = reset HEAD
   back = reset HEAD~
