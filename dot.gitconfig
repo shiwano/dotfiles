@@ -55,6 +55,7 @@
   log-oneline = log --color --oneline
   lu = log --date=unix
   log-unix = log --date=unix
+  exclude = !$EDITOR "${GIT_PREFIX:-.}/.git/info/exclude"
   hide = update-index --skip-worktree
   unhide = update-index --no-skip-worktree
   hidden = !git ls-files -v | grep "^S"
