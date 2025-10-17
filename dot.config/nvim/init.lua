@@ -794,6 +794,15 @@ local pluginSpec = {
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
+
+          vim.keymap.set("t", "<ESC>", function()
+            local chan = vim.b.terminal_job_id
+            if chan then
+              vim.api.nvim_chan_send(chan, "\x1b")
+            end
+          end, { buffer = true, silent = true })
+          vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { buffer = true, silent = true })
+
           vim.opt_local.scrollback = 1000
         end,
       })
