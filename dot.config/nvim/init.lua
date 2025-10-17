@@ -139,6 +139,12 @@ local pluginSpec = {
 
       fzf.setup({
         "fzf-native",
+        winopts = {
+          width = 0.95,
+          preview = {
+            horizontal = "right:45%",
+          },
+        },
         keymap = {
           fzf = { false },
         },
@@ -770,9 +776,13 @@ local pluginSpec = {
           return
         end
 
-        auto_reload_timer:start(500, 500, vim.schedule_wrap(function()
-          vim.cmd("checktime")
-        end))
+        auto_reload_timer:start(
+          500,
+          500,
+          vim.schedule_wrap(function()
+            vim.cmd("checktime")
+          end)
+        )
       end
 
       local function disable_auto_reload()
@@ -789,11 +799,12 @@ local pluginSpec = {
         pattern = "term://*/claude",
         callback = function()
           enable_auto_reload()
+          vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
+          vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { buffer = true, silent = true })
 
           vim.keymap.set("t", "<ESC>", function()
             local chan = vim.b.terminal_job_id
@@ -801,7 +812,6 @@ local pluginSpec = {
               vim.api.nvim_chan_send(chan, "\x1b")
             end
           end, { buffer = true, silent = true })
-          vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { buffer = true, silent = true })
 
           vim.opt_local.scrollback = 1000
         end,
