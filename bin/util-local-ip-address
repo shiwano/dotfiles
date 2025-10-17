@@ -3,7 +3,8 @@
 set -euo pipefail
 
 usage() {
-	cat <<EOF >&2
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: util-local-ip-address
 
 Prints the local (non-loopback) IPv4 addresses of this machine.
@@ -18,7 +19,7 @@ EOF
 
 main() {
 	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-		usage
+		usage 1
 		return 0
 	fi
 

@@ -3,7 +3,8 @@
 set -euo pipefail
 
 usage() {
-	cat <<EOF >&2
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: fzf-preview <mode> <target>
 
 Preview a file or Git diff for fzf.
@@ -47,6 +48,11 @@ preview_file() {
 }
 
 main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
 	if [ "$#" -ne 2 ]; then
 		usage
 		return 1

@@ -14,7 +14,12 @@ EOF
 }
 
 main() {
-	if [ "$#" -lt 2 ] || [[ "$1" == "--help" || "$1" == "-h" ]]; then
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage
+		return 0
+	fi
+
+	if [ "$#" -lt 2 ]; then
 		usage
 		return 1
 	fi

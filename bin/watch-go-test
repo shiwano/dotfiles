@@ -3,7 +3,8 @@
 set -euo pipefail
 
 usage() {
-	cat <<EOF >&2
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: watch-go-test [additional go test args...]
 
 Watches *.go files and runs targeted tests based on the changed file:
@@ -92,7 +93,7 @@ handle_file_change() {
 
 main() {
 	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-		usage
+		usage 1
 		return 0
 	fi
 

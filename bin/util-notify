@@ -3,7 +3,8 @@
 set -euo pipefail
 
 usage() {
-	cat <<EOF
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: util-notify [OPTIONS] <message>
 
 Send a macOS notification that can activate terminal.
@@ -45,7 +46,7 @@ is_active() {
 
 main() {
 	if [[ "$(uname)" != "Darwin" ]]; then
-		usage
+		usage 1
 		return 1
 	fi
 

@@ -11,7 +11,8 @@ readonly BOLD='\033[1m'
 readonly RESET='\033[0m'
 
 usage() {
-	cat <<EOF
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: upgrade-mise-go-tools [OPTIONS]
 
 Upgrade all Go tools managed by mise to their latest versions.
@@ -117,7 +118,7 @@ main() {
 	while [[ $# -gt 0 ]]; do
 		case $1 in
 		-h | --help)
-			usage
+			usage 1
 			return 0
 			;;
 		-n | --notify)

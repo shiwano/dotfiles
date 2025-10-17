@@ -3,7 +3,8 @@
 set -euo pipefail
 
 usage() {
-	cat <<EOF >&2
+	local fd="${1:-2}"
+	cat <<EOF >&$fd
 Usage: util-ansi-colors
 
 Display ANSI color code demonstrations:
@@ -154,7 +155,7 @@ show_notes() {
 
 main() {
 	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-		usage
+		usage 1
 		return 0
 	fi
 
