@@ -287,7 +287,7 @@ if command -v tmux >/dev/null 2>&1; then
 fi
 
 if command -v go >/dev/null 2>&1; then
-	alias go-build-all='go test -run=^$ ./... 1>/dev/null'
+	alias go-test-build='go test -run=^$ ./... 1>/dev/null'
 fi
 
 if command -v docker >/dev/null 2>&1; then
