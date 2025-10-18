@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: go-all <go-command> [args...]
+
+Execute go command in all directories containing go.mod files.
+
+Examples:
+  go-all build ./...
+  go-all test ./... -v
+  go-all mod tidy
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if [ "$#" -lt 1 ]; then
+		echo "Error: No go command specified" >&2
+		usage
+		return 1
+	fi
+
+	find . -name go.mod -print0 | while IFS= read -r -d '' modfile; do
+		local dir
+		dir=$(dirname "$modfile")
+		echo "Executing in $dir: go $*" >&2
+		(cd "$dir" && go "$@")
+	done
+}
+
+main "$@"
