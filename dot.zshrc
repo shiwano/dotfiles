@@ -286,10 +286,6 @@ if command -v tmux >/dev/null 2>&1; then
 	fi
 fi
 
-if command -v go >/dev/null 2>&1; then
-	alias go-test-build='go test -run=^$ ./... 1>/dev/null'
-fi
-
 if command -v docker >/dev/null 2>&1; then
 	alias docker-rm-all='docker rm $(docker ps -a -q)'
 	alias docker-rmi-all='docker rmi $(docker images -q)'
