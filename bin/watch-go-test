@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: watch-go-test [additional go test args...]
 
 Watches *.go files and runs targeted tests based on the changed file:

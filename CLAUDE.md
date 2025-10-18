@@ -50,7 +50,7 @@
 
 ### usage() Function
 
-- **Format**: `cat <<EOF >&$fd` with heredoc; accept file descriptor as parameter
+- **Format**: `cat <<EOF >&"$fd"` with heredoc; accept file descriptor as parameter
 - **Output**: stdout (fd=1) when called with `--help`; stderr (fd=2) on errors (default)
 - **Content**: Include Usage line, description, and Examples section
 - **Help flags**: Support both `-h` and `--help` in `main()`
@@ -100,7 +100,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: script-name [options] <args>
 
 Description of what this script does.

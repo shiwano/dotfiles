@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: git-switch-branch
 
 Interactively select a recently used branch and switch to it using \`git switch\`.

@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: copy-file-paths-to-clipboard [dir]
 
 Interactively select files and copy their paths to the clipboard.

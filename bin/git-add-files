@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: git-add-files
 
 Interactively select untracked or unstaged-but-not-already-added files and add them using \`git add\`.

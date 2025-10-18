@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: copy-changed-file-paths-to-clipboard
 
 Interactively select changed/added/untracked Git files and copy their paths to clipboard.

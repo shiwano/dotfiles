@@ -4,7 +4,7 @@ set -euo pipefail
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: git-unstage-files
 
 Interactively select staged or conflicted files to unstage using \`git reset HEAD\`.

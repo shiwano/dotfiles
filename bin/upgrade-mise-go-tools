@@ -12,7 +12,7 @@ readonly RESET='\033[0m'
 
 usage() {
 	local fd="${1:-2}"
-	cat <<EOF >&$fd
+	cat <<EOF >&"$fd"
 Usage: upgrade-mise-go-tools [OPTIONS]
 
 Upgrade all Go tools managed by mise to their latest versions.
