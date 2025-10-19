@@ -799,14 +799,12 @@ local pluginSpec = {
         pattern = "term://*/claude",
         callback = function()
           enable_auto_reload()
-          vim.keymap.set("t", "<C-z>", "<NOP>", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
-          vim.keymap.set("t", "<ESC><ESC>", "<C-\\><C-n>", { buffer = true, silent = true })
 
-          vim.keymap.set("t", "<ESC>", function()
+          vim.keymap.set("t", "<C-z>", function()
             local chan = vim.b.terminal_job_id
             if chan then
               vim.api.nvim_chan_send(chan, "\x1b")
