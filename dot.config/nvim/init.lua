@@ -693,6 +693,21 @@ local pluginSpec = {
         },
       })
 
+      vim.lsp.config(ls.dart, {
+        handlers = {
+          ["textDocument/publishDiagnostics"] = function(_, result, ctx)
+            local diagnostics = vim.deepcopy(result.diagnostics)
+            result.diagnostics = vim.tbl_filter(function(d)
+              if d.message:find("A value for optional parameter 'key' isn't ever given", 1, true) then
+                return false
+              end
+              return true
+            end, diagnostics)
+            vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx)
+          end,
+        },
+      })
+
       local ls_names = {}
       for _, v in pairs(ls) do
         table.insert(ls_names, v)
