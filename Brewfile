@@ -76,6 +76,7 @@ cask 'wireshark'
 cask 'ghostty'
 cask 'hammerspoon'
 cask 'chatgpt'
+cask 'comfyui'
 
 mas 'The Unarchiver', id: 425_424_353
 mas 'LINE', id: 539_883_307
