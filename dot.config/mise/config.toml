@@ -45,6 +45,7 @@ protoc-gen-go = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
 'npm:neovim' = 'latest'
 'npm:typescript-language-server' = 'latest'
+'npm:pyright' = 'latest'
 
 'go:github.com/Kunde21/markdownfmt/v3/cmd/markdownfmt' = 'latest'
 'go:github.com/aarzilli/gdlv' = 'latest'
