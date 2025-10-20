@@ -803,6 +803,8 @@ local pluginSpec = {
           vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
 
           vim.keymap.set("t", "<C-z>", function()
             local chan = vim.b.terminal_job_id
