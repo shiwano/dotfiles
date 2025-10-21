@@ -649,6 +649,11 @@ local pluginSpec = {
         python = "pyright",
       }
 
+      vim.lsp.config("*", {
+        on_attach = on_attach,
+        capabilities = caps,
+      })
+
       vim.lsp.config(ls.go, {
         on_attach = on_attach,
         capabilities = caps,
