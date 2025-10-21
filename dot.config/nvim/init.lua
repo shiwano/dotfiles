@@ -1453,7 +1453,7 @@ vim.keymap.set("n", "qa", "qa<Esc>", { desc = "# Start or stop recording macro" 
 vim.keymap.set("n", "qq", "<Esc>") -- Disable recording with qq
 
 -- File or URL open
-vim.keymap.set("n", "gf", function()
+vim.keymap.set("n", "oo", function()
   local cfile = vim.fn.expand("<cfile>")
   if cfile:match("^https?://") then
     vim.ui.open(cfile)
