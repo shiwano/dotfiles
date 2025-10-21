@@ -640,6 +640,13 @@ local pluginSpec = {
         relativePatternSupport = true,
       }
 
+      local function lsp_config(opts)
+        return vim.tbl_deep_extend("force", {
+          on_attach = on_attach,
+          capabilities = caps,
+        }, opts or {})
+      end
+
       -- BOOKMARK: language_servers
       local ls = {
         go = "gopls",
@@ -649,80 +656,83 @@ local pluginSpec = {
         python = "pyright",
       }
 
-      vim.lsp.config("*", {
-        on_attach = on_attach,
-        capabilities = caps,
-      })
+      vim.lsp.config("*", lsp_config())
 
-      vim.lsp.config(ls.go, {
-        on_attach = on_attach,
-        capabilities = caps,
-        cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
-      })
+      vim.lsp.config(
+        ls.go,
+        lsp_config({
+          cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
+        })
+      )
 
-      vim.lsp.config(ls.typescript, {
-        on_attach = function(client, bufnr)
-          on_attach(client, bufnr)
+      vim.lsp.config(
+        ls.typescript,
+        lsp_config({
+          on_attach = function(client, bufnr)
+            on_attach(client, bufnr)
 
-          vim.api.nvim_buf_create_user_command(bufnr, "LSPOrganizeImports", function()
-            client.exec_cmd({
-              command = "_typescript.organizeImports",
-              arguments = { vim.api.nvim_buf_get_name(0) },
-            }, { bufnr = bufnr })
-          end, { desc = "# Organize imports (LSP)" })
-        end,
-        capabilities = caps,
-      })
+            vim.api.nvim_buf_create_user_command(bufnr, "LSPOrganizeImports", function()
+              client.exec_cmd({
+                command = "_typescript.organizeImports",
+                arguments = { vim.api.nvim_buf_get_name(0) },
+              }, { bufnr = bufnr })
+            end, { desc = "# Organize imports (LSP)" })
+          end,
+        })
+      )
 
-      vim.lsp.config(ls.lua, {
-        on_attach = on_attach,
-        capabilities = caps,
-        settings = {
-          Lua = {
-            runtime = {
-              version = "LuaJIT",
-              pathStrict = true,
-              path = {
-                "?.lua",
-                "?/init.lua",
+      vim.lsp.config(
+        ls.lua,
+        lsp_config({
+          settings = {
+            Lua = {
+              runtime = {
+                version = "LuaJIT",
+                pathStrict = true,
+                path = {
+                  "?.lua",
+                  "?/init.lua",
+                },
+              },
+              workspace = {
+                library = vim.list_extend(vim.api.nvim_get_runtime_file("lua", true), {
+                  "${3rd}/luv/library",
+                  "${3rd}/busted/library",
+                  "${3rd}/luassert/library",
+                }),
+                checkThirdParty = "Disable",
               },
             },
-            workspace = {
-              library = vim.list_extend(vim.api.nvim_get_runtime_file("lua", true), {
-                "${3rd}/luv/library",
-                "${3rd}/busted/library",
-                "${3rd}/luassert/library",
-              }),
-              checkThirdParty = "Disable",
-            },
           },
-        },
-      })
+        })
+      )
 
-      vim.lsp.config(ls.dart, {
-        on_attach = on_attach,
-        capabilities = caps,
-        handlers = {
-          ["textDocument/publishDiagnostics"] = function(_, result, ctx)
-            local diagnostics = vim.deepcopy(result.diagnostics)
-            result.diagnostics = vim.tbl_filter(function(d)
-              if d.message:find("A value for optional parameter 'key' isn't ever given", 1, true) then
-                return false
-              end
-              return true
-            end, diagnostics)
-            vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx)
-          end,
-        },
-      })
+      vim.lsp.config(
+        ls.dart,
+        lsp_config({
+          handlers = {
+            ["textDocument/publishDiagnostics"] = function(_, result, ctx)
+              local diagnostics = vim.deepcopy(result.diagnostics)
+              result.diagnostics = vim.tbl_filter(function(d)
+                if d.message:find("A value for optional parameter 'key' isn't ever given", 1, true) then
+                  return false
+                end
+                return true
+              end, diagnostics)
+              vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx)
+            end,
+          },
+        })
+      )
 
-      vim.lsp.config(ls.python, {
-        on_attach = on_attach,
-        capabilities = caps,
-        settings = {
-          python = { pythonPath = ".venv/bin/python" },
-        },
-      })
+      vim.lsp.config(
+        ls.python,
+        lsp_config({
+          settings = {
+            python = { pythonPath = ".venv/bin/python" },
+          },
+        })
+      )
 
       local ls_names = {}
       for _, v in pairs(ls) do
