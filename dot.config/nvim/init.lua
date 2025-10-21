@@ -640,6 +640,7 @@ local pluginSpec = {
         relativePatternSupport = true,
       }
 
+      -- Set explicitly as a precaution (wildcard config were overridden with pyright).
       local function lsp_config(opts)
         return vim.tbl_deep_extend("force", {
           on_attach = on_attach,
