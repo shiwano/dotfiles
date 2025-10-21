@@ -1492,7 +1492,7 @@ vim.keymap.set("v", "<Leader>c<Space>", "gc", { remap = true, desc = "# Comment 
 vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment in" })
 
 -- Open diagnostics float
-vim.keymap.set("n", "oe", vim.diagnostic.open_float, { desc = "# Show diagnostics" })
+vim.keymap.set("n", "oe", vim.diagnostic.open_float, { silent = true, desc = "# Show diagnostics" })
 
 -------------------------------------------------------------------------------
 -- Custom commands
