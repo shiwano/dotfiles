@@ -640,20 +640,18 @@ local pluginSpec = {
         relativePatternSupport = true,
       }
 
-      vim.lsp.config("*", {
-        on_attach = on_attach,
-        capabilities = caps,
-      })
-
       -- BOOKMARK: language_servers
       local ls = {
         go = "gopls",
         typescript = "ts_ls",
         dart = "dartls",
         lua = "lua_ls",
+        python = "pyright",
       }
 
       vim.lsp.config(ls.go, {
+        on_attach = on_attach,
+        capabilities = caps,
         cmd = { "gopls", "-remote=auto", "-remote.listen.timeout=180m" },
       })
 
@@ -668,9 +666,12 @@ local pluginSpec = {
             }, { bufnr = bufnr })
           end, { desc = "# Organize imports (LSP)" })
         end,
+        capabilities = caps,
       })
 
       vim.lsp.config(ls.lua, {
+        on_attach = on_attach,
+        capabilities = caps,
         settings = {
           Lua = {
             runtime = {
@@ -694,6 +695,8 @@ local pluginSpec = {
       })
 
       vim.lsp.config(ls.dart, {
+        on_attach = on_attach,
+        capabilities = caps,
         handlers = {
           ["textDocument/publishDiagnostics"] = function(_, result, ctx)
             local diagnostics = vim.deepcopy(result.diagnostics)
@@ -705,6 +708,14 @@ local pluginSpec = {
             end, diagnostics)
             vim.lsp.diagnostic.on_publish_diagnostics(_, result, ctx)
           end,
+        },
+      })
+
+      vim.lsp.config(ls.python, {
+        on_attach = on_attach,
+        capabilities = caps,
+        settings = {
+          python = { pythonPath = ".venv/bin/python" },
         },
       })
 
@@ -1463,6 +1474,9 @@ vim.keymap.set("v", "<Leader>cs", "gc", { remap = true, desc = "# Comment out" }
 vim.keymap.set("n", "<Leader>cs", "gcc", { remap = true, desc = "# Comment out" })
 vim.keymap.set("v", "<Leader>c<Space>", "gc", { remap = true, desc = "# Comment in" })
 vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment in" })
+
+-- Open diagnostics float
+vim.keymap.set("n", "oe", vim.diagnostic.open_float, { desc = "# Show diagnostics" })
 
 -------------------------------------------------------------------------------
 -- Custom commands
