@@ -841,10 +841,16 @@ local pluginSpec = {
         pattern = "term://*/claude",
         callback = function()
           enable_auto_reload()
+          vim.keymap.set("n", "<C-j>", "i<C-\\><C-n><C-w>j", { buffer = true, silent = true })
+          vim.keymap.set("n", "<C-k>", "i<C-\\><C-n><C-w>k", { buffer = true, silent = true })
+          vim.keymap.set("n", "<C-h>", "i<C-\\><C-n><C-w>h", { buffer = true, silent = true })
+          vim.keymap.set("n", "<C-l>", "i<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+
           vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+
           vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
 
