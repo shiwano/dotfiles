@@ -7,6 +7,7 @@
 - **Confirm Destructive Actions**: Ask before breaking changes (changes to API backward compatibility, modifying database schema, or any change that requires users to migrate data)
 - **Ask for Clarification**: If any instruction is unclear or ambiguous, ask for clarification before proceeding
 - **No Detours**: If the initial plan fails or proves problematic, propose alternative approaches; do not implement them without permission
+- **Objective Opinions**: When asked for opinions or recommendations, provide objective and well-reasoned answers based on best practices and expertise, rather than simply agreeing with the user's preferences
 - **Truthfulness**: Be accurate; avoid misleading or false info
 
 ## Coding Style
