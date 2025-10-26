@@ -210,24 +210,24 @@ add-zsh-hook precmd _ssh-add-key
 
 # Functions --------------------------------------------------------------------
 
-move-to-git-repository() {
-	FZF_PROMPT='MoveTo> ' select-git-repository | { read -r s && [ -n "$s" ] && cd "$s"; }
+vcs-move-to-repo() {
+	FZF_PROMPT='MoveTo> ' vcs-select-repo | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
 
-edit-grep-results() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
+vcs-edit-files() {
+	_edit-files "$(FZF_PROMPT='Edit> ' vcs-select-files $1)"
 }
 
-edit-git-files() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-git-files $1)"
-}
-
-edit-git-changed-files() {
+vcs-edit-changed-files() {
 	if [ -z "$(git status -s -u --no-renames | grep -v -E '^D ')" ]; then
-		edit-git-files
+		vcs-edit-files
 	else
-		_edit-files "$(FZF_PROMPT='Edit> ' select-git-changed-files $1)"
+		_edit-files "$(FZF_PROMPT='Edit> ' vcs-select-changed-files $1)"
 	fi
+}
+
+util-edit-grep-results() {
+	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
 }
 
 _edit-files() {
@@ -238,12 +238,12 @@ _edit-files() {
 	edit-files "$1"
 }
 
-select-history() {
+util-select-history() {
 	BUFFER=$(history -n -r 1 | fzf --no-sort +m --query "$LBUFFER" --prompt 'History> ' --preview="")
 	CURSOR=$#BUFFER
 }
 
-remove-last-command() {
+util-remove-last-command() {
 	local last_command
 	last_command=$(fc -ln -1)
 	fc -p "$last_command"
@@ -259,17 +259,17 @@ alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authoriz
 alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 
+alias s='vcs-status'
+alias b='vcs-switch-branch'
+alias r='vcs-restore-files'
+alias t='vcs-stash-files'
+alias g='vcs-move-to-repo'
+alias v='vcs-edit-changed-files'
+alias vv='vcs-edit-files'
 alias a='git-add-files'
-alias b='git-switch-branch'
-alias s='git status'
 alias u='git-unstage-files'
-alias r='git-restore-files' # hide 'r' which is zsh's built-in command
-alias t='git-stash-files'
-alias g='move-to-git-repository'
-alias v='edit-git-changed-files'
-alias vv='edit-git-files'
-alias gg='edit-grep-results'
 alias mt='git-mergetool-file'
+alias gg='util-edit-grep-results'
 alias cf='copy-file-paths-to-clipboard'
 alias cc='copy-changed-file-paths-to-clipboard'
 alias ci='copy-image-paths-to-clipboard'
@@ -337,13 +337,28 @@ _prompt-pwd() {
 	fi
 }
 
-_prompt-git-branch() {
-	local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
-	if [ -n "$branch" ]; then
-		local icon_git_branch=$'\Ue0a0 '
-		echo "$icon_git_branch$branch"
+_prompt-vcs-branch() {
+	if jj root >/dev/null 2>&1; then
+		local bookmarks="$(jj log -r @ --no-graph -T 'bookmarks' 2>/dev/null)"
+		if [ -n "$bookmarks" ] && [ "$bookmarks" != "" ]; then
+			local icon_jj_branch=$'\Ue0a0 '
+			echo "$icon_jj_branch$bookmarks"
+		else
+			local change_id="$(jj log -r @ --no-graph -T 'change_id.short()' 2>/dev/null)"
+			if [ -n "$change_id" ]; then
+				echo "@$change_id"
+			else
+				echo ''
+			fi
+		fi
 	else
-		echo ''
+		local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+		if [ -n "$branch" ]; then
+			local icon_git_branch=$'\Ue0a0 '
+			echo "$icon_git_branch$branch"
+		else
+			echo ''
+		fi
 	fi
 }
 
@@ -388,7 +403,7 @@ _prompt-git-branch() {
 	left_segment+="%F{$secondary_bg}${left_sep}%f"
 
 	local right_segment=""
-	right_segment+="%F{$secondary_fg} "'$(_prompt-git-branch)'" %f"
+	right_segment+="%F{$secondary_fg} "'$(_prompt-vcs-branch)'" %f"
 
 	PROMPT="${left_segment}"
 	RPROMPT="${right_segment}"
@@ -408,8 +423,8 @@ zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
 
-zle -N select-history
-bindkey '^r' select-history
+zle -N util-select-history
+bindkey '^r' util-select-history
 
 _accept-line-with-typo-correction() {
 	if [[ "$BUFFER" =~ ^gti\  ]]; then

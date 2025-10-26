@@ -10,6 +10,7 @@ uv = 'latest'
 cosign = 'latest'
 slsa-verifier = 'latest'
 
+jujutsu = 'latest'
 actionlint = 'latest'
 awscli = 'latest'
 bat = 'latest'

@@ -5,13 +5,13 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-git-files [dir]
+Usage: vcs-select-files [dir]
 
-Interactively select files tracked by Git.
+Interactively select files tracked by version control (Git or jj).
 
 Examples:
-  select-git-files
-  select-git-files src
+  vcs-select-files
+  vcs-select-files src
 EOF
 }
 
@@ -25,7 +25,11 @@ main() {
 	local prompt="${FZF_PROMPT:-Select> }"
 
 	local files
-	files="$(git ls-files "$dir")"
+	if jj root >/dev/null 2>&1; then
+		files="$(jj file list "$dir" 2>/dev/null || true)"
+	else
+		files="$(git ls-files "$dir")"
+	fi
 	[ -z "$files" ] && return 0
 
 	local selected

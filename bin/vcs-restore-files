@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: vcs-restore-files
+
+Interactively select modified files to restore (Git or jj).
+
+Examples:
+  vcs-restore-files
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if jj root >/dev/null 2>&1; then
+		local files
+		files="$(jj status --no-pager 2>/dev/null | grep -E '^\w ' || true)"
+		[ -z "$files" ] && return 0
+
+		local selected
+		# shellcheck disable=SC2016
+		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'JJRestore> ' | cut -c4-)"
+		[ -z "$selected" ] && return 0
+
+		echo -e "$selected" | while IFS= read -r file; do
+			jj restore "$file"
+		done
+
+		jj status
+	else
+		local files
+		files="$(git status -s -u --no-renames | grep -v -E "^(M|A|D|UU|AA|DD|DU|UD) " | grep -v -E "^\?\? " || true)"
+		[ -z "$files" ] && return 0
+
+		local selected
+		# shellcheck disable=SC2016
+		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt 'GitRestore> ' | cut -c4-)"
+		[ -z "$selected" ] && return 0
+
+		echo -e "$selected" | while IFS= read -r file; do
+			git restore "$file"
+		done
+
+		git status
+	fi
+}
+
+main "$@"

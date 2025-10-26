@@ -5,12 +5,12 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-git-repository
+Usage: vcs-select-repo
 
 Interactively select a repository and print its absolute path.
 
 Examples:
-  select-git-repository | { read -r s && [ -n "\$s" ] && cd "\$s"; }
+  vcs-select-repo | { read -r s && [ -n "\$s" ] && cd "\$s"; }
 EOF
 }
 

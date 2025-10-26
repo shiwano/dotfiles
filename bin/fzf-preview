@@ -7,7 +7,7 @@ usage() {
 	cat <<EOF >&"$fd"
 Usage: fzf-preview <mode> <target>
 
-Preview a file or Git diff for fzf.
+Preview a file or diff for fzf (Git or jj).
 
 Examples:
   fzf-preview file /path/to/file
@@ -64,12 +64,20 @@ main() {
 	if [ "$mode" = "file" ]; then
 		preview_file "$target"
 	elif [ "$mode" = "diff" ]; then
-		if [ "$(git diff --name-only "$target")" ]; then
-			git diff --color "$target"
-		elif [ "$(git diff --cached --name-only "$target")" ]; then
-			git diff --color --cached "$target"
+		if jj root >/dev/null 2>&1; then
+			if jj diff "$target" 2>/dev/null | grep -q .; then
+				jj diff --color=always "$target"
+			else
+				preview_file "$target"
+			fi
 		else
-			preview_file "$target"
+			if [ "$(git diff --name-only "$target")" ]; then
+				git diff --color "$target"
+			elif [ "$(git diff --cached --name-only "$target")" ]; then
+				git diff --color --cached "$target"
+			else
+				preview_file "$target"
+			fi
 		fi
 	else
 		usage

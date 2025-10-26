@@ -33,7 +33,7 @@ main() {
 	fi
 
 	local selected
-	selected="$(FZF_PROMPT='CopyPath> ' select-git-changed-files)"
+	selected="$(FZF_PROMPT='CopyPath> ' vcs-select-changed-files)"
 	[ -z "$selected" ] && return 0
 
 	local pbcopy_cmd

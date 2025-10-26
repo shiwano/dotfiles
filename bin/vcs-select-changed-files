@@ -5,12 +5,12 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-git-changed-files [dir]
+Usage: vcs-select-changed-files [dir]
 
-Interactively select changed/added/untracked Git files.
+Interactively select changed/added/untracked files (Git or jj).
 
 Examples:
-  select-git-changed-files
+  vcs-select-changed-files
 EOF
 }
 
@@ -23,7 +23,11 @@ main() {
 	local prompt="${FZF_PROMPT:-Select> }"
 
 	local files
-	files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	if jj root >/dev/null 2>&1; then
+		files="$(jj status --no-pager 2>/dev/null | grep -E '^\w ' || true)"
+	else
+		files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	fi
 	[ -z "$files" ] && return 0
 
 	local selected
