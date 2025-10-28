@@ -515,11 +515,12 @@ setopt no_flow_control
 ulimit -n 200000
 ulimit -u 2000
 
-# Disable C-d to exit shell
+# Disable C-d to exit shell and C-z to suspend
 _do_nothing() {}
 zle -N _do_nothing
 bindkey "^D" _do_nothing
 setopt IGNORE_EOF
+stty susp undef
 
 # Integrations -----------------------------------------------------------------
 
