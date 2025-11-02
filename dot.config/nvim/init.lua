@@ -151,6 +151,9 @@ local pluginSpec = {
         files = {
           cmd = os.getenv("FZF_DEFAULT_COMMAND"),
           cwd_prompt = false,
+          fzf_opts = {
+            ['--no-sort'] = '',
+          },
         },
         oldfiles = {
           include_current_session = true,
