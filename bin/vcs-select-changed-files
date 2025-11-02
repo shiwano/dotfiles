@@ -23,16 +23,21 @@ main() {
 	local prompt="${FZF_PROMPT:-Select> }"
 
 	local files
+	local selected
 	if jj root >/dev/null 2>&1; then
-		files="$(jj status --no-pager 2>/dev/null | grep -E '^\w ' || true)"
+		files="$(jj status --no-pager | grep -E '^\w ' | grep -v -E '^D ')"
+		[ -z "$files" ] && return 0
+
+		# shellcheck disable=SC2016
+		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c3-)' --prompt "$prompt" | cut -c3-)"
 	else
 		files="$(git status -s -u --no-renames | grep -v -E '^D ')"
-	fi
-	[ -z "$files" ] && return 0
+		[ -z "$files" ] && return 0
 
-	local selected
-	# shellcheck disable=SC2016
-	selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt "$prompt" | cut -c4-)"
+		# shellcheck disable=SC2016
+		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c3-)' --prompt "$prompt" | cut -c3-)"
+	fi
+
 	[ -z "$selected" ] && return 0
 
 	echo "$selected"
