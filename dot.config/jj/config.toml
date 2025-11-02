@@ -3,44 +3,14 @@ name = "Shogo Iwano"
 email = "shiwano@gmail.com"
 
 [ui]
-default-command = "log"
+default-command = "status"
 editor = "nvim"
 pager = "delta"
 paginate = "auto"
-
-[ui.diff]
-tool = ["delta", "--line-numbers"]
-
-[ui.diff-editor]
-tool = ["nvim", "-d"]
-
-[ui.merge-editor]
-tool = "nvimdiff"
-
-[merge-tools.nvimdiff]
-program = "nvim"
-merge-args = ["-d", "-c", "wincmd J", "-c", "vimgrep /<<<<<<<\\|=======\\|>>>>>>>/g %", "-c", "copen", "-c", "wincmd k", "-c", "resize +10", "$output", "$left", "$right"]
-
-[colors]
-"change_id" = "yellow"
-"commit_id" = "blue"
-"author" = "cyan"
-"committer" = "cyan"
-"timestamp" = "magenta"
+diff-formatter = ["delta", "--color-only"]
+bookmark-list-sort-keys = ["name"]
 
 [aliases]
-# Short aliases similar to git
-st = ["status"]
-ci = ["commit"]
-co = ["edit"]
-sw = ["edit"]
-br = ["bookmark"]
-df = ["diff"]
-dfs = ["diff", "--git"]
-sh = ["show"]
-l = ["log"]
+s = ["status"]
+b = ["bookmark"]
 la = ["log", "-r", "all()"]
-
-# Enhanced commands
-uncommit = ["split"]
-unstage = ["restore", "--from", "@-"]
