@@ -7,10 +7,11 @@ default-command = "status"
 editor = "nvim"
 pager = "delta"
 paginate = "auto"
-diff-formatter = ["delta", "--color-only"]
+diff-formatter = ":git"
 bookmark-list-sort-keys = ["name"]
 
 [aliases]
 s = ["status"]
 b = ["bookmark"]
+cim = ["describe", "-m"]
 la = ["log", "-r", "all()"]
