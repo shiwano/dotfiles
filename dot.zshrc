@@ -346,7 +346,8 @@ _prompt-vcs-branch() {
 		else
 			local change_id="$(jj log -r @ --no-graph -T 'change_id.short()' 2>/dev/null)"
 			if [ -n "$change_id" ]; then
-				echo "@$change_id"
+				local icon_jj_branch=$'\Ue0a0 '
+				echo "$icon_jj_branch@$change_id"
 			else
 				echo ''
 			fi
