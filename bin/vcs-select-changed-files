@@ -35,7 +35,7 @@ main() {
 		[ -z "$files" ] && return 0
 
 		# shellcheck disable=SC2016
-		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c3-)' --prompt "$prompt" | cut -c3-)"
+		selected="$(echo -e "$files" | fzf -m --preview 'fzf-preview diff $(echo {} | cut -c4-)' --prompt "$prompt" | cut -c4-)"
 	fi
 
 	[ -z "$selected" ] && return 0
