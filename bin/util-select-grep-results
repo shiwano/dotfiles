@@ -5,12 +5,12 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-grep-results <search-term>
+Usage: util-select-grep-results <search-term>
 
 Interactively select lines from \`rg\` results.
 
 Examples:
-  select-grep-results foo
+  util-select-grep-results foo
 EOF
 }
 

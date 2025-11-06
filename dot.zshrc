@@ -222,18 +222,18 @@ vcs-edit-changed-files() {
 		files="$(git status -s -u --no-renames | grep -v -E '^D ')"
 	fi
 	if [ -z "$files" ]; then
-		util-edit-files
+		util-edit-selected-files
 	else
 		_edit-files "$(FZF_PROMPT='Edit> ' vcs-select-changed-files $1)"
 	fi
 }
 
-util-edit-files() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-files $1)"
+util-edit-selected-files() {
+	_edit-files "$(FZF_PROMPT='Edit> ' util-select-files $1)"
 }
 
 util-edit-grep-results() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
+	_edit-files "$(FZF_PROMPT='Edit> ' util-select-grep-results $1)"
 }
 
 util-select-history() {
@@ -252,7 +252,7 @@ _edit-files() {
 		file=$(echo "$1" | awk -F: '{print $1}')
 		print -s "vi $file" && fc -AI
 	fi
-	edit-files "$1"
+	util-edit-files "$1"
 }
 
 # Aliases ----------------------------------------------------------------------
@@ -271,14 +271,11 @@ alias r='vcs-restore-files'
 alias t='vcs-stash-files'
 alias g='vcs-move-to-repo'
 alias v='vcs-edit-changed-files'
-alias vv='util-edit-files'
+alias vv='util-edit-selected-files'
 alias a='git-add-files'
 alias u='git-unstage-files'
 alias mt='git-mergetool-file'
 alias gg='util-edit-grep-results'
-alias cf='copy-file-paths-to-clipboard'
-alias cc='copy-changed-file-paths-to-clipboard'
-alias ci='copy-image-paths-to-clipboard'
 
 autoload zmv
 alias zmv='noglob zmv -W'

@@ -5,13 +5,13 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-files [dir]
+Usage: util-select-files [dir]
 
 Interactively select files.
 
 Examples:
-  select-files
-  select-files src
+  util-select-files
+  util-select-files src
 EOF
 }
 
@@ -25,7 +25,7 @@ main() {
 	local prompt="${FZF_PROMPT:-Select> }"
 
 	local files
-	files="$(rg --files --hidden --follow --sort path -g '!**/.git' "$dir" 2>/dev/null || true)"
+	files="$(rg --files --hidden --follow --sort path -g '!**/.git' "$dir" 2>/dev/null | sed 's|^\./||' || true)"
 	[ -z "$files" ] && return 0
 
 	local selected

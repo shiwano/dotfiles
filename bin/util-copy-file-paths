@@ -5,13 +5,13 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: copy-image-paths-to-clipboard [dir]
+Usage: util-copy-file-paths [dir]
 
-Interactively select image files and copy their paths to the clipboard.
+Interactively select files and copy their paths to the clipboard.
 
 Examples:
-  copy-image-paths-to-clipboard
-  copy-image-paths-to-clipboard assets/images
+  util-copy-file-paths
+  util-copy-file-paths src
 EOF
 }
 
@@ -34,11 +34,11 @@ main() {
 	fi
 
 	local selected
-	selected="$(select-images "$@")"
+	selected="$(FZF_PROMPT='CopyPath> ' util-select-files "$@")"
 	[ -z "$selected" ] && return 0
 
 	local pbcopy_cmd
-	pbcopy_cmd="$(resolve_pbcopy)"
+	pbcopy_cmd=$(resolve_pbcopy)
 
 	# shellcheck disable=SC2086
 	printf "%s" "$selected" | eval $pbcopy_cmd

@@ -5,14 +5,14 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: watch-flutter-test [additional flutter test args...]
+Usage: flutter-watch-test [additional flutter test args...]
 
 Watches test/*.dart files and runs \`flutter test <file>\` when changed.
 
 Examples:
-  watch-flutter-test
-  watch-flutter-test --coverage
-  watch-flutter-test --timeout 60s
+  flutter-watch-test
+  flutter-watch-test --coverage
+  flutter-watch-test --timeout 60s
 EOF
 }
 

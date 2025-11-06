@@ -13,7 +13,7 @@ readonly RESET='\033[0m'
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: upgrade-mise-go-tools [OPTIONS]
+Usage: mise-upgrade-go-tools [OPTIONS]
 
 Upgrade all Go tools managed by mise to their latest versions.
 
@@ -81,7 +81,7 @@ extract_go_tools() {
 			tool=$(echo "$line" | sed -E "s/^[[:space:]]*'go:([^']+)'.*/\1/")
 			tools+=("$tool")
 		fi
-	done < "$config_file"
+	done <"$config_file"
 
 	printf '%s\n' "${tools[@]}"
 }
@@ -170,7 +170,7 @@ main() {
 			failed_tools+=("$(basename "$tool")")
 		fi
 		echo
-	done <<< "$tools"
+	done <<<"$tools"
 
 	# Show summary
 	echo "==============================="
@@ -209,3 +209,4 @@ main() {
 }
 
 main "$@"
+

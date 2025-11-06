@@ -5,13 +5,13 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: select-image-files [dir]
+Usage: select-images [dir]
 
 Interactively select image files.
 
 Examples:
-  select-image-files
-  select-image-files src
+  select-images
+  select-images src
 EOF
 }
 

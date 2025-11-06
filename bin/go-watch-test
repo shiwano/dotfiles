@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: watch-go-test [additional go test args...]
+Usage: go-watch-test [additional go test args...]
 
 Watches *.go files and runs targeted tests based on the changed file:
 - If a test file changes: runs only tests in that file
@@ -13,9 +13,9 @@ Watches *.go files and runs targeted tests based on the changed file:
 - Falls back to running all tests in the directory if no test file found
 
 Examples:
-  watch-go-test
-  watch-go-test -v -race
-  watch-go-test -bench .
+  go-watch-test
+  go-watch-test -v -race
+  go-watch-test -bench .
 
 Behavior:
   foo.go changed      → runs all tests from foo_test.go

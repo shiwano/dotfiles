@@ -5,7 +5,7 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: edit-files <input-string>
+Usage: util-edit-files <input-string>
 
 Open one or more files in nvim:
 - If one file path is given: open directly (with line if provided)
@@ -17,9 +17,9 @@ Each line must be in format:
   <file>:<line>:<text>[:more-text]
 
 Examples:
-  edit-files README.md
-  edit-files 'src/main.go:10'
-  edit-files 'file1.go:42:TODO\\nfile2.go:77:FIXME'
+  util-edit-files README.md
+  util-edit-files 'src/main.go:10'
+  util-edit-files 'file1.go:42:TODO\\nfile2.go:77:FIXME'
 EOF
 }
 
