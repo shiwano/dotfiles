@@ -1264,7 +1264,7 @@ local pluginSpec = {
       require("im_select").setup({
         default_command = "im-select",
         default_im_select = "com.apple.keylayout.ABC",
-        set_default_events = { "VimEnter", "WinEnter", "InsertEnter", "InsertLeave" },
+        set_default_events = { "VimEnter", "FocusGained", "InsertLeave", "TermEnter", "TermLeave" },
         set_previous_events = {}, -- Disable this feature
       })
     end,
