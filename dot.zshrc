@@ -214,28 +214,26 @@ vcs-move-to-repo() {
 	FZF_PROMPT='MoveTo> ' vcs-select-repo | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
 
-vcs-edit-files() {
-	_edit-files "$(FZF_PROMPT='Edit> ' vcs-select-files $1)"
-}
-
 vcs-edit-changed-files() {
-	if [ -z "$(git status -s -u --no-renames | grep -v -E '^D ')" ]; then
-		vcs-edit-files
+	local files=""
+	if jj root >/dev/null 2>&1; then
+		files="$(jj status --no-pager | grep -E '^\w ' | grep -v -E '^D ')"
+	else
+		files="$(git status -s -u --no-renames | grep -v -E '^D ')"
+	fi
+	if [ -z "$files" ]; then
+		util-edit-files
 	else
 		_edit-files "$(FZF_PROMPT='Edit> ' vcs-select-changed-files $1)"
 	fi
 }
 
-util-edit-grep-results() {
-	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
+util-edit-files() {
+	_edit-files "$(FZF_PROMPT='Edit> ' select-files $1)"
 }
 
-_edit-files() {
-	if [ "$(echo "$1" | wc -l)" -eq 1 ]; then
-		file=$(echo "$1" | awk -F: '{print $1}')
-		print -s "vi $file" && fc -AI
-	fi
-	edit-files "$1"
+util-edit-grep-results() {
+	_edit-files "$(FZF_PROMPT='Edit> ' select-grep-results $1)"
 }
 
 util-select-history() {
@@ -247,6 +245,14 @@ util-remove-last-command() {
 	local last_command
 	last_command=$(fc -ln -1)
 	fc -p "$last_command"
+}
+
+_edit-files() {
+	if [ "$(echo "$1" | wc -l)" -eq 1 ]; then
+		file=$(echo "$1" | awk -F: '{print $1}')
+		print -s "vi $file" && fc -AI
+	fi
+	edit-files "$1"
 }
 
 # Aliases ----------------------------------------------------------------------
@@ -265,7 +271,7 @@ alias r='vcs-restore-files'
 alias t='vcs-stash-files'
 alias g='vcs-move-to-repo'
 alias v='vcs-edit-changed-files'
-alias vv='vcs-edit-files'
+alias vv='util-edit-files'
 alias a='git-add-files'
 alias u='git-unstage-files'
 alias mt='git-mergetool-file'
