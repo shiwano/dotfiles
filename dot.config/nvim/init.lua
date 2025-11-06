@@ -152,7 +152,7 @@ local pluginSpec = {
           cmd = os.getenv("FZF_DEFAULT_COMMAND"),
           cwd_prompt = false,
           fzf_opts = {
-            ['--no-sort'] = '',
+            ["--no-sort"] = "",
           },
         },
         oldfiles = {
@@ -433,7 +433,7 @@ local pluginSpec = {
       end
 
       vim.keymap.set("n", "<Leader>uf", find_files, { silent = true, desc = "# Find files from the current file's directory" })
-      vim.keymap.set("n", "<Leader>uu", fzf.git_files, { silent = true, desc = "# Find files" })
+      vim.keymap.set("n", "<Leader>uu", fzf.files, { silent = true, desc = "# Find files" })
       vim.keymap.set("n", "<Leader>ub", fzf.buffers, { silent = true, desc = "# Find buffers" })
       vim.keymap.set("n", "<Leader>ud", find_files_noignore, { silent = true, desc = "# Find files (no ignore)" })
       vim.keymap.set("n", "<Leader>um", fzf.oldfiles, { silent = true, desc = "# Find recent files" })
