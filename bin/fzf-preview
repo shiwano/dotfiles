@@ -65,7 +65,7 @@ main() {
 		preview_file "$target"
 	elif [ "$mode" = "diff" ]; then
 		if jj root >/dev/null 2>&1; then
-			if jj diff "$target" 2>/dev/null | grep -q .; then
+			if [ "$(jj diff --summary "$target")" ]; then
 				jj diff --color=always "$target"
 			else
 				preview_file "$target"
