@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: jj-describe-with-ai [OPTIONS]
+
+Generate commit messages using AI (Claude) and create descriptions or commits interactively.
+
+Options:
+  -c, --commit    Create a new commit (jj commit)
+  -d, --describe  Update current change description (default, jj describe)
+  -h, --help      Show this help message
+
+Examples:
+  jj-describe-with-ai           # Update description (default)
+  jj-describe-with-ai -c        # Create a new commit
+  jj-describe-with-ai --commit  # Create a new commit
+EOF
+}
+
+main() {
+	local jj_command="describe"
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		-c | --commit)
+			jj_command="commit"
+			shift
+			;;
+		-d | --describe)
+			jj_command="describe"
+			shift
+			;;
+		*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	# Check if there are any changes
+	if [[ -z "$(jj diff)" ]]; then
+		echo "No changes to commit" >&2
+		return 1
+	fi
+
+	# Build context for AI
+	# Use temporary file to avoid command substitution issues with large diffs
+	local tmpfile
+	tmpfile=$(mktemp)
+	trap '[[ -n "${tmpfile:-}" ]] && rm -f -- "$tmpfile"' EXIT
+
+	{
+		echo "Recent commit messages in this project:"
+		jj log -r 'ancestors(@, 10)' --no-graph -T 'commit_id.short() ++ " " ++ description.first_line() ++ "\n"' | sed 's/^/- /'
+		echo -e "\nCurrent changes:"
+		jj diff --stat
+		echo -e "\nDetailed changes (limited to 400 lines):"
+		jj diff
+	} >"$tmpfile"
+
+	local context
+	context=$(head -n 450 "$tmpfile")
+
+	# Interactive loop for generating and selecting commit message
+	local additional_prompt=""
+	while true; do
+		local prompt="Analyze the recent commits and current changes. Generate a commit message following the project's style. If no clear pattern exists, use conventional commits format."
+		if [[ -n "$additional_prompt" ]]; then
+			prompt="$prompt Additional instructions: $additional_prompt"
+		fi
+
+		# Generate commit message using Claude
+		local commit_message
+		local response
+		response=$(echo -e "$context" | claude -p "$prompt" \
+			--system-prompt 'Analyze the changes and generate a commit message following the project style. Include your analysis and the commit message in single line JSON format: {"message": "commit message here"}. The message should be a single line, 3-8 words preferred.' \
+			--settings "$HOME/.config/claude/settings-command.json" 2>&1)
+
+		# Extract JSON from response (take last JSON object in case there's extra text)
+		local json_part
+		json_part=$(echo "$response" | grep -o '{[^}]*}' | tail -1)
+
+		if [[ -n "$json_part" ]]; then
+			commit_message=$(echo "$json_part" | jq -r '.message' 2>/dev/null)
+		fi
+
+		if [[ -z "$commit_message" || "$commit_message" == "null" ]]; then
+			echo "Error: Failed to parse commit message. Raw response:" >&2
+			echo "$response" >&2
+			return 1
+		fi
+
+		echo -e "$response" | sed '/^$/d'
+		echo ""
+		echo -e "\033[32mCommit message:\033[0m \033[1m$commit_message\033[0m"
+		read -r -p "$(echo -e "Use this message? [\033[32my\033[0m/\033[31mn\033[0m/\033[33me\033[0m/\033[36mr\033[0m=regenerate with prompt] (default: y) ")" choice
+
+		# Default to 'y' if empty
+		if [[ -z "$choice" ]]; then
+			choice="y"
+		fi
+
+		case "$choice" in
+		y | Y)
+			echo ""
+			jj $jj_command -m "$commit_message"
+			break
+			;;
+		e | E)
+			local edit_tmpfile
+			edit_tmpfile=$(mktemp)
+			trap '[[ -n "${edit_tmpfile:-}" ]] && rm -f -- "$edit_tmpfile"' EXIT
+			echo "$commit_message" >"$edit_tmpfile"
+			${EDITOR:-vi} "$edit_tmpfile"
+			commit_message=$(cat "$edit_tmpfile")
+			rm -f "$edit_tmpfile"
+			jj $jj_command -m "$commit_message"
+			break
+			;;
+		n | N)
+			echo "Cancelled"
+			break
+			;;
+		r | R)
+			read -r -p "Additional instructions (e.g., \"make it shorter\", \"add more detail\", \"mention the bug fix\"): " additional_prompt
+			continue
+			;;
+		*)
+			echo "Please choose y/n/e/r"
+			continue
+			;;
+		esac
+	done
+}
+
+main "$@"
