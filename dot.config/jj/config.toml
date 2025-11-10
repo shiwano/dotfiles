@@ -11,8 +11,6 @@ diff-formatter = ":git"
 bookmark-list-sort-keys = ["name"]
 
 [aliases]
-s = ["status"]
-b = ["bookmark"]
 cim = ["commit", "-m"]
 cic = ["util", "exec", "--", "jj-describe-with-ai --commit"]
 dim = ["describe", "-m"]
