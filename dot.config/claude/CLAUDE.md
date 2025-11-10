@@ -19,4 +19,3 @@
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
 - **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
-- **Git Commits**: Follow existing style; imperative mood; explain "what" and "why"
