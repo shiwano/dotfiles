@@ -241,10 +241,15 @@ util-select-history() {
 	CURSOR=$#BUFFER
 }
 
-util-remove-last-command() {
-	local last_command
-	last_command=$(fc -ln -1)
-	fc -p "$last_command"
+util-remove-history() {
+	local selected
+	selected=$(history -n -r 1 | fzf --no-sort +m --prompt 'Remove History> ' --preview="")
+	if [ -z "$selected" ]; then
+		return 0
+	fi
+	local HISTORY_IGNORE="${(b)selected}"
+	fc -W
+	fc -p $HISTFILE $HISTSIZE $SAVEHIST
 }
 
 _edit-files() {
