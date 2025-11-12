@@ -14,7 +14,7 @@ main() {
 		-allow "$HOME/Library/Caches/go-build" \
 		-allow "$GOPATH/pkg/mod/cache" \
 		-allow "$(git rev-parse --git-common-dir)" \
-		claude "$@"
+		claude --mcp-config "$HOME/.mcp-global.json" "$@"
 }
 
 main "$@"
