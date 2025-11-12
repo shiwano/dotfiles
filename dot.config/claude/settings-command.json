@@ -41,29 +41,5 @@
       "Read(**/secrets/**)"
     ]
   },
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "claude-hook-notification"
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "claude-hook-stop"
-          }
-        ]
-      }
-    ]
-  },
   "model": "claude-3-5-haiku-latest"
 }
