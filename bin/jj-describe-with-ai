@@ -82,6 +82,7 @@ main() {
 		local change_description
 		local response
 		response=$(echo -e "$context" | claude -p "$prompt" \
+			--mcp-config '' \
 			--system-prompt 'Analyze the changes and generate a change description following the project style. Include your analysis and the change description in single line JSON format: {"message": "change description here"}. The message should be a single line, 3-8 words preferred.' \
 			--settings "$HOME/.config/claude/settings-command.json" 2>&1)
 
