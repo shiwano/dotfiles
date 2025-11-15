@@ -43,6 +43,10 @@ fi
 autoload -Uz compinit
 compinit
 
+if command -v jj >/dev/null 2>&1; then
+	source <(jj util completion zsh)
+fi
+
 if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
 	. "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
