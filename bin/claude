@@ -13,6 +13,7 @@ main() {
 		-allow "$HOME/.pub-cache" \
 		-allow "$HOME/Library/Caches/go-build" \
 		-allow "$GOPATH/pkg/mod/cache" \
+		-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh" \
 		-allow "$(git rev-parse --git-common-dir)" \
 		claude --mcp-config "$HOME/.mcp-global.json" "$@"
 }
