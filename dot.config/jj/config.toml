@@ -16,3 +16,8 @@ cic = ["util", "exec", "--", "jj-describe-with-ai --commit"]
 dim = ["describe", "-m"]
 dic = ["util", "exec", "--", "jj-describe-with-ai --describe"]
 la = ["log", "-r", "all()"]
+fsm = ["debug", "watchman", "status"]
+
+[fsmonitor]
+backend = "watchman"
+watchman.register-snapshot-trigger = true
