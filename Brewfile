@@ -41,6 +41,7 @@ brew 'gnuplot'
 brew 'sl'
 brew 'terminal-notifier'
 brew 'im-select'
+brew 'watchman'
 
 cask 'alfred'
 cask 'google-chrome'
