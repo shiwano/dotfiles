@@ -2,7 +2,7 @@
 go = '1.25'
 node = "24.2"
 deno = '2.2'
-rust = '1.85'
+rust = '1.91'
 java = '24.0'
 
 uv = 'latest'
