@@ -658,6 +658,7 @@ local pluginSpec = {
         dart = "dartls",
         lua = "lua_ls",
         python = "pyright",
+        rust = "rust_analyzer",
       }
 
       vim.lsp.config("*", lsp_config())
@@ -737,6 +738,8 @@ local pluginSpec = {
           },
         })
       )
+
+      vim.lsp.config(ls.rust, lsp_config({}))
 
       local ls_names = {}
       for _, v in pairs(ls) do
