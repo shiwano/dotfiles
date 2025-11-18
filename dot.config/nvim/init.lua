@@ -253,6 +253,7 @@ local pluginSpec = {
           { name = "ghostty", path = "~/.config/ghostty/config" },
           { name = "hammerspoon", path = "~/.hammerspoon/init.lua" },
           { name = "bat", path = "~/.config/bat/config" },
+          { name = "jj", path = "~/.config/jj/config.toml" },
         }
 
         local function find_entry(name)
