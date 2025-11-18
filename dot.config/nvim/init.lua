@@ -847,6 +847,15 @@ local pluginSpec = {
         group = "terminal_claude",
         pattern = "term://*/claude",
         callback = function()
+          local send_to_term = function(code)
+            return function()
+              local chan = vim.b.terminal_job_id
+              if chan then
+                vim.api.nvim_chan_send(chan, code)
+              end
+            end
+          end
+
           enable_auto_reload()
           vim.keymap.set("n", "<C-j>", "i<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("n", "<C-k>", "i<C-\\><C-n><C-w>k", { buffer = true, silent = true })
@@ -861,12 +870,8 @@ local pluginSpec = {
           vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
 
-          vim.keymap.set("t", "<C-z>", function()
-            local chan = vim.b.terminal_job_id
-            if chan then
-              vim.api.nvim_chan_send(chan, "\x1b")
-            end
-          end, { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-z>", send_to_term("\x1b"), { buffer = true, silent = true }) -- Escape
+          vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true }) -- Ctrl+O
 
           vim.opt_local.scrollback = 1000
         end,
