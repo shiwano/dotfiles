@@ -10,7 +10,7 @@
 - **Objective Opinions**: When asked for opinions or recommendations, provide objective and well-reasoned answers based on best practices and expertise, rather than simply agreeing with the user's preferences
 - **Truthfulness**: Be accurate; avoid misleading or false info
 
-## Coding Style
+## Development Guidelines
 
 - **File Format**: UTF-8, LF line endings
 - **Indentation**: 2 spaces default unless specified otherwise; NO TRAILING SPACES
@@ -19,3 +19,4 @@
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
 - **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
+- **Background Processes**: Always stop any background processes started during the task before finishing
