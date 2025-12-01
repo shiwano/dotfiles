@@ -20,3 +20,7 @@
 - **Testing**: Always write tests where possible; do not break existing tests.
 - **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
 - **Background Processes**: Always stop any background processes started during the task before finishing
+
+## GitHub Workflow
+
+- **PR Comments**: When asked to fix or respond to PR comments, use `gh-pr-comments` to retrieve and review the comments first

@@ -40,7 +40,8 @@
       "Bash(git status:*)",
       "Bash(cargo build:*)",
       "Bash(cargo check:*)",
-      "Bash(shfmt :*)"
+      "Bash(gh-pr-comments:*)",
+      "Bash(shfmt -d:*)"
     ],
     "deny": [
       "Bash(sh :*)",
@@ -61,6 +62,7 @@
       "Bash(git branch -D :*)",
       "Bash(git branch -d :*)",
       "Bash(git push:*)",
+      "Bash(gh:*)",
       "Bash(docker push:*)",
       "Bash(npm publish:*)",
       "Bash(brew :*)",

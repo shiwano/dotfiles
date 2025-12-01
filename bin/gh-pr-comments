@@ -1,0 +1,221 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: gh-pr-comments [options]
+
+Display PR comments grouped by thread for the current branch.
+
+Shows both PR-level comments and review comments (code comments),
+sorted by last activity time within each thread.
+
+Options:
+  -a, --all    Include resolved comments (hidden by default)
+  -h, --help   Show this help message
+
+Requires:
+  - gh (GitHub CLI)
+  - jq (JSON processor)
+
+Examples:
+  gh-pr-comments
+  gh-pr-comments --all
+EOF
+}
+
+main() {
+	local show_all=false
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-a | --all)
+			show_all=true
+			shift
+			;;
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	if ! command -v gh >/dev/null 2>&1; then
+		echo "Error: gh command not found" >&2
+		return 1
+	fi
+
+	if ! command -v jq >/dev/null 2>&1; then
+		echo "Error: jq command not found" >&2
+		return 1
+	fi
+
+	local pr_number repo_owner repo_name
+	pr_number=$(gh pr view --json number -q .number 2>/dev/null) || {
+		echo "Error: No PR found for current branch" >&2
+		return 1
+	}
+
+	# Get owner and repo name
+	repo_owner=$(gh repo view --json owner -q .owner.login)
+	repo_name=$(gh repo view --json name -q .name)
+
+	# GraphQL query to get both review threads and PR comments
+	# shellcheck disable=SC2016
+	local graphql_query='
+query($owner: String!, $repo: String!, $pr: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
+      reviewThreads(first: 100) {
+        nodes {
+          isResolved
+          path
+          line
+          startLine
+          originalLine
+          originalStartLine
+          comments(first: 100) {
+            nodes {
+              id
+              body
+              createdAt
+              url
+              path
+              line: originalLine
+              author {
+                login
+              }
+            }
+          }
+        }
+      }
+      comments(first: 100) {
+        nodes {
+          id
+          body
+          createdAt
+          url
+          author {
+            login
+          }
+        }
+      }
+    }
+  }
+}
+'
+
+	local api_response
+	api_response=$(gh api graphql -f query="$graphql_query" \
+		-f owner="$repo_owner" \
+		-f repo="$repo_name" \
+		-F pr="$pr_number") || {
+		echo "Error: Failed to fetch PR data" >&2
+		return 1
+	}
+
+	# jq query to process review threads
+	local review_query
+	if [[ "$show_all" == "true" ]]; then
+		review_query='
+.data.repository.pullRequest.reviewThreads.nodes |
+map({
+  type: "review",
+  is_resolved: .isResolved,
+  file: .path,
+  line: (.line // .originalLine // .startLine),
+  comments: .comments.nodes | map({
+    user: (.author.login // "unknown"),
+    body: .body,
+    created_at: .createdAt,
+    url: .url
+  }) | sort_by(.created_at),
+  last_activity: (.comments.nodes | map(.createdAt) | max)
+}) |
+map(. + {
+  comments: (.comments | to_entries | map(.value + {is_reply: (.key > 0)}))
+})
+'
+	else
+		review_query='
+.data.repository.pullRequest.reviewThreads.nodes |
+map(select(.isResolved == false)) |
+map({
+  type: "review",
+  is_resolved: .isResolved,
+  file: .path,
+  line: (.line // .originalLine // .startLine),
+  comments: .comments.nodes | map({
+    user: (.author.login // "unknown"),
+    body: .body,
+    created_at: .createdAt,
+    url: .url
+  }) | sort_by(.created_at),
+  last_activity: (.comments.nodes | map(.createdAt) | max)
+}) |
+map(. + {
+  comments: (.comments | to_entries | map(.value + {is_reply: (.key > 0)}))
+})
+'
+	fi
+
+	# jq query to process PR comments
+	local pr_query='
+.data.repository.pullRequest.comments.nodes |
+map({
+  type: "pr",
+  is_resolved: false,
+  file: null,
+  line: null,
+  comments: [{
+    user: (.author.login // "unknown"),
+    body: .body,
+    created_at: .createdAt,
+    url: .url,
+    is_reply: false
+  }],
+  last_activity: .createdAt
+})
+'
+
+	# Process both comment types
+	local review_threads pr_threads
+	review_threads=$(echo "$api_response" | jq -c "$review_query")
+	pr_threads=$(echo "$api_response" | jq -c "$pr_query")
+
+	# Format output query with indented multi-line body
+	# shellcheck disable=SC2016
+	local format_query='
+def format_time:
+  strptime("%Y-%m-%dT%H:%M:%SZ") | mktime + 32400 | strftime("%Y-%m-%d %H:%M");
+
+def format_body(prefix):
+  prefix + "\n" + (.body | split("\n") | map(select(test("^\\s*$") | not)) | join("\n"));
+
+.[] |
+(if .type == "pr" then
+  "💬 \u001b[1;36mPR Comment\u001b[0m"
+elif .is_resolved then
+  "✅ \u001b[1;36m\(.file):\(.line)\u001b[0m \u001b[90m(resolved)\u001b[0m"
+else
+  "☑️ \u001b[1;36m\(.file):\(.line)\u001b[0m"
+end),
+(.comments[] |
+	format_body("\u001b[1;33m\(.user):\u001b[0m \u001b[90m\(.created_at | format_time) \(.url)\u001b[0m")
+),
+""
+'
+
+	echo "$review_threads" "$pr_threads" |
+		jq -s 'add | sort_by(.last_activity)' |
+		jq -r "$format_query"
+}
+
+main "$@"
