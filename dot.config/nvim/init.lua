@@ -1073,8 +1073,6 @@ local pluginSpec = {
         },
         formatters = {
           markdownfmt = {
-            inherit = false,
-            command = "markdownfmt",
             args = { "-soft-wraps" },
           },
         },
