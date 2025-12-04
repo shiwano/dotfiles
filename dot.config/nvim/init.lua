@@ -141,6 +141,7 @@ local pluginSpec = {
         "fzf-native",
         winopts = {
           width = 0.95,
+          ---@diagnostic disable-next-line: missing-fields
           preview = {
             horizontal = "right:45%",
           },
