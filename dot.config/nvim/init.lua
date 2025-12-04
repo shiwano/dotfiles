@@ -1074,7 +1074,7 @@ local pluginSpec = {
         },
         formatters = {
           markdownfmt = {
-            args = { "-soft-wraps" },
+            append_args = { "-soft-wraps" },
           },
         },
         format_on_save = function(bufnr)
