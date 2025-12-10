@@ -12,11 +12,12 @@
 ## Development Guidelines
 
 - **Code Style**: UTF-8, LF line endings; 2 spaces indentation (unless specified); no trailing spaces
-- **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases, TODOs
+- **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Documentation**: Create only when explicitly requested
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Testing**: Always write tests where possible; do not break existing tests.
 - **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
+- **Path Style**: When referencing files within the current working directory, use relative paths (e.g., `./file.txt`, `src/main.rs`) instead of absolute paths (e.g., `/Users/username/project/file.txt`)
 - **Background Processes**: Always stop any background processes started during the task before finishing
 
 ## GitHub Workflow
