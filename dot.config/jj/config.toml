@@ -21,6 +21,7 @@ ls = ["log", "--stat", "all()"]
 olp = ["op", "log", "-p"]
 untrack = ["file", "untrack"]
 fsm = ["debug", "watchman", "status"]
+zen = ["util", "exec", "--", "jj-zen"]
 
 [fsmonitor]
 backend = "watchman"
