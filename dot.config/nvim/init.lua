@@ -809,37 +809,70 @@ local pluginSpec = {
         ---@diagnostic disable-next-line: missing-fields
         terminal = {
           split_side = "left",
-          split_width_percentage = 0.50,
+          split_width_percentage = 0.40,
           provider = "native",
         },
       })
 
-      local auto_reload_timer = nil
+      local file_watcher = nil
 
-      local function enable_auto_reload()
-        if auto_reload_timer then
-          return
-        end
+      local function is_git_ignored(filepath)
+        vim.fn.system({ "git", "check-ignore", "-q", filepath })
+        return vim.v.shell_error == 0
+      end
 
-        auto_reload_timer = vim.loop.new_timer()
-        if not auto_reload_timer then
-          return
-        end
-
-        auto_reload_timer:start(
-          500,
-          500,
-          vim.schedule_wrap(function()
+      local function load_or_reload_buffer(filepath)
+        local existing_buf = vim.fn.bufnr(filepath)
+        if existing_buf ~= -1 then
+          vim.api.nvim_buf_call(existing_buf, function()
             vim.cmd("checktime")
+          end)
+          return
+        end
+
+        local bufnr = vim.fn.bufadd(filepath)
+        vim.fn.bufload(bufnr)
+      end
+
+      local function enable_file_watcher()
+        if file_watcher then
+          return
+        end
+
+        local root = vim.fn.getcwd()
+
+        file_watcher = vim.uv.new_fs_event()
+        if not file_watcher then
+          return
+        end
+
+        file_watcher:start(
+          root,
+          { recursive = true },
+          vim.schedule_wrap(function(err, filename, _)
+            if err or not filename then
+              return
+            end
+
+            local filepath = root .. "/" .. filename
+
+            if vim.fn.filereadable(filepath) == 0 then
+              return
+            end
+            if is_git_ignored(filepath) then
+              return
+            end
+
+            load_or_reload_buffer(filepath)
           end)
         )
       end
 
-      local function disable_auto_reload()
-        if auto_reload_timer then
-          auto_reload_timer:stop()
-          auto_reload_timer:close()
-          auto_reload_timer = nil
+      local function disable_file_watcher()
+        if file_watcher then
+          file_watcher:stop()
+          file_watcher:close()
+          file_watcher = nil
         end
       end
 
@@ -857,7 +890,8 @@ local pluginSpec = {
             end
           end
 
-          enable_auto_reload()
+          enable_file_watcher()
+
           vim.keymap.set("n", "<C-j>", "i<C-\\><C-n><C-w>j", { buffer = true, silent = true })
           vim.keymap.set("n", "<C-k>", "i<C-\\><C-n><C-w>k", { buffer = true, silent = true })
           vim.keymap.set("n", "<C-h>", "i<C-\\><C-n><C-w>h", { buffer = true, silent = true })
@@ -886,7 +920,7 @@ local pluginSpec = {
         group = "terminal_claude",
         pattern = "term://*/claude",
         callback = function()
-          disable_auto_reload()
+          disable_file_watcher()
         end,
       })
     end,
