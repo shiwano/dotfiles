@@ -298,19 +298,8 @@ if command -v tmux >/dev/null 2>&1; then
 	fi
 fi
 
-if command -v docker >/dev/null 2>&1; then
-	alias docker-rm-all='docker rm $(docker ps -a -q)'
-	alias docker-rmi-all='docker rmi $(docker images -q)'
-	alias docker-rm-volumes-all='docker volume rm $(docker volume ls -qf dangling=true)'
-	alias docker-run-sh='docker run -it --entrypoint sh'
-fi
-
 if command -v bazelisk >/dev/null 2>&1; then
 	alias bazel='bazelisk'
-fi
-
-if command -v ibazel >/dev/null 2>&1; then
-	alias ibazel-go-test='ibazel --run_output_interactive=false -nolive_reload test :go_default_test'
 fi
 
 if command -v bat >/dev/null 2>&1; then

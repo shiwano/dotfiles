@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: docker-rm-dangling-volumes
+
+Remove all dangling Docker volumes.
+
+Examples:
+  docker-rm-dangling-volumes
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if ! command -v docker >/dev/null 2>&1; then
+		echo "Error: docker is not installed" >&2
+		return 1
+	fi
+
+	local volumes
+	volumes="$(docker volume ls -qf dangling=true)"
+	[ -z "$volumes" ] && return 0
+
+	echo "$volumes" | xargs docker volume rm
+}
+
+main "$@"

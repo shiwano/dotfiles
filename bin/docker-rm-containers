@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: docker-rm-containers
+
+Remove all stopped Docker containers and their volumes.
+
+Examples:
+  docker-rm-containers
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if ! command -v docker >/dev/null 2>&1; then
+		echo "Error: docker is not installed" >&2
+		return 1
+	fi
+
+	local containers
+	containers="$(docker ps -a -q)"
+	[ -z "$containers" ] && return 0
+
+	echo "$containers" | xargs docker rm -v
+}
+
+main "$@"

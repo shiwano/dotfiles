@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: docker-rm-images
+
+Remove all Docker images.
+
+Examples:
+  docker-rm-images
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if ! command -v docker >/dev/null 2>&1; then
+		echo "Error: docker is not installed" >&2
+		return 1
+	fi
+
+	local images
+	images="$(docker images -q)"
+	[ -z "$images" ] && return 0
+
+	echo "$images" | xargs docker rmi
+}
+
+main "$@"
