@@ -49,7 +49,6 @@
       "Bash(bash:*)",
       "Bash(zsh:*)",
       "Bash(sudo:*)",
-      "Bash(curl:*)",
       "Bash(wget:*)",
       "Bash(nc:*)",
       "Bash(dd:*)",
