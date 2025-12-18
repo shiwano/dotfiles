@@ -1,5 +1,7 @@
 bindkey -e
 
+typeset -a _startup_funcs=()
+
 # Envs -------------------------------------------------------------------------
 
 if [ -n "$TMUX" ]; then
@@ -43,14 +45,6 @@ fi
 autoload -Uz compinit
 compinit
 
-if command -v jj >/dev/null 2>&1; then
-	source <(jj util completion zsh)
-fi
-
-if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
-	. "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
-fi
-
 # PATH -------------------------------------------------------------------------
 
 export PATH=$BREW_PREFIX/bin:$BREW_PREFIX/sbin:$GOPATH/bin:$PATH
@@ -75,17 +69,11 @@ if [ -d ${HOME}/.local/bin ] ; then
 	export PATH="$HOME/.local/bin:$PATH"
 fi
 
-# mise -------------------------------------------------------------------------
-
-if command -v mise >/dev/null 2>&1; then
-	eval "$(mise activate zsh)"
-fi
-
-# Nix --------------------------------------------------------------------------
-
-if [ -e "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then
-	. "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-fi
+_startup-path() {
+	typeset -U path PATH # Remove duplicated PATHs.
+	export PATH=$HOME/dotfiles/bin:$PATH
+}
+_startup_funcs+=(_startup-path)
 
 # fzf --------------------------------------------------------------------------
 
@@ -186,7 +174,7 @@ fi
 
 # ssh-key ----------------------------------------------------------------------
 
-_ssh-add-key() {
+_startup-ssh-add-key() {
   local key_path="$HOME/.ssh/id_rsa"
   if [ ! -f "$key_path" ]; then
     return 0
@@ -208,9 +196,33 @@ _ssh-add-key() {
 
 	ssh-add "$key_path"
 }
+_startup_funcs+=(_startup-ssh-add-key)
 
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd _ssh-add-key
+# tmux -------------------------------------------------------------------------
+
+_startup-tmux-main-prompt() {
+	if [ -n "$TMUX" ]; then
+		return 0
+	fi
+
+	if ! command -v tmux >/dev/null 2>&1; then
+		return 0
+	fi
+
+	# Skip if any session has attached clients
+	local attached
+	attached="$(tmux list-sessions -F '#{session_attached}' 2>/dev/null | grep -v '^0$' | head -1)"
+	if [ -n "$attached" ]; then
+		return 0
+	fi
+
+	echo "You're not in a tmux session. Start tmux-main? [y/n]"
+	read -r ans
+	if [[ "$ans" =~ ^[Yy]$ ]]; then
+		tmux-main
+	fi
+}
+_startup_funcs+=(_startup-tmux-main-prompt)
 
 # Functions --------------------------------------------------------------------
 
@@ -291,12 +303,6 @@ alias zmv='noglob zmv -W'
 alias zcp='noglob zmv -C'
 alias zln='noglob zmv -L'
 alias zsy='noglob zmv -Ls'
-
-if command -v tmux >/dev/null 2>&1; then
-	if [ -z "$TMUX" ]; then
-		alias tmux='tmux new-session -A -s main'
-	fi
-fi
 
 if command -v bazelisk >/dev/null 2>&1; then
 	alias bazel='bazelisk'
@@ -526,18 +532,37 @@ stty susp undef
 
 # Integrations -----------------------------------------------------------------
 
+if command -v mise >/dev/null 2>&1; then
+	eval "$(mise activate zsh)"
+fi
+
+if [ -e "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then
+	. "${HOME}/.nix-profile/etc/profile.d/nix.sh"
+fi
+
 if command -v direnv >/dev/null 2>&1; then
 	eval "$(direnv hook zsh)"
+fi
+
+if command -v jj >/dev/null 2>&1; then
+	source <(jj util completion zsh)
 fi
 
 if [ -n "${GHOSTTY_RESOURCES_DIR}" ]; then
 	. "${GHOSTTY_RESOURCES_DIR}/shell-integration/zsh/ghostty-integration"
 fi
 
+if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
+	. "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+fi
+
 if [ -f ~/.zshrc.local ]; then
 	. ~/.zshrc.local
 fi
 
-typeset -U path PATH # Remove duplicated PATHs.
+# Startup ----------------------------------------------------------------------
 
-export PATH=$HOME/dotfiles/bin:$PATH
+for _func in "${_startup_funcs[@]}"; do
+	$_func
+done
+unset _func _startup_funcs
