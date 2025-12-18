@@ -8,10 +8,12 @@ main() {
 		-allow /tmp \
 		-allow "$HOME/dotfiles/dot.config/claude" \
 		-allow "$HOME/.config/claude" \
+		-allow "$HOME/.mcp-global.json" \
 		-allow "$HOME/.local/share/mise/installs" \
 		-allow "$HOME/.npm" \
 		-allow "$HOME/.pub-cache" \
 		-allow "$HOME/.cargo" \
+		-allow "$HOME/Library/Caches/claude-cli-nodejs" \
 		-allow "$HOME/Library/Caches/go-build" \
 		-allow "$GOPATH/pkg/mod/cache" \
 		-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh" \
