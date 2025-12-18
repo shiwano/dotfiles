@@ -5,3 +5,4 @@ flutter_jank_metrics_*.json
 .ipynb_checkpoints/
 
 _ignored/
+.tmp-agent/

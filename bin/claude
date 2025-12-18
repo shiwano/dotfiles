@@ -5,7 +5,6 @@ set -euo pipefail
 main() {
 	exec mise exec -- cage \
 		-allow . \
-		-allow /tmp \
 		-allow "$HOME/dotfiles/dot.config/claude" \
 		-allow "$HOME/.config/claude" \
 		-allow "$HOME/.mcp-global.json" \

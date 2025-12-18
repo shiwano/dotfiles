@@ -1,4 +1,4 @@
-# AI Assistant Instructions
+# AI Agent Instructions
 
 ## Core Principles
 
@@ -13,12 +13,11 @@
 
 - **Code Style**: UTF-8, LF line endings; 2 spaces indentation (unless specified); no trailing spaces
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
-- **Documentation**: Create only when explicitly requested
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
-- **Testing**: Always write tests where possible; do not break existing tests
-- **Security**: Always write code with security in mind to prevent vulnerabilities like SQL injection or XSS
 - **Path Style**: Always use relative paths (e.g., `./file.txt`, `src/main.rs`) if available
-- **Background Processes**: Always stop any background processes started during the task before finishing
+- **Working Directory**: Never modify files outside the current working directory
+- **Background Processes**: Ask user before starting; always stop before finishing
+- **Temporary Files**: Use `./.tmp-agent` directory for temporary files instead of `/tmp`; clean up when no longer needed
 
 ## GitHub Workflow
 
