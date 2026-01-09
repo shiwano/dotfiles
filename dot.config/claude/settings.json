@@ -6,9 +6,9 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
+      "mcp__ide__getDiagnostics",
       "WebFetch",
       "WebSearch",
-      "mcp__ide__getDiagnostics",
       "Bash(cd:*)",
       "Bash(echo:*)",
       "Bash(cat:*)",
