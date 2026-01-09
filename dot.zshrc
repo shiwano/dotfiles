@@ -69,12 +69,6 @@ if [ -d ${HOME}/.local/bin ] ; then
 	export PATH="$HOME/.local/bin:$PATH"
 fi
 
-_startup-path() {
-	typeset -U path PATH # Remove duplicated PATHs.
-	export PATH=$HOME/dotfiles/bin:$PATH
-}
-_startup_funcs+=(_startup-path)
-
 # mise -------------------------------------------------------------------------
 
 if command -v mise >/dev/null 2>&1; then
@@ -187,6 +181,10 @@ fi
 # ssh-key ----------------------------------------------------------------------
 
 _startup-ssh-add-key() {
+	if [[ ! -o interactive ]] || [ ! -t 0 ]; then
+		return 0
+	fi
+
   local key_path="$HOME/.ssh/id_rsa"
   if [ ! -f "$key_path" ]; then
     return 0
@@ -194,7 +192,7 @@ _startup-ssh-add-key() {
 
   if ! pgrep -u "$USER" ssh-agent >/dev/null; then
     echo "ssh-agent not running. Start ssh-agent? [y/n]"
-    read -r ans
+    read -r ans </dev/tty
     if [[ "$ans" =~ ^[Yy]$ ]]; then
       eval "$(ssh-agent -s)" >/dev/null
     else
@@ -213,6 +211,10 @@ _startup_funcs+=(_startup-ssh-add-key)
 # tmux -------------------------------------------------------------------------
 
 _startup-tmux-main-prompt() {
+	if [[ ! -o interactive ]] || [ ! -t 0 ]; then
+		return 0
+	fi
+
 	if [ -n "$TMUX" ]; then
 		return 0
 	fi
@@ -229,7 +231,7 @@ _startup-tmux-main-prompt() {
 	fi
 
 	echo "You're not in a tmux session. Start tmux-main? [y/n]"
-	read -r ans
+	read -r ans </dev/tty
 	if [[ "$ans" =~ ^[Yy]$ ]]; then
 		tmux-main
 	fi
@@ -565,6 +567,9 @@ if [ -f ~/.zshrc.local ]; then
 fi
 
 # Startup ----------------------------------------------------------------------
+
+typeset -U path PATH # Remove duplicated PATHs.
+export PATH=$HOME/dotfiles/bin:$PATH
 
 for _func in "${_startup_funcs[@]}"; do
 	$_func
