@@ -6,6 +6,8 @@
   "includeCoAuthoredBy": false,
   "permissions": {
     "allow": [
+      "WebFetch",
+      "WebSearch",
       "mcp__ide__getDiagnostics",
       "Bash(cd:*)",
       "Bash(echo:*)",
@@ -102,5 +104,12 @@
     ]
   },
   "outputStyle": "custom",
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "rust-analyzer-lsp@claude-plugins-official": true,
+    "lua-lsp@claude-plugins-official": true
+  }
 }
