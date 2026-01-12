@@ -17,6 +17,7 @@
       "Bash(grep:*)",
       "Bash(wc:*)",
       "Bash(rg:*)",
+      "Bash(tree:*)",
       "Bash(make test:*)",
       "Bash(go build:*)",
       "Bash(go test:*)",
