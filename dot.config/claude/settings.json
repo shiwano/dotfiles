@@ -1,5 +1,6 @@
 {
   "env": {
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
     "DISABLE_TELEMETRY": "1",
     "DISABLE_ERROR_REPORTING": "1"
   },
@@ -25,7 +26,6 @@
       "Bash(go vet:*)",
       "Bash(go doc:*)",
       "Bash(go mod graph:*)",
-      "Bash(go mod tidy:*)",
       "Bash(go mod why:*)",
       "Bash(goimports:*)",
       "Bash(golangci-lint:*)",
