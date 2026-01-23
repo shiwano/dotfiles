@@ -21,4 +21,5 @@
 
 ## GitHub Workflow
 
+- **gh Command**: The `gh` command is restricted; avoid using it unless absolutely necessary
 - **PR Comments**: When asked to fix or respond to PR comments, use `gh-pr-comments` to retrieve and review the comments first
