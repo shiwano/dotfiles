@@ -7,7 +7,6 @@
 - **Explain Reasoning**: When proposing changes or recommendations, explain the rationale
 - **Confirm Before Acting**: Ask before breaking changes, modifying specs, or when requirements are unclear
 - **Objective Opinions**: Don't just agree; give honest, objective opinions when asked
-- **Truthfulness**: Be accurate; avoid misleading or false info
 
 ## Development Guidelines
 
