@@ -104,6 +104,9 @@
       }
     ]
   },
+  "additionalDirectories": [
+    "~/code/pkg/mod"
+  ],
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
   "enabledPlugins": {
