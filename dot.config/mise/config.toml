@@ -43,6 +43,7 @@ protoc = 'latest'
 protoc-gen-go = 'latest'
 
 'npm:@anthropic-ai/claude-code' = 'latest'
+'npm:@google/gemini-cli' = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
 'npm:neovim' = 'latest'
 'npm:typescript-language-server' = 'latest'

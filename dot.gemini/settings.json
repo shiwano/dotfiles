@@ -1,0 +1,15 @@
+{
+  "contextFileName": "CLAUDE.md",
+  "model": {
+    "name": "gemini-3-flash-preview"
+  },
+  "experimental": {
+    "plan": true
+  },
+  "security": {
+    "auth": {
+      "selectedType": "oauth-personal"
+    }
+  }
+}
+
