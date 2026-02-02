@@ -63,6 +63,7 @@ protoc-gen-go = 'latest'
 'aqua:LuaLS/lua-language-server' = 'latest'
 'aqua:git-lfs/git-lfs' = 'latest'
 'aqua:suzuki-shunsuke/pinact' = 'latest'
+'aqua:goreleaser/goreleaser' = 'latest'
 
 'pipx:isort' = 'latest'
 'pipx:jupyterlab' = 'latest'
