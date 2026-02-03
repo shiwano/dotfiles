@@ -15,7 +15,6 @@
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Path Style**: Always use relative paths (e.g., `./file.txt`, `src/main.rs`) if available
 - **Background Processes**: Ask user before starting; always stop before finishing
-- **Temporary Files**: Use `./.tmp-agent` directory for temporary files instead of `/tmp`; clean up when no longer needed
 
 ## GitHub Workflow
 
