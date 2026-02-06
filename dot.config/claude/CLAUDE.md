@@ -13,7 +13,7 @@
 - **Code Style**: UTF-8, LF line endings; 2 spaces indentation (unless specified); no trailing spaces
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
-- **Path Style**: Always use relative paths (e.g., `./file.txt`, `src/main.rs`) if available
+- **Path Style**: Always use relative paths (e.g., `./file.txt`, `src/main.rs`), not absolute paths like `/Users/shiwano/...`, if available
 - **Background Processes**: Ask user before starting; always stop before finishing
 
 ## GitHub Workflow
