@@ -19,7 +19,7 @@ main() {
 		-allow "$HOME/.cache" \
 		-allow "$HOME/Library/Caches" \
 		-allow "$HOME/Library/Logs" \
-		-allow "$GOPATH/pkg/mod/cache" \
+		-allow "$GOPATH/pkg" \
 		-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh" \
 		-allow "/dev/tty" \
 		-allow "/tmp" \

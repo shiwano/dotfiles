@@ -20,6 +20,8 @@
       "Bash(rg:*)",
       "Bash(tree:*)",
       "Bash(make test:*)",
+      "Bash(xargs:*)",
+      "Bash(basename:*)",
       "Bash(go build:*)",
       "Bash(go test:*)",
       "Bash(go list:*)",
