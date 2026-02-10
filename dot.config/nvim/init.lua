@@ -1169,7 +1169,12 @@ local pluginSpec = {
       vim.api.nvim_create_autocmd("TermClose", {
         group = "term_close",
         pattern = "*",
-        command = "bdelete!",
+        callback = function(args)
+          if vim.bo[args.buf].filetype == "fzf" then
+            return
+          end
+          vim.cmd("bdelete! " .. args.buf)
+        end,
       })
 
       require("toggleterm").setup({
