@@ -881,6 +881,8 @@ local pluginSpec = {
         group = "terminal_claude",
         pattern = "term://*/claude",
         callback = function()
+          vim.wo.winfixbuf = true
+
           local send_to_term = function(code)
             return function()
               local chan = vim.b.terminal_job_id
