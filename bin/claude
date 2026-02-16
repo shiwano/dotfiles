@@ -7,6 +7,7 @@ main() {
 		-allow . \
 		-allow "$HOME/dotfiles/dot.config/claude" \
 		-allow "$HOME/.config/claude" \
+		-allow "$HOME/.claude" \
 		-allow "$HOME/.mcp-global.json" \
 		-allow "$HOME/.npm" \
 		-allow "$HOME/.npmrc" \
