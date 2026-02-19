@@ -815,6 +815,7 @@ local pluginSpec = {
       })
 
       local file_watcher = nil
+      local file_changed_shell_autocmd_id = nil
 
       local function is_git_ignored(filepath)
         vim.fn.system({ "git", "check-ignore", "-q", filepath })
@@ -853,6 +854,12 @@ local pluginSpec = {
             if err or not filename then
               return
             end
+            if filename:match("^%.git/") or filename:match("/%.git/") then
+              return
+            end
+            if filename:match("^%.jj/") or filename:match("/%.jj/") then
+              return
+            end
 
             local filepath = root .. "/" .. filename
 
@@ -866,6 +873,14 @@ local pluginSpec = {
             load_or_reload_buffer(filepath)
           end)
         )
+
+        file_changed_shell_autocmd_id = vim.api.nvim_create_autocmd("FileChangedShell", {
+          group = "terminal_claude",
+          pattern = "*",
+          callback = function()
+            vim.v.fcs_choice = "reload"
+          end,
+        })
       end
 
       local function disable_file_watcher()
@@ -873,6 +888,10 @@ local pluginSpec = {
           file_watcher:stop()
           file_watcher:close()
           file_watcher = nil
+        end
+        if file_changed_shell_autocmd_id then
+          vim.api.nvim_del_autocmd(file_changed_shell_autocmd_id)
+          file_changed_shell_autocmd_id = nil
         end
       end
 
