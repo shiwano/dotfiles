@@ -185,8 +185,16 @@ _startup-ssh-add-key() {
 		return 0
 	fi
 
-  local key_path="$HOME/.ssh/id_rsa"
-  if [ ! -f "$key_path" ]; then
+  local key_paths=("$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa")
+  local keys_to_add=()
+
+  for key_path in "${key_paths[@]}"; do
+    if [ -f "$key_path" ]; then
+      keys_to_add+=("$key_path")
+    fi
+  done
+
+  if [ ${#keys_to_add[@]} -eq 0 ]; then
     return 0
   fi
 
@@ -200,11 +208,11 @@ _startup-ssh-add-key() {
     fi
   fi
 
-  if ssh-add -l 2>/dev/null | grep -q "$key_path"; then
-    return 0
-  fi
-
-	ssh-add "$key_path"
+  for key_path in "${keys_to_add[@]}"; do
+    if ! ssh-add -l 2>/dev/null | grep -q "$key_path"; then
+      ssh-add "$key_path"
+    fi
+  done
 }
 _startup_funcs+=(_startup-ssh-add-key)
 
