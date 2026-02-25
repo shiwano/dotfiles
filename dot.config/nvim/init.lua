@@ -1329,12 +1329,18 @@ local pluginSpec = {
   {
     "keaising/im-select.nvim",
     config = function()
-      require("im_select").setup({
-        default_command = "im-select",
-        default_im_select = "com.apple.keylayout.ABC",
+      local opts = {
         set_default_events = { "VimEnter", "FocusGained", "InsertLeave", "TermEnter", "TermLeave" },
         set_previous_events = {}, -- Disable this feature
-      })
+      }
+      if vim.fn.has("macunix") == 1 then
+        opts.default_command = "im-select"
+        opts.default_im_select = "com.apple.keylayout.ABC"
+      else
+        opts.default_command = "fcitx5-remote"
+        opts.default_im_select = "keyboard-us"
+      end
+      require("im_select").setup(opts)
     end,
   },
 }
