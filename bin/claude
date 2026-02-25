@@ -1,32 +1,43 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -euo pipefail
 
 main() {
-	exec mise exec -- cage \
-		-allow . \
-		-allow "$HOME/dotfiles/dot.config/claude" \
-		-allow "$HOME/.config/claude" \
-		-allow "$HOME/.claude" \
-		-allow "$HOME/.mcp-global.json" \
-		-allow "$HOME/.npm" \
-		-allow "$HOME/.npmrc" \
-		-allow "$HOME/.pub-cache" \
-		-allow "$HOME/.cargo" \
-		-allow "$HOME/.rustup" \
-		-allow "$HOME/.gem" \
-		-allow "$HOME/.bundle" \
-		-allow "$HOME/.local" \
-		-allow "$HOME/.cache" \
-		-allow "$HOME/Library/Caches" \
-		-allow "$HOME/Library/Logs" \
-		-allow "$GOPATH/pkg" \
-		-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh" \
-		-allow "/dev/tty" \
-		-allow "/tmp" \
-		-allow "/private/tmp" \
-		-allow "$(git rev-parse --git-common-dir)" \
-		-allow-keychain \
+	local args=(
+		-allow .
+		-allow "$HOME/dotfiles/dot.config/claude"
+		-allow "$HOME/.config/claude"
+		-allow "$HOME/.claude"
+		-allow "$HOME/.mcp-global.json"
+		-allow "$HOME/.npm"
+		-allow "$HOME/.npmrc"
+		-allow "$HOME/.pub-cache"
+		-allow "$HOME/.cargo"
+		-allow "$HOME/.rustup"
+		-allow "$HOME/.gem"
+		-allow "$HOME/.bundle"
+		-allow "$HOME/.local"
+		-allow "$HOME/.cache"
+		-allow "$GOPATH/pkg"
+		-allow /dev/tty
+		-allow /tmp
+	)
+
+	if [[ "$(uname)" == "Darwin" ]]; then
+		args+=(
+			-allow "$HOME/Library/Caches"
+			-allow "$HOME/Library/Logs"
+			-allow /private/tmp
+			-allow-keychain
+		)
+		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
+			args+=(-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
+		fi
+	fi
+
+	args+=(-allow "$(git rev-parse --git-common-dir)")
+
+	exec mise exec -- cage "${args[@]}" \
 		claude --mcp-config "$HOME/.mcp-global.json" "$@"
 }
 
