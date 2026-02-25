@@ -220,8 +220,12 @@ _startup-ssh-add-key() {
 		fi
 	fi
 
+	local loaded_keys
+	loaded_keys="$(ssh-add -l 2>/dev/null || true)"
 	for key_path in "${keys_to_add[@]}"; do
-		if ! ssh-add -l 2>/dev/null | grep -q "$key_path"; then
+		local fp
+		fp="$(ssh-keygen -lf "$key_path" 2>/dev/null | awk '{print $2}')"
+		if [ -n "$fp" ] && ! echo "$loaded_keys" | grep -q "$fp"; then
 			ssh-add "$key_path"
 		fi
 	done
