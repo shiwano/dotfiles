@@ -185,34 +185,46 @@ _startup-ssh-add-key() {
 		return 0
 	fi
 
-  local key_paths=("$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa")
-  local keys_to_add=()
+	local key_paths=("$HOME/.ssh/id_ed25519" "$HOME/.ssh/id_rsa")
+	local keys_to_add=()
 
-  for key_path in "${key_paths[@]}"; do
-    if [ -f "$key_path" ]; then
-      keys_to_add+=("$key_path")
-    fi
-  done
+	for key_path in "${key_paths[@]}"; do
+		if [ -f "$key_path" ]; then
+			keys_to_add+=("$key_path")
+		fi
+	done
 
-  if [ ${#keys_to_add[@]} -eq 0 ]; then
-    return 0
-  fi
+	if [ ${#keys_to_add[@]} -eq 0 ]; then
+		return 0
+	fi
 
-  if ! pgrep -u "$USER" ssh-agent >/dev/null; then
-    echo "ssh-agent not running. Start ssh-agent? [y/n]"
-    read -r ans </dev/tty
-    if [[ "$ans" =~ ^[Yy]$ ]]; then
-      eval "$(ssh-agent -s)" >/dev/null
-    else
-      return 0
-    fi
-  fi
+	# On Linux, fix SSH_AUTH_SOCK path so all shells share the same agent.
+	if [[ "$(uname)" == "Linux" ]]; then
+		export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
+	fi
 
-  for key_path in "${keys_to_add[@]}"; do
-    if ! ssh-add -l 2>/dev/null | grep -q "$key_path"; then
-      ssh-add "$key_path"
-    fi
-  done
+	if ! ssh-add -l >/dev/null 2>&1; then
+		if [[ "$(uname)" == "Linux" ]]; then
+			rm -f "$HOME/.ssh/agent.sock"
+		fi
+		echo "ssh-agent not running. Start ssh-agent? [y/n]"
+		read -r ans </dev/tty
+		if [[ "$ans" =~ ^[Yy]$ ]]; then
+			if [[ "$(uname)" == "Linux" ]]; then
+				eval "$(ssh-agent -a "$HOME/.ssh/agent.sock")" >/dev/null
+			else
+				eval "$(ssh-agent -s)" >/dev/null
+			fi
+		else
+			return 0
+		fi
+	fi
+
+	for key_path in "${keys_to_add[@]}"; do
+		if ! ssh-add -l 2>/dev/null | grep -q "$key_path"; then
+			ssh-add "$key_path"
+		fi
+	done
 }
 _startup_funcs+=(_startup-ssh-add-key)
 
