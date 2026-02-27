@@ -46,8 +46,7 @@ is_active() {
 
 main() {
 	if [[ "$(uname)" != "Darwin" ]]; then
-		usage 1
-		return 1
+		return 0
 	fi
 
 	local title=""
