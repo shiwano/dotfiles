@@ -68,6 +68,7 @@ protoc-gen-go = 'latest'
 
 'pipx:isort' = 'latest'
 'pipx:jupyterlab' = 'latest'
+'pipx:huggingface_hub' = 'latest'
 
 [settings]
 experimental = true
