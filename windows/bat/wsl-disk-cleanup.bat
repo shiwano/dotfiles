@@ -48,15 +48,17 @@ echo [3/4] Searching for vhdx files...
 set "found=0"
 set "idx=0"
 
-:: WSL distributions (under Packages)
-for /r "%LOCALAPPDATA%\Packages" %%f in (ext4.vhdx) do (
-    set /a idx+=1
-    set "vhdx_!idx!=%%f"
-    set "found=1"
-    echo       Found: %%f
+:: WSL distributions (under %LOCALAPPDATA%\wsl)
+if exist "%LOCALAPPDATA%\wsl" (
+    for /r "%LOCALAPPDATA%\wsl" %%f in (ext4.vhdx) do (
+        set /a idx+=1
+        set "vhdx_!idx!=%%f"
+        set "found=1"
+        echo       Found: %%f
+    )
 )
 
-:: Docker Desktop (under Docker\wsl)
+:: Docker Desktop (under %LOCALAPPDATA%\Docker\wsl)
 if exist "%LOCALAPPDATA%\Docker\wsl" (
     for /r "%LOCALAPPDATA%\Docker\wsl" %%f in (ext4.vhdx) do (
         set /a idx+=1
