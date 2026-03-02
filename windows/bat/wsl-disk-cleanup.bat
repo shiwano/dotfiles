@@ -51,10 +51,12 @@ set "idx=0"
 :: WSL distributions (under %LOCALAPPDATA%\wsl)
 if exist "%LOCALAPPDATA%\wsl" (
     for /r "%LOCALAPPDATA%\wsl" %%f in (ext4.vhdx) do (
-        set /a idx+=1
-        set "vhdx_!idx!=%%f"
-        set "found=1"
-        echo       Found: %%f
+        if /i not "%%~dpf"=="%LOCALAPPDATA%\wsl\" (
+            set /a idx+=1
+            set "vhdx_!idx!=%%f"
+            set "found=1"
+            echo       Found: %%f
+        )
     )
 )
 
@@ -84,37 +86,48 @@ echo [4/4] Compacting vhdx files...
 echo.
 
 for /l %%i in (1,1,!total!) do (
-    set "vhdx_path=!vhdx_%%i!"
-    echo       [%%i/!total!] Processing: !vhdx_path!
+    call :compact_vhdx %%i !total!
+)
+goto :done
 
-    :: Get size before compaction
-    for %%s in ("!vhdx_path!") do set "before_size=%%~zs"
+:compact_vhdx
+set "i=%~1"
+set "t=%~2"
+set "vhdx_path=!vhdx_%i%!"
+echo       [%i%/%t%] Processing: !vhdx_path!
 
-    :: Write diskpart script to temp file and execute
-    set "dp_script=%TEMP%\wsl-disk-cleanup-diskpart.txt"
-    (
-        echo select vdisk file="!vhdx_path!"
-        echo compact vdisk
-        echo exit
-    ) > "!dp_script!"
+:: Get size before compaction (via PowerShell, to handle >2GB files)
+for /f %%s in ('powershell -nologo -noprofile -command "(Get-Item '!vhdx_path!').Length / 1MB -as [int]"') do set "before_mb=%%s"
 
-    diskpart /s "!dp_script!"
+:: Write diskpart script to temp file and execute
+set "dp_script=%TEMP%\wsl-disk-cleanup-diskpart.txt"
+(
+    echo select vdisk file="!vhdx_path!"
+    echo compact vdisk
+    echo exit
+) > "!dp_script!"
 
-    :: Get size after compaction
-    for %%s in ("!vhdx_path!") do set "after_size=%%~zs"
-
-    :: Display sizes in MB
-    set /a before_mb=!before_size! / 1048576
-    set /a after_mb=!after_size! / 1048576
-    set /a saved_mb=!before_mb! - !after_mb!
-
+diskpart /s "!dp_script!"
+if !errorlevel! neq 0 (
     echo.
-    echo       Before: !before_mb! MB -^> After: !after_mb! MB (Saved: !saved_mb! MB)
+    echo       [Warning] Failed to compact: !vhdx_path!
     echo.
-
     del "!dp_script!" >nul 2>&1
+    exit /b 0
 )
 
+:: Get size after compaction (via PowerShell, to handle >2GB files)
+for /f %%s in ('powershell -nologo -noprofile -command "(Get-Item '!vhdx_path!').Length / 1MB -as [int]"') do set "after_mb=%%s"
+set /a saved_mb=!before_mb! - !after_mb!
+
+echo.
+echo       Before: !before_mb! MB -^> After: !after_mb! MB (Saved: !saved_mb! MB)
+echo.
+
+del "!dp_script!" >nul 2>&1
+exit /b 0
+
+:done
 echo ============================================================
 echo  Cleanup complete!
 echo ============================================================
