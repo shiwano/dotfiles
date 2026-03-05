@@ -14,8 +14,3 @@
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Background Processes**: Ask user before starting; always stop before finishing
-
-## GitHub Workflow
-
-- **gh Command**: The `gh` command is restricted; avoid using it unless absolutely necessary
-- **PR Comments**: When asked to fix or respond to PR comments, use `gh-pr-comments` to retrieve and review the comments first
