@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: gh-dependabot-alerts [options]
+
+Display Dependabot alerts for the current repository.
+
+Shows open Dependabot alerts with severity, package info, description,
+and manifest path. By default, only open alerts are shown.
+
+Options:
+  -a, --all              Include dismissed/fixed alerts (default: open only)
+  -s, --severity <level> Filter by severity (critical, high, medium, low)
+  -h, --help             Show this help message
+
+Requires:
+  - gh (GitHub CLI)
+  - jq (JSON processor)
+
+Examples:
+  gh-dependabot-alerts
+  gh-dependabot-alerts --all
+  gh-dependabot-alerts --severity critical
+  gh-dependabot-alerts -s high
+EOF
+}
+
+main() {
+	local show_all=false
+	local severity=""
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-a | --all)
+			show_all=true
+			shift
+			;;
+		-s | --severity)
+			if [[ -z "${2:-}" ]]; then
+				echo "Error: --severity requires a value" >&2
+				usage
+				return 1
+			fi
+			severity="$2"
+			shift 2
+			;;
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	if ! command -v gh >/dev/null 2>&1; then
+		echo "Error: gh command not found" >&2
+		return 1
+	fi
+
+	if ! command -v jq >/dev/null 2>&1; then
+		echo "Error: jq command not found" >&2
+		return 1
+	fi
+
+	local repo_owner repo_name
+	repo_owner=$(gh repo view --json owner -q .owner.login) || {
+		echo "Error: Failed to get repository info" >&2
+		return 1
+	}
+	repo_name=$(gh repo view --json name -q .name)
+
+	# Build API URL with query parameters
+	local api_url="repos/${repo_owner}/${repo_name}/dependabot/alerts?per_page=100"
+	if [[ "$show_all" == "false" ]]; then
+		api_url+="&state=open"
+	fi
+	if [[ -n "$severity" ]]; then
+		api_url+="&severity=${severity}"
+	fi
+
+	local api_response
+	api_response=$(gh api "$api_url" 2>&1) || {
+		echo "Error: Failed to fetch Dependabot alerts" >&2
+		echo "$api_response" >&2
+		return 1
+	}
+
+	local count
+	count=$(echo "$api_response" | jq 'length')
+
+	if [[ "$count" == "0" ]]; then
+		echo "No Dependabot alerts found."
+		return 0
+	fi
+
+	# shellcheck disable=SC2016
+	local format_query='
+def severity_icon:
+  if . == "critical" then "\u001b[1;31m🔴 CRITICAL\u001b[0m"
+  elif . == "high" then "\u001b[1;33m🟠 HIGH\u001b[0m"
+  elif . == "medium" then "\u001b[0;33m🟡 MEDIUM\u001b[0m"
+  elif . == "low" then "\u001b[0;36m🔵 LOW\u001b[0m"
+  else "\u001b[0;37m⚪ \(.)\u001b[0m"
+  end;
+
+def format_state:
+  if .state == "dismissed" then
+    "   ⚠️  \u001b[90mdismissed (\(.dismissed_reason // "no reason"))\u001b[0m\n"
+  elif .state == "fixed" then
+    "   ✅ \u001b[90mfixed\u001b[0m\n"
+  else
+    ""
+  end;
+
+def wrap_text(width):
+  split(" ") | reduce .[] as $word (
+    [""];
+    if ((.[-1] | length) + ($word | length) + 1) > width then
+      . + [$word]
+    elif .[-1] == "" then
+      .[-1] = $word
+    else
+      .[-1] += " " + $word
+    end
+  ) | join("\n   ");
+
+.[] |
+(.security_advisory.severity | severity_icon) + "  " +
+  "\u001b[1m\(.security_vulnerability.package.name)\u001b[0m" +
+  " \u001b[90m(\(.security_vulnerability.package.ecosystem))\u001b[0m" + "\n" +
+"   " + (.security_advisory.summary | wrap_text(76)) + "\n" +
+(if (.security_advisory.description // "") != "" then
+  "   \u001b[36m" + (.security_advisory.description | split("\n") | map(gsub("^\\s+|\\s+$"; "")) | map(select(. != "")) | join(" ") | wrap_text(76)) + "\u001b[0m\n"
+else "" end) +
+"   📄 " + (.dependency.manifest_path // "unknown") + "\n" +
+format_state +
+"   🔗 " + .html_url + "\n" +
+(.security_advisory.references // [] | map("   📚 \u001b[90m" + .url + "\u001b[0m") | join("\n") | if . != "" then . + "\n" else "" end)
+'
+
+	echo "$api_response" | jq -r "$format_query"
+}
+
+main "$@"

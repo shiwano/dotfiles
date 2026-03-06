@@ -53,6 +53,7 @@
       "Bash(cargo build *)",
       "Bash(cargo check *)",
       "Bash(gh-pr-comments *)",
+      "Bash(gh-dependabot-alerts *)",
       "Bash(shfmt -d *)"
     ],
     "deny": [
