@@ -74,6 +74,7 @@
       "Bash(git branch -D *)",
       "Bash(git branch -d *)",
       "Bash(git push *)",
+      "Bash(tmux *)",
       "Bash(gh *)",
       "Bash(docker push *)",
       "Bash(npm publish *)",

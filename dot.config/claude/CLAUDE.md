@@ -14,3 +14,4 @@
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Diagnostics**: Always check diagnostics after editing using MCP tool `mcp__ide__getDiagnostics` if available
 - **Background Processes**: Ask user before starting; always stop before finishing
+- **File Editing**: When Edit fails due to whitespace mismatch, re-read the file to check tabs/spaces and retry
