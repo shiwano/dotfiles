@@ -2,12 +2,38 @@
 
 set -euo pipefail
 
-# stdin から JSON を読み、file_path を抽出して nvim-lint を実行
-# lint エラーがあれば exit 2 で Claude にフィードバック
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: claude-hook-lint
+
+Claude Code hook for linting files after edits.
+Receives JSON data from stdin, extracts file_path, and runs nvim-lint.
+Exits with code 2 if lint errors are found, providing feedback to Claude.
+
+This command is called automatically by Claude Code and should not be
+executed manually unless for testing purposes.
+
+Example (for testing):
+  echo '{"tool_input":{"file_path":"some/file.txt"}}' | claude-hook-lint
+EOF
+}
+
 main() {
-	local input file_path lint_output
-	input=$(cat)
-	file_path=$(echo "${input}" | jq -r '.tool_input.file_path // empty')
+	if [[ "${1:-}" == "-h" ]] || [[ "${1:-}" == "--help" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if [ -t 0 ]; then
+		echo "Error: No input data. This command should be called by Claude Code hooks." >&2
+		usage
+		return 1
+	fi
+
+	local json_input file_path lint_output
+	json_input=$(cat)
+	file_path=$(echo "${json_input}" | jq -r '.tool_input.file_path // empty')
 
 	if [ -z "${file_path}" ] || [ ! -f "${file_path}" ]; then
 		return 0
