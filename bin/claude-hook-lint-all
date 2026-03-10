@@ -5,9 +5,9 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: claude-hook-task-completed
+Usage: claude-hook-lint-all
 
-Claude Code hook for TaskCompleted events.
+Claude Code hook for Stop events.
 Receives JSON data from stdin, detects changed files via jj/git,
 and runs nvim-lint --lsp on them.
 
@@ -15,7 +15,7 @@ This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
 
 Example (for testing):
-  echo '{}' | claude-hook-task-completed
+  echo '{"stop_hook_active": false, "session_id": "test"}' | claude-hook-lint-all
 EOF
 }
 
@@ -31,7 +31,16 @@ main() {
 		return 1
 	fi
 
-	cat >/dev/null
+	local json_input
+	json_input=$(cat)
+
+	local stop_hook_active
+	stop_hook_active=$(echo "$json_input" | jq -r '.stop_hook_active')
+
+	# Prevent infinite loops by checking if hook is already active
+	if [[ "$stop_hook_active" == "true" ]]; then
+		return 0
+	fi
 
 	local changed
 	changed=$(vcs-changed-file-paths)

@@ -104,7 +104,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-hook-notification"
+            "command": "claude-hook-notify"
           }
         ]
       }
@@ -115,18 +115,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-hook-stop"
-          }
-        ]
-      }
-    ],
-    "TaskCompleted": [
-      {
-        "matcher": "",
-        "hooks": [
+            "command": "claude-hook-notify-stop"
+          },
           {
             "type": "command",
-            "command": "claude-hook-task-completed",
+            "command": "claude-hook-lint-all",
             "timeout": 120
           }
         ]

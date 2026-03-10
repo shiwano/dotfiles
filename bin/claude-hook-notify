@@ -5,16 +5,16 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: claude-hook-stop
+Usage: claude-hook-notify
 
-Claude Code hook for Stop events.
+Claude Code hook for Notification events.
 Receives JSON data from stdin and sends a notification using util-notify.
 
 This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
 
 Example (for testing):
-  echo '{"session_id": "abc12345-def6-7890-ghij-klmnopqrstuv", "stop_hook_active": false}' | claude-hook-stop
+  echo '{"session_id": "abc12345-def6-7890-ghij-klmnopqrstuv", "message": "Test notification"}' | claude-hook-notify
 EOF
 }
 
@@ -33,19 +33,14 @@ main() {
 	local json_input
 	json_input=$(cat)
 
-	local stop_hook_active session_id
-	stop_hook_active=$(echo "$json_input" | jq -r '.stop_hook_active')
+	local message session_id
+	message=$(echo "$json_input" | jq -r '.message')
 	session_id=$(echo "$json_input" | jq -r '.session_id')
 
-	# Prevent infinite loops by checking if hook is already active
-	if [[ "$stop_hook_active" == "true" ]]; then
-		return 0
-	fi
-
 	local short_id="${session_id:0:8}"
-	local message="${short_id}: Claude Code response complete"
+	local formatted_message="${short_id}: ${message}"
 
-	util-notify --title "Claude Code" --group-id "$session_id" "$message"
+	util-notify --title "Claude Code" --group-id "$session_id" "$formatted_message"
 }
 
 main "$@"
