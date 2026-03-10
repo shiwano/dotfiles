@@ -5,44 +5,22 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: nvim-format [options] <file> [file...]
+Usage: nvim-format <file> [file...]
 
 Format files using conform.nvim via Neovim headless mode.
 Uses the same conform.nvim configuration as your Neovim init.lua.
 
-Options:
-  -c, --check   Check if files need formatting (no changes written)
-  -h, --help    Show this help message
-
 Examples:
   nvim-format main.go
-  nvim-format --check script.sh lib.lua
+  nvim-format script.sh lib.lua
 EOF
 }
 
 main() {
-	local check_only=false
-
-	while [[ $# -gt 0 ]]; do
-		case $1 in
-		-c | --check)
-			check_only=true
-			shift
-			;;
-		-h | --help)
-			usage 1
-			return 0
-			;;
-		-*)
-			echo "Error: Unknown option $1" >&2
-			usage
-			return 1
-			;;
-		*)
-			break
-			;;
-		esac
-	done
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
 
 	if [ "$#" -lt 1 ]; then
 		usage
@@ -67,7 +45,7 @@ main() {
 			continue
 		fi
 
-		if ! nvim --headless "$fullpath" +"lua require('cli').format(${check_only})"; then
+		if ! nvim --headless "$fullpath" +"lua require('cli').format()"; then
 			has_error=true
 		fi
 	done

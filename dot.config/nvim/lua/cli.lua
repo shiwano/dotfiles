@@ -51,7 +51,7 @@ function M.lint()
   end)
 end
 
-function M.format(check_only)
+function M.format()
   vim.schedule(function()
     if vim.bo.filetype == "" then
       vim.cmd("filetype detect")
@@ -64,34 +64,12 @@ function M.format(check_only)
       return
     end
 
-    if check_only then
-      local lines_before = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-      local content_before = table.concat(lines_before, "\n")
-
-      conform.format({
-        async = false,
-        timeout_ms = 10000,
-        lsp_format = "fallback",
-      })
-
-      local lines_after = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-      local content_after = table.concat(lines_after, "\n")
-
-      if content_before ~= content_after then
-        local filename = vim.api.nvim_buf_get_name(0)
-        io.stderr:write(filename .. " needs formatting\n")
-        vim.cmd("cq1")
-      else
-        vim.cmd("q!")
-      end
-    else
-      conform.format({
-        async = false,
-        timeout_ms = 10000,
-        lsp_format = "fallback",
-      })
-      vim.cmd("wqa")
-    end
+    conform.format({
+      async = false,
+      timeout_ms = 10000,
+      lsp_format = "fallback",
+    })
+    vim.cmd("wqa")
   end)
 end
 
