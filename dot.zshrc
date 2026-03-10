@@ -17,8 +17,8 @@ export LS_COLORS='di=01;36'
 export GOPATH=$HOME/code
 export CLAUDE_CONFIG_DIR=$HOME/.config/claude
 
-if command -v brew >/dev/null 2>&1; then
-	export BREW_PREFIX=$(brew --prefix)
+if [ -x /opt/homebrew ]; then
+	export BREW_PREFIX='/opt/homebrew'
 else
 	export BREW_PREFIX='/nonexistent'
 fi
