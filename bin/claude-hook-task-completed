@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: claude-hook-task-completed
+
+Claude Code hook for TaskCompleted events.
+Receives JSON data from stdin, detects changed files via jj/git,
+and runs nvim-lint --lsp on them.
+
+This command is called automatically by Claude Code and should not be
+executed manually unless for testing purposes.
+
+Example (for testing):
+  echo '{}' | claude-hook-task-completed
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "-h" ]] || [[ "${1:-}" == "--help" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if [ -t 0 ]; then
+		echo "Error: No input data. This command should be called by Claude Code hooks." >&2
+		usage
+		return 1
+	fi
+
+	cat >/dev/null
+
+	local changed
+	changed=$(vcs-changed-file-paths)
+
+	if [ -z "${changed}" ]; then
+		return 0
+	fi
+
+	local existing=()
+	local f
+	while IFS= read -r f; do
+		if [ -f "$f" ]; then
+			existing+=("$f")
+		fi
+	done <<<"${changed}"
+
+	if [ "${#existing[@]}" -eq 0 ]; then
+		return 0
+	fi
+
+	local lint_output
+	lint_output=$(nvim-lint --lsp "${existing[@]}" 2>&1) || {
+		echo "${lint_output}" >&2
+		exit 2
+	}
+	return 0
+}
+
+main "$@"

@@ -610,6 +610,7 @@ local pluginSpec = {
   },
   {
     "neovim/nvim-lspconfig",
+    cond = vim.env.NVIM_NO_LSP ~= "1",
     config = function()
       local function rename()
         local current = vim.fn.expand("<cword>")

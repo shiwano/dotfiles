@@ -5,24 +5,49 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: nvim-lint <file> [file...]
+Usage: nvim-lint [options] <file> [file...]
 
 Run nvim-lint on files using Neovim headless mode.
 Uses the same nvim-lint configuration as your Neovim init.lua.
 
+Options:
+  --lsp    Also check LSP diagnostics (gopls, ts_ls, pyright, etc.)
+  -h, --help  Show this help message
+
 Examples:
   nvim-lint main.go
   nvim-lint script.sh lib.lua
+  nvim-lint --lsp main.go
 EOF
 }
 
 main() {
-	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
-		usage 1
-		return 0
-	fi
+	local use_lsp=false
+	local files=()
 
-	if [ "$#" -lt 1 ]; then
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		--lsp)
+			use_lsp=true
+			shift
+			;;
+		-*)
+			echo "Error: unknown option: $1" >&2
+			usage
+			return 1
+			;;
+		*)
+			files+=("$1")
+			shift
+			;;
+		esac
+	done
+
+	if [ "${#files[@]}" -lt 1 ]; then
 		usage
 		return 1
 	fi
@@ -33,10 +58,10 @@ main() {
 	fi
 
 	local has_error=false
-	local files=()
+	local resolved=()
 
 	local file
-	for file in "$@"; do
+	for file in "${files[@]}"; do
 		local fullpath
 		fullpath=$(cd "$(dirname "$file")" && echo "$(pwd)/$(basename "$file")")
 
@@ -46,11 +71,17 @@ main() {
 			continue
 		fi
 
-		files+=("$fullpath")
+		resolved+=("$fullpath")
 	done
 
-	if [ "${#files[@]}" -gt 0 ]; then
-		if ! nvim --headless "${files[@]}" +"lua require('cli').lint()"; then
+	if [ "${#resolved[@]}" -gt 0 ]; then
+		local lint_cmd="require('cli').lint()"
+		local nvim_args=(nvim --headless "${resolved[@]}" +"lua ${lint_cmd}")
+		if [ "$use_lsp" != true ]; then
+			nvim_args=(env NVIM_NO_LSP=1 "${nvim_args[@]}")
+		fi
+
+		if ! "${nvim_args[@]}"; then
 			has_error=true
 		fi
 	fi
