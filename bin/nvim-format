@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: nvim-format [options] <file> [file...]
+
+Format files using conform.nvim via Neovim headless mode.
+Uses the same conform.nvim configuration as your Neovim init.lua.
+
+Options:
+  -c, --check   Check if files need formatting (no changes written)
+  -h, --help    Show this help message
+
+Examples:
+  nvim-format main.go
+  nvim-format --check script.sh lib.lua
+EOF
+}
+
+main() {
+	local check_only=false
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-c | --check)
+			check_only=true
+			shift
+			;;
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		-*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		*)
+			break
+			;;
+		esac
+	done
+
+	if [ "$#" -lt 1 ]; then
+		usage
+		return 1
+	fi
+
+	if ! command -v nvim >/dev/null 2>&1; then
+		echo "Error: nvim command not found" >&2
+		return 1
+	fi
+
+	local has_error=false
+
+	local file
+	for file in "$@"; do
+		local fullpath
+		fullpath=$(cd "$(dirname "$file")" && echo "$(pwd)/$(basename "$file")")
+
+		if [ ! -f "$fullpath" ]; then
+			echo "Error: file not found: ${file}" >&2
+			has_error=true
+			continue
+		fi
+
+		if ! nvim --headless "$fullpath" +"lua require('cli').format(${check_only})"; then
+			has_error=true
+		fi
+	done
+
+	if [ "$has_error" = true ]; then
+		return 1
+	fi
+	return 0
+}
+
+main "$@"

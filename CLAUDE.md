@@ -20,14 +20,6 @@
 - **Version Manager**: `dot.config/mise/config.toml` (languages, tools, packages), `Brewfile` (Homebrew packages)
 - **AI Assistant**: `dot.claude/claude/CLAUDE.md` (global instructions), `dot.claude/claude/settings.json` (global settings)
 
-## Check/Format Commands
-
-- **Check diagnostics**: Use MCP IDE tool `mcp__ide__getDiagnostics` if available; run formatters only when issues found
-- **Format Commands** (run if diagnostics unavailable or show issues):
-  - Shell Script: `shfmt -w ./path/to/file.sh`
-  - Lua: `stylua ./path/to/file.lua`
-  - Markdown: `markdownfmt -w ./path/to/file.md`
-
 ## Code Style Guidelines
 
 - **Indentation**: Shell scripts: Tabs; Others: 2 spaces (no tabs)

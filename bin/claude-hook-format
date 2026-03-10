@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# stdin から JSON を読み、file_path を抽出して nvim-format を実行
+main() {
+	local input file_path
+	input=$(cat)
+	file_path=$(echo "${input}" | jq -r '.tool_input.file_path // empty')
+
+	if [ -z "${file_path}" ] || [ ! -f "${file_path}" ]; then
+		return 0
+	fi
+
+	nvim-format "${file_path}" >/dev/null 2>&1 || true
+	return 0
+}
+
+main "$@"

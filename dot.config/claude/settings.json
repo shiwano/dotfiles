@@ -54,7 +54,9 @@
       "Bash(cargo check *)",
       "Bash(gh-pr-comments *)",
       "Bash(gh-dependabot-alerts *)",
-      "Bash(shfmt -d *)"
+      "Bash(shfmt -d *)",
+      "Bash(nvim-lint *)",
+      "Bash(nvim-format *)"
     ],
     "deny": [
       "Bash(sh *)",
@@ -114,6 +116,23 @@
           {
             "type": "command",
             "command": "claude-hook-stop"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-hook-format",
+            "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "claude-hook-lint",
+            "timeout": 30
           }
         ]
       }
