@@ -33,6 +33,7 @@ main() {
 	fi
 
 	local has_error=false
+	local files=()
 
 	local file
 	for file in "$@"; do
@@ -45,10 +46,14 @@ main() {
 			continue
 		fi
 
-		if ! nvim --headless "$fullpath" +"lua require('cli').lint()"; then
+		files+=("$fullpath")
+	done
+
+	if [ "${#files[@]}" -gt 0 ]; then
+		if ! nvim --headless "${files[@]}" +"lua require('cli').lint()"; then
 			has_error=true
 		fi
-	done
+	fi
 
 	if [ "$has_error" = true ]; then
 		return 1
