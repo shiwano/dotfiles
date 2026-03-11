@@ -11,7 +11,7 @@ Run nvim-lint on files using Neovim headless mode.
 Uses the same nvim-lint configuration as your Neovim init.lua.
 
 Options:
-  --lsp    Also check LSP diagnostics (gopls, ts_ls, pyright, etc.)
+  --lsp       Also check LSP diagnostics (gopls, ts_ls, pyright, etc.)
   -h, --help  Show this help message
 
 Examples:
