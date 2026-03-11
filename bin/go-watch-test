@@ -100,7 +100,7 @@ main() {
 	export -f has_run_option extract_test_functions run_tests_for_file handle_file_change
 
 	# shellcheck disable=SC2016
-	reflex -d none -r '\.go$' -- bash -c 'handle_file_change "$1" "${@:2}"' _ {} "$@"
+	reflex -d none -r '(^|/)[^.][^/]*\.go$' -- bash -c 'handle_file_change "$1" "${@:2}"' _ {} "$@"
 }
 
 main "$@"
