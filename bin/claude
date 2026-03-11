@@ -12,6 +12,7 @@ main() {
 		-allow "$HOME/.npm"
 		-allow "$HOME/.npmrc"
 		-allow "$HOME/.pub-cache"
+		-allow "$HOME/.dart-tool"
 		-allow "$HOME/.cargo"
 		-allow "$HOME/.rustup"
 		-allow "$HOME/.gem"
