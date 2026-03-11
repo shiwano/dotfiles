@@ -22,7 +22,7 @@ local function run_lint(lint, argc)
   return true
 end
 
-local function wait_for_lsp(argc)
+local function wait_for_lsp()
   if vim.env.NVIM_NO_LSP == "1" then
     return
   end
@@ -30,7 +30,6 @@ local function wait_for_lsp(argc)
   local active_progress = 0
   local had_progress = false
   local last_diag_change = 0
-  local last_attach = 0
   local augroup = vim.api.nvim_create_augroup("cli_lsp_wait", { clear = true })
 
   vim.api.nvim_create_autocmd("LspProgress", {
@@ -55,55 +54,40 @@ local function wait_for_lsp(argc)
     end,
   })
 
-  vim.api.nvim_create_autocmd("LspAttach", {
-    group = augroup,
-    callback = function()
-      last_attach = vim.uv.now()
-    end,
-  })
+  -- Wait for vim.lsp.start() scheduled by vim.lsp.enable()
+  vim.wait(200, function()
+    return #vim.lsp.get_clients() > 0
+  end)
 
-  -- Wait for LSP clients to attach to all buffers (30s timeout)
-  local lsp_attached = vim.wait(30000, function()
-    local has_any = false
-    for buf_i = 1, argc do
-      local bufnr = vim.fn.bufnr(vim.fn.argv(buf_i - 1) --[[@as string]])
-      if #vim.lsp.get_clients({ bufnr = bufnr }) > 0 then
-        has_any = true
-      end
-    end
-    if not has_any then
+  if #vim.lsp.get_clients() == 0 then
+    vim.api.nvim_del_augroup_by_name("cli_lsp_wait")
+    return
+  end
+
+  local attach_time = vim.uv.now()
+  local progress_done_time = 0
+
+  -- Wait for LSP analysis to complete (60s timeout)
+  vim.wait(60000, function()
+    -- If progress events were received but not yet complete, keep waiting
+    if had_progress and active_progress > 0 then
       return false
     end
-    -- Wait until no new LspAttach events for 5s
-    return (vim.uv.now() - last_attach) >= 5000
+    -- Track when progress completed
+    if had_progress and progress_done_time == 0 then
+      progress_done_time = vim.uv.now()
+    end
+    -- Wait for diagnostics to stabilize (2s after last change)
+    if last_diag_change > 0 then
+      return (vim.uv.now() - last_diag_change) >= 2000
+    end
+    -- Progress completed but no diagnostics yet, wait up to 5s
+    if progress_done_time > 0 then
+      return (vim.uv.now() - progress_done_time) >= 5000
+    end
+    -- No signals at all, wait 10s after attach then give up
+    return (vim.uv.now() - attach_time) >= 10000
   end, 200)
-
-  if lsp_attached then
-    local attach_time = vim.uv.now()
-    local progress_done_time = 0
-
-    -- Wait for LSP analysis to complete (60s timeout)
-    vim.wait(60000, function()
-      -- If progress events were received but not yet complete, keep waiting
-      if had_progress and active_progress > 0 then
-        return false
-      end
-      -- Track when progress completed
-      if had_progress and progress_done_time == 0 then
-        progress_done_time = vim.uv.now()
-      end
-      -- Wait for diagnostics to stabilize (2s after last change)
-      if last_diag_change > 0 then
-        return (vim.uv.now() - last_diag_change) >= 2000
-      end
-      -- Progress completed but no diagnostics yet, wait up to 5s
-      if progress_done_time > 0 then
-        return (vim.uv.now() - progress_done_time) >= 5000
-      end
-      -- No signals at all, wait 10s after attach then give up
-      return (vim.uv.now() - attach_time) >= 10000
-    end, 200)
-  end
 
   vim.api.nvim_del_augroup_by_name("cli_lsp_wait")
 end
@@ -150,7 +134,7 @@ function M.lint()
       return
     end
 
-    wait_for_lsp(argc)
+    wait_for_lsp()
 
     if collect_diagnostics(argc) then
       vim.cmd("cq1")
