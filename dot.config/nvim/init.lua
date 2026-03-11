@@ -823,6 +823,11 @@ local pluginSpec = {
         return vim.v.shell_error == 0
       end
 
+      local function is_git_tracked(filepath)
+        vim.fn.system({ "git", "ls-files", "--error-unmatch", filepath })
+        return vim.v.shell_error == 0
+      end
+
       local function load_or_reload_buffer(filepath)
         local existing_buf = vim.fn.bufnr(filepath)
         if existing_buf ~= -1 then
@@ -855,14 +860,12 @@ local pluginSpec = {
             if err or not filename then
               return
             end
-            if filename:match("^%.git/") or filename:match("/%.git/") then
-              return
-            end
-            if filename:match("^%.jj/") or filename:match("/%.jj/") then
-              return
-            end
-
             local filepath = root .. "/" .. filename
+
+            local has_dot_segment = filename:match("^%.") or filename:match("/%.")
+            if has_dot_segment and not is_git_tracked(filepath) then
+              return
+            end
 
             if vim.fn.filereadable(filepath) == 0 then
               return
