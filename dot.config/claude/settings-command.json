@@ -8,8 +8,22 @@
   "permissions": {
     "defaultMode": "default",
     "allow": [
-      "Bash(echo :*)",
-      "Bash(cat :*)",
+      "Bash(echo *)",
+      "Bash(cat *)",
+      "Bash(ls *)",
+      "Bash(find *)",
+      "Bash(grep *)",
+      "Bash(wc *)",
+      "Bash(rg *)",
+      "Bash(tree *)",
+      "Bash(xargs *)",
+      "Bash(basename *)",
+      "Bash(head *)",
+      "Bash(tail *)",
+      "Bash(sort *)",
+      "Bash(uniq *)",
+      "Bash(cut *)",
+      "Bash(diff *)"
     ],
     "deny": [
       "Bash(sh *)",
@@ -48,5 +62,5 @@
       "Read(**/secrets/**)"
     ]
   },
-  "model": "claude-4-5-haiku-latest"
+  "model": "claude-haiku-4-5"
 }
