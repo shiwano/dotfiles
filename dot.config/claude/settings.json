@@ -95,9 +95,10 @@
       "Read(**/secrets/**)"
     ],
     "additionalDirectories": [
+      "~/code/pkg/mod",
       "~/.pub-cache",
       "~/.rustup",
-      "~/code/pkg/mod"
+      "~/.config/claude"
     ],
     "defaultMode": "plan"
   },
