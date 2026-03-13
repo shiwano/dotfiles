@@ -75,12 +75,6 @@ if command -v mise >/dev/null 2>&1; then
 	eval "$(mise activate zsh)"
 fi
 
-# Nix --------------------------------------------------------------------------
-
-if [ -e "${HOME}/.nix-profile/etc/profile.d/nix.sh" ]; then
-	. "${HOME}/.nix-profile/etc/profile.d/nix.sh"
-fi
-
 # fzf --------------------------------------------------------------------------
 
 if command -v fzf >/dev/null 2>&1; then
