@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: util-kill-process [options]
+
+Interactively select processes and kill them.
+
+Options:
+  -9    Use SIGKILL instead of SIGTERM
+
+Examples:
+  util-kill-process
+  util-kill-process -9
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	local signal="TERM"
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-9)
+			signal="KILL"
+			shift
+			;;
+		*)
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	local pids
+	pids="$(util-select-process)"
+	[ -z "$pids" ] && return 0
+
+	local pid
+	while IFS= read -r pid; do
+		kill -"$signal" "$pid" 2>/dev/null && echo "Killed PID $pid (SIG$signal)" >&2 || echo "Failed to kill PID $pid" >&2
+	done <<<"$pids"
+}
+
+main "$@"
