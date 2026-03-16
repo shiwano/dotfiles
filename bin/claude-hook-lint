@@ -39,7 +39,7 @@ main() {
 		return 0
 	fi
 
-	lint_output=$(nvim-lint "${file_path}" 2>&1) || {
+	lint_output=$(nvim-lint --no-lsp "${file_path}" 2>&1) || {
 		echo "${lint_output}" >&2
 		exit 2
 	}

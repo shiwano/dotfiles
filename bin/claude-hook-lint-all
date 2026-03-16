@@ -8,8 +8,8 @@ usage() {
 Usage: claude-hook-lint-all
 
 Claude Code hook for Stop events.
-Receives JSON data from stdin, detects changed files via jj/git,
-and runs nvim-lint --lsp on them.
+Receives JSON data from stdin and runs nvim-lint --changed to lint
+files modified in the current VCS working copy.
 
 This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
@@ -42,27 +42,8 @@ main() {
 		return 0
 	fi
 
-	local changed
-	changed=$(vcs-changed-file-paths)
-
-	if [ -z "${changed}" ]; then
-		return 0
-	fi
-
-	local existing=()
-	local f
-	while IFS= read -r f; do
-		if [ -f "$f" ]; then
-			existing+=("$f")
-		fi
-	done <<<"${changed}"
-
-	if [ "${#existing[@]}" -eq 0 ]; then
-		return 0
-	fi
-
 	local lint_output
-	lint_output=$(nvim-lint --lsp "${existing[@]}" 2>&1) || {
+	lint_output=$(nvim-lint --changed 2>&1) || {
 		echo "${lint_output}" >&2
 		exit 2
 	}

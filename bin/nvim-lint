@@ -5,24 +5,37 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: nvim-lint [options] <file> [file...]
+Usage: nvim-lint [options] [file...]
 
 Run nvim-lint on files using Neovim headless mode.
 Uses the same nvim-lint configuration as your Neovim init.lua.
+LSP diagnostics are enabled by default.
 
 Options:
-  --lsp       Also check LSP diagnostics (gopls, ts_ls, pyright, etc.)
+  --changed   Lint files changed in the current VCS (jj/git) working copy
+  --no-lsp    Disable LSP diagnostics
   -h, --help  Show this help message
+
+Arguments:
+  file...     Files to lint. Use path/... for recursive directory (git-tracked text files only)
 
 Examples:
   nvim-lint main.go
-  nvim-lint script.sh lib.lua
-  nvim-lint --lsp main.go
+  nvim-lint --no-lsp script.sh lib.lua
+  nvim-lint --changed
+  nvim-lint ./...
+  nvim-lint src/...
 EOF
 }
 
+expand_recursive() {
+	local dir="$1"
+	git grep -Il '' -- "${dir}" 2>/dev/null || true
+}
+
 main() {
-	local use_lsp=false
+	local use_lsp=true
+	local use_changed=false
 	local files=()
 
 	while [[ $# -gt 0 ]]; do
@@ -31,8 +44,12 @@ main() {
 			usage 1
 			return 0
 			;;
-		--lsp)
-			use_lsp=true
+		--no-lsp)
+			use_lsp=false
+			shift
+			;;
+		--changed)
+			use_changed=true
 			shift
 			;;
 		-*)
@@ -41,15 +58,38 @@ main() {
 			return 1
 			;;
 		*)
-			files+=("$1")
+			if [[ "$1" =~ ^(.*)/\.\.\.$ ]]; then
+				local dir="${BASH_REMATCH[1]:-.}"
+				local f
+				while IFS= read -r f; do
+					if [ -f "$f" ]; then
+						files+=("$f")
+					fi
+				done < <(expand_recursive "$dir")
+			else
+				files+=("$1")
+			fi
 			shift
 			;;
 		esac
 	done
 
+	if [ "$use_changed" = true ]; then
+		local changed
+		changed=$(vcs-changed-file-paths)
+
+		if [ -n "${changed}" ]; then
+			local f
+			while IFS= read -r f; do
+				if [ -f "$f" ]; then
+					files+=("$f")
+				fi
+			done <<<"${changed}"
+		fi
+	fi
+
 	if [ "${#files[@]}" -lt 1 ]; then
-		usage
-		return 1
+		return 0
 	fi
 
 	if ! command -v nvim >/dev/null 2>&1; then
@@ -77,7 +117,7 @@ main() {
 	if [ "${#resolved[@]}" -gt 0 ]; then
 		local lint_cmd="require('cli').lint()"
 		local nvim_args=(nvim --headless "${resolved[@]}" +"lua ${lint_cmd}")
-		if [ "$use_lsp" != true ]; then
+		if [ "$use_lsp" = false ]; then
 			nvim_args=(env NVIM_NO_LSP=1 "${nvim_args[@]}")
 		fi
 
