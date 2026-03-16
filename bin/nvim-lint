@@ -9,11 +9,9 @@ Usage: nvim-lint [options] [file...]
 
 Run nvim-lint on files using Neovim headless mode.
 Uses the same nvim-lint configuration as your Neovim init.lua.
-LSP diagnostics are enabled by default.
 
 Options:
   --changed   Lint files changed in the current VCS (jj/git) working copy
-  --no-lsp    Disable LSP diagnostics
   -h, --help  Show this help message
 
 Arguments:
@@ -21,7 +19,6 @@ Arguments:
 
 Examples:
   nvim-lint main.go
-  nvim-lint --no-lsp script.sh lib.lua
   nvim-lint --changed
   nvim-lint ./...
   nvim-lint src/...
@@ -34,7 +31,6 @@ expand_recursive() {
 }
 
 main() {
-	local use_lsp=true
 	local use_changed=false
 	local files=()
 
@@ -43,10 +39,6 @@ main() {
 		-h | --help)
 			usage 1
 			return 0
-			;;
-		--no-lsp)
-			use_lsp=false
-			shift
 			;;
 		--changed)
 			use_changed=true
@@ -117,9 +109,6 @@ main() {
 	if [ "${#resolved[@]}" -gt 0 ]; then
 		local lint_cmd="require('cli').lint()"
 		local nvim_args=(nvim --headless "${resolved[@]}" +"lua ${lint_cmd}")
-		if [ "$use_lsp" = false ]; then
-			nvim_args=(env NVIM_NO_LSP=1 "${nvim_args[@]}")
-		fi
 
 		if ! "${nvim_args[@]}"; then
 			has_error=true

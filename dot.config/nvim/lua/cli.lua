@@ -23,10 +23,6 @@ local function run_lint(lint, argc)
 end
 
 local function wait_for_lsp()
-  if vim.env.NVIM_NO_LSP == "1" then
-    return
-  end
-
   local active_progress = 0
   local had_progress = false
   local last_diag_change = 0

@@ -50,7 +50,7 @@ main() {
 	done
 
 	if [ "${#files[@]}" -gt 0 ]; then
-		if ! nvim --headless "${files[@]}" +"lua require('cli').format()"; then
+		if ! env NVIM_NO_LSP=1 nvim --headless "${files[@]}" +"lua require('cli').format()"; then
 			has_error=true
 		fi
 	fi
