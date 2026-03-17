@@ -36,7 +36,13 @@ main() {
 		fi
 	fi
 
-	args+=(-allow "$(git rev-parse --git-common-dir)")
+	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
+		args+=(-allow "$git_common_dir")
+	fi
+
+	if jj_root="$(jj root 2>/dev/null)"; then
+		args+=(-allow "$jj_root/.jj")
+	fi
 
 	exec mise exec -- cage "${args[@]}" \
 		claude --mcp-config "$HOME/.mcp-global.json" "$@"
