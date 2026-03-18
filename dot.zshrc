@@ -335,12 +335,6 @@ alias u='git-unstage-files'
 alias mt='git-mergetool-file'
 alias gg='util-edit-grep-results'
 
-autoload zmv
-alias zmv='noglob zmv -W'
-alias zcp='noglob zmv -C'
-alias zln='noglob zmv -L'
-alias zsy='noglob zmv -Ls'
-
 if command -v bazelisk >/dev/null 2>&1; then
 	alias bazel='bazelisk'
 fi
