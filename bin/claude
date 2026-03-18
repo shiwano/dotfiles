@@ -51,11 +51,8 @@ main() {
 		--deny-read "$HOME/.docker/config.json"
 		--deny-read "$HOME/.netrc"
 		--deny-read "$HOME/Dropbox"
+		--deny-read "$(realpath .env)"
 	)
-
-	for f in .env*; do
-		[ -e "$f" ] && args+=(--deny-read "$(realpath "$f")")
-	done
 
 	for dir in secrets secret; do
 		[ -d "$dir" ] && args+=(--deny-read "$(realpath "$dir")")
