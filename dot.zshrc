@@ -192,23 +192,19 @@ _startup-ssh-add-key() {
 		return 0
 	fi
 
-	# On Linux, fix SSH_AUTH_SOCK path so all shells share the same agent.
-	if [[ "$(uname)" == "Linux" ]]; then
-		export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
-	fi
+	# Fix SSH_AUTH_SOCK path so all shells share the same agent.
+	export SSH_AUTH_SOCK="$HOME/.ssh/agent.sock"
 
-	if ! ssh-add -l >/dev/null 2>&1; then
-		if [[ "$(uname)" == "Linux" ]]; then
-			rm -f "$HOME/.ssh/agent.sock"
-		fi
+	# Check agent connectivity (exit code 2 = cannot connect).
+	ssh-add -l >/dev/null 2>&1
+	local ssh_status=$?
+
+	if [ "$ssh_status" -eq 2 ]; then
+		rm -f "$SSH_AUTH_SOCK"
 		echo "ssh-agent not running. Start ssh-agent? [y/n]"
 		read -r ans </dev/tty
 		if [[ "$ans" =~ ^[Yy]$ ]]; then
-			if [[ "$(uname)" == "Linux" ]]; then
-				eval "$(ssh-agent -a "$HOME/.ssh/agent.sock")" >/dev/null
-			else
-				eval "$(ssh-agent -s)" >/dev/null
-			fi
+			eval "$(ssh-agent -a "$SSH_AUTH_SOCK")" >/dev/null
 		else
 			return 0
 		fi
