@@ -321,8 +321,6 @@ alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
-alias authorize-shiwano='curl https://github.com/shiwano.keys >> ~/.ssh/authorized_keys'
-alias lsof-listen='lsof -i -P | grep "LISTEN"'
 alias reload-shell='exec $SHELL -l'
 
 alias s='vcs-status'
