@@ -563,10 +563,6 @@ stty susp undef
 
 # Integrations -----------------------------------------------------------------
 
-if command -v direnv >/dev/null 2>&1; then
-	eval "$(direnv hook zsh)"
-fi
-
 if command -v jj >/dev/null 2>&1; then
 	source <(jj util completion zsh)
 fi
@@ -579,14 +575,18 @@ if [ -d $BREW_PREFIX/Caskroom/google-cloud-sdk ]; then
 	. "$BREW_PREFIX/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 fi
 
-if [ -f ~/.zshrc.local ]; then
-	. ~/.zshrc.local
+if [ -f $HOME/.zshrc.local ]; then
+	. $HOME/.zshrc.local
 fi
-
-# Startup ----------------------------------------------------------------------
 
 typeset -U path PATH # Remove duplicated PATHs.
 export PATH=$HOME/dotfiles/bin:$PATH
+
+if command -v direnv >/dev/null 2>&1; then
+	eval "$(direnv hook zsh)"
+fi
+
+# Startup ----------------------------------------------------------------------
 
 for _func in "${_startup_funcs[@]}"; do
 	$_func
