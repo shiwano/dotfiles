@@ -1,0 +1,216 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: util-sandbox-exec [--allow-write PATH]... [--deny-read PATH]... -- command [args...]
+
+Execute a command inside a sandbox with restricted file system access.
+Uses sandbox-exec on macOS and bwrap on Linux.
+
+Options:
+  --allow-write PATH  Allow write access to PATH (can be specified multiple times)
+  --deny-read PATH    Deny read access to PATH (can be specified multiple times)
+  -h, --help          Show this help message
+
+Examples:
+  util-sandbox-exec --allow-write /tmp -- touch /tmp/test
+  util-sandbox-exec --allow-write /tmp --deny-read ~/.ssh -- my-command arg1 arg2
+EOF
+}
+
+resolve_path() {
+	local path="$1"
+	if [ -e "$path" ]; then
+		realpath "$path"
+	else
+		# Resolve parent directory and append basename for non-existent paths
+		local dir basename
+		basename="$(basename "$path")"
+		dir="$(cd "$(dirname "$path")" 2>/dev/null && pwd)" || dir="$(dirname "$path")"
+		echo "${dir}/${basename}"
+	fi
+}
+
+run_with_sandbox_exec() {
+	local allow_count="$1"
+	shift
+	local allow_paths=("${@:1:$allow_count}")
+	shift "$allow_count"
+	local deny_read_count="$1"
+	shift
+	local deny_read_paths=()
+	if [ "$deny_read_count" -gt 0 ]; then
+		deny_read_paths=("${@:1:$deny_read_count}")
+		shift "$deny_read_count"
+	fi
+	local cmd=("$@")
+
+	local profile='(version 1)(import "system.sb")(allow default)(deny file-write*)'
+
+	# macOS temporary directories
+	profile+='(allow file-write* (regex #"^/private/var/folders/[^/]+/[^/]+/(C|T|0)($|/)"))'
+
+	# Write-allow paths
+	for path in "${allow_paths[@]}"; do
+		local resolved
+		resolved="$(resolve_path "$path")"
+		profile+="(allow file-write* (subpath \"${resolved}\"))"
+		profile+="(allow file-write* (literal \"${resolved}\"))"
+	done
+
+	# Read-deny paths
+	for path in "${deny_read_paths[@]}"; do
+		if [ -e "$path" ]; then
+			local resolved
+			resolved="$(resolve_path "$path")"
+			profile+="(deny file-read* (subpath \"${resolved}\"))"
+			profile+="(allow file-read-metadata (subpath \"${resolved}\"))"
+		fi
+	done
+
+	exec sandbox-exec -p "$profile" "${cmd[@]}"
+}
+
+run_with_bwrap() {
+	local allow_count="$1"
+	shift
+	local allow_paths=("${@:1:$allow_count}")
+	shift "$allow_count"
+	local deny_read_count="$1"
+	shift
+	local deny_read_paths=()
+	if [ "$deny_read_count" -gt 0 ]; then
+		deny_read_paths=("${@:1:$deny_read_count}")
+		shift "$deny_read_count"
+	fi
+	local cmd=("$@")
+
+	local args=(
+		--ro-bind / /
+		--dev /dev
+		--proc /proc
+		--tmpfs /tmp
+	)
+
+	# Write-allow paths (bind read-write)
+	for path in "${allow_paths[@]}"; do
+		local resolved
+		resolved="$(resolve_path "$path")"
+		if [ -e "$resolved" ]; then
+			args+=(--bind "$resolved" "$resolved")
+		fi
+	done
+
+	# Read-deny paths
+	for path in "${deny_read_paths[@]}"; do
+		if [ -d "$path" ]; then
+			args+=(--tmpfs "$path")
+		elif [ -e "$path" ]; then
+			args+=(--ro-bind /dev/null "$path")
+		fi
+	done
+
+	exec bwrap "${args[@]}" "${cmd[@]}"
+}
+
+main() {
+	local allow_paths=()
+	local deny_read_paths=()
+	local cmd=()
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		--allow-write)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --allow-write requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			allow_paths+=("$1" "$2")
+			shift 2
+			;;
+		--deny-read)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --deny-read requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			deny_read_paths+=("$1" "$2")
+			shift 2
+			;;
+		--)
+			shift
+			cmd=("$@")
+			break
+			;;
+		*)
+			echo "Error: Unknown option '$1'" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	if [ "${#cmd[@]}" -eq 0 ]; then
+		echo "Error: No command specified after '--'" >&2
+		usage
+		return 1
+	fi
+
+	# Extract just the paths from the paired arrays
+	local resolved_allow_paths=()
+	local i=0
+	while [ "$i" -lt "${#allow_paths[@]}" ]; do
+		local resolved
+		resolved="$(resolve_path "${allow_paths[$((i + 1))]}")"
+		resolved_allow_paths+=("$resolved")
+		i=$((i + 2))
+	done
+
+	local resolved_deny_read_paths=()
+	i=0
+	while [ "$i" -lt "${#deny_read_paths[@]}" ]; do
+		resolved_deny_read_paths+=("${deny_read_paths[$((i + 1))]}")
+		i=$((i + 2))
+	done
+
+	# Remove deny_read_paths that conflict with allow_paths (writing requires reading)
+	local filtered_deny_read_paths=()
+	for path in "${resolved_deny_read_paths[@]}"; do
+		local skip=false
+		for allowed in "${resolved_allow_paths[@]}"; do
+			if [[ "$path" == "$allowed" ]]; then
+				skip=true
+				break
+			fi
+		done
+		if [[ "$skip" == false ]]; then
+			filtered_deny_read_paths+=("$path")
+		fi
+	done
+
+	local allow_count="${#resolved_allow_paths[@]}"
+	local deny_read_count="${#filtered_deny_read_paths[@]}"
+
+	case "$(uname)" in
+	Darwin)
+		run_with_sandbox_exec "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "${cmd[@]}"
+		;;
+	Linux)
+		run_with_bwrap "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "${cmd[@]}"
+		;;
+	*)
+		echo "Warning: Unsupported OS '$(uname)'. Running without sandbox." >&2
+		exec "${cmd[@]}"
+		;;
+	esac
+}
+
+main "$@"

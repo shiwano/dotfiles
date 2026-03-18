@@ -46,6 +46,7 @@
       "Bash(tmux *)",
       "Bash(gh *)",
       "Bash(docker push *)",
+      "Bash(uv auth *)",
       "Bash(npm publish *)",
       "Bash(brew *)",
       "Bash(mise *)",
@@ -54,11 +55,10 @@
       "Bash(terraform *)",
       "Bash(kubectl *)",
       "Bash(helm *)",
-      "Read(.env*)",
       "Read(id_rsa)",
       "Read(id_ed25519)",
-      "Read(**/*token*)",
-      "Read(**/*key*)",
+      "Read(.env*)",
+      "Read(**/secret/**)",
       "Read(**/secrets/**)"
     ]
   },

@@ -4,47 +4,71 @@ set -euo pipefail
 
 main() {
 	local args=(
-		-allow .
-		-allow "$HOME/dotfiles/dot.config/claude"
-		-allow "$HOME/.config/claude"
-		-allow "$HOME/.claude"
-		-allow "$HOME/.mcp-global.json"
-		-allow "$HOME/.npm"
-		-allow "$HOME/.npmrc"
-		-allow "$HOME/.pub-cache"
-		-allow "$HOME/.dart-tool"
-		-allow "$HOME/.cargo"
-		-allow "$HOME/.rustup"
-		-allow "$HOME/.gem"
-		-allow "$HOME/.bundle"
-		-allow "$HOME/.local"
-		-allow "$HOME/.cache"
-		-allow "$GOPATH/pkg"
-		-allow /dev/tty
-		-allow /tmp
+		--allow-write "$(realpath .)"
+		--allow-write "$HOME/dotfiles/dot.config/claude"
+		--allow-write "$HOME/.config/claude"
+		--allow-write "$HOME/.npm"
+		--allow-write "$HOME/.pub-cache"
+		--allow-write "$HOME/.dart-tool"
+		--allow-write "$HOME/.cargo"
+		--allow-write "$HOME/.rustup"
+		--allow-write "$HOME/.gem"
+		--allow-write "$HOME/.bundle"
+		--allow-write "$HOME/.local"
+		--allow-write "$HOME/.cache"
+		--allow-write "$GOPATH/pkg"
+		--allow-write /tmp
 	)
 
 	if [[ "$(uname)" == "Darwin" ]]; then
 		args+=(
-			-allow "$HOME/Library/Caches"
-			-allow "$HOME/Library/Logs"
-			-allow /private/tmp
-			-allow-keychain
+			--allow-write "$HOME/Library/Caches"
+			--allow-write "$HOME/Library/Logs"
+			--allow-write "$HOME/Library/Keychains"
+			--allow-write /private/tmp
 		)
 		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
-			args+=(-allow "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
+			args+=(--allow-write "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
 		fi
 	fi
 
 	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
-		args+=(-allow "$git_common_dir")
+		args+=(--allow-write "$(realpath "$git_common_dir")")
 	fi
 
 	if jj_root="$(jj root 2>/dev/null)"; then
-		args+=(-allow "$jj_root/.jj")
+		args+=(--allow-write "$jj_root/.jj")
 	fi
 
-	exec mise exec -- cage "${args[@]}" \
+	args+=(
+		--deny-read "$HOME/.ssh"
+		--deny-read "$HOME/.gnupg"
+		--deny-read "$HOME/.gpg"
+		--deny-read "$HOME/.config/gcloud"
+		--deny-read "$HOME/.aws"
+		--deny-read "$HOME/.azure"
+		--deny-read "$HOME/.kube"
+		--deny-read "$HOME/.docker/config.json"
+		--deny-read "$HOME/.netrc"
+		--deny-read "$HOME/Dropbox"
+	)
+
+	for f in .env*; do
+		[ -e "$f" ] && args+=(--deny-read "$(realpath "$f")")
+	done
+
+	for dir in secrets secret; do
+		[ -d "$dir" ] && args+=(--deny-read "$(realpath "$dir")")
+	done
+
+	# WSL2: deny access to Windows filesystem mounts
+	if [ -n "${WSL_DISTRO_NAME:-}" ]; then
+		for dir in /mnt/[a-z]; do
+			[ -d "$dir" ] && args+=(--deny-read "$dir")
+		done
+	fi
+
+	exec mise exec -- util-sandbox-exec "${args[@]}" -- \
 		claude --mcp-config "$HOME/.mcp-global.json" "$@"
 }
 
