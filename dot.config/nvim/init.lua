@@ -42,7 +42,17 @@ local function current_working_directory()
   return rel_dir
 end
 
+local function open_file_or_url()
+  local cfile = vim.fn.expand("<cfile>")
+  if cfile:match("^https?://") then
+    vim.ui.open(cfile)
+  else
+    vim.cmd("normal! gF")
+  end
+end
+
 local function get_colors()
+  ---@diagnostic disable-next-line: missing-fields
   return require("tokyonight.colors").setup({ style = "night" })
 end
 
@@ -333,15 +343,15 @@ local pluginSpec = {
         local map_by_lhs = {}
         local function collect_map(mode, map, scope)
           if map.desc and map.desc:find(desc_prefix) ~= nil then
-            map_by_lhs[map.lhs] = map_by_lhs[map.lhs]
-              or {
-                lhs = map.lhs,
-                desc = map.desc,
-                modes = {},
-                scopes = {},
-              }
-            table.insert(map_by_lhs[map.lhs].modes, mode)
-            map_by_lhs[map.lhs].scopes[scope] = true
+            local key = map.lhs .. "\0" .. scope
+            map_by_lhs[key] = map_by_lhs[key] or {
+              lhs = map.lhs,
+              desc = map.desc,
+              modes = {},
+              scopes = {},
+            }
+            table.insert(map_by_lhs[key].modes, mode)
+            map_by_lhs[key].scopes[scope] = true
           end
         end
         for _, mode in ipairs({ "n", "v", "x", "i", "c", "t" }) do
@@ -1540,14 +1550,7 @@ vim.keymap.set("n", "qa", "qa<Esc>", { desc = "# Start or stop recording macro" 
 vim.keymap.set("n", "qq", "<Esc>") -- Disable recording with qq
 
 -- File or URL open
-vim.keymap.set("n", "oo", function()
-  local cfile = vim.fn.expand("<cfile>")
-  if cfile:match("^https?://") then
-    vim.ui.open(cfile)
-  else
-    vim.cmd("normal! gF")
-  end
-end, { desc = "# Open file or URL" })
+vim.keymap.set("n", "od", open_file_or_url, { desc = "# Open file or URL" })
 
 -- Window navigation
 vim.keymap.set("n", "<C-j>", "<C-w>j")
