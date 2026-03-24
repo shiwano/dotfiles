@@ -52,6 +52,7 @@ main() {
 		--deny-read "$HOME/.netrc"
 		--deny-read "$HOME/Dropbox"
 		--deny-read "$(realpath .env)"
+		--deny-read "$(realpath .envrc)"
 	)
 
 	for dir in secrets secret; do
