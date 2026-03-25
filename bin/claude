@@ -65,11 +65,9 @@ main() {
 		--deny-read "$HOME/Dropbox"
 		--deny-read "$(realpath .env)"
 		--deny-read "$(realpath .envrc)"
+		--deny-read "$(realpath secret)"
+		--deny-read "$(realpath secrets)"
 	)
-
-	for dir in secrets secret; do
-		[ -d "$dir" ] && args+=(--deny-read "$(realpath "$dir")")
-	done
 
 	# WSL2: deny access to Windows filesystem mounts
 	if [ -n "${WSL_DISTRO_NAME:-}" ]; then
