@@ -47,7 +47,12 @@ local function open_file_or_url()
   if cfile:match("^https?://") then
     vim.ui.open(cfile)
   else
-    vim.cmd("normal! gF")
+    local ok, err = pcall(function()
+      vim.cmd("normal! gF")
+    end)
+    if not ok then
+      vim.notify(err, vim.log.levels.WARN)
+    end
   end
 end
 
