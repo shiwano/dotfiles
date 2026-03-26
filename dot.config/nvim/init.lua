@@ -1141,14 +1141,14 @@ local pluginSpec = {
           rust = { "rustfmt" },
           javascript = { "prettier" },
           typescript = { "prettier" },
-          markdown = { "markdownfmt" },
+          markdown = { "prettier" },
           sh = { "shfmt" },
           json = { "jq" },
           toml = { "taplo" },
         },
         formatters = {
-          markdownfmt = {
-            append_args = { "-soft-wraps" },
+          prettier = {
+            append_args = { "--prose-wrap", "never" },
           },
         },
         format_on_save = function(bufnr)
