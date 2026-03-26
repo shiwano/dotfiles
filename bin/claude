@@ -76,6 +76,36 @@ main() {
 		done
 	fi
 
+	# Redact sensitive environment variables
+	local redact_patterns=(
+		'*_TOKEN'
+		'*_SECRET'
+		'*_KEY'
+		'*_PASSWORD'
+		'*_CREDENTIAL'
+		'*_CREDENTIALS'
+	)
+	local redact_whitelist=()
+
+	local pattern
+	while IFS='=' read -r name _; do
+		local matched=false
+		for pattern in "${redact_patterns[@]}"; do
+			# shellcheck disable=SC2254
+			case "$name" in $pattern) matched=true && break ;; esac
+		done
+		if [[ "$matched" == true ]]; then
+			local whitelisted=false
+			for pattern in "${redact_whitelist[@]}"; do
+				# shellcheck disable=SC2254
+				case "$name" in $pattern) whitelisted=true && break ;; esac
+			done
+			if [[ "$whitelisted" == false ]]; then
+				export "$name=[REDACTED]"
+			fi
+		fi
+	done < <(env)
+
 	exec mise exec -- util-sandbox-exec "${args[@]}" -- \
 		claude --mcp-config "$HOME/.mcp-global.json" "$@"
 }
