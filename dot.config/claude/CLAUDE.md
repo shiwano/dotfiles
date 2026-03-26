@@ -1,6 +1,4 @@
-# AI Agent Instructions
-
-## Core Principles
+# Core Principles
 
 - **Respect Context**: Honor project conventions (coding styles, naming, architecture)
 - **Minimal Changes**: Edit existing files over creating new ones; do only what's asked
@@ -8,7 +6,7 @@
 - **Confirm Before Acting**: Ask before breaking changes, modifying specs, or when requirements are unclear
 - **Objective Opinions**: Don't just agree; give honest, objective opinions when asked
 
-## Development Guidelines
+# Development Guidelines
 
 - **Code Style**: UTF-8, LF line endings; 2 spaces indentation (unless specified); no trailing spaces
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
