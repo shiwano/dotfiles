@@ -8,7 +8,6 @@
 
 # Development Guidelines
 
-- **Code Style**: UTF-8, LF line endings; 2 spaces indentation (unless specified); no trailing spaces
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Lint**: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
 - **Format**: `nvim-format ./path/to/file ...`
