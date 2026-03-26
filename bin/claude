@@ -18,29 +18,7 @@ main() {
 		--allow-write "$HOME/.cache"
 		--allow-write "$GOPATH/pkg"
 		--allow-write /tmp
-	)
 
-	if [[ "$(uname)" == "Darwin" ]]; then
-		args+=(
-			--allow-write "$HOME/Library/Caches"
-			--allow-write "$HOME/Library/Logs"
-			--allow-write "$HOME/Library/Keychains"
-			--allow-write /private/tmp
-		)
-		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
-			args+=(--allow-write "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
-		fi
-	fi
-
-	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
-		args+=(--allow-write "$(realpath "$git_common_dir")")
-	fi
-
-	if jj_root="$(jj root 2>/dev/null)"; then
-		args+=(--allow-write "$jj_root/.jj")
-	fi
-
-	args+=(
 		--deny-read "$HOME/.ssh"
 		--deny-read "$HOME/.gnupg"
 		--deny-read "$HOME/.gpg"
@@ -62,12 +40,38 @@ main() {
 		--deny-read "$HOME/.gitlab-ci-token"
 		--deny-read "$HOME/.travis"
 		--deny-read "$HOME/.jenkins"
-		--deny-read "$HOME/Dropbox"
 		--deny-read "$(realpath .env)"
 		--deny-read "$(realpath .envrc)"
 		--deny-read "$(realpath secret)"
 		--deny-read "$(realpath secrets)"
 	)
+
+	if [[ "$(uname)" == "Darwin" ]]; then
+		args+=(
+			--allow-write "$HOME/Library/Caches"
+			--allow-write "$HOME/Library/Logs"
+			--allow-write "$HOME/Library/Keychains"
+			--allow-write /private/tmp
+
+			--deny-read "$HOME/Desktop"
+			--deny-read "$HOME/Documents"
+			--deny-read "$HOME/Downloads"
+			--deny-read "$HOME/Dropbox"
+			--deny-read "$HOME/Applications"
+			--deny-read "$HOME/jpki"
+		)
+		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
+			args+=(--allow-write "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
+		fi
+	fi
+
+	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
+		args+=(--allow-write "$(realpath "$git_common_dir")")
+	fi
+
+	if jj_root="$(jj root 2>/dev/null)"; then
+		args+=(--allow-write "$jj_root/.jj")
+	fi
 
 	# WSL2: deny access to Windows filesystem mounts
 	if [ -n "${WSL_DISTRO_NAME:-}" ]; then
@@ -85,7 +89,7 @@ main() {
 		'*_CREDENTIAL'
 		'*_CREDENTIALS'
 	)
-	local redact_whitelist=()
+	local redact_allowlist=()
 
 	local pattern
 	while IFS='=' read -r name _; do
@@ -95,12 +99,12 @@ main() {
 			case "$name" in $pattern) matched=true && break ;; esac
 		done
 		if [[ "$matched" == true ]]; then
-			local whitelisted=false
-			for pattern in "${redact_whitelist[@]}"; do
+			local allowlisted=false
+			for pattern in "${redact_allowlist[@]}"; do
 				# shellcheck disable=SC2254
-				case "$name" in $pattern) whitelisted=true && break ;; esac
+				case "$name" in $pattern) allowlisted=true && break ;; esac
 			done
-			if [[ "$whitelisted" == false ]]; then
+			if [[ "$allowlisted" == false ]]; then
 				export "$name=[REDACTED]"
 			fi
 		fi
