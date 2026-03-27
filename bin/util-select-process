@@ -101,11 +101,6 @@ build_process_list() {
 	}'
 }
 
-preview_command() {
-	# shellcheck disable=SC2016
-	printf '%s' 'pid=$(echo {} | awk "{print \$1}"); ps -p "$pid" -o pid=,user=,%cpu=,%mem=,etime= 2>/dev/null | awk "{printf \"PID:   %s\nUSER:  %s\nCPU:   %s%%\nMEM:   %s%%\nTIME:  %s\n\", \$1, \$2, \$3, \$4, \$5}"; lsof -i -P -n -p "$pid" 2>/dev/null | tail -n +2 | awk "{printf \"NET:   %s\n\", \$9}"'
-}
-
 main() {
 	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
 		usage 1
@@ -118,11 +113,11 @@ main() {
 	process_list="$(build_process_list $$)"
 	[ -z "$process_list" ] && return 0
 
-	local preview
-	preview="$(preview_command)"
+	# shellcheck disable=SC2016
+	local preview='fzf-preview process $(echo {} | awk "{print \$1}")'
 
 	local selected
-	selected="$(echo "$process_list" | fzf --header-lines=1 -m --prompt "$prompt" --preview "$preview" --preview-window=down,8 || true)"
+	selected="$(echo "$process_list" | fzf --header-lines=1 -m --prompt "$prompt" --preview "$preview" --preview-window=down,6 || true)"
 	[ -z "$selected" ] && return 0
 
 	echo "$selected" | awk '{print $1}'
