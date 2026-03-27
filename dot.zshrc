@@ -118,29 +118,14 @@ if command -v fzf >/dev/null 2>&1; then
 	export FZF_DEFAULT_COMMAND="rg --files --hidden --follow --sort=path \
 		-g '!**/.DS_Store' \
 		-g '!**/node_modules' \
-		-g '!**/code/pkg/mod' \
-		-g '!**/code/pkg/sumdb' \
 		-g '!**/__pycache__' \
-		-g '!**/.pub-cache' \
 		-g '!**/.bundle' \
-		-g '!**/.android' \
-		-g '!**/.cocoapods' \
 		-g '!**/.gradle' \
-		-g '!**/.zsh_sessions' \
-		-g '!**/.claude' \
-		-g '!**/.dropbox' \
 		-g '!**/.ssh' \
-		-g '!**/.atlas' \
-		-g '!**/.cache' \
-		-g '!**/.dart*' \
-		-g '!**/.local' \
-		-g '!**/.docker' \
-		-g '!**/.npm' \
-		-g '!**/.m2/repository' \
-		-g '!**/.config/**/logs' \
-		-g '!**/.config/**/undo' \
-		-g '!**/swiftpm/cache' \
-		-g '!**/.Trash' \
+		-g '!**/.venv' \
+		-g '!**/{.config,dot.config}/**/logs' \
+		-g '!**/{.config,dot.config}/**/undo' \
+		-g '!**/{.config,dot.config}/claude/*/**/*' \
 		-g '!**/.git'"
 fi
 
