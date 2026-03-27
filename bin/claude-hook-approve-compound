@@ -1,0 +1,291 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: claude-hook-approve-compound
+
+Claude Code PreToolUse hook for auto-approving compound Bash commands.
+Decomposes compound commands (using &&, ||, |, ;) via shfmt AST analysis,
+then checks each segment against the allow/deny lists in Claude settings.
+
+Requires: jq, shfmt
+
+This command is called automatically by Claude Code and should not be
+executed manually unless for testing purposes.
+
+Examples:
+  echo '{"tool_input":{"command":"ls -la /tmp && echo done"}}' | claude-hook-approve-compound
+EOF
+}
+
+# jq filter to extract individual commands from shfmt AST
+# shellcheck disable=SC2016
+SHFMT_AST_FILTER='
+def get_part_value:
+  if (type == "object" | not) then ""
+  elif .Type == "Lit" then .Value // ""
+  elif .Type == "DblQuoted" then
+    "\"" + ([.Parts[]? | get_part_value] | join("")) + "\""
+  elif .Type == "SglQuoted" then
+    "'\''" + (.Value // "") + "'\''"
+  elif .Type == "ParamExp" then
+    "$" + (.Param.Value // "")
+  elif .Type == "CmdSubst" then "$(..)"
+  else ""
+  end;
+
+def find_cmd_substs:
+  if type == "object" then
+    if .Type == "CmdSubst" or .Type == "ProcSubst" then .
+    elif .Type == "DblQuoted" then .Parts[]? | find_cmd_substs
+    elif .Type == "ParamExp" then
+      (.Exp?.Word | find_cmd_substs),
+      (.Repl?.Orig | find_cmd_substs),
+      (.Repl?.With | find_cmd_substs)
+    else empty
+    end
+  elif type == "array" then .[] | find_cmd_substs
+  else empty
+  end;
+
+def get_arg_value:
+  [.Parts[]? | get_part_value] | join("");
+
+def get_command_string:
+  if .Type == "CallExpr" and .Args then
+    [.Args[] | get_arg_value] | map(select(length > 0)) | join(" ")
+  else empty
+  end;
+
+def extract_commands:
+  if type == "object" then
+    if .Type == "CallExpr" then
+      get_command_string,
+      (.Args[]? | find_cmd_substs | .Stmts[]? | extract_commands),
+      (.Assigns[]?.Value | find_cmd_substs | .Stmts[]? | extract_commands),
+      (.Assigns[]?.Array?.Elems[]?.Value | find_cmd_substs | .Stmts[]? | extract_commands),
+      (.Redirs[]?.Word | find_cmd_substs | .Stmts[]? | extract_commands)
+    elif .Type == "BinaryCmd" then
+      (.X | extract_commands), (.Y | extract_commands)
+    elif .Type == "Subshell" or .Type == "Block" then
+      (.Stmts[]? | extract_commands)
+    elif .Type == "CmdSubst" then
+      (.Stmts[]? | extract_commands)
+    elif .Type == "IfClause" then
+      (.Cond[]? | extract_commands),
+      (.Then[]? | extract_commands),
+      (.Else | extract_commands)
+    elif .Type == "WhileClause" or .Type == "UntilClause" then
+      (.Cond[]? | extract_commands), (.Do[]? | extract_commands)
+    elif .Type == "ForClause" then
+      (.Loop.Items[]? | find_cmd_substs | .Stmts[]? | extract_commands),
+      (.Do[]? | extract_commands)
+    elif .Type == "CaseClause" then
+      (.Items[]?.Stmts[]? | extract_commands)
+    elif .Type == "DeclClause" then
+      (.Args[]?.Value | find_cmd_substs | .Stmts[]? | extract_commands),
+      (.Args[]?.Array?.Elems[]?.Value | find_cmd_substs | .Stmts[]? | extract_commands)
+    elif .Cmd then
+      (.Cmd | extract_commands),
+      (.Redirs[]?.Word | find_cmd_substs | .Stmts[]? | extract_commands)
+    elif .Stmts then
+      (.Stmts[] | extract_commands)
+    else
+      (.[] | extract_commands)
+    end
+  elif type == "array" then
+    (.[] | extract_commands)
+  else empty
+  end;
+
+extract_commands | select(length > 0)
+'
+
+ALLOWED_PREFIXES=()
+DENIED_PREFIXES=()
+
+find_git_root() {
+	git rev-parse --show-toplevel 2>/dev/null || true
+}
+
+needs_compound_parse() {
+	# shellcheck disable=SC2016
+	[[ "$1" == *['|&;`']* || "$1" == *'$('* || "$1" == *'<('* || "$1" == *'>('* ]]
+}
+
+parse_compound() {
+	local cmd="$1"
+
+	# Work around shfmt issue with =~ operator
+	if [[ "$cmd" == *"=~"* ]]; then
+		cmd=$(sed -E 's/\[\[[[:space:]]*\\?![[:space:]]+(.+)[[:space:]]+=/! [[ \1 =/g' <<<"$cmd")
+	fi
+
+	local ast
+	if ! ast=$(shfmt -ln bash -tojson <<<"$cmd" 2>/dev/null); then
+		return 1
+	fi
+
+	jq -r "$SHFMT_AST_FILTER" <<<"$ast" 2>/dev/null || return 1
+}
+
+load_prefixes() {
+	local git_root
+	git_root=$(find_git_root)
+
+	local files=(
+		"$HOME/.claude/settings.json"
+		"$HOME/.claude/settings.local.json"
+		"$HOME/.config/claude/settings.json"
+		"$HOME/.config/claude/settings.local.json"
+	)
+	if [[ -n "$git_root" ]]; then
+		files+=(
+			"$git_root/.claude/settings.json"
+			"$git_root/.claude/settings.local.json"
+		)
+	fi
+
+	local jq_filter='
+		def extract_prefix: sub("^Bash\\("; "") | sub("( \\*|\\*|:\\*)\\)$"; "") | sub("\\)$"; "");
+		(.permissions.allow[]? // empty | select(startswith("Bash(")) | "allow:" + extract_prefix),
+		(.permissions.deny[]?  // empty | select(startswith("Bash(")) | "deny:"  + extract_prefix)
+	'
+
+	local line
+	while IFS= read -r line; do
+		[[ -z "$line" ]] && continue
+		case "$line" in
+		allow:*) ALLOWED_PREFIXES+=("${line#allow:}") ;;
+		deny:*) DENIED_PREFIXES+=("${line#deny:}") ;;
+		esac
+	done < <(
+		for file in "${files[@]}"; do
+			[[ -f "$file" ]] || continue
+			jq -r "$jq_filter" "$file" 2>/dev/null || true
+		done | sort -u
+	)
+}
+
+matches_prefix_list() {
+	local cmd="$1"
+	local list_type="$2"
+
+	local prefix
+	if [[ "$list_type" == "allow" ]]; then
+		for prefix in "${ALLOWED_PREFIXES[@]}"; do
+			if [[ "$cmd" == "$prefix" || "$cmd" == "$prefix "* || "$cmd" == "$prefix/"* ]]; then
+				return 0
+			fi
+		done
+	else
+		for prefix in "${DENIED_PREFIXES[@]}"; do
+			if [[ "$cmd" == "$prefix" || "$cmd" == "$prefix "* || "$cmd" == "$prefix/"* ]]; then
+				return 0
+			fi
+		done
+	fi
+	return 1
+}
+
+is_allowed() {
+	local cmd="$1"
+
+	if [[ ${#DENIED_PREFIXES[@]} -gt 0 ]] && matches_prefix_list "$cmd" deny; then
+		return 1
+	fi
+	[[ ${#ALLOWED_PREFIXES[@]} -gt 0 ]] && matches_prefix_list "$cmd" allow
+}
+
+all_allowed() {
+	local cmd
+	for cmd in "${EXTRACTED_COMMANDS[@]}"; do
+		[[ -z "$cmd" ]] && continue
+		if ! is_allowed "$cmd"; then
+			return 1
+		fi
+	done
+	return 0
+}
+
+any_denied() {
+	[[ ${#DENIED_PREFIXES[@]} -eq 0 ]] && return 1
+
+	local cmd
+	for cmd in "${EXTRACTED_COMMANDS[@]}"; do
+		[[ -z "$cmd" ]] && continue
+		if matches_prefix_list "$cmd" deny; then
+			return 0
+		fi
+	done
+	return 1
+}
+
+approve() {
+	cat <<'EOF'
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"allow"}}
+EOF
+}
+
+deny() {
+	local reason="${1:-Denied by hook}"
+	cat <<EOF
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDeniedMessage":"${reason}"}}
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+		usage 1
+		return 0
+	fi
+
+	for dep in jq shfmt; do
+		if ! command -v "$dep" >/dev/null 2>&1; then
+			exit 0
+		fi
+	done
+
+	if [ -t 0 ]; then
+		echo "Error: No input data. This command should be called by Claude Code hooks." >&2
+		usage
+		return 1
+	fi
+
+	local json_input command
+	json_input=$(cat)
+	command=$(jq -r '.tool_input.command // empty' <<<"$json_input")
+	[[ -z "$command" ]] && exit 0
+
+	if ! needs_compound_parse "$command"; then
+		exit 0
+	fi
+
+	load_prefixes
+	[[ ${#ALLOWED_PREFIXES[@]} -eq 0 ]] && exit 0
+
+	EXTRACTED_COMMANDS=()
+	local line
+	while IFS= read -r line; do
+		[[ -n "$line" ]] && EXTRACTED_COMMANDS+=("$line")
+	done < <(parse_compound "$command")
+
+	[[ ${#EXTRACTED_COMMANDS[@]} -eq 0 ]] && exit 0
+
+	if all_allowed; then
+		approve
+		exit 0
+	fi
+
+	if any_denied; then
+		deny "Compound command contains a denied sub-command"
+		exit 2
+	fi
+
+	exit 0
+}
+
+main "$@"
