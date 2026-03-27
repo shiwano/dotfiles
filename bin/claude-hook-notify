@@ -14,8 +14,25 @@ This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
 
 Example (for testing):
-  echo '{"session_id": "abc12345-def6-7890-ghij-klmnopqrstuv", "message": "Test notification"}' | claude-hook-notify
+  echo '{"message": "Test notification", "cwd": "/Users/me/myproject", "transcript_path": "/tmp/transcript.jsonl"}' | claude-hook-notify
 EOF
+}
+
+extract_last_prompt() {
+	local transcript_path="$1"
+	if [[ -z "${transcript_path}" || ! -f "${transcript_path}" ]]; then
+		return 0
+	fi
+	jq -r '
+		select(.type == "user" and .userType == "external")
+		| .message.content
+		| if type == "array" then
+			map(select(type == "object" and .type == "text"
+				and (.text | test("^[<\\[]") | not)) | .text)
+			| if length > 0 then join(" ") else empty end
+		elif type == "string" and (test("^[<\\[]") | not) then .
+		else empty end
+	' "${transcript_path}" | tail -1 | cut -c1-60
 }
 
 main() {
@@ -33,14 +50,28 @@ main() {
 	local json_input
 	json_input=$(cat)
 
-	local message session_id
-	message=$(echo "$json_input" | jq -r '.message')
-	session_id=$(echo "$json_input" | jq -r '.session_id')
+	local message cwd transcript_path
+	message=$(echo "${json_input}" | jq -r '.message')
+	cwd=$(echo "${json_input}" | jq -r '.cwd // empty')
+	transcript_path=$(echo "${json_input}" | jq -r '.transcript_path // empty')
 
-	local short_id="${session_id:0:8}"
-	local formatted_message="${short_id}: ${message}"
+	local last_prompt
+	last_prompt=$(extract_last_prompt "${transcript_path}")
 
-	util-notify --title "Claude Code" --group-id "$session_id" "$formatted_message"
+	local display_message="${last_prompt:-${message}}"
+	local dir_name=""
+	if [[ -n "${cwd}" ]]; then
+		dir_name=$(basename "${cwd}")
+	fi
+
+	local formatted_message
+	if [[ -n "${dir_name}" ]]; then
+		formatted_message="${dir_name}: ${display_message}"
+	else
+		formatted_message="${display_message}"
+	fi
+
+	util-notify --title "Claude Code" "💬 ${formatted_message}"
 }
 
 main "$@"

@@ -26,7 +26,6 @@ main() {
 		--deny-read "$HOME/.aws"
 		--deny-read "$HOME/.azure"
 		--deny-read "$HOME/.kube"
-		--deny-read "$HOME/.docker/config.json"
 		--deny-read "$HOME/.netrc"
 		--deny-read "$HOME/.git-credentials"
 		--deny-read "$HOME/.vault-token"
@@ -44,7 +43,6 @@ main() {
 		--deny-read "$HOME/.yarnrc"
 		--deny-read "$HOME/.python_history"
 		--deny-read "$HOME/.emulator_console_auth_token"
-		--deny-read "$HOME/.zshrc.local"
 		--deny-read "$(realpath .env)"
 		--deny-read "$(realpath .envrc)"
 		--deny-read "$(realpath secret)"
@@ -76,6 +74,13 @@ main() {
 
 	if jj_root="$(jj root 2>/dev/null)"; then
 		args+=(--allow-write "$jj_root/.jj")
+	fi
+
+	# Allow writing to tmux client tty for OSC 777 notifications
+	if [[ -n "${TMUX:-}" ]]; then
+		local client_tty
+		client_tty=$(tmux display-message -p '#{client_tty}')
+		args+=(--allow-write "$client_tty")
 	fi
 
 	# WSL2: deny access to Windows filesystem mounts

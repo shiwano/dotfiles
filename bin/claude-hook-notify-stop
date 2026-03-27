@@ -14,8 +14,25 @@ This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
 
 Example (for testing):
-  echo '{"session_id": "abc12345-def6-7890-ghij-klmnopqrstuv", "stop_hook_active": false}' | claude-hook-notify-stop
+  echo '{"stop_hook_active": false, "cwd": "/Users/me/myproject", "transcript_path": "/tmp/transcript.jsonl"}' | claude-hook-notify-stop
 EOF
+}
+
+extract_last_prompt() {
+	local transcript_path="$1"
+	if [[ -z "${transcript_path}" || ! -f "${transcript_path}" ]]; then
+		return 0
+	fi
+	jq -r '
+		select(.type == "user" and .userType == "external")
+		| .message.content
+		| if type == "array" then
+			map(select(type == "object" and .type == "text"
+				and (.text | test("^[<\\[]") | not)) | .text)
+			| if length > 0 then join(" ") else empty end
+		elif type == "string" and (test("^[<\\[]") | not) then .
+		else empty end
+	' "${transcript_path}" | tail -1 | cut -c1-60
 }
 
 main() {
@@ -33,19 +50,33 @@ main() {
 	local json_input
 	json_input=$(cat)
 
-	local stop_hook_active session_id
-	stop_hook_active=$(echo "$json_input" | jq -r '.stop_hook_active')
-	session_id=$(echo "$json_input" | jq -r '.session_id')
+	local stop_hook_active cwd transcript_path
+	stop_hook_active=$(echo "${json_input}" | jq -r '.stop_hook_active')
+	cwd=$(echo "${json_input}" | jq -r '.cwd // empty')
+	transcript_path=$(echo "${json_input}" | jq -r '.transcript_path // empty')
 
 	# Prevent infinite loops by checking if hook is already active
-	if [[ "$stop_hook_active" == "true" ]]; then
+	if [[ "${stop_hook_active}" == "true" ]]; then
 		return 0
 	fi
 
-	local short_id="${session_id:0:8}"
-	local message="${short_id}: Claude Code response complete"
+	local last_prompt
+	last_prompt=$(extract_last_prompt "${transcript_path}")
 
-	util-notify --title "Claude Code" --group-id "$session_id" "$message"
+	local display_message="${last_prompt:-Claude Code response complete}"
+	local dir_name=""
+	if [[ -n "${cwd}" ]]; then
+		dir_name=$(basename "${cwd}")
+	fi
+
+	local formatted_message
+	if [[ -n "${dir_name}" ]]; then
+		formatted_message="${dir_name}: ${display_message}"
+	else
+		formatted_message="${display_message}"
+	fi
+
+	util-notify --title "Claude Code" "✅ ${formatted_message}"
 }
 
 main "$@"

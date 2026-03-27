@@ -7,56 +7,135 @@ usage() {
 	cat <<EOF >&"$fd"
 Usage: util-notify [OPTIONS] <message>
 
-Send a macOS notification that can activate terminal.
-If run from within tmux, clicking the notification will switch to
-the specific tmux session, window, and pane where the command was executed.
+Send a notification via OSC 777 escape sequence.
+Designed for use with Ghostty, which supports OSC 777 and automatically
+suppresses notifications when the terminal is focused.
+If run from within tmux, the notification is written directly to the
+client tty to bypass the allow-passthrough restriction.
 
 Options:
   -t, --title <title>    Title for the notification
-  -g, --group-id <id>    Group ID for the notification (automatically removes previous notifications with same group ID)
+  --focus                Switch to a tmux window with a pending notification
+  --clear-window         Clear pending state for the current window
 
-Notification sounds are suppressed when:
-- Ghostty is the frontmost application AND the current tmux window is active
+To auto-switch to the notifying window on terminal focus, add to tmux.conf:
+  set-hook -g client-focus-in 'run-shell -b "util-notify --focus"'
+
+To clear pending state when switching windows, add to tmux.conf:
+  set-hook -g session-window-changed 'run-shell -b "util-notify --clear-window"'
 
 Example:
   util-notify "Build completed"
   util-notify --title "Build Status" "Build completed"
-  util-notify --group-id "build-status" "Build completed"
+  util-notify --focus
 EOF
 }
 
-is_active() {
-	local frontmost_app
-	frontmost_app=$(osascript -e 'tell application "System Events" to get name of first process whose frontmost is true' 2>/dev/null || echo "")
-
-	if [[ "$frontmost_app" != "ghostty" ]]; then
-		return 1 # Not active - Ghostty is not active
-	fi
-
-	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
-		local is_pane_active
-		is_pane_active=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_active}')
-		if [[ "$is_pane_active" != "1" ]]; then
-			return 1 # Not active - pane is not active
+send_notification() {
+	local title="$1" message="$2"
+	if [[ -n "${TMUX:-}" ]]; then
+		local client_tty
+		client_tty=$(tmux display-message -p '#{client_tty}')
+		printf '\e]777;notify;%s;%s\a' "$title" "$message" \
+			>"$client_tty" 2>/dev/null
+		if is_client_focused; then
+			printf '\a' >"$client_tty" 2>/dev/null
 		fi
+	else
+		printf '\e]777;notify;%s;%s\a' "$title" "$message" \
+			>/dev/tty 2>/dev/null
 	fi
-
-	return 0 # Active - Ghostty is active and window is selected
 }
 
-main() {
-	if [[ "$(uname)" != "Darwin" ]]; then
+mark_window_pending() {
+	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
+		local window_target
+		window_target=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}:#{window_index}')
+		tmux set-option -w -t "$window_target" @notify_pending 1
+	fi
+}
+
+clear_all_pending() {
+	local window_id
+	while IFS= read -r window_id; do
+		tmux set-option -w -t "$window_id" -u @notify_pending 2>/dev/null
+	done < <(tmux list-windows -a -F '#{session_name}:#{window_index}')
+}
+
+clear_window_pending() {
+	if [[ -n "${TMUX:-}" ]]; then
+		local window_target
+		window_target=$(tmux display-message -p '#{session_name}:#{window_index}')
+		tmux set-option -w -t "$window_target" -u @notify_pending 2>/dev/null
+	fi
+}
+
+is_client_focused() {
+	if [[ -z "${TMUX:-}" ]]; then
+		return 1
+	fi
+	local client_flags
+	client_flags=$(tmux display-message -p '#{client_flags}')
+	[[ "$client_flags" == *focused* ]]
+}
+
+is_active_pane() {
+	if [[ -z "${TMUX:-}" || -z "${TMUX_PANE:-}" ]]; then
+		return 1
+	fi
+	local pane_active window_active
+	pane_active=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_active}')
+	window_active=$(tmux display-message -p -t "$TMUX_PANE" '#{window_active}')
+	[[ "$pane_active" == "1" && "$window_active" == "1" ]]
+}
+
+focus_pending_window() {
+	local pending_windows=()
+	local -A pending_names=()
+	while IFS=$'\t' read -r window_id pending window_name; do
+		if [[ "$pending" == "1" ]]; then
+			pending_windows+=("$window_id")
+			pending_names["$window_id"]="$window_name"
+		fi
+	done < <(tmux list-windows -a \
+		-F '#{session_name}:#{window_index}	#{@notify_pending}	#{window_name}')
+
+	if [[ ${#pending_windows[@]} -eq 0 ]]; then
 		return 0
 	fi
 
+	if [[ ${#pending_windows[@]} -eq 1 ]]; then
+		tmux select-window -t "${pending_windows[0]}"
+		clear_all_pending
+		return 0
+	fi
+
+	local menu_args=(-T "Switch to window")
+	for target in "${pending_windows[@]}"; do
+		menu_args+=("${pending_names[$target]}" ""
+			"select-window -t '$target'")
+	done
+	tmux display-menu "${menu_args[@]}"
+	clear_all_pending
+}
+
+main() {
 	local title=""
-	local group_id=""
 	local message=""
+	local focus=false
 
 	while [[ $# -gt 0 ]]; do
 		case $1 in
 		-h | --help)
 			usage 1
+			return 0
+			;;
+		--focus)
+			focus=true
+			shift
+			;;
+		--clear-window)
+			clear_window_pending
 			return 0
 			;;
 		-t | --title)
@@ -66,15 +145,6 @@ main() {
 				return 1
 			fi
 			title="$2"
-			shift 2
-			;;
-		-g | --group-id)
-			if [[ -z "${2:-}" ]]; then
-				echo "Error: --group-id requires a value" >&2
-				usage 2
-				return 1
-			fi
-			group_id="$2"
 			shift 2
 			;;
 		-*)
@@ -94,43 +164,23 @@ main() {
 		esac
 	done
 
+	if [[ "$focus" == true ]]; then
+		focus_pending_window
+		return 0
+	fi
+
 	if [[ -z "$message" ]]; then
 		echo "Error: Message is required" >&2
 		usage 2
 		return 1
 	fi
 
-	if is_active; then
+	if is_active_pane && is_client_focused; then
 		return 0
 	fi
 
-	local args=()
-	args+=(-message "$message")
-	args+=(-activate "com.mitchellh.ghostty")
-	args+=(-sound default)
-
-	if [[ -n "$title" ]]; then
-		args+=(-title "$title")
-	fi
-
-	if [[ -n "$group_id" ]]; then
-		args+=(-group "$group_id")
-		args+=(-remove "$group_id")
-	fi
-
-	if [[ -n "${TMUX:-}" && -n "${TMUX_PANE:-}" ]]; then
-		local tmux_bin
-		tmux_bin=$(which tmux)
-		local session window pane
-		session=$(tmux display-message -p -t "$TMUX_PANE" '#{session_name}')
-		window=$(tmux display-message -p -t "$TMUX_PANE" '#{window_index}')
-		pane=$(tmux display-message -p -t "$TMUX_PANE" '#{pane_index}')
-
-		local tmux_command="${tmux_bin} select-window -t '${session}:${window}' && ${tmux_bin} select-pane -t '${session}:${window}.${pane}'"
-		args+=(-execute "$tmux_command")
-	fi
-
-	terminal-notifier "${args[@]}"
+	send_notification "$title" "$message"
+	mark_window_pending
 }
 
 main "$@"

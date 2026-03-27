@@ -29,6 +29,7 @@
       "Bash(diff *)",
       "Bash(mkdir *)",
       "Bash(mv *)",
+      "Bash(jq *)",
       "Bash(make test *)",
       "Bash(go get *)",
       "Bash(go build *)",
@@ -114,7 +115,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-hook-notify"
+            "command": "claude-hook-notify",
+            "timeout": 10
           }
         ]
       }
@@ -125,7 +127,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "claude-hook-notify-stop"
+            "command": "claude-hook-notify-stop",
+            "timeout": 10
           },
           {
             "type": "command",

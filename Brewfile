@@ -40,7 +40,6 @@ brew 'imagemagick'
 brew 'kitty'
 brew 'gnuplot'
 brew 'sl'
-brew 'terminal-notifier'
 brew 'im-select'
 brew 'watchman'
 

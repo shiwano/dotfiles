@@ -195,7 +195,7 @@ main() {
 		else
 			notification_message="Go tools upgrade completed: $success_count/$total_tools successful"
 		fi
-		util-notify --title "mise Go Tools" --group-id "mise-go-upgrade" "$notification_message"
+		util-notify --title "mise Go Tools" "$notification_message"
 	fi
 
 	# Return appropriate exit code
@@ -209,4 +209,3 @@ main() {
 }
 
 main "$@"
-

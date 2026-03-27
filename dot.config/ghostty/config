@@ -24,3 +24,5 @@ keybind = cmd+shift+d=unbind
 keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+o=unbind
 keybind = ctrl+shift+e=unbind
+desktop-notifications = true
+bell-features = system,attention,title
