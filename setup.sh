@@ -81,6 +81,11 @@ main() {
 			bat cache --build
 		)
 	fi
+
+	if command -v fcitx5 >/dev/null 2>&1; then
+		topic 'Setup fcitx5'
+		fcitx5 -r -d
+	fi
 }
 
 main "$@"
