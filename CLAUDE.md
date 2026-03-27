@@ -10,3 +10,4 @@
 - **Naming**: Use snake_case for variables
 - **Line Length**: Prefer 80 characters
 - **Tests**: No tests
+- **Shell Scripts**: MUST invoke the `shell-script-guidelines` skill before writing or modifying shell scripts

@@ -329,18 +329,6 @@ if command -v bat >/dev/null 2>&1; then
 	alias cat='bat'
 fi
 
-if ! command -v pbcopy >/dev/null 2>&1; then
-	if command -v xsel >/dev/null 2>&1; then
-		alias pbcopy='xsel --clipboard --input'
-		alias pbpaste='xsel --clipboard --output'
-	elif command -v xclip >/dev/null 2>&1; then
-		alias pbcopy='xclip -selection clipboard'
-		alias pbpaste='xclip -selection clipboard -o'
-	else
-		alias pbcopy='echo "pbcopy: command not found" >&2'
-		alias pbpaste='echo "pbpaste: command not found" >&2'
-	fi
-fi
 
 # Prompt -----------------------------------------------------------------------
 

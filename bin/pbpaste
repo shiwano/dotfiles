@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: pbpaste
+
+Paste the system clipboard to stdout.
+
+Examples:
+  pbpaste
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	case "$(uname -s)" in
+	Darwin)
+		exec /usr/bin/pbpaste
+		;;
+	Linux)
+		if command -v xsel >/dev/null 2>&1; then
+			exec xsel --clipboard --output
+		elif command -v xclip >/dev/null 2>&1; then
+			exec xclip -selection clipboard -o
+		fi
+		;;
+	esac
+
+	echo "pbpaste: no clipboard command found" >&2
+	return 1
+}
+
+main "$@"
