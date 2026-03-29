@@ -68,6 +68,10 @@ main() {
 		fi
 	fi
 
+	if [[ "$(uname)" == "Linux" ]]; then
+		args+=(--allow-write "/dev/pts") # For bwrap
+	fi
+
 	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
 		args+=(--allow-write "$(realpath "$git_common_dir")")
 	fi
@@ -86,7 +90,7 @@ main() {
 	# WSL2: deny access to Windows filesystem mounts
 	if [ -n "${WSL_DISTRO_NAME:-}" ]; then
 		for dir in /mnt/[a-z]; do
-			[ -d "$dir" ] && args+=(--deny-read "$dir")
+			[ -d "$dir" ] && args+=(--deny-read "$dir/Users")
 		done
 	fi
 

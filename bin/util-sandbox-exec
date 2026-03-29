@@ -95,6 +95,14 @@ run_with_bwrap() {
 		--tmpfs /tmp
 	)
 
+	if [ -e /dev/dxg ]; then
+		args+=(--dev-bind /dev/dxg /dev/dxg)
+	fi
+
+	if [ -e /dev/pts ]; then
+		args+=(--dev-bind /dev/pts /dev/pts)
+	fi
+
 	# Write-allow paths (bind read-write)
 	for path in "${allow_paths[@]}"; do
 		local resolved
