@@ -103,7 +103,9 @@ main() {
 		'*_CREDENTIAL'
 		'*_CREDENTIALS'
 	)
-	local redact_allowlist=()
+	local redact_allowlist=(
+		'HF_TOKEN'
+	)
 
 	local pattern
 	while IFS='=' read -r name _; do

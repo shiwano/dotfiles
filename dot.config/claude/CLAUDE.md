@@ -13,3 +13,4 @@
 - **Format**: `nvim-format ./path/to/file ...`
 - **Background Processes**: Ask user before starting; always stop before finishing
 - **File Editing**: When Edit fails due to whitespace mismatch, re-read the file to check tabs/spaces and retry
+- **Preferred Tools**: `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search)
