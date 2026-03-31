@@ -1148,7 +1148,7 @@ local pluginSpec = {
         },
         formatters = {
           prettier = {
-            append_args = { "--prose-wrap", "never" },
+            append_args = { "--prose-wrap", "preserve" },
           },
         },
         format_on_save = function(bufnr)
