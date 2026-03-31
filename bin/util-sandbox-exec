@@ -108,7 +108,11 @@ run_with_bwrap() {
 		local resolved
 		resolved="$(resolve_path "$path")"
 		if [ -e "$resolved" ]; then
-			args+=(--bind "$resolved" "$resolved")
+			if [[ "$resolved" == /dev/* ]]; then
+				args+=(--dev-bind "$resolved" "$resolved")
+			else
+				args+=(--bind "$resolved" "$resolved")
+			fi
 		fi
 	done
 
