@@ -42,6 +42,7 @@ yq = 'latest'
 protoc = 'latest'
 protoc-gen-go = 'latest'
 
+'npm:@openai/codex' = 'latest'
 'npm:@google/gemini-cli' = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
 'npm:neovim' = 'latest'
