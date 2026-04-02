@@ -1,0 +1,14 @@
+project_doc_fallback_filenames = ["CLAUDE.md"]
+
+approval_policy = "on-request"
+commit_attribution = ""
+
+[analytics]
+enabled = false
+
+[feedback]
+enabled = false
+
+[mcp_servers.context7]
+url = "https://mcp.context7.com/mcp"
+env_http_headers = { "CONTEXT7_API_KEY" = "CONTEXT7_API_KEY" }

@@ -137,8 +137,7 @@ main() {
 		fi
 	done < <(env)
 
-	exec mise exec -- util-sandbox-exec "${args[@]}" -- \
-		claude --mcp-config "$HOME/.mcp-global.json" "$@"
+	exec mise exec -- util-sandbox-exec "${args[@]}" -- claude "$@"
 }
 
 main "$@"
