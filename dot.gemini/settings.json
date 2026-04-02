@@ -10,6 +10,19 @@
     "auth": {
       "selectedType": "oauth-personal"
     }
+  },
+  "telemetry": {
+    "enabled": false
+  },
+  "privacy": {
+    "usageStatisticsEnabled": false
+  },
+  "mcpServers": {
+    "context7": {
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
+    }
   }
 }
-
