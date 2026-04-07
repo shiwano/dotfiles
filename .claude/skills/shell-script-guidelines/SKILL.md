@@ -1,6 +1,7 @@
 ---
 name: shell-script-guidelines
 description: Shell script best practices and guidelines. Use when writing, reviewing, or modifying shell scripts (.sh, bash files, bin/* scripts).
+user-invocable: false
 ---
 
 # Shell Script Guidelines
