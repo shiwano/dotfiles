@@ -94,7 +94,16 @@ main() {
 		done
 	fi
 
-	# Redact sensitive environment variables
+	# Redact sensitive environment variables.
+	#
+	# Variables whose name matches redact_patterns are replaced with
+	# [REDACTED] before claude is invoked. To let a variable through
+	# (e.g. HF_TOKEN for a project using Hugging Face), set the
+	# SANDBOX_ENV_ALLOWLIST environment variable to a space-separated
+	# list of variable names (glob patterns are allowed). Typically
+	# this is set per-project via direnv's .envrc:
+	#
+	#   export SANDBOX_ENV_ALLOWLIST="HF_TOKEN MY_*_TOKEN"
 	local redact_patterns=(
 		'*_TOKEN'
 		'*_SECRET'
@@ -103,9 +112,11 @@ main() {
 		'*_CREDENTIAL'
 		'*_CREDENTIALS'
 	)
-	local redact_allowlist=(
-		'HF_TOKEN'
-	)
+	local redact_allowlist=()
+	if [[ -n "${SANDBOX_ENV_ALLOWLIST:-}" ]]; then
+		# shellcheck disable=SC2206
+		redact_allowlist+=(${SANDBOX_ENV_ALLOWLIST})
+	fi
 
 	local pattern
 	while IFS='=' read -r name _; do
