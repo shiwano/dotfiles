@@ -66,6 +66,7 @@
       "Bash(nvim-format *)"
     ],
     "deny": [
+      "Bash(env *)",
       "Bash(sh *)",
       "Bash(bash *)",
       "Bash(zsh *)",
