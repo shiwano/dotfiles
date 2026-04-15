@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: gh-pr-ci-failures [options]
+
+Display failed CI checks for the HEAD commit of the current PR.
+
+Shows failed check runs (workflow/job) together with an excerpt of the
+failed step logs from the latest run per workflow.
+
+Options:
+  -n, --lines <N>  Max log lines to show per failed job (default: 50)
+  -f, --full       Show full failed logs without truncation
+  -h, --help       Show this help message
+
+Requires:
+  - gh (GitHub CLI)
+  - jq (JSON processor)
+
+Examples:
+  gh-pr-ci-failures
+  gh-pr-ci-failures --lines 100
+  gh-pr-ci-failures --full
+EOF
+}
+
+main() {
+	local lines=50
+	local full=false
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-n | --lines)
+			if [[ -z "${2:-}" ]]; then
+				echo "Error: --lines requires a value" >&2
+				usage
+				return 1
+			fi
+			lines="$2"
+			shift 2
+			;;
+		-f | --full)
+			full=true
+			shift
+			;;
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	if ! [[ "$lines" =~ ^[0-9]+$ ]] || [[ "$lines" -eq 0 ]]; then
+		echo "Error: --lines must be a positive integer" >&2
+		return 1
+	fi
+
+	if ! command -v gh >/dev/null 2>&1; then
+		echo "Error: gh command not found" >&2
+		return 1
+	fi
+
+	if ! command -v jq >/dev/null 2>&1; then
+		echo "Error: jq command not found" >&2
+		return 1
+	fi
+
+	local pr_info pr_number head_oid repo_owner repo_name
+	pr_info=$(gh pr view --json number,headRefOid 2>/dev/null) || {
+		echo "Error: No PR found for current branch" >&2
+		return 1
+	}
+	pr_number=$(echo "$pr_info" | jq -r '.number')
+	head_oid=$(echo "$pr_info" | jq -r '.headRefOid')
+
+	repo_owner=$(gh repo view --json owner -q .owner.login)
+	repo_name=$(gh repo view --json name -q .name)
+
+	# shellcheck disable=SC2016
+	local graphql_query='
+query($owner: String!, $repo: String!, $pr: Int!) {
+  repository(owner: $owner, name: $repo) {
+    pullRequest(number: $pr) {
+      headRefOid
+      commits(last: 1) {
+        nodes {
+          commit {
+            oid
+            statusCheckRollup {
+              contexts(first: 100) {
+                nodes {
+                  __typename
+                  ... on CheckRun {
+                    name
+                    conclusion
+                    status
+                    startedAt
+                    completedAt
+                    databaseId
+                    detailsUrl
+                    checkSuite {
+                      workflowRun {
+                        databaseId
+                        workflow { name }
+                      }
+                    }
+                  }
+                  ... on StatusContext {
+                    context
+                    state
+                    targetUrl
+                    createdAt
+                    description
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+'
+
+	local api_response
+	api_response=$(gh api graphql -f query="$graphql_query" \
+		-f owner="$repo_owner" \
+		-f repo="$repo_name" \
+		-F pr="$pr_number" 2>&1) || {
+		echo "Error: Failed to fetch CI data" >&2
+		echo "$api_response" >&2
+		return 1
+	}
+
+	local fetched_oid
+	fetched_oid=$(echo "$api_response" | jq -r '.data.repository.pullRequest.commits.nodes[0].commit.oid // ""')
+	if [[ -n "$fetched_oid" && "$fetched_oid" != "$head_oid" ]]; then
+		echo "Warning: HEAD commit mismatch (expected $head_oid, got $fetched_oid)" >&2
+	fi
+
+	# shellcheck disable=SC2016
+	local extract_query='
+def failed_conclusion: ["FAILURE","CANCELLED","TIMED_OUT","ACTION_REQUIRED","STARTUP_FAILURE"];
+def failed_state: ["FAILURE","ERROR"];
+
+def duration:
+  if (.startedAt // null) != null and (.completedAt // null) != null then
+    (try (((.completedAt | fromdateiso8601) - (.startedAt | fromdateiso8601)) | floor) catch null) as $s |
+    if $s == null or $s < 0 then null
+    elif $s < 60 then "\($s)s"
+    elif $s < 3600 then "\(($s/60)|floor)m \($s%60)s"
+    else "\(($s/3600)|floor)h \((($s%3600)/60)|floor)m"
+    end
+  else null end;
+
+[.data.repository.pullRequest.commits.nodes[0].commit.statusCheckRollup.contexts.nodes[]?] as $ctx |
+
+([$ctx[]
+  | select(.__typename == "CheckRun")
+  | select(.conclusion as $c | failed_conclusion | index($c))
+ ]
+ | group_by([(.checkSuite.workflowRun.workflow.name // ""), .name])
+ | map(max_by(.checkSuite.workflowRun.databaseId // 0))
+ | sort_by([(.checkSuite.workflowRun.workflow.name // ""), .name])
+ | map({
+     type: "check_run",
+     workflow: (.checkSuite.workflowRun.workflow.name // null),
+     name: .name,
+     run_id: (.checkSuite.workflowRun.databaseId // null),
+     job_id: .databaseId,
+     url: .detailsUrl,
+     conclusion: .conclusion,
+     duration: duration,
+     description: null,
+     state: null
+   })
+) as $checks |
+
+([$ctx[]
+  | select(.__typename == "StatusContext")
+  | select(.state as $s | failed_state | index($s))
+ ]
+ | sort_by(.context)
+ | map({
+     type: "status",
+     workflow: null,
+     name: .context,
+     run_id: null,
+     job_id: null,
+     url: .targetUrl,
+     conclusion: null,
+     duration: null,
+     description: .description,
+     state: .state
+   })
+) as $statuses |
+
+($checks + $statuses)[] | @json
+'
+
+	local failures
+	failures=$(echo "$api_response" | jq -r "$extract_query")
+
+	if [[ -z "$failures" ]]; then
+		echo "No CI failures found for the HEAD commit."
+		return 0
+	fi
+
+	local bold_red=$'\e[1;31m'
+	local gray=$'\e[90m'
+	local reset=$'\e[0m'
+
+	local first=true
+	while IFS= read -r failure; do
+		[[ -z "$failure" ]] && continue
+
+		local ftype fworkflow fname fjob_id furl fconclusion fduration fdescription fstate
+		ftype=$(echo "$failure" | jq -r '.type')
+		fworkflow=$(echo "$failure" | jq -r '.workflow // ""')
+		fname=$(echo "$failure" | jq -r '.name')
+		fjob_id=$(echo "$failure" | jq -r '.job_id // ""')
+		furl=$(echo "$failure" | jq -r '.url // ""')
+		fconclusion=$(echo "$failure" | jq -r '.conclusion // ""')
+		fduration=$(echo "$failure" | jq -r '.duration // ""')
+		fdescription=$(echo "$failure" | jq -r '.description // ""')
+		fstate=$(echo "$failure" | jq -r '.state // ""')
+
+		if [[ "$first" == "true" ]]; then
+			first=false
+		else
+			echo
+		fi
+
+		if [[ "$ftype" == "check_run" ]]; then
+			local header="${bold_red}❌ "
+			if [[ -n "$fworkflow" ]]; then
+				header+="${fworkflow} / ${fname}"
+			else
+				header+="${fname}"
+			fi
+			header+="${reset}    ${gray}${fconclusion}${reset}"
+			printf '%s\n' "$header"
+
+			if [[ -n "$fduration" ]]; then
+				printf '   ⏱  %s%s%s\n' "$gray" "$fduration" "$reset"
+			fi
+			if [[ -n "$furl" ]]; then
+				printf '   🔗 %s%s%s\n' "$gray" "$furl" "$reset"
+			fi
+
+			if [[ -n "$fjob_id" ]]; then
+				local logs
+				logs=$(gh run view --log-failed --job "$fjob_id" 2>/dev/null || true)
+
+				if [[ -z "$logs" ]]; then
+					printf '   %s(no failed log output)%s\n' "$gray" "$reset"
+				else
+					local log_output
+					if [[ "$full" == "true" ]]; then
+						log_output="$logs"
+						printf '   %s─── failed logs ───%s\n' "$gray" "$reset"
+					else
+						log_output=$(echo "$logs" | tail -n "$lines")
+						printf '   %s─── failed logs (last %s lines) ───%s\n' "$gray" "$lines" "$reset"
+					fi
+					while IFS= read -r log_line; do
+						printf '   %s| %s%s\n' "$gray" "$log_line" "$reset"
+					done <<<"$log_output"
+				fi
+			fi
+		else
+			printf '%s❌ %s%s    %s%s%s\n' "$bold_red" "$fname" "$reset" "$gray" "$fstate" "$reset"
+			if [[ -n "$fdescription" ]]; then
+				printf '   📝 %s%s%s\n' "$gray" "$fdescription" "$reset"
+			fi
+			if [[ -n "$furl" ]]; then
+				printf '   🔗 %s%s%s\n' "$gray" "$furl" "$reset"
+			fi
+		fi
+	done <<<"$failures"
+}
+
+main "$@"
