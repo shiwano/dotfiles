@@ -61,7 +61,10 @@ main() {
 
 	merge_config
 
-	exec mise exec -- codex "$@"
+	local args=(
+		--allow-write "$HOME/.codex"
+	)
+	exec mise exec -- util-agent-sandbox-exec "${args[@]}" -- codex "$@"
 }
 
 main "$@"

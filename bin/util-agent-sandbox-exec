@@ -1,0 +1,247 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: util-agent-sandbox-exec [--allow-write PATH]... [--deny-read PATH]... -- command [args...]
+
+Execute a command inside a sandbox with common restrictions for AI coding
+agents. Builds shared allow-write / deny-read rules (package caches, secrets,
+OS-specific paths, etc.), merges caller-supplied overrides, redacts sensitive
+environment variables, then delegates to util-sandbox-exec.
+
+Options:
+  --allow-write PATH  Additional path to allow writing (can be repeated)
+  --deny-read PATH    Additional path to deny reading (can be repeated)
+  -h, --help          Show this help message
+
+Environment:
+  SANDBOX_ENV_ALLOWLIST  Space-separated list of variable name patterns to
+                         exempt from redaction (e.g. "HF_TOKEN MY_*_TOKEN")
+
+Examples:
+  util-agent-sandbox-exec -- my-agent
+  util-agent-sandbox-exec --allow-write "\$HOME/.config/my-agent" -- my-agent --flag
+EOF
+}
+
+build_common_allow_write() {
+	local args=()
+
+	args+=(
+		--allow-write "$(realpath .)"
+		--allow-write "$HOME/.npm"
+		--allow-write "$HOME/.pub-cache"
+		--allow-write "$HOME/.dart-tool"
+		--allow-write "$HOME/.cargo"
+		--allow-write "$HOME/.rustup"
+		--allow-write "$HOME/.gem"
+		--allow-write "$HOME/.bundle"
+		--allow-write "$HOME/.local"
+		--allow-write "$HOME/.cache"
+		--allow-write "$GOPATH/pkg"
+		--allow-write /tmp
+	)
+
+	if [[ "$(uname)" == "Darwin" ]]; then
+		args+=(
+			--allow-write "$HOME/Library/Caches"
+			--allow-write "$HOME/Library/Logs"
+			--allow-write "$HOME/Library/Keychains"
+			--allow-write /private/tmp
+		)
+		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
+			args+=(--allow-write "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
+		fi
+	fi
+
+	if [[ "$(uname)" == "Linux" ]]; then
+		args+=(--allow-write "/dev/pts")
+	fi
+
+	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
+		args+=(--allow-write "$(realpath "$git_common_dir")")
+	fi
+
+	if jj_root="$(jj root 2>/dev/null)"; then
+		args+=(--allow-write "$jj_root/.jj")
+	fi
+
+	# Allow writing to tmux client tty for OSC 777 notifications
+	if [[ -n "${TMUX:-}" ]]; then
+		local client_tty
+		client_tty=$(tmux display-message -p '#{client_tty}')
+		args+=(--allow-write "$client_tty")
+	fi
+
+	printf '%s\n' "${args[@]}"
+}
+
+build_common_deny_read() {
+	local args=(
+		--deny-read "$HOME/.ssh"
+		--deny-read "$HOME/.gnupg"
+		--deny-read "$HOME/.gpg"
+		--deny-read "$HOME/.config/gcloud"
+		--deny-read "$HOME/.aws"
+		--deny-read "$HOME/.azure"
+		--deny-read "$HOME/.kube"
+		--deny-read "$HOME/.netrc"
+		--deny-read "$HOME/.git-credentials"
+		--deny-read "$HOME/.vault-token"
+		--deny-read "$HOME/.bash_history"
+		--deny-read "$HOME/.zsh_history"
+		--deny-read "$HOME/.mysql_history"
+		--deny-read "$HOME/.psql_history"
+		--deny-read "$HOME/.sqlite_history"
+		--deny-read "$HOME/.pgpass"
+		--deny-read "$HOME/.terraform.d"
+		--deny-read "$HOME/.config/gh"
+		--deny-read "$HOME/.gitlab-ci-token"
+		--deny-read "$HOME/.travis"
+		--deny-read "$HOME/.jenkins"
+		--deny-read "$HOME/.yarnrc"
+		--deny-read "$HOME/.python_history"
+		--deny-read "$HOME/.emulator_console_auth_token"
+		--deny-read "$(realpath .env)"
+		--deny-read "$(realpath .envrc)"
+		--deny-read "$(realpath secret)"
+		--deny-read "$(realpath secrets)"
+	)
+
+	if [[ "$(uname)" == "Darwin" ]]; then
+		args+=(
+			--deny-read "$HOME/Desktop"
+			--deny-read "$HOME/Documents"
+			--deny-read "$HOME/Downloads"
+			--deny-read "$HOME/Dropbox"
+			--deny-read "$HOME/Applications"
+			--deny-read "$HOME/jpki"
+		)
+	fi
+
+	# WSL2: deny access to Windows filesystem mounts
+	if [ -n "${WSL_DISTRO_NAME:-}" ]; then
+		for dir in /mnt/[a-z]; do
+			[ -d "$dir" ] && args+=(--deny-read "$dir/Users")
+		done
+	fi
+
+	printf '%s\n' "${args[@]}"
+}
+
+redact_env() {
+	# Redact sensitive environment variables.
+	#
+	# Variables whose name matches redact_patterns are replaced with
+	# [REDACTED] before the agent is invoked. To let a variable through
+	# (e.g. HF_TOKEN for a project using Hugging Face), set the
+	# SANDBOX_ENV_ALLOWLIST environment variable to a space-separated
+	# list of variable names (glob patterns are allowed). Typically
+	# this is set per-project via direnv's .envrc:
+	#
+	#   export SANDBOX_ENV_ALLOWLIST="HF_TOKEN MY_*_TOKEN"
+	local redact_patterns=(
+		'*_TOKEN'
+		'*_SECRET'
+		'*_KEY'
+		'*_PASSWORD'
+		'*_CREDENTIAL'
+		'*_CREDENTIALS'
+	)
+	local redact_allowlist=()
+	if [[ -n "${SANDBOX_ENV_ALLOWLIST:-}" ]]; then
+		# shellcheck disable=SC2206
+		redact_allowlist+=(${SANDBOX_ENV_ALLOWLIST})
+	fi
+
+	local pattern
+	while IFS='=' read -r name _; do
+		local matched=false
+		for pattern in "${redact_patterns[@]}"; do
+			# shellcheck disable=SC2254
+			case "$name" in $pattern) matched=true && break ;; esac
+		done
+		if [[ "$matched" == true ]]; then
+			local allowlisted=false
+			for pattern in "${redact_allowlist[@]}"; do
+				# shellcheck disable=SC2254
+				case "$name" in $pattern) allowlisted=true && break ;; esac
+			done
+			if [[ "$allowlisted" == false ]]; then
+				export "$name=[REDACTED]"
+			fi
+		fi
+	done < <(env)
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	local extra_args=()
+	local cmd=()
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		--allow-write)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --allow-write requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			extra_args+=("$1" "$2")
+			shift 2
+			;;
+		--deny-read)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --deny-read requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			extra_args+=("$1" "$2")
+			shift 2
+			;;
+		--)
+			shift
+			cmd=("$@")
+			break
+			;;
+		*)
+			echo "Error: Unknown option '$1'" >&2
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	if [ "${#cmd[@]}" -eq 0 ]; then
+		echo "Error: No command specified after '--'" >&2
+		usage
+		return 1
+	fi
+
+	local sandbox_args=()
+
+	# Read common rules line by line into the array
+	while IFS= read -r line; do
+		sandbox_args+=("$line")
+	done < <(build_common_allow_write)
+
+	while IFS= read -r line; do
+		sandbox_args+=("$line")
+	done < <(build_common_deny_read)
+
+	# Append caller-supplied overrides
+	sandbox_args+=("${extra_args[@]}")
+
+	redact_env
+
+	exec util-sandbox-exec "${sandbox_args[@]}" -- "${cmd[@]}"
+}
+
+main "$@"

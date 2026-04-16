@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+main() {
+	local args=(
+		--allow-write "$HOME/.gemini"
+	)
+	exec mise exec -- util-agent-sandbox-exec "${args[@]}" -- gemini "$@"
+}
+
+main "$@"
