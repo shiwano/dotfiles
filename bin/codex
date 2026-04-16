@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: codex [args...]
+
+Wrapper for codex that merges config.base.toml (shared settings)
+with environment-specific [projects.*] sections.
+
+Examples:
+  codex
+  codex --help
+EOF
+}
+
+merge_config() {
+	local base_config="${HOME}/.codex/config.base.toml"
+	local config="${HOME}/.codex/config.toml"
+
+	if [ ! -f "${base_config}" ]; then
+		return 0
+	fi
+
+	local projects_part=""
+
+	if [ -f "${config}" ]; then
+		# Split config.toml at the first [projects. line
+		local non_projects_part=""
+		non_projects_part="$(sed -n '/^\[projects\./q;p' "${config}")"
+		projects_part="$(sed -n '/^\[projects\./,$p' "${config}")"
+
+		# Strip trailing blank lines from non-projects part for comparison
+		local trimmed_non_projects
+		trimmed_non_projects="$(printf '%s' "${non_projects_part}" | sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }')"
+		local trimmed_base
+		trimmed_base="$(sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }' "${base_config}")"
+
+		# Write back to base config if shared settings were changed
+		if [ "${trimmed_non_projects}" != "${trimmed_base}" ]; then
+			printf '%s\n' "${trimmed_non_projects}" >"${base_config}"
+		fi
+	fi
+
+	# Regenerate config.toml from base + projects
+	rm -f "${config}"
+	if [ -n "${projects_part}" ]; then
+		printf '%s\n\n%s\n' "$(cat "${base_config}")" "${projects_part}" >"${config}"
+	else
+		cp "${base_config}" "${config}"
+	fi
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	merge_config
+
+	exec mise exec -- codex "$@"
+}
+
+main "$@"

@@ -11,4 +11,6 @@ dot.config/claude/*
 dot.config/claude/output-styles/*
 !dot.config/claude/output-styles/.gitkeep
 
+dot.codex/config.toml
+
 dot.config/fcitx5/conf/*
