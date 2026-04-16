@@ -16,4 +16,19 @@ if %ERRORLEVEL% LEQ 3 (
     exit /b 1
 )
 
+set "GHOSTTY_SRC=%~dp0..\dot.config\ghostty"
+set "GHOSTTY_DEST=%LOCALAPPDATA%\ghostty"
+
+echo Copying Ghostty config from %GHOSTTY_SRC% to %GHOSTTY_DEST% ...
+
+robocopy "%GHOSTTY_SRC%" "%GHOSTTY_DEST%" /E /IS /IT
+
+if %ERRORLEVEL% LEQ 3 (
+    echo Done.
+) else (
+    echo Error occurred. errorlevel=%ERRORLEVEL%
+    exit /b 1
+)
+
 endlocal
+pause
