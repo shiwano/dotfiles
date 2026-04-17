@@ -64,6 +64,7 @@
       "Bash(gh-pr-ci-failures *)",
       "Bash(gh-dependabot-alerts *)",
       "Bash(shfmt -d *)",
+      "Bash(nvidia-smi *)",
       "Bash(nvim-lint *)",
       "Bash(nvim-format *)"
     ],
