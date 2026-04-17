@@ -7,7 +7,7 @@ usage() {
 	cat <<EOF >&"$fd"
 Usage: fzf-preview <mode> <target>
 
-Preview a file or diff for fzf (Git or jj).
+Preview a file/diff/process for fzf.
 
 Examples:
   fzf-preview file /path/to/file
@@ -34,6 +34,26 @@ preview_process() {
 	')"
 	if [ -n "$ports" ]; then
 		printf "PORT:  %s\n" "$ports"
+	fi
+}
+
+preview_diff() {
+	local target="$1"
+
+	if jj root >/dev/null 2>&1; then
+		if [ "$(jj diff --summary "$target")" ]; then
+			jj diff --color=always "$target"
+		else
+			preview_file "$target"
+		fi
+	else
+		if [ "$(git diff --name-only "$target")" ]; then
+			git diff --color "$target"
+		elif [ "$(git diff --cached --name-only "$target")" ]; then
+			git diff --color --cached "$target"
+		else
+			preview_file "$target"
+		fi
 	fi
 }
 
@@ -87,21 +107,7 @@ main() {
 	elif [ "$mode" = "process" ]; then
 		preview_process "$target"
 	elif [ "$mode" = "diff" ]; then
-		if jj root >/dev/null 2>&1; then
-			if [ "$(jj diff --summary "$target")" ]; then
-				jj diff --color=always "$target"
-			else
-				preview_file "$target"
-			fi
-		else
-			if [ "$(git diff --name-only "$target")" ]; then
-				git diff --color "$target"
-			elif [ "$(git diff --cached --name-only "$target")" ]; then
-				git diff --color --cached "$target"
-			else
-				preview_file "$target"
-			fi
-		fi
+		preview_diff "$target"
 	else
 		usage
 		return 1
