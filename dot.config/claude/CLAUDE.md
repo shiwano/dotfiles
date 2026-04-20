@@ -12,4 +12,4 @@
 - **Lint**: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
 - **Format**: `nvim-format ./path/to/file ...`
 - **Background Processes**: Ask user before starting; always stop before finishing
-- **Preferred Tools**: `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search)
+- **Preferred Tools**: `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search); avoid Python when these tools suffice
