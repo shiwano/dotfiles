@@ -945,8 +945,8 @@ local pluginSpec = {
           vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
           vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
 
-          vim.keymap.set("t", "<C-z>", send_to_term("\x1b"), { buffer = true, silent = true }) -- Escape
-          vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true }) -- Ctrl+O
+          vim.keymap.set("t", "<Esc>", send_to_term("\x1b"), { buffer = true, silent = true })
+          vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true })
 
           vim.opt_local.scrollback = 1000
         end,
