@@ -6,6 +6,13 @@
       "headers": {
         "CONTEXT7_API_KEY": "$CONTEXT7_API_KEY"
       }
+    },
+    "codex": {
+      "type": "stdio",
+      "command": "codex",
+      "args": [
+        "mcp-server"
+      ]
     }
   }
 }
