@@ -6,6 +6,7 @@ main() {
 	local args=(
 		--allow-write "$HOME/dotfiles/dot.config/claude"
 		--allow-write "$HOME/.config/claude"
+		--allow-write "$HOME/.codex"
 	)
 	exec mise exec -- util-agent-sandbox-exec "${args[@]}" -- claude "$@"
 }
