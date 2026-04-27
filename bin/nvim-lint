@@ -112,7 +112,7 @@ main() {
 	done
 
 	if [ "${#resolved[@]}" -gt 0 ]; then
-		local lint_cmd="require('cli').lint()"
+		local lint_cmd="require('cli').lint({'TODO'})"
 		local nvim_args=(nvim --headless "${resolved[@]}" +"lua ${lint_cmd}")
 
 		if ! "${nvim_args[@]}"; then

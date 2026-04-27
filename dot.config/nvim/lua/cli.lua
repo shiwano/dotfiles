@@ -88,7 +88,19 @@ local function wait_for_lsp()
   vim.api.nvim_del_augroup_by_name("cli_lsp_wait")
 end
 
-local function collect_diagnostics(argc)
+local function should_ignore(d, ignore_patterns)
+  if not ignore_patterns then
+    return false
+  end
+  for _, pat in ipairs(ignore_patterns) do
+    if d.message:match(pat) then
+      return true
+    end
+  end
+  return false
+end
+
+local function collect_diagnostics(argc, ignore_patterns)
   local severity_labels = {
     [vim.diagnostic.severity.ERROR] = "ERROR",
     [vim.diagnostic.severity.WARN] = "WARN",
@@ -100,10 +112,10 @@ local function collect_diagnostics(argc)
   for i = 1, argc do
     local bufnr = vim.fn.bufnr(vim.fn.argv(i - 1) --[[@as string]])
     local diagnostics = vim.diagnostic.get(bufnr)
-    if #diagnostics > 0 then
-      has_error = true
-      local filename = vim.api.nvim_buf_get_name(bufnr)
-      for _, d in ipairs(diagnostics) do
+    local filename = vim.api.nvim_buf_get_name(bufnr)
+    for _, d in ipairs(diagnostics) do
+      if not should_ignore(d, ignore_patterns) then
+        has_error = true
         local sev = severity_labels[d.severity] or "UNKNOWN"
         local line = (d.lnum or 0) + 1
         local col = (d.col or 0) + 1
@@ -114,7 +126,7 @@ local function collect_diagnostics(argc)
   return has_error
 end
 
-function M.lint()
+function M.lint(ignore_patterns)
   vim.schedule(function()
     local ok, lint = pcall(require, "lint")
     if not ok then
@@ -132,7 +144,7 @@ function M.lint()
 
     wait_for_lsp()
 
-    if collect_diagnostics(argc) then
+    if collect_diagnostics(argc, ignore_patterns) then
       vim.cmd("cq1")
     else
       vim.cmd("qa!")
