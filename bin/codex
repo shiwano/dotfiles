@@ -24,30 +24,35 @@ merge_config() {
 		return 0
 	fi
 
-	local projects_part=""
+	local projects_toml=""
 
 	if [ -f "${config}" ]; then
-		# Split config.toml at the first [projects. line
-		local non_projects_part=""
-		non_projects_part="$(sed -n '/^\[projects\./q;p' "${config}")"
-		projects_part="$(sed -n '/^\[projects\./,$p' "${config}")"
+		local config_json
+		config_json="$(taplo get -f "${config}" -o json)"
 
-		# Strip trailing blank lines from non-projects part for comparison
-		local trimmed_non_projects
-		trimmed_non_projects="$(printf '%s' "${non_projects_part}" | sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }')"
-		local trimmed_base
-		trimmed_base="$(sed -e :a -e '/^[[:space:]]*$/{ $d; N; ba; }' "${base_config}")"
+		# Extract projects section as TOML
+		local projects_json
+		projects_json="$(printf '%s' "${config_json}" | jq '{projects}')"
+		if [ "$(printf '%s' "${projects_json}" | jq '.projects')" != "null" ]; then
+			projects_toml="$(printf '%s' "${projects_json}" | dasel -i json -o toml)"
+		fi
+
+		# Compare non-projects sections via JSON
+		local non_projects_json
+		non_projects_json="$(printf '%s' "${config_json}" | jq -S 'del(.projects)')"
+		local base_json
+		base_json="$(taplo get -f "${base_config}" -o json | jq -S '.')"
 
 		# Write back to base config if shared settings were changed
-		if [ "${trimmed_non_projects}" != "${trimmed_base}" ]; then
-			printf '%s\n' "${trimmed_non_projects}" >"${base_config}"
+		if [ "${non_projects_json}" != "{}" ] && [ "${non_projects_json}" != "${base_json}" ]; then
+			printf '%s' "${non_projects_json}" | dasel -i json -o toml >"${base_config}"
 		fi
 	fi
 
 	# Regenerate config.toml from base + projects
 	rm -f "${config}"
-	if [ -n "${projects_part}" ]; then
-		printf '%s\n\n%s\n' "$(cat "${base_config}")" "${projects_part}" >"${config}"
+	if [ -n "${projects_toml}" ]; then
+		printf '%s\n\n%s\n' "$(cat "${base_config}")" "${projects_toml}" >"${config}"
 	else
 		cp "${base_config}" "${config}"
 	fi

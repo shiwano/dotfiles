@@ -41,6 +41,7 @@ tmux = 'latest'
 yq = 'latest'
 protoc = 'latest'
 protoc-gen-go = 'latest'
+dasel = 'latest'
 
 'npm:@openai/codex' = 'latest'
 'npm:@google/gemini-cli' = 'latest'

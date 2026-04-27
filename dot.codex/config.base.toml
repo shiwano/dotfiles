@@ -1,7 +1,6 @@
-project_doc_fallback_filenames = ["CLAUDE.md"]
-
-approval_policy = "on-request"
-commit_attribution = ""
+approval_policy = 'on-request'
+commit_attribution = ''
+project_doc_fallback_filenames = ['CLAUDE.md']
 
 [analytics]
 enabled = false
@@ -9,6 +8,13 @@ enabled = false
 [feedback]
 enabled = false
 
+[mcp_servers]
 [mcp_servers.context7]
-url = "https://mcp.context7.com/mcp"
-env_http_headers = { "CONTEXT7_API_KEY" = "CONTEXT7_API_KEY" }
+url = 'https://mcp.context7.com/mcp'
+
+[mcp_servers.context7.env_http_headers]
+CONTEXT7_API_KEY = 'CONTEXT7_API_KEY'
+
+[tui]
+[tui.model_availability_nux]
+'gpt-5.5' = 3
