@@ -116,22 +116,6 @@ local pluginSpec = {
   -----------------------------------------------------------------------------
   -- Highlighting
   -----------------------------------------------------------------------------
-  {
-    "nvim-treesitter/nvim-treesitter",
-    build = ":TSUpdate",
-    config = function()
-      require("nvim-treesitter").setup({
-        modules = {},
-        ensure_installed = "all",
-        ignore_install = {},
-        sync_install = false,
-        auto_install = false,
-        highlight = { enable = true },
-        indent = { enable = true },
-        endwise = { enable = true },
-      })
-    end,
-  },
   { "mechatroner/rainbow_csv", ft = { "csv" } },
   {
     "brenoprata10/nvim-highlight-colors",
