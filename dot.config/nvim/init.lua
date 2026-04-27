@@ -804,7 +804,6 @@ local pluginSpec = {
   {
     "coder/claudecode.nvim",
     config = function()
-      ---@diagnostic disable-next-line: missing-fields
       require("claudecode").setup({
         ---@diagnostic disable-next-line: missing-fields
         terminal = {
@@ -966,7 +965,6 @@ local pluginSpec = {
   { "windwp/nvim-autopairs", event = "InsertEnter", config = true },
   { "windwp/nvim-ts-autotag", event = { "BufReadPre", "BufNewFile" }, config = true },
   { "RRethy/nvim-treesitter-endwise", event = { "BufReadPre", "BufNewFile" } },
-  { "buoto/gotests-vim", ft = { "go" } },
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
@@ -1218,7 +1216,6 @@ local pluginSpec = {
   -- Misc
   -----------------------------------------------------------------------------
   { "nvim-tree/nvim-web-devicons", lazy = true },
-  { "nvim-lua/plenary.nvim", lazy = true },
   {
     "nvim-lualine/lualine.nvim",
     config = function()
@@ -1348,7 +1345,6 @@ local pluginSpec = {
   },
 }
 
----@diagnostic disable-next-line: missing-fields
 require("lazy").setup({
   spec = pluginSpec,
   install = { colorscheme = { "habamax" } },
