@@ -176,6 +176,5 @@
     "lua-lsp@claude-plugins-official": true
   },
   "outputStyle": "custom",
-  "alwaysThinkingEnabled": true,
-  "effortLevel": "medium"
+  "alwaysThinkingEnabled": true
 }
