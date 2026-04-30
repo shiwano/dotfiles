@@ -1381,7 +1381,9 @@ vim.opt.foldenable = false -- No folding.
 vim.opt.modeline = false -- No modeline.
 vim.opt.undofile = true -- Save undo history to a file.
 vim.opt.undodir = paths.home .. "/.config/nvim/undo" -- Undo history directory.
-vim.opt.clipboard:append("unnamedplus") -- Use system clipboard.
+if not vim.list_contains(vim.v.argv, "--headless") then
+  vim.opt.clipboard:append("unnamedplus") -- Use system clipboard.
+end
 vim.opt.shortmess:append("c") -- Don't pass messages to |ins-completion-menu|.
 vim.opt.updatetime = 300 -- Avaid delays and poor user experienve (default is 4000 ms).
 vim.opt.backupcopy = "yes" -- Make a copy of the file and overwrite the original one.
