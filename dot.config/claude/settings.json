@@ -105,13 +105,13 @@
       "Read(**/secret/**)",
       "Read(**/secrets/**)"
     ],
+    "defaultMode": "plan",
     "additionalDirectories": [
       "~/code/pkg/mod",
       "~/.pub-cache",
       "~/.rustup",
       "~/.config/claude"
-    ],
-    "defaultMode": "plan"
+    ]
   },
   "hooks": {
     "Notification": [
