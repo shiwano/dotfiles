@@ -262,6 +262,15 @@ main() {
 	# Append caller-supplied overrides
 	sandbox_args+=("${extra_args[@]}")
 
+	# Redirect XDG_RUNTIME_DIR to /tmp so processes (e.g. Neovim) can
+	# create sockets inside bwrap and agent-internal sandboxes
+	if [[ "$(uname)" == "Linux" ]] && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
+		local uid
+		uid="$(id -u)"
+		export XDG_RUNTIME_DIR="/tmp/runtime-${uid}"
+		mkdir -p "${XDG_RUNTIME_DIR}"
+	fi
+
 	redact_env
 
 	exec util-sandbox-exec "${sandbox_args[@]}" -- "${cmd[@]}"
