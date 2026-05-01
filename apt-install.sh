@@ -19,8 +19,11 @@ main() {
 		fonts-takao \
 		librsvg2-common \
 		adwaita-icon-theme \
+		desktop-file-utils \
 		wl-clipboard \
 		xclip
+
+	sudo update-desktop-database
 }
 
 main "$@"

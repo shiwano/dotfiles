@@ -15,6 +15,10 @@ export LC_TIME=ja_JP.UTF-8
 export XDG_CONFIG_HOME=$HOME/.config
 export LS_COLORS='di=01;36'
 
+if grep -qi microsoft /proc/version 2>/dev/null; then
+	export BROWSER=wsl-open
+fi
+
 export GOPATH=$HOME/code
 export CLAUDE_CONFIG_DIR=$HOME/.config/claude
 

@@ -1,0 +1,52 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: wsl-open <url|path>
+
+Open a URL or file/directory in the default Windows application from WSL.
+
+Examples:
+  wsl-open https://example.com
+  wsl-open .
+  wsl-open ~/documents/file.pdf
+  BROWSER=wsl-open claude
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if [ "$#" -lt 1 ]; then
+		echo "Error: URL or path is required" >&2
+		usage
+		return 1
+	fi
+
+	if ! command -v powershell.exe >/dev/null 2>&1; then
+		echo "Error: powershell.exe not found (WSL environment required)" >&2
+		return 1
+	fi
+
+	local target="$1"
+
+	# Local path: convert to Windows path and open with explorer.exe
+	if [ -e "$target" ]; then
+		local win_path
+		win_path="$(wslpath -w "$(realpath "$target")")"
+		explorer.exe "$win_path" 2>/dev/null
+		return 0
+	fi
+
+	# URL or non-existent path: open with PowerShell
+	powershell.exe -NoProfile -Command "Start-Process '${target//\'/\'\'}'" \
+		>/dev/null 2>&1
+}
+
+main "$@"
