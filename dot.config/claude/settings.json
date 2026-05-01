@@ -108,6 +108,7 @@
     "defaultMode": "plan",
     "additionalDirectories": [
       "~/code/pkg/mod",
+      "~/.local/share/nvim/lazy",
       "~/.pub-cache",
       "~/.rustup",
       "~/.config/claude"

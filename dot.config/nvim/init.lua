@@ -1089,6 +1089,8 @@ local pluginSpec = {
       -- BOOKMARK: linters
       require("lint").linters_by_ft = {
         go = { "golangcilint" },
+        javascript = { "biomejs" },
+        typescript = { "biomejs" },
         ["yaml.ghaction"] = { "actionlint" },
         sh = { "shellcheck" },
         bash = { "shellcheck" },
@@ -1099,7 +1101,15 @@ local pluginSpec = {
         group = "nvim_lint",
         pattern = "*",
         callback = function()
-          require("lint").try_lint()
+          require("lint").try_lint(nil, {
+            filter = function(linter)
+              if linter.name == "biomejs" then
+                local bin = vim.fn.fnamemodify("./node_modules/.bin/biome", ":p")
+                return vim.uv.fs_stat(bin) ~= nil
+              end
+              return true
+            end,
+          })
         end,
       })
     end,
@@ -1121,8 +1131,8 @@ local pluginSpec = {
           lua = { "stylua" },
           python = { "isort", "black" },
           rust = { "rustfmt" },
-          javascript = { "prettier" },
-          typescript = { "prettier" },
+          javascript = { "biome", "prettier", stop_after_first = true },
+          typescript = { "biome", "prettier", stop_after_first = true },
           markdown = { "prettier" },
           sh = { "shfmt" },
           json = { "jq" },
