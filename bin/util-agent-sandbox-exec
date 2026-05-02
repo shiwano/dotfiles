@@ -263,7 +263,7 @@ main() {
 	sandbox_args+=("${extra_args[@]}")
 
 	# Redirect XDG_RUNTIME_DIR to /tmp so processes (e.g. Neovim) can
-	# create sockets inside bwrap and agent-internal sandboxes
+	# create sockets inside the sandbox (/tmp is bind-mounted read-write)
 	if [[ "$(uname)" == "Linux" ]] && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
 		local uid
 		uid="$(id -u)"

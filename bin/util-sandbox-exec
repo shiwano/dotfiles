@@ -130,7 +130,7 @@ run_with_bwrap() {
 
 	args+=(--tmpfs /dev/shm)
 
-	if [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -d "${XDG_RUNTIME_DIR}" ]; then
+	if [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -d "${XDG_RUNTIME_DIR}" ] && [[ "${XDG_RUNTIME_DIR}" != /tmp/* ]]; then
 		args+=(--tmpfs "${XDG_RUNTIME_DIR}")
 	fi
 
