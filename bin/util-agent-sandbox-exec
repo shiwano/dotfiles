@@ -42,6 +42,7 @@ build_common_allow_write() {
 		--allow-write "$HOME/.bundle"
 		--allow-write "$HOME/.local"
 		--allow-write "$HOME/.cache"
+		--allow-write "$HOME/.bun/install/cache"
 		--allow-write "$GOPATH/pkg"
 		--allow-write /tmp
 	)
@@ -60,6 +61,9 @@ build_common_allow_write() {
 
 	if [[ "$(uname)" == "Linux" ]]; then
 		args+=(--allow-write "/dev/pts")
+		if [ -n "${XDG_RUNTIME_DIR:-}" ] && [ -d "${XDG_RUNTIME_DIR}" ]; then
+			args+=(--allow-write "${XDG_RUNTIME_DIR}")
+		fi
 	fi
 
 	if git_common_dir="$(git rev-parse --git-common-dir 2>/dev/null)"; then
@@ -261,15 +265,6 @@ main() {
 
 	# Append caller-supplied overrides
 	sandbox_args+=("${extra_args[@]}")
-
-	# Redirect XDG_RUNTIME_DIR to /tmp so processes (e.g. Neovim) can
-	# create sockets inside the sandbox (/tmp is bind-mounted read-write)
-	if [[ "$(uname)" == "Linux" ]] && [ -n "${XDG_RUNTIME_DIR:-}" ]; then
-		local uid
-		uid="$(id -u)"
-		export XDG_RUNTIME_DIR="/tmp/runtime-${uid}"
-		mkdir -p "${XDG_RUNTIME_DIR}"
-	fi
 
 	redact_env
 
