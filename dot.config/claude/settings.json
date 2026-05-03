@@ -10,6 +10,9 @@
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
+      "mcp__codex__codex",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
       "WebFetch",
       "WebSearch",
       "Bash(cd *)",
@@ -43,8 +46,11 @@
       "Bash(go mod why *)",
       "Bash(goimports *)",
       "Bash(golangci-lint *)",
-      "Bash(npm run lint *)",
-      "Bash(npm run test *)",
+      "Bash(npm run *)",
+      "Bash(bun --version *)",
+      "Bash(bun run *)",
+      "Bash(bun test *)",
+      "Bash(bunx tsc *)",
       "Bash(flutter analyze *)",
       "Bash(flutter test *)",
       "Bash(flutter pub deps *)",
