@@ -1,6 +1,7 @@
 approval_policy = 'on-request'
 commit_attribution = ''
 project_doc_fallback_filenames = ['CLAUDE.md']
+sandbox_mode = 'workspace-write'
 
 [analytics]
 enabled = false
@@ -14,6 +15,10 @@ url = 'https://mcp.context7.com/mcp'
 
 [mcp_servers.context7.env_http_headers]
 CONTEXT7_API_KEY = 'CONTEXT7_API_KEY'
+
+[sandbox_workspace_write]
+network_access = true
+writable_roots = ['/tmp', '/run/user']
 
 [tui]
 [tui.model_availability_nux]

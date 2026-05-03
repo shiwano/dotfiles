@@ -45,7 +45,9 @@ merge_config() {
 
 		# Write back to base config if shared settings were changed
 		if [ "${non_projects_json}" != "{}" ] && [ "${non_projects_json}" != "${base_json}" ]; then
-			printf '%s' "${non_projects_json}" | dasel -i json -o toml >"${base_config}"
+			local merged_json
+			merged_json="$(printf '%s' "${non_projects_json}" | jq -S '. * $base' --argjson base "${base_json}")"
+			printf '%s' "${merged_json}" | dasel -i json -o toml >"${base_config}"
 		fi
 	fi
 
