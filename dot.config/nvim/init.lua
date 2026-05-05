@@ -1207,8 +1207,8 @@ local pluginSpec = {
       -- BOOKMARK: linters
       require("lint").linters_by_ft = {
         go = { "golangcilint" },
-        javascript = { "biomejs" },
-        typescript = { "biomejs" },
+        javascript = { "oxlint" },
+        typescript = { "oxlint" },
         ["yaml.ghaction"] = { "actionlint" },
         sh = { "shellcheck" },
         bash = { "shellcheck" },
@@ -1219,15 +1219,7 @@ local pluginSpec = {
         group = "nvim_lint",
         pattern = "*",
         callback = function()
-          require("lint").try_lint(nil, {
-            filter = function(linter)
-              if linter.name == "biomejs" then
-                local bin = vim.fn.fnamemodify("./node_modules/.bin/biome", ":p")
-                return vim.uv.fs_stat(bin) ~= nil
-              end
-              return true
-            end,
-          })
+          require("lint").try_lint()
         end,
       })
     end,
@@ -1249,17 +1241,12 @@ local pluginSpec = {
           lua = { "stylua" },
           python = { "isort", "black" },
           rust = { "rustfmt" },
-          javascript = { "biome", "prettier", stop_after_first = true },
-          typescript = { "biome", "prettier", stop_after_first = true },
-          markdown = { "prettier" },
+          javascript = { "oxfmt" },
+          typescript = { "oxfmt" },
+          markdown = { "oxfmt" },
           sh = { "shfmt" },
           json = { "jq" },
           toml = { "taplo" },
-        },
-        formatters = {
-          prettier = {
-            append_args = { "--prose-wrap", "preserve" },
-          },
         },
         format_on_save = function(bufnr)
           if vim.b[bufnr].disable_autoformat then
