@@ -813,7 +813,7 @@ local pluginSpec = {
         },
       })
 
-      local file_watcher = nil
+      local file_watcher_state = nil
       local file_changed_shell_autocmd_id = nil
 
       local function is_git_ignored(filepath)
@@ -839,42 +839,155 @@ local pluginSpec = {
         vim.fn.bufload(bufnr)
       end
 
+      -- Collect unique parent directories from loaded buffers under root
+      local function get_buffer_dirs(root)
+        local dirs = {}
+        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+          if vim.api.nvim_buf_is_loaded(bufnr) then
+            local name = vim.api.nvim_buf_get_name(bufnr)
+            if name ~= "" and name:sub(1, #root) == root then
+              local dir = vim.fn.fnamemodify(name, ":h")
+              dirs[dir] = true
+            end
+          end
+        end
+        return dirs
+      end
+
+      local function create_fs_event_callback(state, watched_dir)
+        local pending_events = {}
+        local debounce_timer = nil
+        return function(err, filename, _)
+          if err or not filename then
+            if err then
+              local w = state.watchers[watched_dir]
+              if w then
+                w:stop()
+                w:close()
+                state.watchers[watched_dir] = nil
+              end
+            end
+            return
+          end
+
+          local filepath = watched_dir .. "/" .. filename
+          pending_events[filepath] = true
+
+          if not debounce_timer then
+            debounce_timer = vim.defer_fn(function()
+              local events = pending_events
+              pending_events = {}
+              debounce_timer = nil
+              for fp, _ in pairs(events) do
+                local relative = fp:sub(#state.root + 2)
+                local has_dot_segment = relative:match("^%.") or relative:match("/%.")
+                if has_dot_segment and not is_git_tracked(fp) then
+                  goto continue
+                end
+                if vim.fn.filereadable(fp) == 0 then
+                  goto continue
+                end
+                if is_git_ignored(fp) then
+                  goto continue
+                end
+                load_or_reload_buffer(fp)
+                ::continue::
+              end
+            end, 100)
+          end
+        end
+      end
+
+      -- Add a non-recursive watcher for a single directory (Linux/WSL)
+      local function add_dir_watcher(state, dirpath)
+        if state.watchers[dirpath] then
+          return
+        end
+        local watcher = vim.uv.new_fs_event()
+        if not watcher then
+          return
+        end
+        state.watchers[dirpath] = watcher
+        watcher:start(dirpath, {}, vim.schedule_wrap(create_fs_event_callback(state, dirpath)))
+      end
+
+      -- Sync watchers to match currently loaded buffer directories
+      local function sync_watchers(state)
+        local dirs = get_buffer_dirs(state.root)
+        for dir, _ in pairs(dirs) do
+          add_dir_watcher(state, dir)
+        end
+        for dir, watcher in pairs(state.watchers) do
+          if not dirs[dir] then
+            watcher:stop()
+            watcher:close()
+            state.watchers[dir] = nil
+          end
+        end
+      end
+
       local function enable_file_watcher()
-        if file_watcher then
+        if file_watcher_state then
           return
         end
 
         local root = vim.fn.getcwd()
+        local is_recursive = (jit.os == "OSX")
 
-        file_watcher = vim.uv.new_fs_event()
-        if not file_watcher then
-          return
+        file_watcher_state = {
+          root = root,
+          watchers = {},
+          is_recursive = is_recursive,
+          buf_add_autocmd_id = nil,
+        }
+
+        if is_recursive then
+          local watcher = vim.uv.new_fs_event()
+          if not watcher then
+            file_watcher_state = nil
+            return
+          end
+          file_watcher_state.watchers[root] = watcher
+          watcher:start(
+            root,
+            { recursive = true },
+            vim.schedule_wrap(function(err, filename, _)
+              if err or not filename then
+                return
+              end
+              local filepath = root .. "/" .. filename
+
+              local has_dot_segment = filename:match("^%.") or filename:match("/%.")
+              if has_dot_segment and not is_git_tracked(filepath) then
+                return
+              end
+
+              if vim.fn.filereadable(filepath) == 0 then
+                return
+              end
+              if is_git_ignored(filepath) then
+                return
+              end
+
+              load_or_reload_buffer(filepath)
+            end)
+          )
+        else
+          sync_watchers(file_watcher_state)
+          file_watcher_state.buf_add_autocmd_id = vim.api.nvim_create_autocmd("BufAdd", {
+            group = "terminal_claude",
+            callback = function(args)
+              if not file_watcher_state then
+                return
+              end
+              local name = vim.api.nvim_buf_get_name(args.buf)
+              if name ~= "" and name:sub(1, #root) == root then
+                local dir = vim.fn.fnamemodify(name, ":h")
+                add_dir_watcher(file_watcher_state, dir)
+              end
+            end,
+          })
         end
-
-        file_watcher:start(
-          root,
-          { recursive = true },
-          vim.schedule_wrap(function(err, filename, _)
-            if err or not filename then
-              return
-            end
-            local filepath = root .. "/" .. filename
-
-            local has_dot_segment = filename:match("^%.") or filename:match("/%.")
-            if has_dot_segment and not is_git_tracked(filepath) then
-              return
-            end
-
-            if vim.fn.filereadable(filepath) == 0 then
-              return
-            end
-            if is_git_ignored(filepath) then
-              return
-            end
-
-            load_or_reload_buffer(filepath)
-          end)
-        )
 
         file_changed_shell_autocmd_id = vim.api.nvim_create_autocmd("FileChangedShell", {
           group = "terminal_claude",
@@ -886,10 +999,15 @@ local pluginSpec = {
       end
 
       local function disable_file_watcher()
-        if file_watcher then
-          file_watcher:stop()
-          file_watcher:close()
-          file_watcher = nil
+        if file_watcher_state then
+          for _, watcher in pairs(file_watcher_state.watchers) do
+            watcher:stop()
+            watcher:close()
+          end
+          if file_watcher_state.buf_add_autocmd_id then
+            vim.api.nvim_del_autocmd(file_watcher_state.buf_add_autocmd_id)
+          end
+          file_watcher_state = nil
         end
         if file_changed_shell_autocmd_id then
           vim.api.nvim_del_autocmd(file_changed_shell_autocmd_id)
