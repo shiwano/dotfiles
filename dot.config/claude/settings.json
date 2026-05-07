@@ -65,6 +65,7 @@
       "Bash(git -C * grep *)",
       "Bash(git -C * ls-files *)",
       "Bash(git -C * status *)",
+      "Bash(git rm *)",
       "Bash(git mv *)",
       "Bash(git log *)",
       "Bash(git show *)",
