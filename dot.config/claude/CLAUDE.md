@@ -9,7 +9,9 @@
 # Development Guidelines
 
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
-- **Lint**: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
-- **Format**: `nvim-format ./path/to/file ...`
 - **Background Processes**: Ask user before starting; always stop before finishing
-- **Preferred Tools**: `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search); avoid Python when these tools suffice
+- **Shell Commands**:
+  - Lint: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
+  - Format: `nvim-format ./path/to/file ...`
+  - Prefer `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search); avoid Python when these suffice
+  - NEVER use `rm -f`; use `rm -r` instead of `rm -rf`
