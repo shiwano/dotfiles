@@ -1,5 +1,7 @@
 approval_policy = 'on-request'
 commit_attribution = ''
+model = 'gpt-5.5'
+model_reasoning_effort = 'medium'
 project_doc_fallback_filenames = ['CLAUDE.md']
 sandbox_mode = 'workspace-write'
 
