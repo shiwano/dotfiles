@@ -1,6 +1,6 @@
 [tools]
 go = '1.26'
-node = "24.2"
+node = "26.1"
 deno = '2.2'
 rust = { version = "1.91", components = "rust-analyzer" }
 java = '24.0'
