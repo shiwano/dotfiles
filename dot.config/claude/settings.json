@@ -35,6 +35,7 @@
       "Bash(mkdir *)",
       "Bash(mv *)",
       "Bash(test *)",
+      "Bash(sed -n *)",
       "Bash(jq *)",
       "Bash(make test *)",
       "Bash(go get *)",
