@@ -170,6 +170,16 @@
             "timeout": 10
           }
         ]
+      },
+      {
+        "matcher": "Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "claude-hook-block-outside-project",
+            "timeout": 10
+          }
+        ]
       }
     ],
     "PostToolUse": [

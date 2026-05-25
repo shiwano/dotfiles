@@ -8,7 +8,6 @@
 
 # Development Guidelines
 
-- **Path Resolution**: NEVER prepend `~` or `$HOME` to project-relative paths
 - **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
 - **Background Processes**: Ask user before starting; always stop before finishing
 - **Shell Commands**:

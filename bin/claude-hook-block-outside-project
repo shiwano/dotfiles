@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: claude-hook-block-outside-project
+
+Claude Code PreToolUse hook that blocks Read/Glob/Grep access to paths
+under ~/code/src/ that are outside the current working directory.
+
+Requires: jq
+
+This command is called automatically by Claude Code and should not be
+executed manually unless for testing purposes.
+
+Examples:
+  echo '{"cwd":"/home/user/code/src/github.com/user/proj","tool_name":"Read","tool_input":{"file_path":"/home/user/code/src/cli/foo.ts"}}' | claude-hook-block-outside-project
+EOF
+}
+
+deny() {
+	local reason="${1:-Denied by hook}"
+	cat <<EOF
+{"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDeniedMessage":"${reason}"}}
+EOF
+}
+
+extract_path() {
+	local tool_name="$1" json_input="$2"
+
+	case "${tool_name}" in
+	Read) jq -r '.tool_input.file_path // empty' <<<"${json_input}" ;;
+	Glob) jq -r '.tool_input.path // empty' <<<"${json_input}" ;;
+	Grep) jq -r '.tool_input.path // empty' <<<"${json_input}" ;;
+	*) return 0 ;;
+	esac
+}
+
+main() {
+	if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if ! command -v jq >/dev/null 2>&1; then
+		exit 0
+	fi
+
+	if [ -t 0 ]; then
+		echo "Error: No input data. This command should be called by Claude Code hooks." >&2
+		usage
+		return 1
+	fi
+
+	local json_input tool_name cwd target_path code_src
+	json_input=$(cat)
+	tool_name=$(jq -r '.tool_name // empty' <<<"${json_input}")
+	cwd=$(jq -r '.cwd // empty' <<<"${json_input}")
+
+	[[ -z "${tool_name}" || -z "${cwd}" ]] && exit 0
+
+	target_path=$(extract_path "${tool_name}" "${json_input}")
+	[[ -z "${target_path}" ]] && exit 0
+
+	code_src="${HOME}/code/src/"
+	if [[ "${target_path}" == "${code_src}"* && "${target_path}" != "${cwd}"* ]]; then
+		deny "Blocked: ${target_path} is outside the project root ${cwd}"
+		exit 0
+	fi
+
+	exit 0
+}
+
+main "$@"
