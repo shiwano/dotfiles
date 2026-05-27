@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly TOOLS=(
+	'npm:@openai/codex'
+	'npm:@google/gemini-cli'
+	'aqua:anthropics/claude-code'
+)
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: mise-upgrade-coding-agents [options]
+
+Upgrade AI coding agent CLIs managed by mise to their latest versions.
+
+Targets:
+  npm:@openai/codex
+  npm:@google/gemini-cli
+  aqua:anthropics/claude-code
+
+Options:
+  -h, --help     Show this help message
+
+Examples:
+  mise-upgrade-coding-agents
+EOF
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	local failed=()
+	local tool
+	for tool in "${TOOLS[@]}"; do
+		echo "Upgrading ${tool}..."
+		if ! mise install "${tool}@latest"; then
+			failed+=("${tool}")
+		fi
+	done
+
+	if [ "${#failed[@]}" -gt 0 ]; then
+		echo
+		echo "Failed:" >&2
+		for tool in "${failed[@]}"; do
+			echo "  - ${tool}" >&2
+		done
+		return 1
+	fi
+
+	return 0
+}
+
+main "$@"
