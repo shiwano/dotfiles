@@ -1086,7 +1086,6 @@ local pluginSpec = {
   { "folke/ts-comments.nvim", event = { "BufReadPre", "BufNewFile" } },
   { "thinca/vim-qfreplace", ft = "qf" },
   { "tiagofumo/dart-vim-flutter-layout", ft = "dart" },
-  { "fabridamicelli/cronex.nvim", event = { "BufReadPre", "BufNewFile" } },
   {
     "Vonr/align.nvim",
     branch = "v2",
