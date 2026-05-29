@@ -805,9 +805,6 @@ local pluginSpec = {
     "coder/claudecode.nvim",
     config = function()
       require("claudecode").setup({
-        env = {
-          CLAUDE_CODE_DISABLE_ALTERNATE_SCREEN = "1",
-        },
         ---@diagnostic disable-next-line: missing-fields
         terminal = {
           split_side = "left",
