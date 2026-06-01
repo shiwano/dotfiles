@@ -1,13 +1,12 @@
 @echo off
 setlocal
 
-set "SRC=%~dp0"
-set "SRC=%SRC:~0,-1%"
-set "DEST=%USERPROFILE%\Documents"
+set "SRC=%~dp0UserProfile"
+set "DEST=%USERPROFILE%"
 
 echo Copying files from %SRC% to %DEST% ...
 
-robocopy "%SRC%" "%DEST%" /E /IS /IT /XF setup.bat
+robocopy "%SRC%" "%DEST%" /E /IS /IT
 
 if %ERRORLEVEL% LEQ 3 (
     echo Done.
