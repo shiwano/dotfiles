@@ -205,5 +205,6 @@
     "figma@claude-plugins-official": true
   },
   "outputStyle": "custom",
-  "alwaysThinkingEnabled": true
+  "alwaysThinkingEnabled": true,
+  "effortLevel": "high"
 }
