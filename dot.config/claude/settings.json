@@ -121,7 +121,7 @@
       "Read(**/secret/**)",
       "Read(**/secrets/**)"
     ],
-    "defaultMode": "plan",
+    "defaultMode": "auto",
     "additionalDirectories": [
       "~/code/pkg/mod",
       "~/.local/share/nvim/lazy",
