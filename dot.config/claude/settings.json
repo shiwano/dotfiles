@@ -27,6 +27,7 @@
       "Bash(tree *)",
       "Bash(xargs *)",
       "Bash(basename *)",
+      "Bash(readlink *)",
       "Bash(head *)",
       "Bash(tail *)",
       "Bash(sort *)",
