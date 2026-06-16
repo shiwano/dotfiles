@@ -8,8 +8,7 @@
 
 # Development Guidelines
 
-- **Minimal Comments**: Write ONLY when absolutely necessary; explain "why" not "what"; for complex logic, edge cases
-- **No Feedback Trails**: Don't bake the rationale behind a correction or review comment into code, comments, or docs; only keep it when it has lasting value on its own, never for trivial feedback
+- **Minimal Comments**: Default to no comment; add one only when the intent can't be recovered from the code or context itself — never to restate a name, type, signature, or an evident "why".
 - **Shell Commands**:
   - Lint: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
   - Format: `nvim-format ./path/to/file ...`
