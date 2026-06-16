@@ -518,8 +518,8 @@ setopt print_eight_bit
 # Ctrl+wで､直前の/までを削除する｡
 WORDCHARS='*?_-.[]~=&;!#$%^(){}<>'
 
-# cd をしたときにlsを実行する
-chpwd() { ls }
+# cd をしたときにlsを実行する（tty のときだけ）
+chpwd() { [[ -t 1 ]] && ls }
 
 # ディレクトリ名だけで､ディレクトリの移動をする｡
 setopt auto_cd
