@@ -99,7 +99,6 @@
       "Bash(chown -R *)",
       "Bash(rm -rf *)",
       "Bash(mv /* *)",
-      "Bash(cd /* *)",
       "Bash(> /dev/sda *)",
       "Bash(source *)",
       "Bash(git branch -D *)",
