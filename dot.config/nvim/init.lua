@@ -657,6 +657,7 @@ local pluginSpec = {
       local ls = {
         go = "gopls",
         typescript = "ts_ls",
+        typescript_konte = "konte",
         dart = "dartls",
         lua = "lua_ls",
         python = "pyright",
@@ -672,9 +673,18 @@ local pluginSpec = {
         })
       )
 
+      local ts_ls_root_dir = vim.lsp.config.ts_ls.root_dir
       vim.lsp.config(
         ls.typescript,
         lsp_config({
+          root_dir = function(bufnr, on_dir)
+            if vim.fs.root(bufnr, "konte.state.json") then
+              return
+            end
+            if ts_ls_root_dir then
+              ts_ls_root_dir(bufnr, on_dir)
+            end
+          end,
           on_attach = function(client, bufnr)
             on_attach(client, bufnr)
 
@@ -742,6 +752,15 @@ local pluginSpec = {
       )
 
       vim.lsp.config(ls.rust, lsp_config({}))
+
+      vim.lsp.config(
+        ls.typescript_konte,
+        lsp_config({
+          cmd = { "konte", "lsp" },
+          filetypes = { "typescript", "typescriptreact" },
+          root_markers = { "konte.state.json" },
+        })
+      )
 
       local ls_names = {}
       for _, v in pairs(ls) do
