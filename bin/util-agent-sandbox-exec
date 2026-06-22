@@ -19,8 +19,10 @@ Options:
   -h, --help          Show this help message
 
 Environment:
-  SANDBOX_ENV_ALLOWLIST  Space-separated list of variable name patterns to
-                         exempt from redaction (e.g. "HF_TOKEN MY_*_TOKEN")
+  SANDBOX_ENV_ALLOWLIST    Space-separated list of variable name patterns to
+                           exempt from redaction (e.g. "HF_TOKEN MY_*_TOKEN")
+  SANDBOX_WRITE_ALLOWLIST  Space-separated list of additional paths to allow
+                           writing (e.g. "\$HOME/.config/my-agent /opt/cache")
 
 Examples:
   util-agent-sandbox-exec -- my-agent
@@ -79,6 +81,18 @@ build_common_allow_write() {
 		local client_tty
 		client_tty=$(tmux display-message -p '#{client_tty}')
 		args+=(--allow-write "$client_tty")
+	fi
+
+	# Extend allow-write with caller-supplied paths, typically set per-project
+	# via direnv's .envrc:
+	#
+	#   export SANDBOX_WRITE_ALLOWLIST="$HOME/.config/my-agent /opt/cache"
+	if [[ -n "${SANDBOX_WRITE_ALLOWLIST:-}" ]]; then
+		local path
+		# shellcheck disable=SC2206
+		for path in ${SANDBOX_WRITE_ALLOWLIST}; do
+			args+=(--allow-write "$path")
+		done
 	fi
 
 	printf '%s\n' "${args[@]}"
