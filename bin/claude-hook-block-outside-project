@@ -8,7 +8,8 @@ usage() {
 Usage: claude-hook-block-outside-project
 
 Claude Code PreToolUse hook that blocks Read/Glob/Grep access to paths
-under ~/code/src/ that are outside the current working directory.
+under ~/code/src/ that are outside the current working directory and any
+additionalDirectories configured in Claude Code settings.
 
 Requires: jq
 
@@ -38,6 +39,35 @@ extract_path() {
 	esac
 }
 
+expand_home() {
+	local path="$1" tilde='~'
+	if [[ "${path}" == "${tilde}" ]]; then
+		printf '%s' "${HOME}"
+	elif [[ "${path}" == "${tilde}/"* ]]; then
+		printf '%s' "${HOME}/${path:2}"
+	else
+		printf '%s' "${path}"
+	fi
+}
+
+additional_dirs() {
+	local cwd="$1" file
+	local files=(
+		"${HOME}/.config/claude/settings.json"
+		"${cwd}/.claude/settings.json"
+		"${cwd}/.claude/settings.local.json"
+	)
+	for file in "${files[@]}"; do
+		[[ -f "${file}" ]] || continue
+		jq -r '(.additionalDirectories // [])[]' "${file}" 2>/dev/null || true
+	done
+}
+
+is_under() {
+	local path="$1" root="$2"
+	[[ "${path}" == "${root}" || "${path}" == "${root%/}/"* ]]
+}
+
 main() {
 	if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
 		usage 1
@@ -54,7 +84,7 @@ main() {
 		return 1
 	fi
 
-	local json_input tool_name cwd target_path code_src
+	local json_input tool_name cwd target_path code_src dir
 	json_input=$(cat)
 	tool_name=$(jq -r '.tool_name // empty' <<<"${json_input}")
 	cwd=$(jq -r '.cwd // empty' <<<"${json_input}")
@@ -64,12 +94,17 @@ main() {
 	target_path=$(extract_path "${tool_name}" "${json_input}")
 	[[ -z "${target_path}" ]] && exit 0
 
-	code_src="${HOME}/code/src/"
-	if [[ "${target_path}" == "${code_src}"* && "${target_path}" != "${cwd}"* ]]; then
-		deny "Blocked: ${target_path} is outside the project root ${cwd}"
-		exit 0
-	fi
+	code_src="${HOME}/code/src"
+	is_under "${target_path}" "${code_src}" || exit 0
+	is_under "${target_path}" "${cwd}" && exit 0
 
+	while IFS= read -r dir; do
+		[[ -z "${dir}" ]] && continue
+		dir=$(expand_home "${dir}")
+		is_under "${target_path}" "${dir}" && exit 0
+	done < <(additional_dirs "${cwd}")
+
+	deny "Blocked: ${target_path} is outside the project root ${cwd} and any allowed directory"
 	exit 0
 }
 
