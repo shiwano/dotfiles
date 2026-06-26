@@ -206,5 +206,6 @@
   },
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
-  "effortLevel": "high"
+  "effortLevel": "high",
+  "skipAutoPermissionPrompt": true
 }
