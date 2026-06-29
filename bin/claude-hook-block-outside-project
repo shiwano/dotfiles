@@ -8,16 +8,24 @@ usage() {
 Usage: claude-hook-block-outside-project
 
 Claude Code PreToolUse hook that blocks Read/Glob/Grep access to paths
-under ~/code/src/ that are outside the current working directory and any
-additionalDirectories configured in Claude Code settings.
+under ~/code/src/ that are outside the project root (CLAUDE_PROJECT_DIR,
+fixed at launch time) and any additionalDirectories configured in Claude
+Code settings.
 
 Requires: jq
+
+Environment:
+  CLAUDE_PROJECT_DIR    Project root the access is gated against. Injected by
+                        Claude Code when invoking hooks; unlike the cwd in the
+                        hook payload, it does not follow the agent's cd.
+  SANDBOX_PROJECT_ROOT  Fallback project root, exported by util-agent-sandbox-exec
+                        at launch. Used when CLAUDE_PROJECT_DIR is unset.
 
 This command is called automatically by Claude Code and should not be
 executed manually unless for testing purposes.
 
 Examples:
-  echo '{"cwd":"/home/user/code/src/github.com/user/proj","tool_name":"Read","tool_input":{"file_path":"/home/user/code/src/cli/foo.ts"}}' | claude-hook-block-outside-project
+  echo '{"tool_name":"Read","tool_input":{"file_path":"/home/user/code/src/cli/foo.ts"}}' | CLAUDE_PROJECT_DIR=/home/user/code/src/github.com/user/proj claude-hook-block-outside-project
 EOF
 }
 
@@ -84,27 +92,27 @@ main() {
 		return 1
 	fi
 
-	local json_input tool_name cwd target_path code_src dir
+	local json_input tool_name project_root target_path code_src dir
 	json_input=$(cat)
 	tool_name=$(jq -r '.tool_name // empty' <<<"${json_input}")
-	cwd=$(jq -r '.cwd // empty' <<<"${json_input}")
+	project_root="${CLAUDE_PROJECT_DIR:-${SANDBOX_PROJECT_ROOT:-}}"
 
-	[[ -z "${tool_name}" || -z "${cwd}" ]] && exit 0
+	[[ -z "${tool_name}" || -z "${project_root}" ]] && exit 0
 
 	target_path=$(extract_path "${tool_name}" "${json_input}")
 	[[ -z "${target_path}" ]] && exit 0
 
 	code_src="${HOME}/code/src"
 	is_under "${target_path}" "${code_src}" || exit 0
-	is_under "${target_path}" "${cwd}" && exit 0
+	is_under "${target_path}" "${project_root}" && exit 0
 
 	while IFS= read -r dir; do
 		[[ -z "${dir}" ]] && continue
 		dir=$(expand_home "${dir}")
 		is_under "${target_path}" "${dir}" && exit 0
-	done < <(additional_dirs "${cwd}")
+	done < <(additional_dirs "${project_root}")
 
-	deny "Blocked: ${target_path} is outside the project root ${cwd} and any allowed directory"
+	deny "Blocked: ${target_path} is outside the project root ${project_root} and any allowed directory"
 	exit 0
 }
 

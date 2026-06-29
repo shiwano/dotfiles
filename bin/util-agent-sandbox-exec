@@ -280,6 +280,11 @@ main() {
 	# Append caller-supplied overrides
 	sandbox_args+=("${extra_args[@]}")
 
+	# Pin the launch directory for claude-hook-block-outside-project, which
+	# gates reads against it instead of the cd-following hook cwd.
+	SANDBOX_PROJECT_ROOT="$(realpath .)"
+	export SANDBOX_PROJECT_ROOT
+
 	redact_env
 
 	exec util-sandbox-exec "${sandbox_args[@]}" -- "${cmd[@]}"
