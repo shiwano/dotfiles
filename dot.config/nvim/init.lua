@@ -159,7 +159,7 @@ local pluginSpec = {
           include_current_session = true,
         },
         grep = {
-          rg_opts = "--sort=path --column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+          rg_opts = "--hidden --glob '!.git' --sort=path --column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
         },
       })
 
