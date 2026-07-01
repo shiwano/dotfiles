@@ -43,6 +43,7 @@ yq = 'latest'
 protoc = 'latest'
 protoc-gen-go = 'latest'
 dasel = 'latest'
+fd = 'latest'
 
 'npm:@openai/codex' = 'latest'
 'npm:@google/gemini-cli' = 'latest'
