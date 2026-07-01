@@ -21,6 +21,7 @@ fi
 
 export GOPATH=$HOME/code
 export CLAUDE_CONFIG_DIR=$HOME/.config/claude
+export RIPGREP_CONFIG_PATH=$HOME/.ripgreprc
 
 if [ -x /opt/homebrew ]; then
 	export BREW_PREFIX='/opt/homebrew'
