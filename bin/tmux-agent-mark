@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Coding agents to highlight. Add a new agent by adding its process name.
+AGENTS=(
+	claude
+	codex
+)
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: tmux-agent-mark
+
+Set the @window_agent option for every tmux window: 1 when one of the
+configured coding agents is alive in one of the window's panes, unset
+otherwise. Agents are matched by process name and walked up the parent
+chain (through the bwrap sandbox) until they reach a pane's root process.
+
+Meant to be polled from the tmux status line so the marker self-heals
+within one status interval even when an agent exits without firing a hook
+(Ctrl-C, kill, crash). Prints nothing.
+
+Agents are configured in the AGENTS array at the top of this script.
+
+Example:
+  tmux-agent-mark
+EOF
+}
+
+resolve_window() {
+	local ancestor="$1"
+	while [[ -n "${ancestor}" && "${ancestor}" != "1" ]]; do
+		if [[ -n "${pane_window[${ancestor}]:-}" ]]; then
+			printf '%s' "${pane_window[${ancestor}]}"
+			return 0
+		fi
+		ancestor="${parent[${ancestor}]:-}"
+	done
+	return 1
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	if [[ -z "${TMUX:-}" ]]; then
+		return 0
+	fi
+
+	local pane_pid window_target pid ppid name agent_pid
+
+	local -A pane_window=()
+	while IFS=$'\t' read -r pane_pid window_target; do
+		pane_window["${pane_pid}"]="${window_target}"
+	done < <(tmux list-panes -a -F '#{pane_pid}	#{session_name}:#{window_index}')
+
+	local -A parent=()
+	while read -r pid ppid; do
+		parent["${pid}"]="${ppid}"
+	done < <(ps -eo pid=,ppid=)
+
+	local -A active=()
+	for name in "${AGENTS[@]}"; do
+		while read -r agent_pid; do
+			if window_target="$(resolve_window "${agent_pid}")"; then
+				active["${window_target}"]=1
+			fi
+		done < <(pgrep -x "${name}" || true)
+	done
+
+	while IFS= read -r window_target; do
+		if [[ -n "${active[${window_target}]:-}" ]]; then
+			tmux set-option -w -t "${window_target}" @window_agent 1 2>/dev/null || true
+		else
+			tmux set-option -w -t "${window_target}" -u @window_agent 2>/dev/null || true
+		fi
+	done < <(tmux list-windows -a -F '#{session_name}:#{window_index}')
+
+	return 0
+}
+
+main "$@"
