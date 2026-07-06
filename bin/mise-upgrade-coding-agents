@@ -4,7 +4,6 @@ set -euo pipefail
 
 readonly TOOLS=(
 	'npm:@openai/codex'
-	'npm:@google/gemini-cli'
 	'aqua:anthropics/claude-code'
 )
 
