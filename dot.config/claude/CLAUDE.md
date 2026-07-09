@@ -12,5 +12,5 @@
 - **Shell Commands**:
   - Lint: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
   - Format: `nvim-format ./path/to/file ...`
-  - Prefer `jq` (JSON), `yq` (YAML/XML), `taplo` (TOML), `rg` (text search); avoid Python when these suffice
+  - Prefer `jq`, `yq`, `taplo`, `rg`; avoid Python when these suffice
   - NEVER use `rm -f`; use `rm -r` instead of `rm -rf`
