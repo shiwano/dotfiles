@@ -4,6 +4,7 @@
   "cmp-buffer": { "branch": "main", "commit": "b74fab3656eea9de20a9b8116afa3cfc4ec09657" },
   "cmp-nvim-lsp": { "branch": "main", "commit": "cbc7b02bb99fae35cb42f514762b89b5126651ef" },
   "cmp-path": { "branch": "main", "commit": "c642487086dbd9a93160e1679a1327be111cbc25" },
+  "codex.nvim": { "branch": "main", "commit": "e6b5eaa4b83c5f2085150ea80da2e2d103ee5f32" },
   "conform.nvim": { "branch": "master", "commit": "dca1a190aa85f9065979ef35802fb77131911106" },
   "copilot.lua": { "branch": "master", "commit": "3b95c93d804077dd409d62a6da53a8c92ac8f415" },
   "dart-vim-flutter-layout": { "branch": "master", "commit": "9105781d713f03ede4fae4857bab2be585eb6aaf" },

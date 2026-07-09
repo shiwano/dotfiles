@@ -62,6 +62,309 @@ local function get_colors()
 end
 
 -------------------------------------------------------------------------------
+-- Agent
+-------------------------------------------------------------------------------
+local function setup_agent_terminal(group_name, term_pattern)
+  local file_watcher_state = nil
+  local file_changed_shell_autocmd_id = nil
+
+  local function is_git_ignored(filepath)
+    vim.fn.system({ "git", "check-ignore", "-q", filepath })
+    return vim.v.shell_error == 0
+  end
+
+  local function is_git_tracked(filepath)
+    vim.fn.system({ "git", "ls-files", "--error-unmatch", filepath })
+    return vim.v.shell_error == 0
+  end
+
+  local function load_or_reload_buffer(filepath)
+    local existing_buf = vim.fn.bufnr(filepath)
+    if existing_buf ~= -1 then
+      vim.api.nvim_buf_call(existing_buf, function()
+        vim.cmd("checktime")
+      end)
+      return
+    end
+
+    local bufnr = vim.fn.bufadd(filepath)
+    vim.fn.bufload(bufnr)
+  end
+
+  -- Collect unique parent directories from loaded buffers under root
+  local function get_buffer_dirs(root)
+    local dirs = {}
+    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(bufnr) then
+        local name = vim.api.nvim_buf_get_name(bufnr)
+        if name ~= "" and name:sub(1, #root) == root then
+          local dir = vim.fn.fnamemodify(name, ":h")
+          dirs[dir] = true
+        end
+      end
+    end
+    return dirs
+  end
+
+  local function create_fs_event_callback(state, watched_dir)
+    local pending_events = {}
+    local debounce_timer = nil
+    return function(err, filename, _)
+      if err or not filename then
+        if err then
+          local w = state.watchers[watched_dir]
+          if w then
+            w:stop()
+            w:close()
+            state.watchers[watched_dir] = nil
+          end
+        end
+        return
+      end
+
+      local filepath = watched_dir .. "/" .. filename
+      pending_events[filepath] = true
+
+      if not debounce_timer then
+        debounce_timer = vim.defer_fn(function()
+          local events = pending_events
+          pending_events = {}
+          debounce_timer = nil
+          for fp, _ in pairs(events) do
+            local relative = fp:sub(#state.root + 2)
+            local has_dot_segment = relative:match("^%.") or relative:match("/%.")
+            if has_dot_segment and not is_git_tracked(fp) then
+              goto continue
+            end
+            if vim.fn.filereadable(fp) == 0 then
+              goto continue
+            end
+            if is_git_ignored(fp) then
+              goto continue
+            end
+            load_or_reload_buffer(fp)
+            ::continue::
+          end
+        end, 100)
+      end
+    end
+  end
+
+  -- Add a non-recursive watcher for a single directory (Linux/WSL)
+  local function add_dir_watcher(state, dirpath)
+    if state.watchers[dirpath] then
+      return
+    end
+    local watcher = vim.uv.new_fs_event()
+    if not watcher then
+      return
+    end
+    state.watchers[dirpath] = watcher
+    watcher:start(dirpath, {}, vim.schedule_wrap(create_fs_event_callback(state, dirpath)))
+  end
+
+  -- Sync watchers to match currently loaded buffer directories
+  local function sync_watchers(state)
+    local dirs = get_buffer_dirs(state.root)
+    for dir, _ in pairs(dirs) do
+      add_dir_watcher(state, dir)
+    end
+    for dir, watcher in pairs(state.watchers) do
+      if not dirs[dir] then
+        watcher:stop()
+        watcher:close()
+        state.watchers[dir] = nil
+      end
+    end
+  end
+
+  local function enable_file_watcher()
+    if file_watcher_state then
+      return
+    end
+
+    local root = vim.fn.getcwd()
+    local is_recursive = (jit.os == "OSX")
+
+    file_watcher_state = {
+      root = root,
+      watchers = {},
+      is_recursive = is_recursive,
+      buf_add_autocmd_id = nil,
+    }
+
+    if is_recursive then
+      local watcher = vim.uv.new_fs_event()
+      if not watcher then
+        file_watcher_state = nil
+        return
+      end
+      file_watcher_state.watchers[root] = watcher
+      watcher:start(
+        root,
+        { recursive = true },
+        vim.schedule_wrap(function(err, filename, _)
+          if err or not filename then
+            return
+          end
+          local filepath = root .. "/" .. filename
+
+          local has_dot_segment = filename:match("^%.") or filename:match("/%.")
+          if has_dot_segment and not is_git_tracked(filepath) then
+            return
+          end
+
+          if vim.fn.filereadable(filepath) == 0 then
+            return
+          end
+          if is_git_ignored(filepath) then
+            return
+          end
+
+          load_or_reload_buffer(filepath)
+        end)
+      )
+    else
+      sync_watchers(file_watcher_state)
+      file_watcher_state.buf_add_autocmd_id = vim.api.nvim_create_autocmd("BufAdd", {
+        group = group_name,
+        callback = function(args)
+          if not file_watcher_state then
+            return
+          end
+          local name = vim.api.nvim_buf_get_name(args.buf)
+          if name ~= "" and name:sub(1, #root) == root then
+            local dir = vim.fn.fnamemodify(name, ":h")
+            add_dir_watcher(file_watcher_state, dir)
+          end
+        end,
+      })
+    end
+
+    file_changed_shell_autocmd_id = vim.api.nvim_create_autocmd("FileChangedShell", {
+      group = group_name,
+      pattern = "*",
+      callback = function()
+        vim.v.fcs_choice = "reload"
+      end,
+    })
+  end
+
+  local function disable_file_watcher()
+    if file_watcher_state then
+      for _, watcher in pairs(file_watcher_state.watchers) do
+        watcher:stop()
+        watcher:close()
+      end
+      if file_watcher_state.buf_add_autocmd_id then
+        vim.api.nvim_del_autocmd(file_watcher_state.buf_add_autocmd_id)
+      end
+      file_watcher_state = nil
+    end
+    if file_changed_shell_autocmd_id then
+      vim.api.nvim_del_autocmd(file_changed_shell_autocmd_id)
+      file_changed_shell_autocmd_id = nil
+    end
+  end
+
+  vim.api.nvim_create_augroup(group_name, { clear = true })
+  vim.api.nvim_create_autocmd("TermOpen", {
+    group = group_name,
+    pattern = term_pattern,
+    callback = function()
+      vim.wo.winfixbuf = true
+
+      local send_to_term = function(code)
+        return function()
+          local chan = vim.b.terminal_job_id
+          if chan then
+            vim.api.nvim_chan_send(chan, code)
+          end
+        end
+      end
+
+      enable_file_watcher()
+
+      vim.keymap.set("n", "<C-j>", "i<C-\\><C-n><C-w>j", { buffer = true, silent = true })
+      vim.keymap.set("n", "<C-k>", "i<C-\\><C-n><C-w>k", { buffer = true, silent = true })
+      vim.keymap.set("n", "<C-h>", "i<C-\\><C-n><C-w>h", { buffer = true, silent = true })
+      vim.keymap.set("n", "<C-l>", "i<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+
+      vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
+      vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
+      vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
+      vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
+
+      vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
+      vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
+
+      vim.keymap.set("t", "<Esc>", send_to_term("\x1b"), { buffer = true, silent = true })
+      vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true })
+
+      vim.opt_local.scrollback = 1000
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
+    group = group_name,
+    pattern = term_pattern,
+    command = "startinsert",
+  })
+  vim.api.nvim_create_autocmd("TermClose", {
+    group = group_name,
+    pattern = term_pattern,
+    callback = function()
+      disable_file_watcher()
+    end,
+  })
+end
+
+local agent_keymaps = {
+  claude = {
+    { "n", "<Leader>aa", "<cmd>ClaudeCode<cr>", "Toggle Claude" },
+    { "v", "<Leader>aa", "<cmd>ClaudeCodeSend<cr>", "Send to Claude" },
+    { "n", "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", "Focus Claude" },
+    { "n", "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", "Resume Claude" },
+    { "n", "<Leader>ac", "<cmd>ClaudeCode --continue<cr>", "Continue Claude" },
+    { "n", "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", "Add current buffer to Claude" },
+    { "n", "<Leader>ay", "<cmd>ClaudeCodeDiffAccept<cr>", "Accept diff to Claude" },
+    { "n", "<Leader>an", "<cmd>ClaudeCodeDiffDeny<cr>", "Deny diff to Claude" },
+  },
+  codex = {
+    { "n", "<Leader>aa", "<cmd>Codex<cr>", "Toggle Codex" },
+    { "v", "<Leader>aa", "<cmd>CodexSend<cr>", "Send to Codex" },
+    { "n", "<Leader>af", "<cmd>CodexFocus<cr>", "Focus Codex" },
+    { "n", "<Leader>ar", "<cmd>Codex resume<cr>", "Resume Codex" },
+    { "n", "<Leader>ac", "<cmd>Codex resume --last<cr>", "Continue Codex" },
+    { "n", "<Leader>ab", "<cmd>CodexAdd %<cr>", "Add current buffer to Codex" },
+    { "n", "<Leader>ay", "<cmd>CodexDiffAccept<cr>", "Accept diff to Codex" },
+    { "n", "<Leader>an", "<cmd>CodexDiffDeny<cr>", "Deny diff to Codex" },
+  },
+}
+
+local agent_current = nil
+
+local function use_agent(name)
+  if not agent_keymaps[name] then
+    vim.notify("Unknown agent: " .. name, vim.log.levels.ERROR)
+    return false
+  end
+  if agent_current == name then
+    return true
+  end
+
+  if agent_current then
+    for _, keymap in ipairs(agent_keymaps[agent_current]) do
+      vim.keymap.del(keymap[1], keymap[2])
+    end
+  end
+  for _, keymap in ipairs(agent_keymaps[name]) do
+    vim.keymap.set(keymap[1], keymap[2], keymap[3], { silent = true, desc = "# " .. keymap[4] })
+  end
+  agent_current = name
+  return true
+end
+
+-------------------------------------------------------------------------------
 -- Plugins
 -------------------------------------------------------------------------------
 local pluginSpec = {
@@ -822,6 +1125,14 @@ local pluginSpec = {
   },
   {
     "coder/claudecode.nvim",
+    cmd = {
+      "ClaudeCode",
+      "ClaudeCodeSend",
+      "ClaudeCodeFocus",
+      "ClaudeCodeAdd",
+      "ClaudeCodeDiffAccept",
+      "ClaudeCodeDiffDeny",
+    },
     config = function()
       require("claudecode").setup({
         ---@diagnostic disable-next-line: missing-fields
@@ -832,268 +1143,33 @@ local pluginSpec = {
         },
       })
 
-      local file_watcher_state = nil
-      local file_changed_shell_autocmd_id = nil
-
-      local function is_git_ignored(filepath)
-        vim.fn.system({ "git", "check-ignore", "-q", filepath })
-        return vim.v.shell_error == 0
-      end
-
-      local function is_git_tracked(filepath)
-        vim.fn.system({ "git", "ls-files", "--error-unmatch", filepath })
-        return vim.v.shell_error == 0
-      end
-
-      local function load_or_reload_buffer(filepath)
-        local existing_buf = vim.fn.bufnr(filepath)
-        if existing_buf ~= -1 then
-          vim.api.nvim_buf_call(existing_buf, function()
-            vim.cmd("checktime")
-          end)
-          return
-        end
-
-        local bufnr = vim.fn.bufadd(filepath)
-        vim.fn.bufload(bufnr)
-      end
-
-      -- Collect unique parent directories from loaded buffers under root
-      local function get_buffer_dirs(root)
-        local dirs = {}
-        for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
-          if vim.api.nvim_buf_is_loaded(bufnr) then
-            local name = vim.api.nvim_buf_get_name(bufnr)
-            if name ~= "" and name:sub(1, #root) == root then
-              local dir = vim.fn.fnamemodify(name, ":h")
-              dirs[dir] = true
-            end
-          end
-        end
-        return dirs
-      end
-
-      local function create_fs_event_callback(state, watched_dir)
-        local pending_events = {}
-        local debounce_timer = nil
-        return function(err, filename, _)
-          if err or not filename then
-            if err then
-              local w = state.watchers[watched_dir]
-              if w then
-                w:stop()
-                w:close()
-                state.watchers[watched_dir] = nil
-              end
-            end
-            return
-          end
-
-          local filepath = watched_dir .. "/" .. filename
-          pending_events[filepath] = true
-
-          if not debounce_timer then
-            debounce_timer = vim.defer_fn(function()
-              local events = pending_events
-              pending_events = {}
-              debounce_timer = nil
-              for fp, _ in pairs(events) do
-                local relative = fp:sub(#state.root + 2)
-                local has_dot_segment = relative:match("^%.") or relative:match("/%.")
-                if has_dot_segment and not is_git_tracked(fp) then
-                  goto continue
-                end
-                if vim.fn.filereadable(fp) == 0 then
-                  goto continue
-                end
-                if is_git_ignored(fp) then
-                  goto continue
-                end
-                load_or_reload_buffer(fp)
-                ::continue::
-              end
-            end, 100)
-          end
-        end
-      end
-
-      -- Add a non-recursive watcher for a single directory (Linux/WSL)
-      local function add_dir_watcher(state, dirpath)
-        if state.watchers[dirpath] then
-          return
-        end
-        local watcher = vim.uv.new_fs_event()
-        if not watcher then
-          return
-        end
-        state.watchers[dirpath] = watcher
-        watcher:start(dirpath, {}, vim.schedule_wrap(create_fs_event_callback(state, dirpath)))
-      end
-
-      -- Sync watchers to match currently loaded buffer directories
-      local function sync_watchers(state)
-        local dirs = get_buffer_dirs(state.root)
-        for dir, _ in pairs(dirs) do
-          add_dir_watcher(state, dir)
-        end
-        for dir, watcher in pairs(state.watchers) do
-          if not dirs[dir] then
-            watcher:stop()
-            watcher:close()
-            state.watchers[dir] = nil
-          end
-        end
-      end
-
-      local function enable_file_watcher()
-        if file_watcher_state then
-          return
-        end
-
-        local root = vim.fn.getcwd()
-        local is_recursive = (jit.os == "OSX")
-
-        file_watcher_state = {
-          root = root,
-          watchers = {},
-          is_recursive = is_recursive,
-          buf_add_autocmd_id = nil,
-        }
-
-        if is_recursive then
-          local watcher = vim.uv.new_fs_event()
-          if not watcher then
-            file_watcher_state = nil
-            return
-          end
-          file_watcher_state.watchers[root] = watcher
-          watcher:start(
-            root,
-            { recursive = true },
-            vim.schedule_wrap(function(err, filename, _)
-              if err or not filename then
-                return
-              end
-              local filepath = root .. "/" .. filename
-
-              local has_dot_segment = filename:match("^%.") or filename:match("/%.")
-              if has_dot_segment and not is_git_tracked(filepath) then
-                return
-              end
-
-              if vim.fn.filereadable(filepath) == 0 then
-                return
-              end
-              if is_git_ignored(filepath) then
-                return
-              end
-
-              load_or_reload_buffer(filepath)
-            end)
-          )
-        else
-          sync_watchers(file_watcher_state)
-          file_watcher_state.buf_add_autocmd_id = vim.api.nvim_create_autocmd("BufAdd", {
-            group = "terminal_claude",
-            callback = function(args)
-              if not file_watcher_state then
-                return
-              end
-              local name = vim.api.nvim_buf_get_name(args.buf)
-              if name ~= "" and name:sub(1, #root) == root then
-                local dir = vim.fn.fnamemodify(name, ":h")
-                add_dir_watcher(file_watcher_state, dir)
-              end
-            end,
-          })
-        end
-
-        file_changed_shell_autocmd_id = vim.api.nvim_create_autocmd("FileChangedShell", {
-          group = "terminal_claude",
-          pattern = "*",
-          callback = function()
-            vim.v.fcs_choice = "reload"
-          end,
-        })
-      end
-
-      local function disable_file_watcher()
-        if file_watcher_state then
-          for _, watcher in pairs(file_watcher_state.watchers) do
-            watcher:stop()
-            watcher:close()
-          end
-          if file_watcher_state.buf_add_autocmd_id then
-            vim.api.nvim_del_autocmd(file_watcher_state.buf_add_autocmd_id)
-          end
-          file_watcher_state = nil
-        end
-        if file_changed_shell_autocmd_id then
-          vim.api.nvim_del_autocmd(file_changed_shell_autocmd_id)
-          file_changed_shell_autocmd_id = nil
-        end
-      end
-
-      vim.api.nvim_create_augroup("terminal_claude", { clear = true })
-      vim.api.nvim_create_autocmd("TermOpen", {
-        group = "terminal_claude",
-        pattern = "term://*/claude",
-        callback = function()
-          vim.wo.winfixbuf = true
-
-          local send_to_term = function(code)
-            return function()
-              local chan = vim.b.terminal_job_id
-              if chan then
-                vim.api.nvim_chan_send(chan, code)
-              end
-            end
-          end
-
-          enable_file_watcher()
-
-          vim.keymap.set("n", "<C-j>", "i<C-\\><C-n><C-w>j", { buffer = true, silent = true })
-          vim.keymap.set("n", "<C-k>", "i<C-\\><C-n><C-w>k", { buffer = true, silent = true })
-          vim.keymap.set("n", "<C-h>", "i<C-\\><C-n><C-w>h", { buffer = true, silent = true })
-          vim.keymap.set("n", "<C-l>", "i<C-\\><C-n><C-w>l", { buffer = true, silent = true })
-
-          vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-w>j", { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-k>", "<C-\\><C-n><C-w>k", { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-w>h", { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-l>", "<C-\\><C-n><C-w>l", { buffer = true, silent = true })
-
-          vim.keymap.set("t", "<C-u>", "<C-\\><C-n><C-u>", { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-d>", "<C-\\><C-n><C-d>", { buffer = true, silent = true })
-
-          vim.keymap.set("t", "<Esc>", send_to_term("\x1b"), { buffer = true, silent = true })
-          vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true })
-
-          vim.opt_local.scrollback = 1000
-        end,
-      })
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
-        group = "terminal_claude",
-        pattern = "term://*/claude",
-        command = "startinsert",
-      })
-      vim.api.nvim_create_autocmd("TermClose", {
-        group = "terminal_claude",
-        pattern = "term://*/claude",
-        callback = function()
-          disable_file_watcher()
-        end,
-      })
+      setup_agent_terminal("terminal_claude", { "term://*/claude", "term://*/claude *" })
     end,
-    keys = {
-      { "<Leader>aa", "<cmd>ClaudeCode<cr>", mode = "n", desc = "# Toggle Claude" },
-      { "<Leader>aa", "<cmd>ClaudeCodeSend<cr>", mode = "v", desc = "# Send to Claude" },
-      { "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", desc = "# Focus Claude" },
-      { "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", desc = "# Resume Claude" },
-      { "<Leader>ac", "<cmd>ClaudeCode --continue<cr>", desc = "# Continue Claude" },
-      { "<Leader>ab", "<cmd>ClaudeCodeAdd %<cr>", desc = "# Add current buffer to Claude" },
-      { "<Leader>ay", "<cmd>ClaudeCodeDiffAccept<cr>", desc = "# Accept diff to Claude" },
-      { "<Leader>an", "<cmd>ClaudeCodeDiffDeny<cr>", desc = "# Deny diff to Claude" },
+  },
+  {
+    "ishiooon/codex.nvim",
+    cmd = {
+      "Codex",
+      "CodexSend",
+      "CodexFocus",
+      "CodexAdd",
+      "CodexDiffAccept",
+      "CodexDiffDeny",
     },
+    config = function()
+      require("codex").setup({
+        ---@diagnostic disable-next-line: missing-fields
+        terminal = {
+          split_side = "left",
+          split_width_percentage = 0.40,
+          provider = "native",
+        },
+        ---@diagnostic disable-next-line: missing-fields
+        keymaps = { enabled = false },
+      })
+
+      setup_agent_terminal("terminal_codex", { "term://*/codex", "term://*/codex *" })
+    end,
   },
 
   -----------------------------------------------------------------------------
@@ -1704,12 +1780,33 @@ vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment
 -- Open diagnostics float
 vim.keymap.set("n", "oe", vim.diagnostic.open_float, { silent = true, desc = "# Show diagnostics" })
 
+-- Agent
+use_agent("claude")
+
 -------------------------------------------------------------------------------
 -- Custom commands
 -------------------------------------------------------------------------------
 vim.api.nvim_create_user_command("Cd", function()
   vim.cmd("cd %:h")
 end, { desc = "# Change directory to the current file's directory" })
+
+vim.api.nvim_create_user_command("Agent", function(opts)
+  local name = opts.args
+  if name == "" then
+    name = agent_current == "claude" and "codex" or "claude"
+  end
+  if use_agent(name) then
+    vim.notify("Agent: " .. name)
+  end
+end, {
+  nargs = "?",
+  complete = function()
+    local names = vim.tbl_keys(agent_keymaps)
+    table.sort(names)
+    return names
+  end,
+  desc = "# Switch the agent",
+})
 
 vim.api.nvim_create_user_command("Enc", function(opts)
   vim.cmd("edit ++enc=" .. opts.args)
