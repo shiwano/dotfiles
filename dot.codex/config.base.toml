@@ -18,6 +18,9 @@ url = 'https://mcp.context7.com/mcp'
 [mcp_servers.context7.env_http_headers]
 CONTEXT7_API_KEY = 'CONTEXT7_API_KEY'
 
+[mcp_servers.figma]
+url = 'https://mcp.figma.com/mcp'
+
 [sandbox_workspace_write]
 network_access = true
 writable_roots = ['/tmp', '/run/user']
