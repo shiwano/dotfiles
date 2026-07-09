@@ -1361,32 +1361,6 @@ local pluginSpec = {
   },
 
   -----------------------------------------------------------------------------
-  -- Documentation
-  -----------------------------------------------------------------------------
-  {
-    "toppair/peek.nvim",
-    ft = { "markdown" },
-    build = "deno task --quiet build:fast",
-    config = function()
-      local peek = require("peek")
-
-      peek.setup({
-        theme = "light",
-      })
-
-      vim.api.nvim_create_augroup("markdown_preview", { clear = true })
-      vim.api.nvim_create_autocmd("FileType", {
-        group = "markdown_preview",
-        pattern = "markdown",
-        callback = function()
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreview", peek.open, { desc = "# Open markdown preview" })
-          vim.api.nvim_buf_create_user_command(0, "MarkdownPreviewClose", peek.close, { desc = "# Close markdown preview" })
-        end,
-      })
-    end,
-  },
-
-  -----------------------------------------------------------------------------
   -- Terminal
   -----------------------------------------------------------------------------
   {
