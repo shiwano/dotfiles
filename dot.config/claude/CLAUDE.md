@@ -8,7 +8,8 @@
 
 # Development Guidelines
 
-- **Minimal Comments**: Default to no comment; add one only when the intent can't be recovered from the code or context itself — never to restate a name, type, signature, or an evident "why".
+- **Minimal Comments**: Default to none; add one only when intent can't be recovered from the code itself, never to restate a name, type, signature, or evident "why".
+- **Minimal Prose** (docs, AGENTS.md, skills): Write only facts a reader needs. No rationale or self-justification unless asked (e.g. "so that…", "not an X but a Y"). Don't restate what's documented elsewhere. Don't editorialize.
 - **Shell Commands**:
   - Lint: `nvim-lint ./path/to/file ...`; fix ALL severity levels including HINT
   - Format: `nvim-format ./path/to/file ...`
