@@ -15,3 +15,4 @@
   - Format: `nvim-format ./path/to/file ...`
 - **Shell Commands**:
   - Prefer `jq`, `yq`, `taplo`, `rg`; avoid Python when these suffice
+  - NEVER use `rm -f`; use `rm -r` instead of `rm -rf`
