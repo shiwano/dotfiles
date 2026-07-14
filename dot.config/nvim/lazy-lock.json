@@ -9,6 +9,7 @@
   "copilot.lua": { "branch": "master", "commit": "ef4bfc579b404c531c1738bacca82ed61501d877" },
   "dart-vim-flutter-layout": { "branch": "master", "commit": "9105781d713f03ede4fae4857bab2be585eb6aaf" },
   "fzf-lua": { "branch": "main", "commit": "cfc085749d9232373fc6d8cf3a964c5601a7816e" },
+  "gitsigns.nvim": { "branch": "main", "commit": "eb60cc7b94c46005237fd34170d76f3a089a90aa" },
   "im-select.nvim": { "branch": "master", "commit": "113a6905a1c95d2990269f96abcbad9718209557" },
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
   "lazydev.nvim": { "branch": "main", "commit": "5231c62aa83c2f8dc8e7ba957aa77098cda1257d" },

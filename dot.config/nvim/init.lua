@@ -427,6 +427,29 @@ local pluginSpec = {
       enable_tailwind = true,
     },
   },
+  {
+    "lewis6991/gitsigns.nvim",
+    config = function()
+      local colors = get_colors()
+
+      require("gitsigns").setup({
+        signs = {
+          add = { text = "┃" },
+          change = { text = "┃" },
+          delete = { text = "_" },
+          topdelete = { text = "‾" },
+          changedelete = { text = "~" },
+        },
+        linehl = true,
+        signcolumn = true,
+        numhl = true,
+        word_diff = true,
+      })
+
+      vim.api.nvim_set_hl(0, "GitSignsChangeLn", { bg = colors.blue7 })
+      vim.api.nvim_set_hl(0, "GitSignsChangeInline", { bg = colors.blue0 })
+    end,
+  },
 
   -----------------------------------------------------------------------------
   -- File explorer
