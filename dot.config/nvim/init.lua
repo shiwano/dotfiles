@@ -983,6 +983,7 @@ local pluginSpec = {
       local ls = {
         go = "gopls",
         typescript = "ts_ls",
+        typescript_go = "tsgo",
         typescript_konte = "konte",
         dart = "dartls",
         lua = "lua_ls",
@@ -999,16 +1000,26 @@ local pluginSpec = {
         })
       )
 
+      -- TypeScript 7 (native/tsgo) ships no tsserver.js, so ts_ls can't drive it.
+      local function is_ts7_project(dir)
+        local ts = dir .. "/node_modules/typescript"
+        return vim.uv.fs_stat(ts) ~= nil and vim.uv.fs_stat(ts .. "/lib/tsserver.js") == nil
+      end
+
       local ts_ls_root_dir = vim.lsp.config.ts_ls.root_dir
       vim.lsp.config(
         ls.typescript,
         lsp_config({
           root_dir = function(bufnr, on_dir)
-            if vim.fs.root(bufnr, "konte.state.json") then
+            if vim.fs.root(bufnr, "konte.config.json") then
               return
             end
             if ts_ls_root_dir then
-              ts_ls_root_dir(bufnr, on_dir)
+              ts_ls_root_dir(bufnr, function(dir)
+                if not is_ts7_project(dir) then
+                  on_dir(dir)
+                end
+              end)
             end
           end,
           on_attach = function(client, bufnr)
@@ -1080,11 +1091,49 @@ local pluginSpec = {
       vim.lsp.config(ls.rust, lsp_config({}))
 
       vim.lsp.config(
+        ls.typescript_go,
+        lsp_config({
+          cmd = function(dispatchers, config)
+            local cmd = "tsgo"
+            local root = (config or {}).root_dir
+            if root then
+              for _, name in ipairs({ "tsgo", "tsc" }) do
+                local candidate = vim.fs.joinpath(root, "node_modules", ".bin", name)
+                if vim.fn.executable(candidate) == 1 then
+                  cmd = candidate
+                  break
+                end
+              end
+            end
+            return vim.lsp.rpc.start({ cmd, "--lsp", "--stdio" }, dispatchers)
+          end,
+          filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+          root_dir = function(bufnr, on_dir)
+            if vim.fs.root(bufnr, "konte.config.json") then
+              return
+            end
+            if ts_ls_root_dir then
+              ts_ls_root_dir(bufnr, function(dir)
+                if is_ts7_project(dir) then
+                  on_dir(dir)
+                end
+              end)
+            end
+          end,
+        })
+      )
+
+      vim.lsp.config(
         ls.typescript_konte,
         lsp_config({
           cmd = { "konte", "lsp" },
           filetypes = { "typescript", "typescriptreact" },
-          root_markers = { "konte.state.json" },
+          root_dir = function(bufnr, on_dir)
+            local root = vim.fs.root(bufnr, "konte.config.json")
+            if root then
+              on_dir(root)
+            end
+          end,
         })
       )
 
