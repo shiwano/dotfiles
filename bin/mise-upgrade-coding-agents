@@ -3,8 +3,8 @@
 set -euo pipefail
 
 readonly TOOLS=(
-	'npm:@openai/codex'
-	'aqua:anthropics/claude-code'
+	'codex'
+	'claude'
 )
 
 usage() {
@@ -15,9 +15,8 @@ Usage: mise-upgrade-coding-agents [options]
 Upgrade AI coding agent CLIs managed by mise to their latest versions.
 
 Targets:
-  npm:@openai/codex
-  npm:@google/gemini-cli
-  aqua:anthropics/claude-code
+  codex
+  claude
 
 Options:
   -h, --help     Show this help message

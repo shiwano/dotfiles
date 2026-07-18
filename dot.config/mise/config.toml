@@ -44,9 +44,9 @@ protoc = 'latest'
 protoc-gen-go = 'latest'
 dasel = 'latest'
 fd = 'latest'
+claude = "latest"
+codex = "latest"
 
-'npm:@openai/codex' = 'latest'
-'npm:@google/gemini-cli' = 'latest'
 'npm:@mermaid-js/mermaid-cli' = 'latest'
 'npm:neovim' = 'latest'
 'npm:typescript-language-server' = 'latest'
@@ -68,7 +68,6 @@ fd = 'latest'
 'aqua:git-lfs/git-lfs' = 'latest'
 'aqua:suzuki-shunsuke/pinact' = 'latest'
 'aqua:goreleaser/goreleaser' = 'latest'
-'aqua:anthropics/claude-code' = 'latest'
 
 'pipx:isort' = 'latest'
 'pipx:jupyterlab' = 'latest'
