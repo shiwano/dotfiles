@@ -8,6 +8,7 @@
     "DISABLE_ERROR_REPORTING": "1"
   },
   "includeCoAuthoredBy": false,
+  "disableClaudeAiConnectors": true,
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
@@ -202,7 +203,7 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": false
   },
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
