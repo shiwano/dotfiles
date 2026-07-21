@@ -111,7 +111,6 @@
       "Bash(uv auth *)",
       "Bash(npm publish *)",
       "Bash(brew *)",
-      "Bash(mise *)",
       "Bash(gcloud *)",
       "Bash(aws *)",
       "Bash(terraform *)",

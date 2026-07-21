@@ -3,7 +3,7 @@
 set -euo pipefail
 
 readonly TOOLS=(
-	'codex'
+	'npm:@openai/codex'
 	'claude'
 )
 
