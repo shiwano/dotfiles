@@ -47,15 +47,16 @@ extract_path() {
 	esac
 }
 
-expand_home() {
-	local path="$1" tilde='~'
+resolve_dir() {
+	local path="$1" base="$2" tilde='~'
 	if [[ "${path}" == "${tilde}" ]]; then
-		printf '%s' "${HOME}"
+		path="${HOME}"
 	elif [[ "${path}" == "${tilde}/"* ]]; then
-		printf '%s' "${HOME}/${path:2}"
-	else
-		printf '%s' "${path}"
+		path="${HOME}/${path:2}"
+	elif [[ "${path}" != /* ]]; then
+		path="${base%/}/${path}"
 	fi
+	realpath -ms "${path}"
 }
 
 additional_dirs() {
@@ -67,7 +68,9 @@ additional_dirs() {
 	)
 	for file in "${files[@]}"; do
 		[[ -f "${file}" ]] || continue
-		jq -r '(.additionalDirectories // [])[]' "${file}" 2>/dev/null || true
+		jq -r '[(.additionalDirectories // [])[],
+			(.permissions.additionalDirectories // [])[]] | .[]' \
+			"${file}" 2>/dev/null || true
 	done
 }
 
@@ -108,7 +111,7 @@ main() {
 
 	while IFS= read -r dir; do
 		[[ -z "${dir}" ]] && continue
-		dir=$(expand_home "${dir}")
+		dir=$(resolve_dir "${dir}" "${project_root}")
 		is_under "${target_path}" "${dir}" && exit 0
 	done < <(additional_dirs "${project_root}")
 
