@@ -1386,7 +1386,11 @@ local pluginSpec = {
       vim.api.nvim_create_autocmd({ "BufReadPost", "BufWritePost" }, {
         group = "nvim_lint",
         pattern = "*",
-        callback = function()
+        callback = function(args)
+          local name = vim.fn.fnamemodify(args.file, ":t")
+          if name == ".env" or name:match("^%.env%.") then
+            return
+          end
           require("lint").try_lint()
         end,
       })
