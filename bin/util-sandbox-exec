@@ -5,20 +5,26 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: util-sandbox-exec [--allow-write PATH]... [--deny-read PATH]... [--allow-read PATH]... -- command [args...]
+Usage: util-sandbox-exec [--allow-write PATH]... [--deny-write PATH]... [--deny-read PATH]... [--allow-read PATH]... -- command [args...]
 
 Execute a command inside a sandbox with restricted file system access.
 Uses sandbox-exec on macOS and bwrap on Linux.
 
 Options:
   --allow-write PATH  Allow write access to PATH (can be specified multiple times)
+  --deny-write PATH   Keep PATH readable but revoke write access granted by an
+                      enclosing --allow-write (can be repeated)
   --deny-read PATH    Deny read access to PATH (can be specified multiple times)
   --allow-read PATH   Re-allow read access within a denied path (can be repeated)
   -h, --help          Show this help message
 
+Rules are applied in this order, so later ones win over earlier ones:
+allow-write, deny-write, deny-read, allow-read.
+
 Examples:
   util-sandbox-exec --allow-write /tmp -- touch /tmp/test
   util-sandbox-exec --deny-read ~/.ssh --allow-read ~/.ssh/known_hosts -- my-command
+  util-sandbox-exec --allow-write . --deny-write ./.git/hooks -- my-command
 EOF
 }
 
@@ -33,6 +39,13 @@ resolve_path() {
 		dir="$(cd "$(dirname "$path")" 2>/dev/null && pwd)" || dir="$(dirname "$path")"
 		echo "${dir}/${basename}"
 	fi
+}
+
+escape_sbpl() {
+	local value="$1"
+	value="${value//\\/\\\\}"
+	value="${value//\"/\\\"}"
+	printf '%s' "$value"
 }
 
 run_with_sandbox_exec() {
@@ -54,6 +67,13 @@ run_with_sandbox_exec() {
 		allow_read_paths=("${@:1:$allow_read_count}")
 		shift "$allow_read_count"
 	fi
+	local deny_write_count="$1"
+	shift
+	local deny_write_paths=()
+	if [ "$deny_write_count" -gt 0 ]; then
+		deny_write_paths=("${@:1:$deny_write_count}")
+		shift "$deny_write_count"
+	fi
 	local cmd=("$@")
 
 	local profile='(version 1)(import "system.sb")(allow default)(deny file-write*)'
@@ -64,16 +84,26 @@ run_with_sandbox_exec() {
 	# Write-allow paths
 	for path in "${allow_paths[@]}"; do
 		local resolved
-		resolved="$(resolve_path "$path")"
+		resolved="$(escape_sbpl "$(resolve_path "$path")")"
 		profile+="(allow file-write* (subpath \"${resolved}\"))"
 		profile+="(allow file-write* (literal \"${resolved}\"))"
+	done
+
+	# Write-deny paths (revokes write granted by an enclosing allow path)
+	for path in "${deny_write_paths[@]}"; do
+		if [ -e "$path" ]; then
+			local resolved
+			resolved="$(escape_sbpl "$(resolve_path "$path")")"
+			profile+="(deny file-write* (subpath \"${resolved}\"))"
+			profile+="(deny file-write* (literal \"${resolved}\"))"
+		fi
 	done
 
 	# Read-deny paths
 	for path in "${deny_read_paths[@]}"; do
 		if [ -e "$path" ]; then
 			local resolved
-			resolved="$(resolve_path "$path")"
+			resolved="$(escape_sbpl "$(resolve_path "$path")")"
 			profile+="(deny file-read* (subpath \"${resolved}\"))"
 			profile+="(allow file-read-metadata (subpath \"${resolved}\"))"
 		fi
@@ -83,7 +113,7 @@ run_with_sandbox_exec() {
 	for path in "${allow_read_paths[@]}"; do
 		if [ -e "$path" ]; then
 			local resolved
-			resolved="$(resolve_path "$path")"
+			resolved="$(escape_sbpl "$(resolve_path "$path")")"
 			profile+="(allow file-read* (subpath \"${resolved}\"))"
 			profile+="(allow file-read* (literal \"${resolved}\"))"
 		fi
@@ -111,6 +141,13 @@ run_with_bwrap() {
 		allow_read_paths=("${@:1:$allow_read_count}")
 		shift "$allow_read_count"
 	fi
+	local deny_write_count="$1"
+	shift
+	local deny_write_paths=()
+	if [ "$deny_write_count" -gt 0 ]; then
+		deny_write_paths=("${@:1:$deny_write_count}")
+		shift "$deny_write_count"
+	fi
 	local cmd=("$@")
 
 	local args=(
@@ -118,6 +155,10 @@ run_with_bwrap() {
 		--dev /dev
 		--proc /proc
 		--tmpfs /tmp
+		--unshare-pid
+		--unshare-ipc
+		--unshare-uts
+		--die-with-parent
 	)
 
 	if [ -e /dev/dxg ]; then
@@ -140,6 +181,15 @@ run_with_bwrap() {
 			else
 				args+=(--bind "$resolved" "$resolved")
 			fi
+		fi
+	done
+
+	# Write-deny paths (re-mount read-only over an enclosing writable bind)
+	for path in "${deny_write_paths[@]}"; do
+		if [ -e "$path" ]; then
+			local resolved
+			resolved="$(resolve_path "$path")"
+			args+=(--ro-bind "$resolved" "$resolved")
 		fi
 	done
 
@@ -168,6 +218,7 @@ main() {
 	local allow_paths=()
 	local deny_read_paths=()
 	local allow_read_paths=()
+	local deny_write_paths=()
 	local cmd=()
 
 	while [[ $# -gt 0 ]]; do
@@ -201,6 +252,15 @@ main() {
 				return 1
 			fi
 			allow_read_paths+=("$1" "$2")
+			shift 2
+			;;
+		--deny-write)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --deny-write requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			deny_write_paths+=("$1" "$2")
 			shift 2
 			;;
 		--)
@@ -246,6 +306,13 @@ main() {
 		i=$((i + 2))
 	done
 
+	local resolved_deny_write_paths=()
+	i=0
+	while [ "$i" -lt "${#deny_write_paths[@]}" ]; do
+		resolved_deny_write_paths+=("${deny_write_paths[$((i + 1))]}")
+		i=$((i + 2))
+	done
+
 	# Remove deny_read_paths that conflict with allow_paths (writing requires reading)
 	local filtered_deny_read_paths=()
 	for path in "${resolved_deny_read_paths[@]}"; do
@@ -264,13 +331,14 @@ main() {
 	local allow_count="${#resolved_allow_paths[@]}"
 	local deny_read_count="${#filtered_deny_read_paths[@]}"
 	local allow_read_count="${#resolved_allow_read_paths[@]}"
+	local deny_write_count="${#resolved_deny_write_paths[@]}"
 
 	case "$(uname)" in
 	Darwin)
-		run_with_sandbox_exec "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "$allow_read_count" "${resolved_allow_read_paths[@]}" "${cmd[@]}"
+		run_with_sandbox_exec "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "$allow_read_count" "${resolved_allow_read_paths[@]}" "$deny_write_count" "${resolved_deny_write_paths[@]}" "${cmd[@]}"
 		;;
 	Linux)
-		run_with_bwrap "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "$allow_read_count" "${resolved_allow_read_paths[@]}" "${cmd[@]}"
+		run_with_bwrap "$allow_count" "${resolved_allow_paths[@]}" "$deny_read_count" "${filtered_deny_read_paths[@]}" "$allow_read_count" "${resolved_allow_read_paths[@]}" "$deny_write_count" "${resolved_deny_write_paths[@]}" "${cmd[@]}"
 		;;
 	*)
 		echo "Warning: Unsupported OS '$(uname)'. Running without sandbox." >&2

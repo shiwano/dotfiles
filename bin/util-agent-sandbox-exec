@@ -5,15 +5,18 @@ set -euo pipefail
 usage() {
 	local fd="${1:-2}"
 	cat <<EOF >&"$fd"
-Usage: util-agent-sandbox-exec [--allow-write PATH]... [--deny-read PATH]... [--allow-read PATH]... -- command [args...]
+Usage: util-agent-sandbox-exec [--allow-write PATH]... [--deny-write PATH]... [--deny-read PATH]... [--allow-read PATH]... -- command [args...]
 
 Execute a command inside a sandbox with common restrictions for AI coding
-agents. Builds shared allow-write / deny-read / allow-read rules (package
-caches, secrets, OS-specific paths, etc.), merges caller-supplied overrides,
-redacts sensitive environment variables, then delegates to util-sandbox-exec.
+agents. Builds shared allow-write / deny-read / allow-read / deny-write rules
+(package caches, secrets, OS-specific paths, etc.), merges caller-supplied
+overrides, redacts sensitive environment variables, then delegates to
+util-sandbox-exec.
 
 Options:
   --allow-write PATH  Additional path to allow writing (can be repeated)
+  --deny-write PATH   Additional path to keep readable but not writable
+                      (can be repeated)
   --deny-read PATH    Additional path to deny reading (can be repeated)
   --allow-read PATH   Re-allow read access within a denied path (can be repeated)
   -h, --help          Show this help message
@@ -124,11 +127,35 @@ build_common_deny_read() {
 		--deny-read "$HOME/.yarnrc"
 		--deny-read "$HOME/.python_history"
 		--deny-read "$HOME/.emulator_console_auth_token"
-		--deny-read "$(realpath .env)"
-		--deny-read "$(realpath .envrc)"
+		--deny-read "$HOME/.npmrc"
+		--deny-read "$HOME/.pypirc"
+		--deny-read "$HOME/.m2/settings.xml"
+		--deny-read "$HOME/.gradle/gradle.properties"
+		--deny-read "$HOME/.cargo/credentials"
+		--deny-read "$HOME/.cargo/credentials.toml"
+		--deny-read "$HOME/.docker/config.json"
+		--deny-read "$HOME/.config/containers/auth.json"
+		--deny-read "$HOME/.config/rclone"
+		--deny-read "$HOME/.config/op"
+		--deny-read "$HOME/.password-store"
+		--deny-read "$HOME/.local/share/keyrings"
+		--deny-read "$HOME/.mozilla"
+		--deny-read "$HOME/.config/chromium"
+		--deny-read "$HOME/.config/google-chrome"
 		--deny-read "$(realpath secret)"
 		--deny-read "$(realpath secrets)"
 	)
+
+	# Env files live in subdirectories too (monorepo packages, app dirs).
+	# Sample files carry no secrets, so they stay readable.
+	local env_file
+	while IFS= read -r env_file; do
+		args+=(--deny-read "$env_file")
+	done < <(find "$(realpath .)" -maxdepth 5 \
+		\( -name .git -o -name node_modules -o -name vendor \) -prune -o \
+		! -type d \( -name '.env' -o -name '.env.*' -o -name '.envrc' \) \
+		! -name '*.example' ! -name '*.sample' ! -name '*.template' \
+		-print 2>/dev/null)
 
 	if [[ "$(uname)" == "Darwin" ]]; then
 		args+=(
@@ -160,6 +187,25 @@ build_common_allow_read() {
 	printf '%s\n' "${args[@]}"
 }
 
+build_common_deny_write() {
+	# git config and hooks run arbitrary commands (core.sshCommand, core.pager,
+	# post-commit, ...) the next time git is used outside the sandbox.
+	# --git-path resolves these per-worktree and honors core.hooksPath.
+	local args=()
+
+	if git rev-parse --git-dir >/dev/null 2>&1; then
+		local name path
+		for name in config config.worktree hooks; do
+			path="$(git rev-parse --git-path "$name")"
+			args+=(--deny-write "$(realpath "$path")")
+		done
+	fi
+
+	[ "${#args[@]}" -eq 0 ] && return 0
+
+	printf '%s\n' "${args[@]}"
+}
+
 redact_env() {
 	# Redact sensitive environment variables.
 	#
@@ -172,12 +218,25 @@ redact_env() {
 	#
 	#   export SANDBOX_ENV_ALLOWLIST="HF_TOKEN MY_*_TOKEN"
 	local redact_patterns=(
+		'TOKEN'
+		'SECRET'
+		'PASSWORD'
 		'*_TOKEN'
 		'*_SECRET'
 		'*_KEY'
+		'*_KEYS'
+		'*_APIKEY'
+		'*_ACCESS_KEY_ID'
 		'*_PASSWORD'
+		'*_PASSWD'
 		'*_CREDENTIAL'
 		'*_CREDENTIALS'
+		'*_PAT'
+		'*_AUTH'
+		'*_COOKIE'
+		'*_DSN'
+		'DATABASE_URL'
+		'*_DATABASE_URL'
 	)
 	local redact_allowlist=()
 	if [[ -n "${SANDBOX_ENV_ALLOWLIST:-}" ]]; then
@@ -243,6 +302,15 @@ main() {
 			extra_args+=("$1" "$2")
 			shift 2
 			;;
+		--deny-write)
+			if [ -z "${2:-}" ]; then
+				echo "Error: --deny-write requires a PATH argument" >&2
+				usage
+				return 1
+			fi
+			extra_args+=("$1" "$2")
+			shift 2
+			;;
 		--)
 			shift
 			cmd=("$@")
@@ -276,6 +344,10 @@ main() {
 	while IFS= read -r line; do
 		sandbox_args+=("$line")
 	done < <(build_common_allow_read)
+
+	while IFS= read -r line; do
+		sandbox_args+=("$line")
+	done < <(build_common_deny_write)
 
 	# Append caller-supplied overrides
 	sandbox_args+=("${extra_args[@]}")
