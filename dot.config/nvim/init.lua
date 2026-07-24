@@ -447,7 +447,9 @@ local pluginSpec = {
       })
 
       vim.api.nvim_set_hl(0, "GitSignsChangeLn", { bg = colors.blue7 })
-      vim.api.nvim_set_hl(0, "GitSignsChangeInline", { bg = colors.blue0 })
+      vim.api.nvim_set_hl(0, "GitSignsAddInline", { bg = colors.git.add, fg = colors.blue5, bold = true })
+      vim.api.nvim_set_hl(0, "GitSignsChangeInline", { bg = colors.blue0, fg = colors.blue5, bold = true })
+      vim.api.nvim_set_hl(0, "GitSignsDeleteInline", { bg = colors.git.delete, fg = colors.blue5, bold = true })
     end,
   },
 
