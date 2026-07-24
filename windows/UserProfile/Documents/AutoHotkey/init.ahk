@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 
-#HotIf WinActive("ahk_class RAIL_WINDOW") && GetKeyState("LWin", "P")
+#HotIf WinActive("ahk_exe ghostty.exe") && (GetKeyState("LWin", "P") || GetKeyState("RWin", "P"))
 
 *c::Send "^+c"
 *v::Send "^+v"
