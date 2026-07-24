@@ -25,6 +25,5 @@ keybind = ctrl+shift+t=unbind
 keybind = ctrl+shift+o=unbind
 keybind = ctrl+shift+e=unbind
 keybind = performable:ctrl+c=copy_to_clipboard
-keybind = ctrl+p=paste_from_clipboard
 desktop-notifications = true
 bell-features = system,attention,title
