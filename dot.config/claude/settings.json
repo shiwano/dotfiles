@@ -8,7 +8,6 @@
     "DISABLE_ERROR_REPORTING": "1"
   },
   "includeCoAuthoredBy": false,
-  "disableClaudeAiConnectors": true,
   "permissions": {
     "allow": [
       "mcp__ide__getDiagnostics",
@@ -131,6 +130,7 @@
       "~/.config/claude"
     ]
   },
+  "disableClaudeAiConnectors": true,
   "hooks": {
     "Notification": [
       {
@@ -207,6 +207,6 @@
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
-  "skipAutoPermissionPrompt": true,
-  "agentPushNotifEnabled": true
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true
 }
