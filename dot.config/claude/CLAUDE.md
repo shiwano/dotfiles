@@ -10,5 +10,5 @@
 
 - **Minimal Comments**: Default to none; add one only when intent can't be recovered from the code itself, never to restate a name, type, signature, or evident "why".
 - **Minimal Prose** (docs, AGENTS.md, skills): Write only facts a reader needs. No rationale or self-justification unless asked (e.g. "so that…", "not an X but a Y"). Don't restate what's documented elsewhere. Don't editorialize.
-- **Lint/Format**: Runs automatically via a Claude hook; no need to invoke manually
+- **Lint/Format**: Runs automatically via a hook; no need to invoke manually
 - **Installed Tools**: `jq`, `yq`, `taplo`, `rg`, `fd`
