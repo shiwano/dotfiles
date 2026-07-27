@@ -23,7 +23,8 @@ extract_last_prompt() {
 	if [[ -z "${transcript_path}" || ! -f "${transcript_path}" ]]; then
 		return 0
 	fi
-	jq -r '
+	# Transcripts can contain torn lines from concurrent appends; skip them
+	jq -rR 'fromjson? |
 		select(.type == "user" and .userType == "external")
 		| .message.content
 		| if type == "array" then
@@ -32,7 +33,7 @@ extract_last_prompt() {
 			| if length > 0 then join(" ") else empty end
 		elif type == "string" and (test("^[<\\[]") | not) then .
 		else empty end
-	' "${transcript_path}" | tail -1 | cut -c1-60
+	' "${transcript_path}" | tail -1 | awk '{ print substr($0, 1, 60) }'
 }
 
 main() {
