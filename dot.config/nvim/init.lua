@@ -318,6 +318,17 @@ local function setup_agent_terminal(group_name, term_pattern)
   })
 end
 
+local function codex_send_visual()
+  local start_line = vim.fn.line("v")
+  local end_line = vim.fn.line(".")
+  if start_line > end_line then
+    start_line, end_line = end_line, start_line
+  end
+
+  vim.cmd(string.format("CodexAdd %% %d %d", start_line, end_line))
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+end
+
 local agent_keymaps = {
   claude = {
     { "n", "<Leader>aa", "<cmd>ClaudeCode<cr>", "Toggle Claude" },
@@ -331,7 +342,7 @@ local agent_keymaps = {
   },
   codex = {
     { "n", "<Leader>aa", "<cmd>Codex<cr>", "Toggle Codex" },
-    { "v", "<Leader>aa", "<cmd>CodexSend<cr>", "Send to Codex" },
+    { "v", "<Leader>aa", codex_send_visual, "Send to Codex" },
     { "n", "<Leader>af", "<cmd>CodexFocus<cr>", "Focus Codex" },
     { "n", "<Leader>ar", "<cmd>Codex resume<cr>", "Resume Codex" },
     { "n", "<Leader>ac", "<cmd>Codex resume --last<cr>", "Continue Codex" },
@@ -1232,6 +1243,7 @@ local pluginSpec = {
     },
     config = function()
       require("codex").setup({
+        track_selection = false,
         ---@diagnostic disable-next-line: missing-fields
         terminal = {
           split_side = "left",
@@ -1835,7 +1847,7 @@ vim.keymap.set("n", "<Leader>c<Space>", "gcc", { remap = true, desc = "# Comment
 vim.keymap.set("n", "oe", vim.diagnostic.open_float, { silent = true, desc = "# Show diagnostics" })
 
 -- Agent
-use_agent("claude")
+use_agent(agent_keymaps[vim.env.NVIM_AGENT] and vim.env.NVIM_AGENT or "claude")
 
 -------------------------------------------------------------------------------
 -- Custom commands
