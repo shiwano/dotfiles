@@ -97,7 +97,6 @@
       "Bash(dd *)",
       "Bash(mkfs *)",
       "Bash(chown -R *)",
-      "Bash(rm -rf *)",
       "Bash(mv /* *)",
       "Bash(> /dev/sda *)",
       "Bash(source *)",
