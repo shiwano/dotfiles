@@ -12,12 +12,6 @@ enabled = false
 enabled = false
 
 [mcp_servers]
-[mcp_servers.context7]
-url = 'https://mcp.context7.com/mcp'
-
-[mcp_servers.context7.env_http_headers]
-CONTEXT7_API_KEY = 'CONTEXT7_API_KEY'
-
 [mcp_servers.figma]
 url = 'https://mcp.figma.com/mcp'
 

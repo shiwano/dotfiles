@@ -1,3 +1,1 @@
-export CONTEXT7_API_KEY="" # https://context7.com/dashboard
-
-export SANDBOX_ENV_ALLOWLIST="CONTEXT7_API_KEY"
+export SANDBOX_ENV_ALLOWLIST=""
