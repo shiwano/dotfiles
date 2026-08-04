@@ -1,0 +1,171 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: claude-select-scratchpad-dirs [-a|--all]
+
+Interactively select Claude Code session scratchpad directories and print
+their absolute paths, most recently updated first. Empty directories are
+skipped.
+
+Scratchpad directories are searched under \$TMPDIR/claude-<uid>,
+/tmp/claude-<uid> and /tmp/nix-shell.*/claude-<uid>.
+
+By default, only sessions of the current project are listed. The project is
+resolved by walking up from the current directory.
+
+Options:
+  -a, --all   List sessions of all projects
+
+Examples:
+  claude-select-scratchpad-dirs
+  claude-select-scratchpad-dirs --all
+  cd "\$(claude-select-scratchpad-dirs)"
+EOF
+}
+
+scratchpad_roots() {
+	local uid
+	uid="$(id -u)"
+
+	shopt -s nullglob
+	local candidates=("/tmp/claude-$uid" /tmp/nix-shell.*/"claude-$uid")
+	shopt -u nullglob
+	[ -n "${TMPDIR:-}" ] && candidates=("${TMPDIR%/}/claude-$uid" "${candidates[@]}")
+
+	local root seen=""
+	for root in "${candidates[@]}"; do
+		if [ -d "$root" ] && [[ "$seen" != *"|$root|"* ]]; then
+			seen="$seen|$root|"
+			printf '%s\n' "$root"
+		fi
+	done
+}
+
+encode_path() {
+	printf '%s' "$1" | sed 's|[^a-zA-Z0-9]|-|g'
+}
+
+project_dir() {
+	local root="$1"
+	local dir="$PWD"
+
+	while true; do
+		local encoded
+		encoded="$(encode_path "$dir")"
+		if [ -d "$root/$encoded" ]; then
+			printf '%s\n' "$root/$encoded"
+			return 0
+		fi
+		[ "$dir" = "/" ] && return 1
+		dir="$(dirname "$dir")"
+	done
+}
+
+format_item() {
+	local dir="$1"
+	local show_project="$2"
+	local mtimes count newest date head session project
+
+	mtimes="$(find "$dir" -type f -printf '%T@\n' 2>/dev/null | sort -rn)"
+	[ -z "$mtimes" ] && return 0
+
+	count="$(echo "$mtimes" | wc -l)"
+	newest="${mtimes%%$'\n'*}"
+	date="$(date -d "@${newest%.*}" '+%Y-%m-%d %H:%M')"
+
+	head="${dir%/scratchpad}"
+	session="${head##*/}"
+	head="${head%/*}"
+	project="${head##*/}"
+
+	if [ "$show_project" = "1" ]; then
+		project="${project#"$(encode_path "$HOME")"-}"
+		[ "${#project}" -gt 30 ] && project="..${project: -28}"
+		printf '%s\t%s  %-8.8s  %-30s  %3s files\t%s\n' \
+			"$newest" "$date" "$session" "$project" "$count" "$dir"
+	else
+		printf '%s\t%s  %-8.8s  %3s files\t%s\n' \
+			"$newest" "$date" "$session" "$count" "$dir"
+	fi
+}
+
+main() {
+	local show_all=0
+
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		-a | --all)
+			show_all=1
+			shift
+			;;
+		*)
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	local roots=()
+	local root
+	while IFS= read -r root; do
+		roots+=("$root")
+	done < <(scratchpad_roots)
+	if [ "${#roots[@]}" -eq 0 ]; then
+		echo "no scratchpad directory found" >&2
+		return 1
+	fi
+
+	local bases=()
+	local base
+	for root in "${roots[@]}"; do
+		if [ "$show_all" = "1" ]; then
+			bases+=("$root")
+		elif base="$(project_dir "$root")"; then
+			bases+=("$base")
+		fi
+	done
+	if [ "${#bases[@]}" -eq 0 ]; then
+		echo "no scratchpad directory for the current project" >&2
+		return 1
+	fi
+
+	local dirs=()
+	local dir
+	while IFS= read -r dir; do
+		dirs+=("$dir")
+	done < <(find "${bases[@]}" -mindepth 1 -maxdepth 3 -type d -name scratchpad 2>/dev/null)
+
+	local lines=""
+	for dir in "${dirs[@]}"; do
+		lines+="$(format_item "$dir" "$show_all")"$'\n'
+	done
+
+	local items
+	items="$(printf '%s' "$lines" | grep -v '^$' | sort -rn | cut -f2- || true)"
+	if [ -z "$items" ]; then
+		echo "no scratchpad files found" >&2
+		return 1
+	fi
+
+	local prompt="${FZF_PROMPT:-Select> }"
+	local selected
+	selected="$(
+		echo "$items" | fzf -m --no-sort \
+			--delimiter=$'\t' --with-nth=1 \
+			--preview 'fzf-preview file {2}' \
+			--prompt "$prompt" | cut -f2
+	)"
+	[ -z "$selected" ] && return 0
+
+	echo "$selected"
+}
+
+main "$@"

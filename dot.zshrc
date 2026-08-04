@@ -256,6 +256,11 @@ fi
 
 # Functions --------------------------------------------------------------------
 
+claude-move-to-scratchpad() {
+	FZF_PROMPT='MoveTo> ' claude-select-scratchpad-dirs "$@" |
+		{ read -r s && [ -n "$s" ] && cd "$s"; }
+}
+
 vcs-move-to-repo() {
 	FZF_PROMPT='MoveTo> ' vcs-select-repo | { read -r s && [ -n "$s" ] && cd "$s"; }
 }
@@ -325,6 +330,7 @@ alias a='git-add-files'
 alias u='git-unstage-files'
 alias mt='git-mergetool-file'
 alias gg='util-edit-grep-results'
+alias cs='claude-move-to-scratchpad'
 
 if command -v bazelisk >/dev/null 2>&1; then
 	alias bazel='bazelisk'
