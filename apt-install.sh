@@ -33,6 +33,7 @@ main() {
 		curl \
 		unzip \
 		bubblewrap \
+		inotify-tools \
 		fcitx5 \
 		fcitx5-mozc \
 		fonts-ipafont \
