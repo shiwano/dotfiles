@@ -20,6 +20,7 @@ Options:
 
 Rules are applied in this order, so later ones win over earlier ones:
 allow-write, deny-write, deny-read, allow-read.
+An --allow-write path nested under a --deny-read path stays accessible.
 
 Examples:
   util-sandbox-exec --allow-write /tmp -- touch /tmp/test
@@ -100,13 +101,32 @@ run_with_sandbox_exec() {
 	done
 
 	# Read-deny paths
+	local applied_deny_read_paths=()
 	for path in "${deny_read_paths[@]}"; do
 		if [ -e "$path" ]; then
 			local resolved
 			resolved="$(escape_sbpl "$(resolve_path "$path")")"
 			profile+="(deny file-read* (subpath \"${resolved}\"))"
 			profile+="(allow file-read-metadata (subpath \"${resolved}\"))"
+			applied_deny_read_paths+=("$(resolve_path "$path")")
 		fi
+	done
+
+	# Write-allow paths nested under a denied directory: the deny rule above
+	# also revokes the read access that writing requires
+	for path in "${allow_paths[@]}"; do
+		local resolved_allow
+		resolved_allow="$(resolve_path "$path")"
+		local denied
+		for denied in "${applied_deny_read_paths[@]}"; do
+			if [[ "$resolved_allow" == "$denied"/* ]]; then
+				local escaped
+				escaped="$(escape_sbpl "$resolved_allow")"
+				profile+="(allow file-read* (subpath \"${escaped}\"))"
+				profile+="(allow file-read* (literal \"${escaped}\"))"
+				break
+			fi
+		done
 	done
 
 	# Read-allow paths (overrides deny-read for specific paths)
@@ -194,12 +214,31 @@ run_with_bwrap() {
 	done
 
 	# Read-deny paths
+	local applied_deny_read_paths=()
 	for path in "${deny_read_paths[@]}"; do
 		if [ -d "$path" ]; then
 			args+=(--tmpfs "$path")
 		elif [ -e "$path" ]; then
 			args+=(--ro-bind /dev/null "$path")
+		else
+			continue
 		fi
+		applied_deny_read_paths+=("$(resolve_path "$path")")
+	done
+
+	# Write-allow paths nested under a denied directory: the tmpfs above hides
+	# the bind mounted earlier, so mount it again on top
+	for path in "${allow_paths[@]}"; do
+		local resolved
+		resolved="$(resolve_path "$path")"
+		[ -e "$resolved" ] || continue
+		local denied
+		for denied in "${applied_deny_read_paths[@]}"; do
+			if [[ "$resolved" == "$denied"/* ]]; then
+				args+=(--bind "$resolved" "$resolved")
+				break
+			fi
+		done
 	done
 
 	# Read-allow paths (re-mount read-only over denied tmpfs)

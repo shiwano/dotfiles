@@ -22,10 +22,10 @@ Options:
   -h, --help          Show this help message
 
 Environment:
-  SANDBOX_ENV_ALLOWLIST    Space-separated list of variable name patterns to
-                           exempt from redaction (e.g. "HF_TOKEN MY_*_TOKEN")
-  SANDBOX_WRITE_ALLOWLIST  Space-separated list of additional paths to allow
-                           writing (e.g. "\$HOME/.config/my-agent /opt/cache")
+  SANDBOX_ENV_ALLOWLIST    Comma-separated list of variable name patterns to
+                           exempt from redaction (e.g. "HF_TOKEN,MY_*_TOKEN")
+  SANDBOX_WRITE_ALLOWLIST  Comma-separated list of additional paths to allow
+                           writing (e.g. "\$HOME/.config/my-agent,/opt/cache")
 
 Examples:
   util-agent-sandbox-exec -- my-agent
@@ -87,15 +87,14 @@ build_common_allow_write() {
 	fi
 
 	# Extend allow-write with caller-supplied paths, typically set per-project
-	# via direnv's .envrc:
+	# via direnv's .envrc. Comma-separated so paths may contain spaces:
 	#
-	#   export SANDBOX_WRITE_ALLOWLIST="$HOME/.config/my-agent /opt/cache"
+	#   export SANDBOX_WRITE_ALLOWLIST="$HOME/.config/my-agent,/opt/cache"
 	if [[ -n "${SANDBOX_WRITE_ALLOWLIST:-}" ]]; then
 		local path
-		# shellcheck disable=SC2206
-		for path in ${SANDBOX_WRITE_ALLOWLIST}; do
-			args+=(--allow-write "$path")
-		done
+		while IFS= read -r path; do
+			[ -n "$path" ] && args+=(--allow-write "$path")
+		done <<<"${SANDBOX_WRITE_ALLOWLIST//,/$'\n'}"
 	fi
 
 	printf '%s\n' "${args[@]}"
@@ -212,11 +211,11 @@ redact_env() {
 	# Variables whose name matches redact_patterns are replaced with
 	# [REDACTED] before the agent is invoked. To let a variable through
 	# (e.g. HF_TOKEN for a project using Hugging Face), set the
-	# SANDBOX_ENV_ALLOWLIST environment variable to a space-separated
+	# SANDBOX_ENV_ALLOWLIST environment variable to a comma-separated
 	# list of variable names (glob patterns are allowed). Typically
 	# this is set per-project via direnv's .envrc:
 	#
-	#   export SANDBOX_ENV_ALLOWLIST="HF_TOKEN MY_*_TOKEN"
+	#   export SANDBOX_ENV_ALLOWLIST="HF_TOKEN,MY_*_TOKEN"
 	local redact_patterns=(
 		'TOKEN'
 		'SECRET'
@@ -240,8 +239,10 @@ redact_env() {
 	)
 	local redact_allowlist=()
 	if [[ -n "${SANDBOX_ENV_ALLOWLIST:-}" ]]; then
-		# shellcheck disable=SC2206
-		redact_allowlist+=(${SANDBOX_ENV_ALLOWLIST})
+		local entry
+		while IFS= read -r entry; do
+			[ -n "$entry" ] && redact_allowlist+=("$entry")
+		done <<<"${SANDBOX_ENV_ALLOWLIST//,/$'\n'}"
 	fi
 
 	local pattern
