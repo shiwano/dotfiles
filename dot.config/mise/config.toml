@@ -45,6 +45,7 @@ protoc-gen-go = 'latest'
 dasel = 'latest'
 fd = 'latest'
 claude = "latest"
+yt-dlp = "latest"
 "npm:@openai/codex" = "latest"
 
 'npm:@mermaid-js/mermaid-cli' = 'latest'
