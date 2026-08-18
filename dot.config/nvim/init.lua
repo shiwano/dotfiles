@@ -42,7 +42,49 @@ local function current_working_directory()
   return rel_dir
 end
 
+local function markdown_reference_label(line, col)
+  local init = 1
+  while true do
+    local s, e, text = line:find("%[([^%[%]]*)%]", init)
+    if not s then
+      return nil
+    end
+    if col >= s and col <= e then
+      local ref = line:match("^%[([^%[%]]*)%]", e + 1)
+      if ref then
+        return ref ~= "" and ref or text
+      elseif line:sub(e + 1, e + 1):match("[%(:]") then
+        return nil
+      end
+      return text ~= "" and text or nil
+    end
+    init = s + 1
+  end
+end
+
+local function jump_to_markdown_reference()
+  local col = vim.api.nvim_win_get_cursor(0)[2] + 1
+  local label = markdown_reference_label(vim.api.nvim_get_current_line(), col)
+  if not label then
+    return false
+  end
+
+  local pattern = "^%s*%[" .. vim.pesc(label:lower()) .. "%]:"
+  for i, line in ipairs(vim.api.nvim_buf_get_lines(0, 0, -1, false)) do
+    if line:lower():match(pattern) then
+      vim.cmd("normal! m'")
+      vim.api.nvim_win_set_cursor(0, { i, 0 })
+      return true
+    end
+  end
+  return false
+end
+
 local function open_file_or_url()
+  if vim.bo.filetype == "markdown" and jump_to_markdown_reference() then
+    return
+  end
+
   local cfile = vim.fn.expand("<cfile>")
   if cfile:match("^https?://") then
     vim.ui.open(cfile)
