@@ -152,8 +152,8 @@
           },
           {
             "type": "command",
-            "command": "claude-hook-lint-all",
-            "timeout": 120
+            "command": "claude-hook-fix-all",
+            "timeout": 180
           }
         ]
       }
