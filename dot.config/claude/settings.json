@@ -79,6 +79,7 @@
       "Bash(nvim-format *)"
     ],
     "deny": [
+      "SendFeedback",
       "Bash(env *)",
       "Bash(sh *)",
       "Bash(bash *)",
