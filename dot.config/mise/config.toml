@@ -46,6 +46,7 @@ dasel = 'latest'
 fd = 'latest'
 claude = "latest"
 yt-dlp = "latest"
+cloudflared = "latest"
 "npm:@openai/codex" = "latest"
 
 'npm:@mermaid-js/mermaid-cli' = 'latest'
