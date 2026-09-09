@@ -1,0 +1,144 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly oui_url="https://standards-oui.ieee.org/oui/oui.csv"
+cache_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/.cache"
+readonly cache_dir
+readonly oui_cache="${cache_dir}/util-local-network-devices/oui.csv"
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: util-local-network-devices [options]
+
+Lists IPv4 devices on the local network with their MAC address and vendor.
+The default gateway is marked as "gateway".
+
+Options:
+  -f, --filter <text>  Show only rows matching <text> (case-insensitive)
+  -s, --skip-scan      Use the current ARP cache without probing the subnet
+
+Examples:
+  util-local-network-devices
+  util-local-network-devices --filter buffalo
+  util-local-network-devices --skip-scan
+EOF
+}
+
+# Probes every host in a /24 so that the kernel fills in the ARP cache.
+scan_subnet() {
+	local subnet="$1"
+	local i
+	for i in $(seq 1 254); do
+		timeout 1 bash -c "exec 3<>/dev/tcp/${subnet}.${i}/80" >/dev/null 2>&1 &
+	done
+	wait
+}
+
+update_oui_cache() {
+	if [ -f "$oui_cache" ] && [ -z "$(find "$oui_cache" -mtime +30)" ]; then
+		return 0
+	fi
+
+	mkdir -p "$(dirname "$oui_cache")"
+	if curl -fsS --max-time 60 "$oui_url" -o "${oui_cache}.tmp" 2>/dev/null; then
+		mv "${oui_cache}.tmp" "$oui_cache"
+	else
+		rm -f "${oui_cache}.tmp"
+	fi
+}
+
+lookup_vendor() {
+	local mac="$1"
+	[ -f "$oui_cache" ] || return 0
+
+	local oui line rest
+	oui="$(echo "${mac:0:8}" | tr -d ':' | tr '[:lower:]' '[:upper:]')"
+	line="$(grep -m1 ",${oui}," "$oui_cache" || true)"
+	[ -z "$line" ] && return 0
+
+	rest="${line#*,"${oui}",}"
+	if [[ "$rest" == \"* ]]; then
+		rest="${rest#\"}"
+		echo "${rest%%\"*}"
+	else
+		echo "${rest%%,*}"
+	fi
+}
+
+main() {
+	if [[ "${1:-}" == "--help" || "${1:-}" == "-h" ]]; then
+		usage 1
+		return 0
+	fi
+
+	local filter="" skip_scan=0
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-f | --filter)
+			filter="${2:-}"
+			[ -z "$filter" ] && usage && return 1
+			shift 2
+			;;
+		-s | --skip-scan)
+			skip_scan=1
+			shift
+			;;
+		*)
+			usage
+			return 1
+			;;
+		esac
+	done
+
+	local gateway iface
+	gateway="$(ip route show default | awk '{print $3; exit}')"
+	iface="$(ip route show default | awk '{print $5; exit}')"
+	if [ -z "$iface" ]; then
+		echo "No default route found" >&2
+		return 1
+	fi
+
+	if [ "$skip_scan" -eq 0 ]; then
+		local cidr
+		cidr="$(ip -4 route show dev "$iface" scope link | awk '/\/24 /{print $1; exit}')"
+		if [ -z "$cidr" ]; then
+			echo "Only /24 subnets can be scanned; showing the ARP cache" >&2
+		else
+			scan_subnet "$(echo "${cidr%/*}" | cut -d. -f1-3)"
+		fi
+	fi
+
+	update_oui_cache
+
+	local gateway_mac
+	gateway_mac="$(ip -4 neigh show dev "$iface" |
+		awk -v gw="$gateway" '$1 == gw {mac = $3} END {print mac}')"
+
+	local rows=""
+	local ip mac vendor note
+	while read -r ip mac; do
+		# The gateway may answer ARP on behalf of absent hosts (proxy ARP),
+		# so its MAC on any other address means nothing is really there.
+		if [ "$mac" = "$gateway_mac" ] && [ "$ip" != "$gateway" ]; then
+			continue
+		fi
+		vendor="$(lookup_vendor "$mac")"
+		note=""
+		[ "$ip" = "$gateway" ] && note="gateway"
+		rows+="$(printf '%-15s %-17s %-28s %s' "$ip" "$mac" "${vendor:--}" "$note")"$'\n'
+	done < <(ip -4 neigh show dev "$iface" |
+		awk '$2 == "lladdr" && $4 != "FAILED" {print $1, $3}' |
+		sort -t. -k4 -n)
+
+	if [ -n "$filter" ]; then
+		rows="$(echo "$rows" | grep -i "$filter" || true)"
+		[ -z "$rows" ] && return 0
+	fi
+
+	printf '%-15s %-17s %-28s %s\n' "IP" "MAC" "VENDOR" "NOTE"
+	echo "$rows" | sed -e 's/[[:space:]]*$//' -e '/^$/d'
+}
+
+main "$@"

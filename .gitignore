@@ -14,3 +14,5 @@ dot.config/claude/output-styles/*
 dot.codex/config.toml
 
 dot.config/fcitx5/conf/*
+
+.cache
