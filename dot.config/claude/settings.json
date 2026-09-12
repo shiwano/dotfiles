@@ -77,7 +77,8 @@
       "Bash(shfmt -d *)",
       "Bash(nvidia-smi *)",
       "Bash(nvim-lint *)",
-      "Bash(nvim-format *)"
+      "Bash(nvim-format *)",
+      "Bash(codex review *)"
     ],
     "deny": [
       "SendFeedback",
@@ -112,7 +113,8 @@
       "Read(id_ed25519)",
       "Read(.env)",
       "Read(**/secret/**)",
-      "Read(**/secrets/**)"
+      "Read(**/secrets/**)",
+      "Bash(codex *)"
     ],
     "defaultMode": "auto",
     "additionalDirectories": [
