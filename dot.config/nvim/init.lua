@@ -360,21 +360,23 @@ local function setup_agent_terminal(group_name, term_pattern)
   })
 end
 
-local function codex_send_visual()
-  local start_line = vim.fn.line("v")
-  local end_line = vim.fn.line(".")
-  if start_line > end_line then
-    start_line, end_line = end_line, start_line
-  end
+local function send_visual(add_cmd)
+  return function()
+    local start_line = vim.fn.line("v")
+    local end_line = vim.fn.line(".")
+    if start_line > end_line then
+      start_line, end_line = end_line, start_line
+    end
 
-  vim.cmd(string.format("CodexAdd %% %d %d", start_line, end_line))
-  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+    vim.cmd(string.format("%s %% %d %d", add_cmd, start_line, end_line))
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", false)
+  end
 end
 
 local agent_keymaps = {
   claude = {
     { "n", "<Leader>aa", "<cmd>ClaudeCode<cr>", "Toggle Claude" },
-    { "v", "<Leader>aa", "<cmd>ClaudeCodeSend<cr>", "Send to Claude" },
+    { "v", "<Leader>aa", send_visual("ClaudeCodeAdd"), "Send to Claude" },
     { "n", "<Leader>af", "<cmd>ClaudeCodeFocus<cr>", "Focus Claude" },
     { "n", "<Leader>ar", "<cmd>ClaudeCode --resume<cr>", "Resume Claude" },
     { "n", "<Leader>ac", "<cmd>ClaudeCode --continue<cr>", "Continue Claude" },
@@ -384,7 +386,7 @@ local agent_keymaps = {
   },
   codex = {
     { "n", "<Leader>aa", "<cmd>Codex<cr>", "Toggle Codex" },
-    { "v", "<Leader>aa", codex_send_visual, "Send to Codex" },
+    { "v", "<Leader>aa", send_visual("CodexAdd"), "Send to Codex" },
     { "n", "<Leader>af", "<cmd>CodexFocus<cr>", "Focus Codex" },
     { "n", "<Leader>ar", "<cmd>Codex resume<cr>", "Resume Codex" },
     { "n", "<Leader>ac", "<cmd>Codex resume --last<cr>", "Continue Codex" },
@@ -1262,6 +1264,7 @@ local pluginSpec = {
     },
     config = function()
       require("claudecode").setup({
+        track_selection = false,
         ---@diagnostic disable-next-line: missing-fields
         terminal = {
           split_side = "left",
