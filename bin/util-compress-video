@@ -1,0 +1,167 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: util-compress-video [options] <input>
+
+Two-pass H.264 encode that fits <input> under the target size
+(1 MB = 1,000,000 bytes).
+
+Options:
+  -s, --size SIZE_MB      Target size in MB (default: 10)
+  -a, --audio AUDIO_KBPS  AAC audio bitrate in kbps (default: 96)
+  -o, --output OUTPUT     Output path
+                          (default: <input dir>/<name>.<SIZE_MB>mb.mp4)
+  -h, --help              Show this help message
+
+Requires:
+  - ffmpeg
+  - ffprobe
+
+Examples:
+  util-compress-video movie.mov
+  util-compress-video -s 25 -a 128 -o out.mp4 movie.mov
+EOF
+}
+
+main() {
+	local size_mb=10
+	local audio_kbps=96
+	local output=""
+	local input=""
+
+	while [[ $# -gt 0 ]]; do
+		case $1 in
+		-s | --size | -a | --audio | -o | --output)
+			if [[ $# -lt 2 ]]; then
+				echo "Error: $1 requires a value" >&2
+				usage
+				return 1
+			fi
+			case $1 in
+			-s | --size) size_mb="$2" ;;
+			-a | --audio) audio_kbps="$2" ;;
+			-o | --output) output="$2" ;;
+			esac
+			shift 2
+			;;
+		-h | --help)
+			usage 1
+			return 0
+			;;
+		-*)
+			echo "Error: Unknown option $1" >&2
+			usage
+			return 1
+			;;
+		*)
+			if [[ -n "${input}" ]]; then
+				echo "Error: Multiple inputs given" >&2
+				usage
+				return 1
+			fi
+			input="$1"
+			shift
+			;;
+		esac
+	done
+
+	if [[ -z "${input}" ]]; then
+		usage
+		return 1
+	fi
+
+	if ! [[ "${size_mb}" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then
+		echo "Error: Invalid size: ${size_mb}" >&2
+		return 1
+	fi
+
+	if ! [[ "${audio_kbps}" =~ ^[0-9]+$ ]]; then
+		echo "Error: Invalid audio bitrate: ${audio_kbps}" >&2
+		return 1
+	fi
+
+	local cmd
+	for cmd in ffmpeg ffprobe; do
+		if ! command -v "${cmd}" >/dev/null 2>&1; then
+			echo "Error: ${cmd} command not found" >&2
+			return 1
+		fi
+	done
+
+	if [[ ! -f "${input}" ]]; then
+		echo "Error: File not found: ${input}" >&2
+		return 1
+	fi
+
+	if [[ -z "${output}" ]]; then
+		output="$(dirname "${input}")/$(basename "${input%.*}").${size_mb}mb.mp4"
+	fi
+
+	local duration has_audio
+	duration="$(ffprobe -v error -show_entries format=duration \
+		-of default=nw=1:nk=1 "${input}")"
+	has_audio="$(ffprobe -v error -select_streams a \
+		-show_entries stream=index -of csv=p=0 "${input}")"
+
+	# 5% margin for container overhead and rate-control drift
+	local total_kbps
+	total_kbps="$(awk -v s="${size_mb}" -v d="${duration}" \
+		'BEGIN { printf "%d", s * 1000000 * 8 * 0.95 / d / 1000 }')"
+
+	local video_kbps audio_label
+	local audio_args=()
+	if [[ -n "${has_audio}" ]]; then
+		video_kbps=$((total_kbps - audio_kbps))
+		audio_args+=(-c:a aac -b:a "${audio_kbps}k")
+		audio_label="${audio_kbps}k"
+	else
+		video_kbps="${total_kbps}"
+		audio_args+=(-an)
+		audio_label="none"
+	fi
+
+	if ((video_kbps < 100)); then
+		echo "Error: ${size_mb}MB is too small for ${duration}s" \
+			"(video bitrate would be ${video_kbps}k)" >&2
+		return 1
+	fi
+
+	local workdir
+	workdir="$(mktemp -d)"
+	# shellcheck disable=SC2064
+	trap "rm -rf -- '${workdir}'" EXIT
+
+	echo "input:  ${input} (${duration}s)"
+	echo "video:  ${video_kbps}k, audio: ${audio_label}"
+
+	local common=(
+		-c:v libx264 -preset slow -b:v "${video_kbps}k" -pix_fmt yuv420p
+		-passlogfile "${workdir}/x264"
+	)
+
+	echo "pass 1/2..."
+	ffmpeg -y -v error -stats -i "${input}" "${common[@]}" \
+		-pass 1 -an -f null /dev/null
+	echo "pass 2/2..."
+	ffmpeg -y -v error -stats -i "${input}" "${common[@]}" \
+		-pass 2 "${audio_args[@]}" -movflags +faststart "${output}"
+
+	local size_bytes
+	size_bytes="$(stat -c %s "${output}")"
+	echo "output: ${output}" \
+		"($(awk -v b="${size_bytes}" 'BEGIN { printf "%.2f", b / 1000000 }')MB)"
+
+	if awk -v b="${size_bytes}" -v s="${size_mb}" \
+		'BEGIN { exit !(b > s * 1000000) }'; then
+		echo "Warning: Output exceeds ${size_mb}MB" >&2
+		return 1
+	fi
+
+	return 0
+}
+
+main "$@"

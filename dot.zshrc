@@ -286,7 +286,8 @@ util-edit-selected-files() {
 util-edit-shiwano-files() {
 	local root
 	root="$(jj root 2>/dev/null || git rev-parse --show-toplevel 2>/dev/null || pwd)"
-	_edit-files "$(FZF_PROMPT='Edit> ' util-select-files --modified "$root/.shiwano")"
+	(cd "$root" &&
+		_edit-files "$(FZF_PROMPT='Edit> ' util-select-files --modified .shiwano)")
 }
 
 util-edit-grep-results() {
