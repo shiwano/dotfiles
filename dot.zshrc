@@ -283,6 +283,12 @@ util-edit-selected-files() {
 	_edit-files "$(FZF_PROMPT='Edit> ' util-select-files $1)"
 }
 
+util-edit-shiwano-files() {
+	local root
+	root="$(jj root 2>/dev/null || git rev-parse --show-toplevel 2>/dev/null || pwd)"
+	_edit-files "$(FZF_PROMPT='Edit> ' util-select-files --modified "$root/.shiwano")"
+}
+
 util-edit-grep-results() {
 	_edit-files "$(FZF_PROMPT='Edit> ' util-select-grep-results $1)"
 }
@@ -326,6 +332,7 @@ alias t='vcs-stash-files'
 alias g='vcs-move-to-repo'
 alias v='vcs-edit-changed-files'
 alias vv='util-edit-selected-files'
+alias vs='util-edit-shiwano-files'
 alias a='git-add-files'
 alias u='git-unstage-files'
 alias mt='git-mergetool-file'

@@ -6,4 +6,5 @@ flutter_jank_metrics_*.json
 _ignored/
 .claude/settings.local.json
 .claude/skills/shiwano-*
-.codex
+
+.shiwano/
