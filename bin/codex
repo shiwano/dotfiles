@@ -71,7 +71,7 @@ main() {
 	local args=(
 		--allow-write "$HOME/.codex"
 	)
-	exec mise exec -- util-agent-sandbox-exec "${args[@]}" -- codex "$@"
+	exec util-agent-sandbox-exec "${args[@]}" -- "$(mise which codex)" "$@"
 }
 
 main "$@"

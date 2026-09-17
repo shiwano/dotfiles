@@ -1,3 +1,6 @@
+# Skip for AI agent shell snapshots; env is inherited from the parent shell
+[[ -n $CLAUDECODE || -n $CODEX_MANAGED_PACKAGE_ROOT ]] && return
+
 bindkey -e
 
 typeset -a _startup_funcs=()

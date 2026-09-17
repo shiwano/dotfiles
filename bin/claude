@@ -8,7 +8,7 @@ main() {
 		--allow-write "$HOME/.config/claude"
 		--allow-write "$HOME/.codex"
 	)
-	exec mise exec -- util-agent-sandbox-exec "${args[@]}" -- claude "$@"
+	exec util-agent-sandbox-exec "${args[@]}" -- "$(mise which claude)" "$@"
 }
 
 main "$@"
