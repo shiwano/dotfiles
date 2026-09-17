@@ -47,7 +47,6 @@ fd = 'latest'
 claude = "latest"
 yt-dlp = "latest"
 cloudflared = "latest"
-ffmpeg = "latest"
 "npm:@openai/codex" = "latest"
 
 'npm:@mermaid-js/mermaid-cli' = 'latest'
