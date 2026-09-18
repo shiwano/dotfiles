@@ -1,5 +1,6 @@
 # Core Principles
 
+- **Language**: Always respond in Japanese
 - **Respect Context**: Honor project conventions (coding styles, naming, architecture)
 - **Minimal Changes**: Edit existing files over creating new ones; do only what's asked
 - **Explain Reasoning**: When proposing changes or recommendations, explain the rationale
