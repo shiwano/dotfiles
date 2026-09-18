@@ -12,3 +12,4 @@
 - **Minimal Prose** (docs, skills): Write only facts a reader needs; No rationale or self-justification unless asked (e.g. "so that…", "not an X but a Y"); Don't restate what's documented elsewhere; Don't editorialize
 - **Lint/Format**: Runs automatically via a hook; no need to invoke manually
 - **Installed Tools**: `jq`, `yq`, `taplo`, `rg`, `fd`, `gh-readonly` (read-only `gh`)
+- **Forbidden Commands**: Commands that fetch and run packages on the fly (`npx`, `uvx`, `bunx`, etc.)
