@@ -32,9 +32,17 @@ command = 'codex-hook'
 timeout = 180
 type = 'command'
 
+[hooks.state]
+[hooks.state.'/home/shiwano/.codex/config.toml:permission_request:0:0']
+trusted_hash = 'sha256:19ff167907471be63191e15cc839b1a6cba74e6c1d3f0606d1b91f8212c7e39c'
+
+[hooks.state.'/home/shiwano/.codex/config.toml:post_tool_use:0:0']
+trusted_hash = 'sha256:a5f71db17c5f7c402809a9ae85e1ce281b0ec2c8fb0cf0af3ce1f2837b816344'
+
+[hooks.state.'/home/shiwano/.codex/config.toml:stop:0:0']
+trusted_hash = 'sha256:f85f7420463a5db6e96e6ddadd1d2443eabbd76ec8b6949c1f3e9bc0b15a0fb5'
+
 [mcp_servers]
-[mcp_servers.figma]
-url = 'https://mcp.figma.com/mcp'
 
 [sandbox_workspace_write]
 network_access = true
