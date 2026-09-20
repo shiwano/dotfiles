@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+usage() {
+	local fd="${1:-2}"
+	cat <<EOF >&"$fd"
+Usage: codex-hook
+
+Handle Codex formatting, linting, and terminal notifications.
+Receives hook event JSON from stdin.
+
+Examples:
+  echo '{"hook_event_name":"Stop","stop_hook_active":true}' | codex-hook
+EOF
+}
+
+notify() {
+	local json_input="$1" message="$2" cwd
+	cwd=$(jq -r '.cwd // empty' <<<"${json_input}")
+	if [[ -n "${cwd}" ]]; then
+		message="$(basename "${cwd}"): ${message}"
+	fi
+	util-notify --title "Codex" "${message}" >/dev/null 2>&1 || true
+	return 0
+}
+
+format_patch() {
+	local json_input="$1" patch line file_path
+	local files=()
+	patch=$(jq -r '.tool_input.command // empty' <<<"${json_input}")
+	while IFS= read -r line; do
+		case "${line}" in
+		'*** Add File: '* | '*** Update File: '* | '*** Move to: '*)
+			file_path="${line#*: }"
+			;;
+		*) continue ;;
+		esac
+		if [[ -f "${file_path}" ]]; then
+			if [[ "${file_path}" != /* ]]; then
+				file_path="./${file_path}"
+			fi
+			files+=("${file_path}")
+		fi
+	done <<<"${patch}"
+	if [[ ${#files[@]} -gt 0 ]]; then
+		nvim-format "${files[@]}" >/dev/null 2>&1 || true
+	fi
+	return 0
+}
+
+main() {
+	if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+		usage 1
+		return 0
+	fi
+	if [ -t 0 ]; then
+		echo "Error: Expected Codex hook JSON on stdin." >&2
+		usage
+		return 1
+	fi
+
+	local json_input event cwd lint_output
+	json_input=$(cat)
+	event=$(jq -r '.hook_event_name // empty' <<<"${json_input}")
+	cwd=$(jq -r '.cwd // empty' <<<"${json_input}")
+	if [[ -n "${cwd}" ]]; then
+		cd "${cwd}"
+	fi
+
+	case "${event}" in
+	PermissionRequest)
+		notify "${json_input}" "💬 Approval required"
+		;;
+	PostToolUse)
+		format_patch "${json_input}"
+		;;
+	Stop)
+		if [[ $(jq -r '.stop_hook_active // false' <<<"${json_input}") == true ]]; then
+			printf '{}\n'
+			return 0
+		fi
+		nvim-format --changed >/dev/null 2>&1 || true
+		if ! lint_output=$(nvim-lint --changed 2>&1); then
+			printf '%s\n' "${lint_output}" >&2
+			return 2
+		fi
+		notify "${json_input}" "✅ Codex response complete"
+		;;
+	esac
+	printf '{}\n'
+	return 0
+}
+
+main "$@"

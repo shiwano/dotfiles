@@ -11,6 +11,27 @@ enabled = false
 [feedback]
 enabled = false
 
+[hooks]
+[[hooks.PermissionRequest]]
+[[hooks.PermissionRequest.hooks]]
+command = 'codex-hook'
+timeout = 10
+type = 'command'
+
+[[hooks.PostToolUse]]
+matcher = '^apply_patch$'
+
+[[hooks.PostToolUse.hooks]]
+command = 'codex-hook'
+timeout = 30
+type = 'command'
+
+[[hooks.Stop]]
+[[hooks.Stop.hooks]]
+command = 'codex-hook'
+timeout = 180
+type = 'command'
+
 [mcp_servers]
 [mcp_servers.figma]
 url = 'https://mcp.figma.com/mcp'
