@@ -205,6 +205,7 @@
     "lua-lsp@claude-plugins-official": true,
     "figma@claude-plugins-official": false
   },
+  "extraKnownMarketplaces": {},
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",

@@ -80,10 +80,12 @@ build_common_allow_write() {
 	fi
 
 	# Allow writing to tmux client tty for OSC 777 notifications
-	if [[ -n "${TMUX:-}" ]]; then
+	if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
 		local client_tty
-		client_tty=$(tmux display-message -p '#{client_tty}')
-		args+=(--allow-write "$client_tty")
+		client_tty="$(tmux display-message -p '#{client_tty}' 2>/dev/null || true)"
+		if [ -n "$client_tty" ]; then
+			args+=(--allow-write "$client_tty")
+		fi
 	fi
 
 	# Extend allow-write with caller-supplied paths, typically set per-project
@@ -333,22 +335,22 @@ main() {
 
 	local sandbox_args=()
 
-	# Read common rules line by line into the array
-	while IFS= read -r line; do
-		sandbox_args+=("$line")
-	done < <(build_common_allow_write)
-
-	while IFS= read -r line; do
-		sandbox_args+=("$line")
-	done < <(build_common_deny_read)
-
-	while IFS= read -r line; do
-		sandbox_args+=("$line")
-	done < <(build_common_allow_read)
-
-	while IFS= read -r line; do
-		sandbox_args+=("$line")
-	done < <(build_common_deny_write)
+	# Read common rules line by line into the array. Capturing the output in an
+	# assignment keeps set -e effective: a builder that dies midway must abort
+	# instead of silently contributing no rules at all.
+	local builder output line
+	for builder in \
+		build_common_allow_write \
+		build_common_deny_read \
+		build_common_allow_read \
+		build_common_deny_write; do
+		output="$("$builder")"
+		while IFS= read -r line; do
+			if [ -n "$line" ]; then
+				sandbox_args+=("$line")
+			fi
+		done <<<"$output"
+	done
 
 	# Append caller-supplied overrides
 	sandbox_args+=("${extra_args[@]}")
