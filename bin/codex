@@ -9,7 +9,7 @@ Usage: codex [args...]
 
 Wrapper for codex that merges config.base.toml (shared settings)
 with environment-specific [projects.*] sections.
-Embeds ~/.config/claude/output-styles/custom.md as developer instructions.
+Embeds ~/.config/claude/output-styles/<output_style>.md as developer instructions.
 
 Examples:
   codex
@@ -25,12 +25,21 @@ merge_config() {
 		return 0
 	fi
 
-	local instructions_toml
-	instructions_toml="$(
-		jq -n --rawfile instructions \
-			"${HOME}/.config/claude/output-styles/custom.md" \
-			'{developer_instructions: $instructions}' | dasel -i json -o toml
-	)"
+	local base_json
+	base_json="$(taplo get -f "${base_config}" -o json | jq -S '.')"
+	local output_style
+	output_style="$(printf '%s' "${base_json}" | jq -r '.output_style // empty')"
+	local instructions_toml=""
+	if [ -n "${output_style}" ]; then
+		instructions_toml="$(
+			jq -n --rawfile instructions \
+				"${HOME}/.config/claude/output-styles/${output_style}.md" \
+				'{developer_instructions: ($instructions | sub(
+					"\\A---\\r?\\n.*?\\r?\\n---(?:\\r?\\n|\\z)(?:\\r?\\n)*";
+					""; "s"
+				))}' | dasel -i json -o toml
+		)"
+	fi
 
 	local projects_toml=""
 
@@ -49,20 +58,23 @@ merge_config() {
 		local non_projects_json
 		non_projects_json="$(printf '%s' "${config_json}" |
 			jq -S 'del(.projects, .developer_instructions)')"
-		local base_json
-		base_json="$(taplo get -f "${base_config}" -o json | jq -S '.')"
+		local shared_json
+		shared_json="$(printf '%s' "${base_json}" | jq -S 'del(.output_style)')"
 
 		# Write back to base config if shared settings were changed
-		if [ "${non_projects_json}" != "{}" ] && [ "${non_projects_json}" != "${base_json}" ]; then
-			local merged_json
-			merged_json="$(printf '%s' "${non_projects_json}" | jq -S '. * $base' --argjson base "${base_json}")"
-			printf '%s' "${merged_json}" | dasel -i json -o toml >"${base_config}"
+		if [ "${non_projects_json}" != "{}" ] && [ "${non_projects_json}" != "${shared_json}" ]; then
+			base_json="$(printf '%s' "${non_projects_json}" | jq -S '. * $base' --argjson base "${base_json}")"
+			printf '%s' "${base_json}" | dasel -i json -o toml >"${base_config}"
 		fi
 	fi
 
+	local base_toml
+	base_toml="$(printf '%s' "${base_json}" |
+		jq 'del(.output_style)' | dasel -i json -o toml)"
+
 	# Regenerate config.toml from base + projects
 	rm -f "${config}"
-	printf '%s\n\n%s\n' "${instructions_toml}" "$(cat "${base_config}")" >"${config}"
+	printf '%s\n\n%s\n' "${instructions_toml}" "${base_toml}" >"${config}"
 	if [ -n "${projects_toml}" ]; then
 		printf '\n%s\n' "${projects_toml}" >>"${config}"
 	fi

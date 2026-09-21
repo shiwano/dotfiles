@@ -2,6 +2,7 @@ approval_policy = 'on-request'
 commit_attribution = ''
 model = 'gpt-6-astra'
 model_reasoning_effort = 'medium'
+output_style = 'custom'
 project_doc_fallback_filenames = ['CLAUDE.md']
 sandbox_mode = 'danger-full-access'
 
