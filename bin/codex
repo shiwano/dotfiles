@@ -9,6 +9,7 @@ Usage: codex [args...]
 
 Wrapper for codex that merges config.base.toml (shared settings)
 with environment-specific [projects.*] sections.
+Embeds ~/.config/claude/output-styles/custom.md as developer instructions.
 
 Examples:
   codex
@@ -23,6 +24,13 @@ merge_config() {
 	if [ ! -f "${base_config}" ]; then
 		return 0
 	fi
+
+	local instructions_toml
+	instructions_toml="$(
+		jq -n --rawfile instructions \
+			"${HOME}/.config/claude/output-styles/custom.md" \
+			'{developer_instructions: $instructions}' | dasel -i json -o toml
+	)"
 
 	local projects_toml=""
 
@@ -39,7 +47,8 @@ merge_config() {
 
 		# Compare non-projects sections via JSON
 		local non_projects_json
-		non_projects_json="$(printf '%s' "${config_json}" | jq -S 'del(.projects)')"
+		non_projects_json="$(printf '%s' "${config_json}" |
+			jq -S 'del(.projects, .developer_instructions)')"
 		local base_json
 		base_json="$(taplo get -f "${base_config}" -o json | jq -S '.')"
 
@@ -53,11 +62,12 @@ merge_config() {
 
 	# Regenerate config.toml from base + projects
 	rm -f "${config}"
+	printf '%s\n\n%s\n' "${instructions_toml}" "$(cat "${base_config}")" >"${config}"
 	if [ -n "${projects_toml}" ]; then
-		printf '%s\n\n%s\n' "$(cat "${base_config}")" "${projects_toml}" >"${config}"
-	else
-		cp "${base_config}" "${config}"
+		printf '\n%s\n' "${projects_toml}" >>"${config}"
 	fi
+
+	return 0
 }
 
 main() {

@@ -1,6 +1,5 @@
 approval_policy = 'on-request'
 commit_attribution = ''
-developer_instructions = 'At the start of each session, read and follow `~/.config/claude/output-styles/custom.md`.'
 model = 'gpt-6-astra'
 model_reasoning_effort = 'medium'
 project_doc_fallback_filenames = ['CLAUDE.md']
