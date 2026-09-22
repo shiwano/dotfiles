@@ -81,6 +81,7 @@ experimental = true
 http_timeout = '180s'
 fetch_remote_versions_timeout = '60s'
 disable_backends = ["asdf", "vfox"]
+minimum_release_age_excludes = ['claude', 'npm:@openai/codex']
 
 [settings.pipx]
 uvx = true
