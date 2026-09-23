@@ -55,6 +55,7 @@ writable_roots = ['/tmp', '/run/user']
 [tui]
 alternate_screen = 'never'
 animations = false
+screen_reader_detection_done = true
 
 [tui.model_availability_nux]
 'gpt-5.5' = 4
