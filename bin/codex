@@ -8,7 +8,7 @@ usage() {
 Usage: codex [args...]
 
 Wrapper for codex that merges config.base.toml (shared settings)
-with environment-specific [projects.*] sections.
+with environment-specific [projects.*] and [hooks.state] sections.
 Embeds ~/.config/claude/output-styles/<output_style>.md as developer instructions.
 
 Examples:
@@ -42,10 +42,13 @@ merge_config() {
 	fi
 
 	local projects_toml=""
+	local hooks_state_json='{}'
 
 	if [ -f "${config}" ]; then
 		local config_json
 		config_json="$(taplo get -f "${config}" -o json)"
+		hooks_state_json="$(printf '%s' "${config_json}" |
+			jq '.hooks | {state} | with_entries(select(.value != null))')"
 
 		# Extract projects section as TOML
 		local projects_json
@@ -54,25 +57,26 @@ merge_config() {
 			projects_toml="$(printf '%s' "${projects_json}" | dasel -i json -o toml)"
 		fi
 
-		# Compare non-projects sections via JSON
-		local non_projects_json
-		non_projects_json="$(printf '%s' "${config_json}" |
-			jq -S 'del(.projects, .developer_instructions)')"
+		local config_shared_json
+		config_shared_json="$(printf '%s' "${config_json}" |
+			jq -S 'del(.projects, .hooks.state, .developer_instructions)')"
 		local shared_json
 		shared_json="$(printf '%s' "${base_json}" | jq -S 'del(.output_style)')"
 
 		# Write back to base config if shared settings were changed
-		if [ "${non_projects_json}" != "{}" ] && [ "${non_projects_json}" != "${shared_json}" ]; then
-			base_json="$(printf '%s' "${non_projects_json}" | jq -S '. * $base' --argjson base "${base_json}")"
+		if [ "${config_shared_json}" != "{}" ] && [ "${config_shared_json}" != "${shared_json}" ]; then
+			base_json="$(printf '%s' "${config_shared_json}" | jq -S '. * $base' --argjson base "${base_json}")"
 			printf '%s' "${base_json}" | dasel -i json -o toml >"${base_config}"
 		fi
 	fi
 
 	local base_toml
 	base_toml="$(printf '%s' "${base_json}" |
-		jq 'del(.output_style)' | dasel -i json -o toml)"
+		jq --argjson hooks_state "${hooks_state_json}" \
+			'del(.output_style) | if $hooks_state == {} then .
+			else .hooks = ((.hooks // {}) * $hooks_state) end' |
+		dasel -i json -o toml)"
 
-	# Regenerate config.toml from base + projects
 	rm -f "${config}"
 	printf '%s\n\n%s\n' "${instructions_toml}" "${base_toml}" >"${config}"
 	if [ -n "${projects_toml}" ]; then
