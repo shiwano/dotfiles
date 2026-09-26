@@ -464,6 +464,8 @@ bindkey '^r' util-select-history
 _accept-line-with-typo-correction() {
 	if [[ "$BUFFER" =~ ^gti\  ]]; then
 		BUFFER="${BUFFER/gti /git }"
+	elif [[ "$BUFFER" =~ ^qs(\ |$) ]]; then
+		BUFFER="s${BUFFER#qs}"
 	fi
 	zle accept-line
 }
