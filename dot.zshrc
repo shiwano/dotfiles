@@ -327,7 +327,7 @@ alias ls='ls --color=auto'
 alias ll='ls -l --block-size=KB'
 alias la='ls -A'
 alias lal='ls -l -A --block-size=KB'
-alias reload-shell='exec $SHELL -l'
+alias reload-shell='if (( $+commands[direnv] )); then exec direnv exec / $SHELL -l; else exec $SHELL -l; fi'
 
 alias s='vcs-status'
 alias b='vcs-switch-branch'
