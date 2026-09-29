@@ -10,6 +10,7 @@ sandbox_mode = 'danger-full-access'
 enabled = false
 
 [features]
+daemon_auto_start = false
 memories = false
 
 [feedback]
