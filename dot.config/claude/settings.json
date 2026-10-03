@@ -98,7 +98,6 @@
       "Bash(git branch -d *)",
       "Bash(git push *)",
       "Bash(tmux *)",
-      "Bash(gh *)",
       "Bash(docker push *)",
       "Bash(uv auth *)",
       "Bash(uv tool run *)",
