@@ -52,3 +52,4 @@ screen_reader_detection_done = true
 'gpt-5.5' = 4
 'gpt-5.6-sol' = 1
 gpt-6-astra = 1
+'gpt-6.1-sol' = 2
