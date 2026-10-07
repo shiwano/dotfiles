@@ -1,6 +1,9 @@
 #Requires AutoHotkey v2.0
 
-#HotIf WinActive("ahk_exe ghostty.exe") && (GetKeyState("LWin", "P") || GetKeyState("RWin", "P"))
+GroupAdd "terminal", "ahk_exe ghostty.exe"
+GroupAdd "terminal", "ahk_exe noctty.exe"
+
+#HotIf WinActive("ahk_group terminal") && (GetKeyState("LWin", "P") || GetKeyState("RWin", "P"))
 
 *c::Send "^+c"
 *v::Send "^+v"
