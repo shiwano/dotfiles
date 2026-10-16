@@ -1,7 +1,7 @@
 @echo off
 setlocal
 
-set TOOLS=VideoLAN.VLC DuongDieuPhap.ImageGlass 7zip.7zip
+set TOOLS=VideoLAN.VLC DuongDieuPhap.ImageGlass 7zip.7zip SlackTechnologies.Slack
 
 for %%T in (%TOOLS%) do (
 	winget list --id %%T >nul 2>&1
