@@ -1,11 +1,11 @@
 @echo off
-setlocal
+setlocal EnableDelayedExpansion
 
 set TOOLS=VideoLAN.VLC DuongDieuPhap.ImageGlass 7zip.7zip SlackTechnologies.Slack
 
 for %%T in (%TOOLS%) do (
-	winget list --id %%T >nul 2>&1
-	if errorlevel 1 (
+	winget list --id %%T --exact >nul 2>&1
+	if !errorlevel! neq 0 (
 		echo Installing %%T ...
 		winget install --id %%T --exact --accept-source-agreements --accept-package-agreements
 	) else (
