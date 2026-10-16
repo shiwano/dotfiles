@@ -57,11 +57,17 @@ main() {
 		return 1
 	fi
 
-	local pr_number repo_owner repo_name
-	pr_number=$(gh pr view --json number -q .number 2>/dev/null) || {
+	local pr_number repo_owner repo_name branch
+	pr_number=$(gh pr view --json number -q .number 2>/dev/null) || true
+	if [[ -z "$pr_number" ]]; then
+		branch=$(git branch --show-current)
+		pr_number=$(gh pr list --head "$branch" --state all --limit 1 \
+			--json number -q '.[0].number')
+	fi
+	if [[ -z "$pr_number" ]]; then
 		echo "Error: No PR found for current branch" >&2
 		return 1
-	}
+	fi
 
 	# Get owner and repo name
 	repo_owner=$(gh repo view --json owner -q .owner.login)
