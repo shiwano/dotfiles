@@ -1,10 +1,14 @@
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not (vim.uv or vim.loop).fs_stat(lazypath) then
   local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  local lazy_commit = "306a05526ada86a7b30af95c5cc81ffba93fef97" -- Pinned commit from stable branch.
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--no-checkout", lazyrepo, lazypath })
+  if vim.v.shell_error == 0 then
+    out = vim.fn.system({ "git", "-C", lazypath, "checkout", "--detach", lazy_commit })
+  end
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
+      { "Failed to install lazy.nvim:\n", "ErrorMsg" },
       { out, "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
@@ -1225,35 +1229,7 @@ local pluginSpec = {
   -- AI assistant
   -----------------------------------------------------------------------------
   {
-    "zbirenbaum/copilot.lua",
-    cmd = "Copilot",
-    event = "InsertEnter",
-    config = function()
-      require("copilot").setup({
-        panel = { enabled = false },
-        suggestion = {
-          enabled = true,
-          auto_trigger = true,
-          hide_during_completion = true,
-          debounce = 100,
-          keymap = {
-            accept = "<C-l>",
-            next = "<C-j>",
-            prev = "<C-k>",
-            dismiss = "<C-h>",
-          },
-        },
-        filetypes = {
-          yaml = true,
-          markdown = true,
-          gitcommit = true,
-        },
-        copilot_node_command = "node",
-      })
-    end,
-  },
-  {
-    "coder/claudecode.nvim",
+    "shiwano/claudecode.nvim",
     cmd = {
       "ClaudeCode",
       "ClaudeCodeSend",
@@ -1277,7 +1253,7 @@ local pluginSpec = {
     end,
   },
   {
-    "ishiooon/codex.nvim",
+    "shiwano/codex.nvim",
     cmd = {
       "Codex",
       "CodexSend",
