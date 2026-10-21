@@ -23,6 +23,30 @@ echo_link() {
 	echo "${action}" "${src/$HOME/~}" '->' "${dest/$HOME/~}"
 }
 
+setup_zenhan() (
+	local install_dir="${HOME}/.local/bin"
+	local exe_path="${install_dir}/zenhan.exe"
+	if [ -x "${exe_path}" ] && [ ! -L "${exe_path}" ]; then
+		echo "zenhan.exe already installed"
+		return 0
+	fi
+
+	local temp_dir
+	temp_dir="$(mktemp -d)"
+	trap 'rm -rf "${temp_dir}"' EXIT
+
+	local url="https://github.com/iuchim/zenhan/releases/download/v0.0.1/zenhan.zip"
+	local sha256="057e4ad47163c31d530a695353958e989200381b048c1e4f1bd8b40a97c20e28"
+	curl -fL --retry 2 "${url}" -o "${temp_dir}/zenhan.zip"
+	printf '%s  %s\n' "${sha256}" "${temp_dir}/zenhan.zip" | sha256sum --check
+	unzip -q "${temp_dir}/zenhan.zip" -d "${temp_dir}"
+	mkdir -p "${install_dir}"
+	cp --remove-destination "${temp_dir}/zenhan/bin64/zenhan.exe" "${exe_path}"
+	chmod +x "${exe_path}"
+	echo "Installed: ${exe_path}"
+	return 0
+)
+
 main() {
 	local dotfiles_dir=$HOME/dotfiles
 
@@ -85,6 +109,11 @@ main() {
 	if command -v fcitx5 >/dev/null 2>&1; then
 		topic 'Setup fcitx5'
 		fcitx5 -r -d
+	fi
+
+	if grep -qi microsoft /proc/sys/kernel/osrelease 2>/dev/null; then
+		topic 'Setup Windows IME'
+		setup_zenhan
 	fi
 }
 

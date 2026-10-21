@@ -1633,6 +1633,9 @@ local pluginSpec = {
       if vim.fn.has("macunix") == 1 then
         opts.default_command = "im-select"
         opts.default_im_select = "com.apple.keylayout.ABC"
+      elseif vim.fn.has("wsl") == 1 then
+        opts.default_command = "zenhan.exe"
+        opts.default_im_select = "0"
       else
         opts.default_command = "fcitx5-remote"
         opts.default_im_select = "keyboard-us"
