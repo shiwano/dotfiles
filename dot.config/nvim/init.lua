@@ -317,7 +317,7 @@ local function setup_agent_terminal(group_name, term_pattern)
   vim.api.nvim_create_autocmd("TermOpen", {
     group = group_name,
     pattern = term_pattern,
-    callback = function()
+    callback = function(args)
       vim.wo.winfixbuf = true
 
       local send_to_term = function(code)
@@ -348,18 +348,19 @@ local function setup_agent_terminal(group_name, term_pattern)
       vim.keymap.set("t", "<C-o>", send_to_term("\x0f"), { buffer = true, silent = true })
 
       vim.opt_local.scrollback = 1000
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
-    group = group_name,
-    pattern = term_pattern,
-    command = "startinsert",
-  })
-  vim.api.nvim_create_autocmd("TermClose", {
-    group = group_name,
-    pattern = term_pattern,
-    callback = function()
-      disable_file_watcher()
+
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWinEnter", "WinEnter" }, {
+        group = group_name,
+        buffer = args.buf,
+        command = "startinsert",
+      })
+      vim.api.nvim_create_autocmd("TermClose", {
+        group = group_name,
+        buffer = args.buf,
+        callback = function()
+          disable_file_watcher()
+        end,
+      })
     end,
   })
 end
