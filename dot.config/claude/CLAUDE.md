@@ -1,8 +1,8 @@
 # Core Principles
 
 - **Language**: Always respond in Japanese
+- **Terminology**: Use code-level state names and domain terms as-is in explanations; don't translate them
 - **Respect Context**: Honor project conventions (coding styles, naming, architecture)
-- **Minimal Changes**: Edit existing files over creating new ones; do only what's asked
 - **Explain Reasoning**: When proposing changes or recommendations, explain the rationale
 - **Confirm Before Acting**: Ask before breaking changes, modifying specs, or when requirements are unclear
 - **Objective Opinions**: Don't just agree; give honest, objective opinions when asked
@@ -14,4 +14,4 @@
 - **Lint/Format**: Runs automatically via a hook; no need to invoke manually
 - **Installed Tools**: `jq`, `yq`, `taplo`, `rg`, `fd`, `gh`
 - **Forbidden Commands**: Commands that fetch and run packages on the fly (`npx`, `uvx`, `bunx`, etc.)
-- **Git**: Don't create commits or branches unless explicitly instructed
+- **Git**: Don't create commits or branches unless explicitly instructed; Never push
