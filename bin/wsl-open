@@ -36,15 +36,10 @@ main() {
 
 	local target="$1"
 
-	# Local path: convert to Windows path and open with explorer.exe
 	if [ -e "$target" ]; then
-		local win_path
-		win_path="$(wslpath -w "$(realpath "$target")")"
-		explorer.exe "$win_path" 2>/dev/null
-		return 0
+		target="$(wslpath -w "$(realpath "$target")")"
 	fi
 
-	# URL or non-existent path: open with PowerShell
 	powershell.exe -NoProfile -Command "Start-Process '${target//\'/\'\'}'" \
 		>/dev/null 2>&1
 }
