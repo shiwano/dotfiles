@@ -130,6 +130,7 @@
       "~/.config/claude"
     ]
   },
+  "model": "opus",
   "disableClaudeAiConnectors": true,
   "hooks": {
     "Notification": [
@@ -192,12 +193,29 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "lua-lsp@claude-plugins-official": true,
-    "figma@claude-plugins-official": false
+    "figma@claude-plugins-official": false,
+    "konte@konte": true
   },
-  "extraKnownMarketplaces": {},
+  "extraKnownMarketplaces": {
+    "konte": {
+      "source": {
+        "source": "github",
+        "repo": "shiwano/konte",
+        "ref": "plugin"
+      }
+    }
+  },
   "outputStyle": "custom",
   "alwaysThinkingEnabled": true,
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-2": {
+      "autoCompactWindow": 400000
+    },
+    "claude-opus-5-5": {
+      "autoCompactWindow": 400000
+    }
+  },
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true
 }
