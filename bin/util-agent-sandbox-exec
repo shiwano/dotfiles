@@ -62,6 +62,15 @@ build_common_allow_write() {
 		if [ -n "${HOMEBREW_PREFIX:-}" ]; then
 			args+=(--allow-write "$HOMEBREW_PREFIX/Library/Homebrew/cmd/shellenv.sh")
 		fi
+		# Allow writing to tmux client tty for OSC 777 notifications
+		if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
+			local client_tty
+			client_tty="$(tmux display-message -p '#{client_tty}' 2>/dev/null ||
+				true)"
+			if [ -n "$client_tty" ]; then
+				args+=(--allow-write "$client_tty")
+			fi
+		fi
 	fi
 
 	if [[ "$(uname)" == "Linux" ]]; then
@@ -77,15 +86,6 @@ build_common_allow_write() {
 
 	if jj_root="$(jj root 2>/dev/null)"; then
 		args+=(--allow-write "$jj_root/.jj")
-	fi
-
-	# Allow writing to tmux client tty for OSC 777 notifications
-	if [[ -n "${TMUX:-}" ]] && command -v tmux >/dev/null 2>&1; then
-		local client_tty
-		client_tty="$(tmux display-message -p '#{client_tty}' 2>/dev/null || true)"
-		if [ -n "$client_tty" ]; then
-			args+=(--allow-write "$client_tty")
-		fi
 	fi
 
 	# Extend allow-write with caller-supplied paths, typically set per-project
