@@ -76,6 +76,13 @@ ffmpeg = "latest"
 'pipx:jupyterlab' = 'latest'
 'pipx:huggingface_hub' = 'latest'
 
+[tools.'github:zenbu-labs/terminal-browser']
+version = 'latest'
+version_prefix = 'v'
+strip_components = 1
+bin_path = 'bin'
+filter_bins = ['terminal-browser']
+
 [settings]
 experimental = true
 http_timeout = '180s'
