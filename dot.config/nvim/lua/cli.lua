@@ -162,6 +162,7 @@ function M.format()
     end
 
     local argc = vim.fn.argc()
+    local disabled_fts = vim.split(vim.env.NVIM_DISABLE_FORMAT_FT or "", ",", { trimempty = true })
 
     for i = 1, argc do
       vim.cmd("argument " .. i)
@@ -170,11 +171,13 @@ function M.format()
         vim.cmd("filetype detect")
       end
 
-      conform.format({
-        async = false,
-        timeout_ms = 10000,
-        lsp_format = "fallback",
-      })
+      if not vim.tbl_contains(disabled_fts, vim.bo.filetype) then
+        conform.format({
+          async = false,
+          timeout_ms = 10000,
+          lsp_format = "fallback",
+        })
+      end
     end
 
     vim.cmd("wqa")
