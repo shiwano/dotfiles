@@ -1,3 +1,4 @@
 export SANDBOX_ENV_ALLOWLIST=""
 export SANDBOX_WRITE_ALLOWLIST=""
 export NVIM_AGENT="claude"
+# export NVIM_DISABLE_FORMAT_FT="markdown"

@@ -46,6 +46,11 @@ local function current_working_directory()
   return rel_dir
 end
 
+local function is_format_disabled_ft(ft)
+  local fts = vim.split(vim.env.NVIM_DISABLE_FORMAT_FT or "", ",", { trimempty = true })
+  return vim.tbl_contains(fts, ft)
+end
+
 local function markdown_reference_label(line, col)
   local init = 1
   while true do
@@ -1426,6 +1431,9 @@ local pluginSpec = {
           if name == ".env" or name:match("^%.env%.") then
             return
           end
+          if is_format_disabled_ft(vim.bo[args.buf].filetype) then
+            return
+          end
           require("lint").try_lint()
         end,
       })
@@ -1456,7 +1464,7 @@ local pluginSpec = {
           toml = { "taplo" },
         },
         format_on_save = function(bufnr)
-          if vim.b[bufnr].disable_autoformat then
+          if vim.b[bufnr].disable_autoformat or is_format_disabled_ft(vim.bo[bufnr].filetype) then
             return
           end
           return { timeout_ms = 5000, lsp_format = "fallback" }
