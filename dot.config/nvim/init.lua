@@ -1154,7 +1154,16 @@ local pluginSpec = {
         })
       )
 
-      vim.lsp.config(ls.rust, lsp_config({}))
+      vim.lsp.config(
+        ls.rust,
+        lsp_config({
+          settings = {
+            ["rust-analyzer"] = {
+              check = { command = "clippy" },
+            },
+          },
+        })
+      )
 
       vim.lsp.config(
         ls.typescript_go,
